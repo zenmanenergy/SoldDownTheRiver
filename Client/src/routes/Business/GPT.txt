@@ -1,0 +1,8 @@
+Create a Svelte form for adding and deleting businesses using SvelteKit. 
+The form should have a hidden field for the BusinessId, which is obtained 
+from the URL query parameter 'businessId'. The form should also have a 
+text input field for the business name, and two buttons for saving and 
+deleting a business. The JavaScript for handling the save and delete 
+actions should be in separate files named 'handleSave.js' and 
+'handleDelete.js', respectively. The form should be inside a Svelte 
+component named '+page.svelte' in the 'src/routes/Businesses' folder.

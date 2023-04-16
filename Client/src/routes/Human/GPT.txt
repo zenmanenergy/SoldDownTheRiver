@@ -1,0 +1,25 @@
+Create a Svelte form for adding and deleting Humans using SvelteKit. The form should have a hidden field for the HumanId, which is obtained from the URL query parameter 'HumanId'. The form should include the following fields:
+
+First Name
+Middle Name (optional)
+Last Name
+Start Year
+End Year
+Notes (optional)
+The JavaScript for handling the save and delete actions should be in separate files named 'handleSave.js' and 'handleDelete.js', respectively. For now just have the functions in those files output information to the console.log(). The form should be inside a Svelte component named '+page.svelte' in the 'src/routes/Humans' folder.
+
+The form validation should include checking that the first name, last name, start year, and end year fields are not empty, and that the start year is less than or equal to the end year. If a required field is left empty, the form should focus the cursor on that field and highlight it in red. You can use reactive statements in Svelte to implement this functionality. For example, you can use the following code to check if the First Name field is empty:
+
+$: firstNameValid = !!FirstName;
+
+This creates a reactive statement that checks if the FirstName field is empty, and assigns the result to the firstNameValid variable. You can use similar code to check the other form fields.
+
+When the component is mounted, the HumanId field should be set based on the value of the 'HumanId' query parameter in the URL. If there is no 'HumanId' query parameter, the HumanId field should be set to an empty string. You can use the following code to achieve this:
+
+onMount(async () => {
+const urlParams = new URLSearchParams(window.location.search);
+HumanId = urlParams.get("HumanId") || "";
+console.log("HumanId", HumanId);
+});
+
+If the form is valid, the save button should call the handleSave function, passing in the values of the form fields as parameters. The delete button should call the handleDelete function, passing in the HumanId value as a parameter.
