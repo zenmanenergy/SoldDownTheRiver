@@ -27,6 +27,7 @@ export function handleSave(businessId, BusinessName,formValid) {
   .then(response => response.json())
   .then(data => {
     console.log("Save success",data);
+    window.location.href = '/Businesses';
     // Handle the response data as needed
   })
   .catch(error => {

@@ -10,6 +10,7 @@ export async function handleDelete(BusinessId) {
     }
 
     console.log(`Business with ID ${BusinessId} has been deleted.`);
+    window.location.href = '/Businesses';
   } catch (error) {
     console.error('There was a problem deleting the business:', error);
   }
