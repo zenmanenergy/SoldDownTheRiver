@@ -12,6 +12,7 @@ from Business import Business
 from Humans import Humans
 from Human import Human
 from Locations import Locations
+from Location import Location
 from Notary import Notary
 from Partners import Partners
 from Transactions import Transactions
@@ -24,6 +25,8 @@ app.register_blueprint(Businesses.blueprint)
 app.register_blueprint(Business.blueprint)
 app.register_blueprint(Humans.blueprint)
 app.register_blueprint(Human.blueprint)
+app.register_blueprint(Locations.blueprint)
+app.register_blueprint(Location.blueprint)
 
 @app.route("/")
 @cross_origin()
