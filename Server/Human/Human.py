@@ -14,10 +14,16 @@ def SaveHuman():
 
     # Extract the HumanId and HumanName from the human_data
     HumanId = human_data.get('HumanId', None)
-    HumanName = human_data.get('HumanName', None)
+    FirstName = human_data.get('FirstName', None)
+    MiddleName = human_data.get('MiddleName', None)
+    LastName = human_data.get('LastName', None)
+    StartYear = human_data.get('StartYear', None)
+    EndYear = human_data.get('EndYear', None)
+    Notes = human_data.get('Notes', None)
 
     # Call the save_human function from SaveHuman.py with the extracted data
-    result = save_human(HumanId, HumanName)
+    result = save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes)
+
 
     return result
 
