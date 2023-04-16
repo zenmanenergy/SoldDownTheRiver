@@ -1,27 +1,44 @@
-// src/routes/Humans/handleSave.js
-export function handleSave(data) {
-	console.log("abc");
-	const { HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, formValid } = data;
+const baseURL = 'http://192.168.1.182';
 
-	if (!formValid) {
-		const invalidFields = document.querySelectorAll("input:invalid");
-		if (invalidFields.length > 0) {
-			invalidFields[0].focus();
-		}
-		return;
-	}
+export function handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, formValid ) {
 
-	let port = "";
-	if (window.location.port == "3000") {
-		port = ":80";
-	}
-	var endpoint = window.location.protocol + "//" + window.location.hostname + port + "/q?command=" + JSON.stringify(command);
-	console.log(endpoint);
-	fetch(endpoint)
-		.then((response) => response.json())
-		.then((result) => {
-			// console.log(result.data);
-			location.href = "/trade3?type=" + type + "&tradeSearchId=" + result.data.tradeSearchId;
-		});
-	console.log("Saving human:", { HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes });
+  if (!formValid) {
+    const invalidFields = document.querySelectorAll("input:invalid");
+    if (invalidFields.length > 0) {
+      invalidFields[0].focus();
+    }
+    return;
+  }
+  console.log('valid')
+  const humanData = {
+    HumanId: HumanId,
+    FirstName: FirstName,
+    MiddleName: MiddleName,
+    LastName: LastName,
+    StartYear: StartYear,
+    EndYear: EndYear,
+    Notes: Notes
+  };
+
+  console.log('humanData',humanData)
+  const queryString = Object.keys(humanData)
+    .map(key => key + '=' + encodeURIComponent(humanData[key]))
+    .join('&');
+
+	console.log('queryString',queryString)
+  const url = baseURL + '/SaveHuman?' + queryString; 
+  console.log(url)
+  fetch(url, {
+    method: 'GET'
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("Save success",data);
+    window.location.href = '/Humans';
+    // Handle the response data as needed
+  })
+  .catch(error => {
+    console.error("save error",error);
+    // Handle the error as needed
+  });
 }
