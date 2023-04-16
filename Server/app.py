@@ -10,6 +10,7 @@ import json
 from Businesses import Businesses
 from Business import Business
 from Humans import Humans
+from Human import Human
 from Locations import Locations
 from Notary import Notary
 from Partners import Partners
@@ -22,6 +23,7 @@ app = Flask(__name__)
 app.register_blueprint(Businesses.blueprint)
 app.register_blueprint(Business.blueprint)
 app.register_blueprint(Humans.blueprint)
+app.register_blueprint(Human.blueprint)
 
 @app.route("/")
 @cross_origin()
