@@ -2,8 +2,9 @@
 <script>
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import { handleSave } from './handleSave';
-  import { handleDelete } from './handleDelete';
+  import { handleSave } from './handleSave.js';
+  import { handleDelete } from './handleDelete.js';
+  import { handleGet } from './handleGet.js';
 
   let HumanId = '';
   let FirstName = '';
@@ -12,17 +13,29 @@
   let StartYear = '';
   let EndYear = '';
   let Notes = '';
+  let isLoading = true;
 
-  let formValid = false;
-
+  let FormValid = false;
+  async function setName(_FirstName, _MiddleName, _LastName, _StartYear, _EndYear, _Notes) {
+    FirstName=_FirstName;
+    MiddleName=_MiddleName;
+    LastName=_LastName;
+    StartYear=_StartYear;
+    EndYear=_EndYear;
+    Notes=_Notes;
+  }
   $: {
-    formValid = FirstName && LastName && StartYear && EndYear && StartYear <= EndYear;
+    FormValid = FirstName && LastName && StartYear && EndYear && StartYear <= EndYear;
   }
 
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     HumanId = urlParams.get("HumanId") || "";
+    if (HumanId) {
+      handleGet(HumanId, setName);
+    }
     console.log("HumanId", HumanId);
+    isLoading = false;
   });
 </script>
 
@@ -34,7 +47,11 @@
     border: 1px solid #ccc;
   }
 </style>
-
+{#if isLoading}
+  <div class="loading-screen">
+    <div class="spinner"></div>
+  </div>
+{:else}
 <form>
   <div>
     <label for="FirstName">First Name:</label>
@@ -61,9 +78,10 @@
     <textarea id="Notes" bind:value={Notes}></textarea>
   </div>
   <div>
-    <button type="button" on:click={() => handleSave({ HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, formValid })} >Save</button>
+    <button type="button" on:click={() => handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, FormValid)}>Save</button>
     {#if HumanId.length}
       <button type="button" on:click={() => handleDelete(HumanId)}>Delete</button>
     {/if}
   </div>
 </form>
+{/if}
