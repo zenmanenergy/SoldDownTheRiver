@@ -11,7 +11,6 @@ blueprint = Blueprint('Business', __name__)
 @blueprint.route("/SaveBusiness", methods=['GET'])
 @cross_origin()
 def SaveBusiness():
-    print("save!!!")
     business_data = request.args.to_dict()
 
     # Extract the BusinessId and BusinessName from the business_data
