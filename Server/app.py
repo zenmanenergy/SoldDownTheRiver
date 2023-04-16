@@ -17,6 +17,7 @@ from Notary import Notary
 from Partners import Partners
 from Transactions import Transactions
 from Users import Users
+from User import User
 
 
 app = Flask(__name__)
@@ -27,6 +28,8 @@ app.register_blueprint(Humans.blueprint)
 app.register_blueprint(Human.blueprint)
 app.register_blueprint(Locations.blueprint)
 app.register_blueprint(Location.blueprint)
+app.register_blueprint(Users.blueprint)
+app.register_blueprint(User.blueprint)
 
 @app.route("/")
 @cross_origin()
