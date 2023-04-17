@@ -1,9 +1,14 @@
+
 <!-- src/routes/Locations/+page.svelte -->
+<style>
+	@import "/static/FormPages.css";
+</style>
+
 <script>
-	import { onMount } from 'svelte';
-	import { handleSave } from './handleSave.js';
-	import { handleDelete } from './handleDelete.js';
-	import { handleGet } from './handleGet.js';
+	import { onMount } from "svelte";
+	import { handleSave } from "./handleSave.js";
+	import { handleDelete } from "./handleDelete.js";
+	import { handleGet } from "./handleGet.js";
 
 	let LocationId = "";
 	let City = "";
@@ -32,94 +37,68 @@
 		if (LocationId) {
 			handleGet(LocationId, setLocation);
 		}
-		console.log("LocationId", LocationId)
-    	isLoading = false;
+		console.log("LocationId", LocationId);
+		isLoading = false;
 	});
 </script>
 
-<style>
-	input:required:invalid {
-		border: 1px solid red;
-	}
-	input:required:valid {
-		border: 1px solid #ccc;
-	}
-</style>
-
 {#if isLoading}
-  <div class="loading-screen">
-    <div class="spinner"></div>
-  </div>
+	<div class="loading-screen">
+		<div class="spinner" />
+	</div>
 {:else}
-	<div>
-		<form>
-			<h2>Add a Location</h2>
+	<div class="section">
+		<a href="/Locations">Back to Locations</a>
+		<div class="ActionBox">
+			<form>
+				<h3 class="title is-2">Edit a Location</h3>
 
-			<input type="hidden" bind:value={LocationId} />
+				<input type="hidden" bind:value={LocationId} />
 
-			<div>
-				<label for="City">City</label>
-				<input
-					type="text"
-					id="City"
-					placeholder="Enter City Name"
-					bind:value={City}
-					required
-				/>
-			</div>
+				<div class="field">
+					<label class="label" for="City">City</label>
+					<div class="control">
+						<input type="text" id="City" placeholder="Enter City Name" bind:value={City} required />
+					</div>
+				</div>
 
-			<div>
-				<label for="State">State</label>
-				<input
-					type="text"
-					id="State"
-					placeholder="Enter State Name"
-					bind:value={State}
-					required
-				/>
-			</div>
+				<div class="field">
+					<label class="label" for="State">State</label>
+					<div class="control">
+						<input type="text" id="State" placeholder="Enter State Name" bind:value={State} required />
+					</div>
+				</div>
 
-			<div>
-				<label for="Country">Country</label>
-				<input
-					type="text"
-					id="Country"
-					placeholder="Enter Country Name"
-					bind:value={Country}
-					required
-				/>
-			</div>
+				<div class="field">
+					<label class="label" for="Country">Country</label>
+					<div class="control">
+						<input type="text" id="Country" placeholder="Enter Country Name" bind:value={Country} required />
+					</div>
+				</div>
 
-			<div>
-				<label for="Latitude">Latitude</label>
-				<input
-					type="number"
-					id="Latitude"
-					placeholder="Enter Latitude"
-					step="0.0001"
-					bind:value={Latitude}
-					required
-				/>
-			</div>
+				<div class="field">
+					<label class="label" for="Latitude">Latitude</label>
+					<div class="control">
+						<input type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Latitude} required />
+					</div>
+				</div>
 
-			<div>
-				<label for="Longitude">Longitude</label>
-				<input
-					type="number"
-					id="Longitude"
-					placeholder="Enter Longitude"
-					step="0.0001"
-					bind:value={Longitude}
-					required
-				/>
-			</div>
+				<div class="field">
+					<label class="label" for="Longitude">Longitude</label>
+					<div class="control">
+						<input type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Longitude} required />
+					</div>
+				</div>
 
-			<div>
-				<button type="button" on:click={() => handleSave(LocationId, City, State, Country, Latitude, Longitude, formValid)}>Save</button>
-				{#if LocationId.length}
-					<button type="button" on:click={() => handleDelete(LocationId)}>Delete</button>
-				{/if}
-			</div>
-		</form>
+				<div class="field">
+					<div class="control">
+						<button type="button" on:click={() => handleSave(LocationId, City, State, Country, Latitude, Longitude, formValid)}>Save</button>
+						{#if LocationId.length}
+							<button type="button" on:click={() => handleDelete(LocationId)}>Delete</button>
+						{/if}
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 {/if}
