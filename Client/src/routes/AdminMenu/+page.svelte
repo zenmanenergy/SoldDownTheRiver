@@ -1,4 +1,7 @@
-<script>
+<style>
+	@import '/static/FormPages.css';
+  </style>
+  <script>
 	import { onMount } from "svelte";
 
 	let isLoading = true;
@@ -13,8 +16,9 @@
 		<div class="spinner" />
 	</div>
 {:else}
-	<div>
-		<h1>Admin Menu</h1>
+<div class="section">
+    <div class="ActionBox">
+      <h3 class="title is-2">Admin Menu</h3>
 		<ul>
 			<li><a href={`/Businesses`}>Businesses</a></li>
 			<li><a href={`/Humans`}>Humans</a></li>
@@ -22,4 +26,5 @@
 			<li><a href={`/Users`}>Users</a></li>
 		</ul>
 	</div>
+</div>
 {/if}
