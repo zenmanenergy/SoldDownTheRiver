@@ -1,7 +1,7 @@
 *.pyc
-Server/Locations/__pycache__/
-Server/Humans/__pycache__/
-Server/Business/__pycache__/
-Server/Businesses/__pycache__/
-Server/__pycache__/
+Server\Locations\__pycache__\
+Server\Humans\__pycache__\
+Server\Business\__pycache__\
+Server\Businesses\__pycache__\
+Server\__pycache__\
 *__pycache__/*
