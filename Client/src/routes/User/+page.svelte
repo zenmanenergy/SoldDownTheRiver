@@ -1,4 +1,7 @@
 <!-- src/routes/Users/+page.svelte -->
+<style>
+	@import '/static/FormPages.css';
+  </style>
 <script>
 	import { onMount } from 'svelte';
 	import { handleSave } from './handleSave.js';
@@ -40,29 +43,25 @@
 	});
 </script>
 
-<style>
-	input:required:invalid {
-		border: 1px solid red;
-	}
-	input:required:valid {
-		border: 1px solid #ccc;
-	}
-</style>
 
 {#if isLoading}
   <div class="loading-screen">
     <div class="spinner"></div>
   </div>
 {:else}
-	<div>
-		<form>
-			<h2>Add a User</h2>
 
-			<input type="hidden" bind:value={UserId} />
+  <div class="section">
+	<a href="/Users">Back to Users</a>
+	<div class="ActionBox">
+	<form>
+		<h3 class="title is-2">Add a User</h3>
+		<input type="hidden" bind:value={UserId} />
 
-			<div>
-				<label for="FirstName">First Name</label>
+		<div class="field">
+			<label class="label" for="FirstName">First Name</label>
+			<div class="control">
 				<input
+					class="input"
 					type="text"
 					id="FirstName"
 					placeholder="Enter First Name"
@@ -70,10 +69,13 @@
 					required
 				/>
 			</div>
+		</div>
 
-			<div>
-				<label for="LastName">Last Name</label>
+		<div class="field">
+			<label class="label" for="LastName">Last Name</label>
+			<div class="control">
 				<input
+					class="input"
 					type="text"
 					id="LastName"
 					placeholder="Enter Last Name"
@@ -81,10 +83,13 @@
 					required
 				/>
 			</div>
+		</div>
 
-			<div>
-				<label for="Email">Email</label>
+		<div class="field">
+			<label class="label" for="Email">Email</label>
+			<div class="control">
 				<input
+					class="input"
 					type="email"
 					id="Email"
 					placeholder="Enter Email Address"
@@ -92,10 +97,13 @@
 					required
 				/>
 			</div>
+		</div>
 
-			<div>
-				<label for="Phone">Phone</label>
+		<div class="field">
+			<label class="label" for="Phone">Phone</label>
+			<div class="control">
 				<input
+					class="input"
 					type="tel"
 					id="Phone"
 					placeholder="Enter Phone Number"
@@ -103,10 +111,13 @@
 					required
 				/>
 			</div>
+		</div>
 
-			<div>
-				<label for="Password">Password</label>
+		<div class="field">
+			<label class="label" for="Password">Password</label>
+			<div class="control">
 				<input
+					class="input"
 					type="password"
 					id="Password"
 					placeholder="Enter Password"
@@ -114,10 +125,13 @@
 					required
 				/>
 			</div>
+		</div>
 
-			<div>
-				<label for="School">School</label>
+		<div class="field">
+			<label class="label" for="School">School</label>
+			<div class="control">
 				<input
+					class="input"
 					type="text"
 					id="School"
 					placeholder="Enter School Name"
@@ -125,25 +139,31 @@
 					required
 				/>
 			</div>
+		</div>
 
-			<div>
-				<label for="SemesterYear">Semester/Year</label>
+		<div class="field">
+			<label class="label" for="SemesterYear">Semester/Year</label>
+			<div class="control">
 				<input
+					class="input"
 					type="text"
 					id="SemesterYear"
 					placeholder="Enter Semester/Year"
 					bind:value={SemesterYear}
 					required
-				
-					/>
-				</div>
-		
-				<div>
-					<button type="button" on:click={() => handleSave(UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear, formValid)} >Save</button>
-					{#if UserId.length}
-						<button type="button" on:click={() => handleDelete(UserId)}>Delete</button>
-					{/if}
-				</div>
-			</form>
+				/>
+			</div>
 		</div>
+
+		<div class="field">
+			<div class="control">
+				<button class="button is-primary" type="button" on:click={() => handleSave(UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear, formValid)} >Save</button>
+				{#if UserId.length}
+					<button class="button is-danger" type="button" on:click={() => handleDelete(UserId)}>Delete</button>
+				{/if}
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
 	{/if}
