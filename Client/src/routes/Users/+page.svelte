@@ -1,3 +1,6 @@
+<style>
+  @import '/static/FormPages.css';
+</style>
 <script>
   import { onMount } from 'svelte';
   import handleGet from './handleGet.js';
@@ -20,8 +23,10 @@
     <div class="spinner"></div>
   </div>
 {:else}
-  <div>
-    <h1>List of Users</h1>
+<div class="section">
+	<a href="/AdminMenu">Back to Menu</a>
+	<div class="ActionBox">
+		<h3 class="title is-2">List of Users</h3>
     <ul>
       {#each users as user}
         <li>
@@ -33,4 +38,5 @@
     </ul>
     <button on:click={addUser}>Add User</button>
   </div>
+</div>
 {/if} 
