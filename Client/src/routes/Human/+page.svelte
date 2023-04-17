@@ -1,4 +1,7 @@
 <!-- src/routes/Humans/+page.svelte -->
+<style>
+  @import '/static/FormPages.css';
+</style>
 <script>
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
@@ -39,49 +42,61 @@
   });
 </script>
 
-<style>
-  input:required:invalid {
-    border: 1px solid red;
-  }
-  input:required:valid {
-    border: 1px solid #ccc;
-  }
-</style>
 {#if isLoading}
   <div class="loading-screen">
     <div class="spinner"></div>
   </div>
 {:else}
-<form>
-  <div>
-    <label for="FirstName">First Name:</label>
-    <input type="text" id="FirstName" bind:value={FirstName} required>
-  </div>
-  <div>
-    <label for="MiddleName">Middle Name:</label>
-    <input type="text" id="MiddleName" bind:value={MiddleName}>
-  </div>
-  <div>
-    <label for="LastName">Last Name:</label>
-    <input type="text" id="LastName" bind:value={LastName} required>
-  </div>
-  <div>
-    <label for="StartYear">Start Year:</label>
-    <input type="number" id="StartYear" bind:value={StartYear} required>
-  </div>
-  <div>
-    <label for="EndYear">End Year:</label>
-    <input type="number" id="EndYear" bind:value={EndYear} required>
-  </div>
-  <div>
-    <label for="Notes">Notes:</label>
-    <textarea id="Notes" bind:value={Notes}></textarea>
-  </div>
-  <div>
-    <button type="button" on:click={() => handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, FormValid)}>Save</button>
-    {#if HumanId.length}
-      <button type="button" on:click={() => handleDelete(HumanId)}>Delete</button>
-    {/if}
-  </div>
-</form>
-{/if}
+<div class="section">
+  <a href="/Humans">Back to Humans</a>
+  <div class="ActionBox">
+    <h3 class="title is-2">Edit Human</h3>
+  <form>
+    <div class="field">
+      <label class="label" for="FirstName">First Name:</label>
+      <div class="control">
+        <input class="input" type="text" id="FirstName" bind:value={FirstName} required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="MiddleName">Middle Name:</label>
+      <div class="control">
+        <input class="input" type="text" id="MiddleName" bind:value={MiddleName}>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="LastName">Last Name:</label>
+      <div class="control">
+        <input class="input" type="text" id="LastName" bind:value={LastName} required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="StartYear">Start Year:</label>
+      <div class="control">
+        <input class="input" type="number" id="StartYear" bind:value={StartYear} required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="EndYear">End Year:</label>
+      <div class="control">
+        <input class="input" type="number" id="EndYear" bind:value={EndYear} required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="Notes">Notes:</label>
+      <div class="control">
+        <textarea class="textarea" id="Notes" bind:value={Notes}></textarea>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <button class="button is-primary" type="button" on:click={() => handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, FormValid)}>Save</button>
+        {#if HumanId.length}
+          <button class="button is-danger" type="button" on:click={() => handleDelete(HumanId)}>Delete</button>
+        {/if}
+      </div>
+    </div>
+  </form>
+</div>
+</div>
+  {/if}
