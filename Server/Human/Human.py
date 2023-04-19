@@ -4,6 +4,9 @@ from flask_cors import CORS, cross_origin
 from .SaveHuman import save_human
 from .DeleteHuman import delete_human
 from .GetHuman import get_human
+from .GetAKANames import get_aka
+from .SaveAKANames import save_aka
+from .DeleteAKAName import delete_aka
 
 blueprint = Blueprint('Human', __name__)
 
@@ -49,4 +52,49 @@ def GetHuman():
     HumanId = human_data.get('HumanId')
     # Call the get_human function from GetHuman.py
     result = get_human(HumanId)
+    return result
+
+
+@blueprint.route("/GetAkaNames", methods=['GET'])
+@cross_origin()
+def GetAkaNames():
+    # Get the human data from the request
+    human_data = request.args.to_dict()
+
+    # Get the human ID from the request
+    HumanId = human_data.get('HumanId')
+    # Call the get_human function from GetHuman.py
+    result = get_aka(HumanId)
+    return result
+
+
+@blueprint.route("/SaveHumanAKA", methods=['GET'])
+@cross_origin()
+def SaveHumanAKA():
+    # Get the human data from the request
+    human_data = request.args.to_dict()
+
+    # Get the human ID from the request
+    AKAHumanId = human_data.get('AKAHumanId', None)
+    HumanId = human_data.get('HumanId', None)
+    AKAFirstName = human_data.get('AKAFirstName', None)
+    AKAMiddleName = human_data.get('AKAMiddleName', None)
+    AKALastName = human_data.get('AKALastName', None)
+    
+    # Call the get_human function from GetHuman.py
+    result = save_aka(AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName)
+    return result
+
+
+@blueprint.route("/DeleteAKAName", methods=['GET'])
+@cross_origin()
+def DeleteAKAName():
+    # Get the human data from the request
+    human_data = request.args.to_dict()
+
+    # Get the human ID from the request
+    AKAHumanId = human_data.get('AKAHumanId', None)
+    
+    # Call the get_human function from GetHuman.py
+    result = delete_aka(AKAHumanId)
     return result
