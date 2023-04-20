@@ -11,6 +11,10 @@
   import { handleGetAKA } from './handleGetAKA.js';
   import { handleSaveAkaName } from './handleSaveAkaName.js';
   import { handleDeleteAkaName } from './handleDeleteAkaName.js';
+  import { handleGetPartners } from './handleGetPartners.js';
+  import { handleDeletePartner } from './handleDeletePartner.js';
+  import { handleGetPossiblePartners } from './handleGetPossiblePartners.js';
+  import { handleSavePartner } from './handleSavePartner.js';
   
   let HumanId = '';
   let FirstName = '';
@@ -25,6 +29,11 @@
   let AKAFirstName = '';
   let AKAMiddleName = '';
   let AKALastName = '';
+
+  let Partners=[];
+
+  let PartnerHumanId='';
+  let PossiblePartners=[]
 
   let isLoading = true;
 
@@ -46,17 +55,23 @@
   async function setAkaNames(data) {
     AkaNames = data;
   }
-
+  async function setPartners(data) {
+    Partners = data;
+  }
+  async function setPossiblePartners(data) {
+    PossiblePartners = data;
+  }
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     HumanId = urlParams.get("HumanId") || "";
     if (HumanId) {
       await Promise.all([
         handleGet(HumanId, setName),
-        handleGetAKA(HumanId, setAkaNames)
+        handleGetAKA(HumanId, setAkaNames),
+        handleGetPartners(HumanId, setPartners),
+        handleGetPossiblePartners(HumanId, setPossiblePartners),
       ]);
     }
-    console.log("HumanId", HumanId);
     isLoading = false;
   });
 </script>
@@ -128,6 +143,33 @@
         <input class="input" type="text" id="AKAMiddleName" placeholder="AKA Middle Name" bind:value={AKAMiddleName}><br>
         <input class="input" type="text" id="AKALastName" placeholder="AKA Last Name" bind:value={AKALastName}><br>
         <button class="button is-primary" type="button" on:click={() => handleSaveAkaName(AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid)}>Add Also Known As</button>
+      </div>
+    </div>
+
+    <div class="ActionBox">
+      <label class="label" for="AkaNames">Partners:</label>
+      {#if Partners.length}
+        <ul>
+          {#each Partners as partner}
+            <li>
+              {partner.FirstName} {partner.MiddleName} {partner.LastName}
+              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeletePartner(partner.PartnerHumanId, HumanId)}>X</button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p>No also known as names added yet.</p>
+      {/if}
+      <div class="control">
+       
+        <select id="PartnerHumanId" bind:value={PartnerHumanId}>
+          <option value="">Select Partner</option>
+          {#each PossiblePartners as possiblePartner}
+            <option value={possiblePartner.HumanId}>{possiblePartner.FirstName} {possiblePartner.MiddleName} {possiblePartner.LastName}</option>
+          {/each}
+        </select>
+        
+        <button class="button is-primary" type="button" on:click={() => handleSavePartner(HumanId, PartnerHumanId)}>Add Also Known As</button>
       </div>
     </div>
     <div class="field">
