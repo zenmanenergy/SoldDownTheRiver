@@ -2,29 +2,19 @@ const baseURL = 'http://192.168.1.182';
 
 export function handleSavePartner(HumanId, PartnerHumanId) {
 
-  if (!AKAFormValid) {
-    const invalidFields = document.querySelectorAll("input:invalid");
-    if (invalidFields.length > 0) {
-      invalidFields[0].focus();
-    }
-    return;
-  }
   console.log('valid')
-  const AKAHumanData = {
-    AKAHumanId: AKAHumanId,
+  const PartnerData = {
     HumanId: HumanId,
-    AKAFirstName: AKAFirstName,
-    AKAMiddleName: AKAMiddleName,
-    AKALastName: AKALastName
+    PartnerHumanId
   };
 
-  console.log('AKAHumanData',AKAHumanData)
-  const queryString = Object.keys(AKAHumanData)
-    .map(key => key + '=' + encodeURIComponent(AKAHumanData[key]))
+  console.log('PartnerData',PartnerData)
+  const queryString = Object.keys(PartnerData)
+    .map(key => key + '=' + encodeURIComponent(PartnerData[key]))
     .join('&');
 
 	console.log('queryString',queryString)
-  const url = baseURL + '/SaveHumanAKA?' + queryString; 
+  const url = baseURL + '/SavePartner?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'
@@ -32,7 +22,7 @@ export function handleSavePartner(HumanId, PartnerHumanId) {
   .then(response => response.json())
   .then(data => {
     console.log("Save success",data);
-    window.location.href = '/Human?HumanId=' + HumanId + '&tab=AKA';
+    window.location.href = '/Human?HumanId=' + HumanId + '&tab=Partners';
     // Handle the response data as needed
   })
   .catch(error => {
