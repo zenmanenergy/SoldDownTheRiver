@@ -169,7 +169,7 @@
           {/each}
         </select>
         
-        <button class="button is-primary" type="button" on:click={() => handleSavePartner(HumanId, PartnerHumanId)}>Add Also Known As</button>
+        <button class="button is-primary" type="button" on:click={() => handleSavePartner(HumanId, PartnerHumanId)}>Add Partner</button>
       </div>
     </div>
     <div class="field">
