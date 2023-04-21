@@ -5,8 +5,8 @@ def get_possible_partners(HumanId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Humans where humanId=%s and humanId not in (select partnerHumanId from partners where partners.humanId=humans.humanId) order by LastName, FirstName"
-    values = (HumanId)
+    query = "SELECT * FROM Humans where humanId<>%s and humanId not in (select partnerHumanId from partners where partners.humanId=%s) order by LastName, FirstName"
+    values = (HumanId,HumanId)
 
     # Execute the query and get the results
     cursor.execute(query, values)
