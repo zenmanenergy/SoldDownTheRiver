@@ -23,6 +23,7 @@
 			<li><a href={`/Businesses`}>Businesses</a></li>
 			<li><a href={`/Humans`}>Humans</a></li>
 			<li><a href={`/Locations`}>Locations</a></li>
+			<li><a href={`/Roles`}>Roles</a></li>
 			<li><a href={`/Users`}>Users</a></li>
 		</ul>
 	</div>
