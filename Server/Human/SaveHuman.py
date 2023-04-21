@@ -14,6 +14,7 @@ def save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Not
         # If the HumanId is not present, create a new human
         HumanId = str(uuid.uuid4())
         query = "INSERT INTO Humans (HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        query +="  ON DUPLICATE KEY UPDATE FirstName=values(FirstName),MiddleName=values(MiddleName),LastName=values(LastName),StartYear=values(StartYear),EndYear=values(EndYear),Notes=values(Notes)"
         values = (HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes)
 
     # Execute the query and commit the changes
