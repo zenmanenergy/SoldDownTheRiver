@@ -8,9 +8,9 @@ def get_partners(HumanId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Partners WHERE HumanId = %s"
+    query = "SELECT * FROM Partners join Humans on Humans.HumanId=Partners.PartnerHumanId WHERE Partners.HumanId = %s"
     values = (HumanId,)
-
+    print(query, values)
     # Execute the query and get the results
     cursor.execute(query, values)
     result = cursor.fetchall()
