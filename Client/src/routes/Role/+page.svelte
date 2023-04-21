@@ -17,15 +17,16 @@
 	$: {
 		formValid = Role;
 	}
-	async function setRole(RoleId,Role) {
-		RoleId = RoleId;
-		Role = Role;
+	async function setRole(_RoleId,_Role) {
+		console.log(RoleId,Role)
+		RoleId = _RoleId;
+		Role = _Role;
 	}
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		RoleId = urlParams.get("RoleId") || "";
 		if (RoleId) {
-			handleGet(RoleId);
+			handleGet(RoleId, setRole);
 		}
 		console.log("RoleId", RoleId);
 		isLoading = false;
@@ -44,7 +45,7 @@
 				<h3 class="title is-2">Add a Role</h3>
 
 				<div class="field">
-					<label class="label" for="role">Name</label>
+					<label class="label" for="Role">Name</label>
 					<div class="control">
 						<input type="hidden" 
 							id="RoleId" 
@@ -63,7 +64,7 @@
 				<div class="field">
 					<div class="control">
 						<button class="button is-primary" type="button" on:click={() => handleSave(RoleId,Role, formValid)}>Save</button>
-						{#if role.length}
+						{#if Role.length}
 							<button class="button is-danger" type="button" on:click={() => handleDelete(RoleId,Role)}>Delete</button>
 						{/if}
 					</div>
