@@ -8,6 +8,7 @@ from .GetAKANames import get_aka
 from .SaveAKANames import save_aka
 from .DeleteAKAName import delete_aka
 from .SavePartner import save_partner
+from .DeletePartner import delete_partner
 from .GetPartners import get_partners
 from .GetPossiblePartners import get_possible_partners
 
@@ -119,7 +120,7 @@ def SavePartner():
     return result
 
 
-@blueprint.route("/getPartners", methods=['GET'])
+@blueprint.route("/GetPartners", methods=['GET'])
 @cross_origin()
 def getPartners():
     # Get the human data from the request
@@ -144,4 +145,18 @@ def GetPossiblePartners():
     
     # Call the get_human function from GetHuman.py
     result = get_possible_partners(HumanId)
+    return result
+
+@blueprint.route("/DeletePartner", methods=['GET'])
+@cross_origin()
+def DeletePartner():
+    # Get the human data from the request
+    human_data = request.args.to_dict()
+
+    # Get the human ID from the request
+    HumanId = human_data.get('HumanId', None)
+    PartnerHumanId = human_data.get('PartnerHumanId', None)
+    
+    # Call the get_human function from GetHuman.py
+    result = delete_partner(HumanId, PartnerHumanId)
     return result
