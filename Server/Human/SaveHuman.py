@@ -1,7 +1,7 @@
 import uuid
 from Lib import Database
 
-def save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes):
+def save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId):
     # Connect to the database
     cursor, connection = Database.ConnectToDatabase()
 
@@ -16,6 +16,19 @@ def save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Not
         query = "INSERT INTO Humans (HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         query +="  ON DUPLICATE KEY UPDATE FirstName=values(FirstName),MiddleName=values(MiddleName),LastName=values(LastName),StartYear=values(StartYear),EndYear=values(EndYear),Notes=values(Notes)"
         values = (HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes)
+
+    
+    # Execute the query and commit the changes
+    cursor.execute(query, values)
+    connection.commit()
+
+    if RoleId:
+        query = "INSERT INTO HumanRoles (HumanId, RoleId) VALUES (%s, %s)"
+        query +="  ON DUPLICATE KEY UPDATE RoleId=values(RoleId)"
+        values = (HumanId, RoleId)
+    else:
+        query = "DELETE FROM HumanRoles WHERE HumanId = %s"
+        values = (HumanId)
 
     # Execute the query and commit the changes
     cursor.execute(query, values)
