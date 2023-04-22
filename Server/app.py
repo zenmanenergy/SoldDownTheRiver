@@ -20,6 +20,7 @@ from Users import Users
 from User import User
 from Roles import Roles
 from Role import Role
+from Transactions import Transactions
 
 
 app = Flask(__name__)
@@ -34,6 +35,7 @@ app.register_blueprint(Users.blueprint)
 app.register_blueprint(User.blueprint)
 app.register_blueprint(Roles.blueprint)
 app.register_blueprint(Role.blueprint)
+app.register_blueprint(Transactions.blueprint)
 
 @app.route("/")
 @cross_origin()
