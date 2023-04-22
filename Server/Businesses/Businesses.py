@@ -7,7 +7,7 @@ from .GetBusinesses import get_businesses
 blueprint = Blueprint('Businesses', __name__)
 
 
-@blueprint.route("/GetBusinesses", methods=['GET'])
+@blueprint.route("/Businesses/GetBusinesses", methods=['GET'])
 @cross_origin()
 def GetBusinesses():
     # Get the business data from the request

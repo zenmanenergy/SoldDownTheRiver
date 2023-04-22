@@ -11,10 +11,11 @@ from .SavePartner import save_partner
 from .DeletePartner import delete_partner
 from .GetPartners import get_partners
 from .GetPossiblePartners import get_possible_partners
+from .GetRoles import get_roles
 
 blueprint = Blueprint('Human', __name__)
 
-@blueprint.route("/SaveHuman", methods=['GET'])
+@blueprint.route("/Human/SaveHuman", methods=['GET'])
 @cross_origin()
 def SaveHuman():
     human_data = request.args.to_dict()
@@ -34,7 +35,7 @@ def SaveHuman():
 
     return result
 
-@blueprint.route("/DeleteHuman", methods=['GET'])
+@blueprint.route("/Human/DeleteHuman", methods=['GET'])
 @cross_origin()
 def DeleteHuman():
     # Get the human data from the request
@@ -46,7 +47,7 @@ def DeleteHuman():
     result = delete_human(HumanId)
     return result
 
-@blueprint.route("/GetHuman", methods=['GET'])
+@blueprint.route("/Human/GetHuman", methods=['GET'])
 @cross_origin()
 def GetHuman():
     # Get the human data from the request
@@ -59,7 +60,7 @@ def GetHuman():
     return result
 
 
-@blueprint.route("/GetAkaNames", methods=['GET'])
+@blueprint.route("/Human/GetAkaNames", methods=['GET'])
 @cross_origin()
 def GetAkaNames():
     # Get the human data from the request
@@ -72,7 +73,7 @@ def GetAkaNames():
     return result
 
 
-@blueprint.route("/SaveHumanAKA", methods=['GET'])
+@blueprint.route("/Human/SaveHumanAKA", methods=['GET'])
 @cross_origin()
 def SaveHumanAKA():
     # Get the human data from the request
@@ -90,7 +91,7 @@ def SaveHumanAKA():
     return result
 
 
-@blueprint.route("/DeleteAKAName", methods=['GET'])
+@blueprint.route("/Human/DeleteAKAName", methods=['GET'])
 @cross_origin()
 def DeleteAKAName():
     # Get the human data from the request
@@ -105,7 +106,7 @@ def DeleteAKAName():
 
 
 
-@blueprint.route("/SavePartner", methods=['GET'])
+@blueprint.route("/Human/SavePartner", methods=['GET'])
 @cross_origin()
 def SavePartner():
     # Get the human data from the request
@@ -120,7 +121,7 @@ def SavePartner():
     return result
 
 
-@blueprint.route("/GetPartners", methods=['GET'])
+@blueprint.route("/Human/GetPartners", methods=['GET'])
 @cross_origin()
 def getPartners():
     # Get the human data from the request
@@ -134,7 +135,7 @@ def getPartners():
     return result
 
 
-@blueprint.route("/GetPossiblePartners", methods=['GET'])
+@blueprint.route("/Human/GetPossiblePartners", methods=['GET'])
 @cross_origin()
 def GetPossiblePartners():
     # Get the human data from the request
@@ -147,7 +148,7 @@ def GetPossiblePartners():
     result = get_possible_partners(HumanId)
     return result
 
-@blueprint.route("/DeletePartner", methods=['GET'])
+@blueprint.route("/Human/DeletePartner", methods=['GET'])
 @cross_origin()
 def DeletePartner():
     # Get the human data from the request
@@ -159,4 +160,15 @@ def DeletePartner():
     
     # Call the get_human function from GetHuman.py
     result = delete_partner(HumanId, PartnerHumanId)
+    return result
+
+@blueprint.route("/Human/GetRoles", methods=['GET'])
+@cross_origin()
+def GetRoles():
+    # Get the role data from the request
+    role_data = request.args.to_dict()
+
+    # Call the get_role function from GetRoles.py
+    result = get_roles()
+
     return result

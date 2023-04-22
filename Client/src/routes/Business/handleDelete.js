@@ -2,7 +2,7 @@
 const baseURL = 'http://192.168.1.182';
 export async function handleDelete(BusinessId) {
   try {
-    const response = await fetch(`${baseURL}/DeleteBusiness?BusinessId=${BusinessId}`);
+    const response = await fetch(`${baseURL}/Business/DeleteBusiness?BusinessId=${BusinessId}`);
     
 
     if (!response.ok) {

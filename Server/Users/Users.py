@@ -6,7 +6,7 @@ from .GetUsers import get_users
 blueprint = Blueprint('Users', __name__)
 
 
-@blueprint.route("/GetUsers", methods=['GET'])
+@blueprint.route("/Users/GetUsers", methods=['GET'])
 @cross_origin()
 def GetUsers():
     # Get the user data from the request

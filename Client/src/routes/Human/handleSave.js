@@ -26,7 +26,7 @@ export function handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, 
     .join('&');
 
 	console.log('queryString',queryString)
-  const url = baseURL + '/SaveHuman?' + queryString; 
+  const url = baseURL + '/Human/SaveHuman?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

@@ -6,7 +6,7 @@ from .GetRoles import get_roles
 blueprint = Blueprint('Roles', __name__)
 
 
-@blueprint.route("/GetRoles", methods=['GET'])
+@blueprint.route("/Roles/GetRoles", methods=['GET'])
 @cross_origin()
 def GetRoles():
     # Get the role data from the request

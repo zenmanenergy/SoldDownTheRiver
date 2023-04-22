@@ -8,7 +8,7 @@ from .GetBusiness import get_business
 
 blueprint = Blueprint('Business', __name__)
 
-@blueprint.route("/SaveBusiness", methods=['GET'])
+@blueprint.route("/Business/SaveBusiness", methods=['GET'])
 @cross_origin()
 def SaveBusiness():
     business_data = request.args.to_dict()
@@ -24,7 +24,7 @@ def SaveBusiness():
     
     
 
-@blueprint.route("/DeleteBusiness", methods=['GET'])
+@blueprint.route("/Business/DeleteBusiness", methods=['GET'])
 @cross_origin()
 def DeleteBusiness():
     # Get the business data from the request
@@ -36,7 +36,7 @@ def DeleteBusiness():
     result = delete_business(BusinessId)
     return result
 
-@blueprint.route("/GetBusiness", methods=['GET'])
+@blueprint.route("/Business/GetBusiness", methods=['GET'])
 @cross_origin()
 def GetBusiness():
     # Get the business data from the request

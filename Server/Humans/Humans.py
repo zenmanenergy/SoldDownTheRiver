@@ -5,7 +5,7 @@ from .GetHumans import get_humans
 
 blueprint = Blueprint('Humans', __name__ )
 
-@blueprint.route("/GetHumans", methods=['GET'])
+@blueprint.route("/Humans/GetHumans", methods=['GET'])
 @cross_origin()
 def GetHumans():
     # Get the human data from the request

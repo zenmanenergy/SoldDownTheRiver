@@ -24,7 +24,7 @@ export function handleSave(locationId, city, state, country, latitude, longitude
     .map(key => key + '=' + encodeURIComponent(locationData[key]))
     .join('&');
 
-  const url = baseURL + '/SaveLocation?' + queryString; 
+  const url = baseURL + '/Location/SaveLocation?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

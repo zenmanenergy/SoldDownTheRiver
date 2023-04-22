@@ -19,7 +19,7 @@ export function handleSave(RoleId,Role, formValid) {
     .map(key => key + '=' + encodeURIComponent(roleData[key]))
     .join('&');
 
-  const url = baseURL + '/SaveRole?' + queryString; 
+  const url = baseURL + '/Role/SaveRole?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 blueprint = Blueprint('Notary', __name__)
 
 
-@blueprint.route("/TESTINGGetLastNotary", methods=['GET', 'POST'])
+@blueprint.route("/Notary/TESTINGGetLastNotary", methods=['GET', 'POST'])
 @cross_origin()
 def TESTINGGetLastNotary():
     Cursor, Connection = Database.ConnectToDatabase()

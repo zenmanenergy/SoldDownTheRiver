@@ -7,7 +7,7 @@ from .GetLocation import get_location
 
 blueprint = Blueprint('Location', __name__)
 
-@blueprint.route("/SaveLocation", methods=['GET'])
+@blueprint.route("/Location/SaveLocation", methods=['GET'])
 @cross_origin()
 def SaveLocation():
     location_data = request.args.to_dict()
@@ -27,7 +27,7 @@ def SaveLocation():
     
     
 
-@blueprint.route("/DeleteLocation", methods=['GET'])
+@blueprint.route("/Location/DeleteLocation", methods=['GET'])
 @cross_origin()
 def DeleteLocation():
     # Get the location information from the request
@@ -39,7 +39,7 @@ def DeleteLocation():
     result = delete_location(LocationId)
     return result
 
-@blueprint.route("/GetLocation", methods=['GET'])
+@blueprint.route("/Location/GetLocation", methods=['GET'])
 @cross_origin()
 def GetLocation():
     # Get the location information from the request

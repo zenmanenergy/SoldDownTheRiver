@@ -7,7 +7,7 @@ from .GetRole import get_role
 
 blueprint = Blueprint('Role', __name__)
 
-@blueprint.route("/SaveRole", methods=['GET'])
+@blueprint.route("/Role/SaveRole", methods=['GET'])
 @cross_origin()
 def SaveRole():
     role_data = request.args.to_dict()
@@ -23,7 +23,7 @@ def SaveRole():
     
     
 
-@blueprint.route("/DeleteRole", methods=['GET'])
+@blueprint.route("/Role/DeleteRole", methods=['GET'])
 @cross_origin()
 def DeleteRole():
     # Get the role data from the request
@@ -35,7 +35,7 @@ def DeleteRole():
     result = delete_role(RoleId)
     return result
 
-@blueprint.route("/GetRole", methods=['GET'])
+@blueprint.route("/Role/GetRole", methods=['GET'])
 @cross_origin()
 def GetRole():
     # Get the role data from the request

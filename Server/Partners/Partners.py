@@ -6,7 +6,7 @@ from flask_cors import CORS, cross_origin
 
 blueprint = Blueprint('Partners', __name__)
 
-@blueprint.route("/GetLastPartner", methods=['GET', 'POST'])
+@blueprint.route("/Partners/GetLastPartner", methods=['GET', 'POST'])
 @cross_origin()
 def GetLastPartner():
     Cursor, Connection = Database.ConnectToDatabase()
@@ -24,7 +24,7 @@ def GetLastPartner():
 
     return Response
 
-@blueprint.route("/InsertPartner", methods=['GET'])
+@blueprint.route("/Partners/InsertPartner", methods=['GET'])
 @cross_origin()
 def InsertPartner():
     HumanId = request.args['HumanId']
@@ -49,7 +49,7 @@ def InsertPartner():
 
     return Response
 
-@blueprint.route("/UpdatePartner", methods=['GET'])
+@blueprint.route("/Partners/UpdatePartner", methods=['GET'])
 @cross_origin()
 def UpdatePartner():
     PartnerId = request.args['PartnerId']
@@ -74,7 +74,7 @@ def UpdatePartner():
 
     return Response
 
-@blueprint.route("/DeletePartner", methods=['GET'])
+@blueprint.route("/Partners/DeletePartner", methods=['GET'])
 @cross_origin()
 def DeletePartner():
     PartnerId = request.args['PartnerId']

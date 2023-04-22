@@ -25,7 +25,7 @@ export function handleSave(userId, firstName, lastName, email, phone, password, 
     .map(key => key + '=' + encodeURIComponent(userData[key]))
     .join('&');
 
-  const url = baseURL + '/SaveUser?' + queryString; 
+  const url = baseURL + '/User/SaveUser?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

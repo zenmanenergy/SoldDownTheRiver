@@ -24,7 +24,7 @@ export function handleSaveAkaName(AKAHumanId,HumanId, AKAFirstName, AKAMiddleNam
     .join('&');
 
 	console.log('queryString',queryString)
-  const url = baseURL + '/SaveHumanAKA?' + queryString; 
+  const url = baseURL + '/Human/SaveHumanAKA?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

@@ -19,7 +19,7 @@ export function handleSave(businessId, BusinessName,formValid) {
     .map(key => key + '=' + encodeURIComponent(businessData[key]))
     .join('&');
 
-  const url = baseURL + '/SaveBusiness?' + queryString; 
+  const url = baseURL + '/Business/SaveBusiness?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

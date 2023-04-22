@@ -14,7 +14,7 @@ export function handleSavePartner(HumanId, PartnerHumanId) {
     .join('&');
 
 	console.log('queryString',queryString)
-  const url = baseURL + '/SavePartner?' + queryString; 
+  const url = baseURL + '/Human/SavePartner?' + queryString; 
   console.log(url)
   fetch(url, {
     method: 'GET'

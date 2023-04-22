@@ -7,7 +7,7 @@ from .GetUser import get_user
 
 blueprint = Blueprint('User', __name__)
 
-@blueprint.route("/SaveUser", methods=['GET'])
+@blueprint.route("/User/SaveUser", methods=['GET'])
 @cross_origin()
 def SaveUser():
     user_data = request.args.to_dict()
@@ -29,7 +29,7 @@ def SaveUser():
     
     
 
-@blueprint.route("/DeleteUser", methods=['GET'])
+@blueprint.route("/User/DeleteUser", methods=['GET'])
 @cross_origin()
 def DeleteUser():
     # Get the user data from the request
@@ -41,7 +41,7 @@ def DeleteUser():
     result = delete_user(UserId)
     return result
 
-@blueprint.route("/GetUser", methods=['GET'])
+@blueprint.route("/User/GetUser", methods=['GET'])
 @cross_origin()
 def GetUser():
     # Get the user data from the request
