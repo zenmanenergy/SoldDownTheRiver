@@ -5,8 +5,8 @@ export async function handleGet(HumanId, setHumanName) {
     const response = await fetch(`${baseURL}/Human/GetHuman?HumanId=${HumanId}`);
     const data = await response.json();
   
-    const { FirstName, MiddleName, LastName , StartYear, EndYear, Notes} = data;
+    const { FirstName, MiddleName, LastName , StartYear, EndYear, Notes, RoleId} = data;
     // const humanName = `${FirstName} ${MiddleName} ${LastName}`.trim();
   
-    setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes);
+    setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId);
 }

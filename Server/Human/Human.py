@@ -28,9 +28,10 @@ def SaveHuman():
     StartYear = human_data.get('StartYear', None)
     EndYear = human_data.get('EndYear', None)
     Notes = human_data.get('Notes', None)
+    RoleId = human_data.get('RoleId', None)
 
     # Call the save_human function from SaveHuman.py with the extracted data
-    result = save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes)
+    result = save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId )
 
 
     return result

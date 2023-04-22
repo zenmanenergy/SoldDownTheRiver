@@ -1,6 +1,6 @@
 const baseURL = 'http://192.168.1.182';
 
-export function handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, formValid ) {
+export function handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId, formValid ) {
 
   if (!formValid) {
     const invalidFields = document.querySelectorAll("input:invalid");
@@ -17,7 +17,8 @@ export function handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, 
     LastName: LastName,
     StartYear: StartYear,
     EndYear: EndYear,
-    Notes: Notes
+    Notes: Notes,
+    RoleId: RoleId
   };
 
   console.log('humanData',humanData)
