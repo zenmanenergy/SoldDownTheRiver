@@ -8,7 +8,7 @@ def get_human(HumanId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Humans WHERE HumanId = %s"
+    query = "SELECT * FROM Humans left join HumanRoles on Humans.HumanId=HumanRoles.HumanId WHERE Humans.HumanId = %s"
     values = (HumanId,)
 
     # Execute the query and get the results
