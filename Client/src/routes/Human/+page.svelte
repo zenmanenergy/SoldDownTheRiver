@@ -15,6 +15,7 @@
   import { handleDeletePartner } from './handleDeletePartner.js';
   import { handleGetPossiblePartners } from './handleGetPossiblePartners.js';
   import { handleSavePartner } from './handleSavePartner.js';
+  import { handleGetRoles } from './handleGetRoles.js';
   
   let HumanId = '';
   let FirstName = '';
@@ -35,17 +36,22 @@
   let PartnerHumanId='';
   let PossiblePartners=[]
 
+  let RoleId='';
+  let Roles=[];
+
   let isLoading = true;
 
   let FormValid = false;
   let AKAFormValid = false;
-  async function setName(_FirstName, _MiddleName, _LastName, _StartYear, _EndYear, _Notes) {
+  async function setName(_FirstName, _MiddleName, _LastName, _StartYear, _EndYear, _Notes, _RoleId) {
     FirstName=_FirstName;
     MiddleName=_MiddleName;
     LastName=_LastName;
     StartYear=_StartYear;
     EndYear=_EndYear;
     Notes=_Notes;
+    RoleId=_RoleId;
+    console.log(RoleId)
   }
   $: {
     FormValid = FirstName && LastName && StartYear && EndYear && StartYear <= EndYear;
@@ -61,6 +67,9 @@
   async function setPossiblePartners(data) {
     PossiblePartners = data;
   }
+  async function setRoles(data) {
+    Roles = data;
+  }
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     HumanId = urlParams.get("HumanId") || "";
@@ -70,6 +79,7 @@
         handleGetAKA(HumanId, setAkaNames),
         handleGetPartners(HumanId, setPartners),
         handleGetPossiblePartners(HumanId, setPossiblePartners),
+        handleGetRoles(setRoles)
       ]);
     }
     isLoading = false;
@@ -102,6 +112,17 @@
       <label class="label" for="LastName">Last Name:</label>
       <div class="control">
         <input class="input" type="text" id="LastName" bind:value={LastName} required>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="Role">Role:</label>
+      <div class="control">
+        <select id="RoleId" bind:value={RoleId}>
+          <option value="">Select Role</option>
+          {#each Roles as Role}
+            <option value={Role.RoleId}>{Role.Role}</option>
+          {/each}
+        </select>
       </div>
     </div>
     <div class="field">
@@ -174,7 +195,7 @@
     </div>
     <div class="field">
       <div class="control">
-        <button class="button is-primary" type="button" on:click={() => handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, FormValid)}>Save</button>
+        <button class="button is-primary" type="button" on:click={() => handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId, FormValid)}>Save</button>
         {#if HumanId.length}
           <button class="button is-danger" type="button" on:click={() => handleDelete(HumanId)}>Delete</button>
         {/if}
