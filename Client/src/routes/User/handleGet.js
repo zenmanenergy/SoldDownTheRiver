@@ -5,5 +5,5 @@ export async function handleGet(UserId, setUser) {
     const response = await fetch(`${baseURL}/User/GetUser?UserId=${UserId}`);
     const data = await response.json();
   
-    setUser(data.FirstName, data.LastName, data.Email, data.Phone, data.Password, data.School, data.SemesterYear);
+    setUser(data.FirstName, data.LastName, data.Email, data.Phone, data.Password, data.School, data.SemesterYear, data.UserType);
 }

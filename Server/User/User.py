@@ -21,9 +21,11 @@ def SaveUser():
     Password = user_data.get('Password', None)
     School = user_data.get('School', None)
     SemesterYear = user_data.get('SemesterYear', None)
+    UserType = user_data.get('UserType', None)
+    
 
     # Call the save_user function from SaveUser.py with the extracted data
-    result = save_user(UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear)
+    result = save_user(UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear,UserType)
 
     return result
     
