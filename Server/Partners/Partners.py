@@ -17,7 +17,7 @@ def GetLastPartner():
     Response = {}
     Response['action'] = "select"
     Response['rowcount'] = Cursor.rowcount
-    Response['data'] = Cursor.fetchone()
+    Response['data'] = Cursor.fetchall()()
 
     Cursor.close()
     Connection.close()
