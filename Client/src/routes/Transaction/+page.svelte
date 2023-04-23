@@ -8,6 +8,7 @@
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
 	import { handleGetFromHumans } from './handleGetFromHumans.js';
+	import {Session} from "../Session.js";
   
 	let TransactionId = "";
 	let TransactionDate = "";
@@ -51,6 +52,7 @@
 	}
   
 	onMount(async () => {
+		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		TransactionId = urlParams.get("TransactionId") || "";
       console.log("abc")
