@@ -12,7 +12,7 @@ def save_business(BusinessId, BusinessName):
         values = (BusinessName, BusinessId)
     else:
         # If the BusinessId is not present, create a new business
-        BusinessId = str(uuid.uuid4())
+        BusinessId = "BUS"+str(uuid.uuid4())
         query = "INSERT INTO Businesses (BusinessId, BusinessName) VALUES (%s, %s)"
         values = (BusinessId, BusinessName)
 
