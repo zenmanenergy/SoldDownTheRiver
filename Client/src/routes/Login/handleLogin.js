@@ -26,10 +26,16 @@ export function handleLogin(Email, Password,formValid) {
     method: 'GET'
   })
   .then(response => response.json())
-  .then(data => {
-    console.log("Save success",data);
-    window.location.href = '/AdminMenu';
-    // Handle the response data as needed
+  .then(SessionId => {
+    if (SessionId){
+      console.log("Save success, SessionId:",SessionId);
+      Cookies.set("SessionId", SessionId, { expires: 365 });
+      // window.location.href = '/AdminMenu';
+      // Handle the response data as needed
+    }else {
+			Cookies.remove("sessionId");
+    }
+    
   })
   .catch(error => {
     console.error("save error",error);
