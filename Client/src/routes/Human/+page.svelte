@@ -16,6 +16,7 @@
   import { handleGetPossiblePartners } from './handleGetPossiblePartners.js';
   import { handleSavePartner } from './handleSavePartner.js';
   import { handleGetRoles } from './handleGetRoles.js';
+	import {Session} from "../Session.js";
   
   let HumanId = '';
   let FirstName = '';
@@ -71,6 +72,7 @@
     Roles = data;
   }
   onMount(async () => {
+		await Session.handleSession();
     const urlParams = new URLSearchParams(window.location.search);
     HumanId = urlParams.get("HumanId") || "";
     if (HumanId) {
