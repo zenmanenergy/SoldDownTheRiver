@@ -12,7 +12,7 @@ def save_location(LocationId, City, State, Country, Latitude, Longitude):
         values = (City, State, Country, Latitude, Longitude, LocationId)
     else:
         # If the LocationId is not present, create a new location
-        LocationId = str(uuid.uuid4())
+        LocationId = "LOC"+str(uuid.uuid4())
         query = "INSERT INTO Locations (LocationId, City, State, Country, Latitude, Longitude) VALUES (%s, %s, %s, %s, %s, %s)"
         values = (LocationId, City, State, Country, Latitude, Longitude)
 
