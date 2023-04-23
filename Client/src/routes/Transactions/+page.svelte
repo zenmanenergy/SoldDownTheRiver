@@ -30,7 +30,7 @@
         <ul>
           {#each transactions as transaction}
             <li>
-              <a href={`/Transaction?transactionId=${transaction.TransactionId}`}>
+              <a href={`/Transaction?TransactionId=${transaction.TransactionId}`}>
                 {transaction.TransactionType} between {transaction.FromHumanId} and {transaction.ToHumanId}
               </a>
             </li>
