@@ -13,7 +13,7 @@ def save_role(RoleId,Role):
         values = (Role, RoleId)
     else:
         # If the role doesn't exist, create a new row with a new role ID
-        role_id = str(uuid.uuid4())
+        role_id = "ROL"+str(uuid.uuid4())
         query = "INSERT INTO Roles (RoleId, Role) VALUES (%s,%s)"
         values = (role_id,Role,)
 
