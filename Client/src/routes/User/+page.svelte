@@ -7,6 +7,7 @@
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
+	import {Session} from "../Session.js";
 
 	let UserId="";
 	let FirstName = "";
@@ -37,6 +38,7 @@
 		formValid = FirstName && LastName && Email && Phone && Password && School && SemesterYear && UserType;
 	}
 	onMount(async () => {
+		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		UserId = urlParams.get("UserId") || "";
 		if (UserId) {
