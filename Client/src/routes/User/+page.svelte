@@ -16,21 +16,25 @@
 	let Password = "";
 	let School = "";
 	let SemesterYear = "";
+	let UserType=""
+
 	let formValid = false;
   	let isLoading = true;
+	
 
-	async function setUser(newFirstName, newLastName, newEmail, newPhone, newPassword, newSchool, newSemesterYear) {
-		FirstName = newFirstName;
-		LastName = newLastName;
-		Email = newEmail;
-		Phone = newPhone;
-		Password = newPassword;
-		School = newSchool;
-		SemesterYear = newSemesterYear;
+	async function setUser(_FirstName, _LastName, _Email, _Phone, _Password, _School, _SemesterYear,_UserType) {
+		FirstName = _FirstName;
+		LastName = _LastName;
+		Email = _Email;
+		Phone = _Phone;
+		Password = _Password;
+		School = _School;
+		SemesterYear = _SemesterYear;
+		UserType= _UserType
 	}
 
 	$: {
-		formValid = FirstName && LastName && Email && Phone && Password && School && SemesterYear;
+		formValid = FirstName && LastName && Email && Phone && Password && School && SemesterYear && UserType;
 	}
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -154,10 +158,20 @@
 				/>
 			</div>
 		</div>
-
+		<div class="field">
+			<label class="label" for="UserType">Type</label>
+			<div class="control">
+				<select class="input" id="UserType" bind:value={UserType} required>
+					<option value=""></option>
+					<option value="Administrator">Administrator</option>
+					<option value="Transcriber">Transcriber</option>
+					
+				  </select>
+			</div>
+		</div>
 		<div class="field">
 			<div class="control">
-				<button class="button is-primary" type="button" on:click={() => handleSave(UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear, formValid)} >Save</button>
+				<button class="button is-primary" type="button" on:click={() => handleSave(UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear,UserType, formValid)} >Save</button>
 				{#if UserId.length}
 					<button class="button is-danger" type="button" on:click={() => handleDelete(UserId)}>Delete</button>
 				{/if}
