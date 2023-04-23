@@ -8,6 +8,7 @@
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
+	import {Session} from "../Session.js";
 
 	let RoleId = "";
 	let Role = "";
@@ -23,6 +24,7 @@
 		Role = _Role;
 	}
 	onMount(async () => {
+		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		RoleId = urlParams.get("RoleId") || "";
 		if (RoleId) {
