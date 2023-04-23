@@ -7,6 +7,7 @@
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
+	import {Session} from "../Session.js";
   
 	let BusinessId="";
 	let BusinessName = "";
@@ -22,13 +23,14 @@
 	}
   
 	onMount(async () => {
-	  const urlParams = new URLSearchParams(window.location.search);
-	  BusinessId = urlParams.get("BusinessId") || "";
-	  if (BusinessId) {
+		await Session.handleSession();
+		const urlParams = new URLSearchParams(window.location.search);
+		BusinessId = urlParams.get("BusinessId") || "";
+		if (BusinessId) {
 		handleGet(BusinessId, setName);
-	  }
-	  console.log("BusinessId", BusinessId)
-	  isLoading = false;
+		}
+		console.log("BusinessId", BusinessId)
+		isLoading = false;
 	});
   </script>
   
