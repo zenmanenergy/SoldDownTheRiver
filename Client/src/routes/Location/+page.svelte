@@ -9,6 +9,7 @@
 	import { handleSave } from "./handleSave.js";
 	import { handleDelete } from "./handleDelete.js";
 	import { handleGet } from "./handleGet.js";
+	import {Session} from "../Session.js";
 
 	let LocationId = "";
 	let City = "";
@@ -32,6 +33,7 @@
 	}
 
 	onMount(async () => {
+		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		LocationId = urlParams.get("LocationId") || "";
 		if (LocationId) {
