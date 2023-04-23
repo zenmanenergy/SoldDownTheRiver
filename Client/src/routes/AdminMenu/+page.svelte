@@ -1,13 +1,17 @@
 <style>
 	@import '/static/FormPages.css';
   </style>
-  <script>
+<script>
 	import { onMount } from "svelte";
-
+	import {Session} from "../Session.js";
+	
+	
 	let isLoading = true;
 
 	onMount(async () => {
 		isLoading = false;
+		await Session.handleSession();
+		
 	});
 </script>
 
