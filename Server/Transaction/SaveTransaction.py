@@ -12,7 +12,7 @@ def save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, Tra
         values = (TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL, UserId, TransactionId)
     else:
         # If the TransactionId is not present, create a new transaction
-        TransactionId = str(uuid.uuid4())
+        TransactionId = "TRN"+str(uuid.uuid4())
         query = "INSERT INTO Transactions (TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL, UserId) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = (TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL, UserId)
 
