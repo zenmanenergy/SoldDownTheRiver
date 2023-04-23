@@ -34,6 +34,9 @@ export function handleLogin(Email, Password,formValid) {
       // Handle the response data as needed
     }else {
 			Cookies.remove("sessionId");
+      const formFields = document.querySelectorAll("input");
+		
+			formFields[2].focus();
     }
     
   })
