@@ -12,7 +12,7 @@ def save_aka(AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName):
         values = (HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAHumanId)
     else:
         # If the HumanId is not present, create a new AKA record
-        AKAHumanId = str(uuid.uuid4())
+        AKAHumanId = "AKA"+str(uuid.uuid4())
         query = "INSERT INTO HumansAKA (AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName) VALUES (%s, %s, %s, %s, %s)"
         values = (AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName)
 
