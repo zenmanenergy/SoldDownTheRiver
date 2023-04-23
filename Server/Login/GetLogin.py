@@ -20,17 +20,23 @@ def get_login(Email, Password):
     # Execute the query and get the results
     cursor.execute(query, values)
     result = cursor.fetchone()
-    if not result:
-        result={}
-    else:
-        query = "delete from userSessions where userId= %s "
-        values = (result['UserId'])
-        cursor.execute(query, values)
 
-        SessionId = str(uuid.uuid4())
-        query = "INSERT INTO userSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
-        values = (SessionId, result['UserId'], datetime.datetime.now())
+
+    if not result:
+        result=""
+    else:
+        print(result)
+        query = "delete from UserSessions where userId= %s "
+        values = (result['UserId'],)
         cursor.execute(query, values)
+        connection.commit()
+
+        SessionId = "SES" + str(uuid.uuid4())
+        query = "INSERT INTO userSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
+        values = (SessionId, result['UserId'], datetime.datetime.now(),)
+        cursor.execute(query, values)
+        
+        connection.commit()
         result=SessionId
         
     # Close the database connection
