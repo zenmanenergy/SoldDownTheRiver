@@ -1,7 +1,7 @@
 const baseURL = 'http://192.168.1.182';
 
 // src/routes/Users/handleSave.js
-export function handleSave(userId, firstName, lastName, email, phone, password, school, semesterYear,UserType, formValid) {
+export function handleSave(SessionId,userId, firstName, lastName, email, phone, password, school, semesterYear,UserType, formValid) {
 
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
@@ -19,7 +19,8 @@ export function handleSave(userId, firstName, lastName, email, phone, password, 
     Password: password,
     School: school,
     SemesterYear: semesterYear,
-    UserType: UserType
+    UserType: UserType,
+    SessionId: SessionId
   };
 
   const queryString = Object.keys(userData)

@@ -77,11 +77,11 @@
     HumanId = urlParams.get("HumanId") || "";
     if (HumanId) {
       await Promise.all([
-        handleGet(HumanId, setName),
-        handleGetAKA(HumanId, setAkaNames),
-        handleGetPartners(HumanId, setPartners),
-        handleGetPossiblePartners(HumanId, setPossiblePartners),
-        handleGetRoles(setRoles)
+        handleGet(Session.SessionId,HumanId, setName),
+        handleGetAKA(Session.SessionId,HumanId, setAkaNames),
+        handleGetPartners(Session.SessionId,HumanId, setPartners),
+        handleGetPossiblePartners(Session.SessionId,HumanId, setPossiblePartners),
+        handleGetRoles(Session.SessionId,setRoles)
       ]);
     }
     isLoading = false;
@@ -152,7 +152,7 @@
           {#each AkaNames as akaName}
             <li>
               {akaName.AKAFirstName} {akaName.AKAMiddleName} {akaName.AKALastName}
-              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteAkaName(akaName.AKAHumanId, HumanId)}>X</button>
+              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteAkaName(Session.SessionId,akaName.AKAHumanId, HumanId)}>X</button>
             </li>
           {/each}
         </ul>
@@ -165,7 +165,7 @@
         <input class="input" type="text" id="AKAFirstName" placeholder="AKA First Name" bind:value={AKAFirstName}><br>
         <input class="input" type="text" id="AKAMiddleName" placeholder="AKA Middle Name" bind:value={AKAMiddleName}><br>
         <input class="input" type="text" id="AKALastName" placeholder="AKA Last Name" bind:value={AKALastName}><br>
-        <button class="button is-primary" type="button" on:click={() => handleSaveAkaName(AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid)}>Add Also Known As</button>
+        <button class="button is-primary" type="button" on:click={() => handleSaveAkaName(Session.SessionId,AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid)}>Add Also Known As</button>
       </div>
     </div>
 
@@ -176,7 +176,7 @@
           {#each Partners as partner}
             <li>
               {partner.FirstName} {partner.MiddleName} {partner.LastName}
-              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeletePartner(partner.PartnerHumanId, HumanId)}>X</button>
+              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeletePartner(Session.SessionId,partner.PartnerHumanId, HumanId)}>X</button>
             </li>
           {/each}
         </ul>
@@ -192,14 +192,14 @@
           {/each}
         </select>
         
-        <button class="button is-primary" type="button" on:click={() => handleSavePartner(HumanId, PartnerHumanId)}>Add Partner</button>
+        <button class="button is-primary" type="button" on:click={() => handleSavePartner(Session.SessionId,HumanId, PartnerHumanId)}>Add Partner</button>
       </div>
     </div>
     <div class="field">
       <div class="control">
-        <button class="button is-primary" type="button" on:click={() => handleSave(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId, FormValid)}>Save</button>
+        <button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId, FormValid)}>Save</button>
         {#if HumanId.length}
-          <button class="button is-danger" type="button" on:click={() => handleDelete(HumanId)}>Delete</button>
+          <button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,HumanId)}>Delete</button>
         {/if}
       </div>
     </div>

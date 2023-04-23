@@ -1,7 +1,7 @@
 // src/routes/Locations/handleSave.js
 const baseURL = 'http://192.168.1.182';
 // src/routes/Locations/handleSave.js
-export function handleSave(locationId, city, state, country, latitude, longitude, formValid) {
+export function handleSave(SessionId,locationId, city, state, country, latitude, longitude, formValid) {
 
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
@@ -17,7 +17,9 @@ export function handleSave(locationId, city, state, country, latitude, longitude
     State: state,
     Country: country,
     Latitude: latitude,
-    Longitude: longitude
+    Longitude: longitude,
+    SessionId: SessionId
+
   };
 
   const queryString = Object.keys(locationData)

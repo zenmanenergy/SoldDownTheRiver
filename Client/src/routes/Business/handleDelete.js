@@ -1,8 +1,8 @@
 // src/routes/Businesses/handleDelete.js
 const baseURL = 'http://192.168.1.182';
-export async function handleDelete(BusinessId) {
+export async function handleDelete(SessionId, BusinessId) {
   try {
-    const response = await fetch(`${baseURL}/Business/DeleteBusiness?BusinessId=${BusinessId}`);
+    const response = await fetch(`${baseURL}/Business/DeleteBusiness?BusinessId=${BusinessId}&SessionId=${SessionId}`);
     
 
     if (!response.ok) {

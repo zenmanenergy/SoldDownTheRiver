@@ -11,7 +11,7 @@
   
     onMount(async () => {
       await Session.handleSession();
-      humans = await handleGet();
+      humans = await handleGet(Session.SessionId);
       isLoading = false;
     });
   

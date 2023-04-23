@@ -55,11 +55,11 @@
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		TransactionId = urlParams.get("TransactionId") || "";
-      console.log("abc")
+    
 		if (TransactionId, TransactionId) {
 			await Promise.all([
-        handleGet(TransactionId, setTransactionDetails),
-        handleGetFromHumans(TransactionId, setFromHumans)
+        handleGet(Session.SessionId,TransactionId, setTransactionDetails),
+        handleGetFromHumans(Session.SessionId,TransactionId, setFromHumans)
       ]);
 			console.log("TransactionId", TransactionId);
 		}
@@ -213,7 +213,7 @@
               class="button is-primary"
               type="button"
               on:click={() =>
-                handleSave(
+                handleSave(Session.SessionId,
                   TransactionId,
                   TransactionDate,
                   FromHumanId,
@@ -236,7 +236,7 @@
               <button
                 class="button is-danger"
                 type="button"
-                on:click={() => handleDelete(TransactionId)}
+                on:click={() => handleDelete(Session.SessionId,TransactionId)}
               >
                 Delete
               </button>

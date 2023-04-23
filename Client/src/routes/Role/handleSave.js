@@ -1,7 +1,7 @@
 const baseURL = 'http://192.168.1.182';
 
 // src/routes/Roles/handleSave.js
-export function handleSave(RoleId,Role, formValid) {
+export function handleSave(SessionId,RoleId,Role, formValid) {
 
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
@@ -12,7 +12,8 @@ export function handleSave(RoleId,Role, formValid) {
 	}
   const roleData = {
     RoleId: RoleId,
-    Role: Role
+    Role: Role,
+    SessionId: SessionId
   };
 
   const queryString = Object.keys(roleData)

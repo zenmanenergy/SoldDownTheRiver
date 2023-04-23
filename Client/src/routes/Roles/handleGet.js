@@ -1,8 +1,8 @@
 const baseURL = 'http://192.168.1.182';
 
-async function handleGet() {
-  console.log(`${baseURL}/Roles/GetRoles`)
-  const response = await fetch(`${baseURL}/Roles/GetRoles`);
+async function handleGet(SessionId) {
+  console.log(`${baseURL}/Roles/GetRoles?SessionId=${SessionId}`)
+  const response = await fetch(`${baseURL}/Roles/GetRoles?SessionId=${SessionId}`);
   const roles = await response.json();
   return roles;
 }

@@ -42,7 +42,7 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		UserId = urlParams.get("UserId") || "";
 		if (UserId) {
-			handleGet(UserId, setUser);
+			handleGet(Session.SessionId,UserId, setUser);
 		}
 		console.log("UserId", UserId)
     	isLoading = false;
@@ -173,9 +173,9 @@
 		</div>
 		<div class="field">
 			<div class="control">
-				<button class="button is-primary" type="button" on:click={() => handleSave(UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear,UserType, formValid)} >Save</button>
+				<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear,UserType, formValid)} >Save</button>
 				{#if UserId.length}
-					<button class="button is-danger" type="button" on:click={() => handleDelete(UserId)}>Delete</button>
+					<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,UserId)}>Delete</button>
 				{/if}
 			</div>
 		</div>

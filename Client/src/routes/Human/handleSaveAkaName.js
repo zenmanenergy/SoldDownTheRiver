@@ -1,6 +1,6 @@
 const baseURL = 'http://192.168.1.182';
 
-export function handleSaveAkaName(AKAHumanId,HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid) {
+export function handleSaveAkaName(SessionId,AKAHumanId,HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid) {
 
   if (!AKAFormValid) {
     const invalidFields = document.querySelectorAll("input:invalid");
@@ -15,7 +15,8 @@ export function handleSaveAkaName(AKAHumanId,HumanId, AKAFirstName, AKAMiddleNam
     HumanId: HumanId,
     AKAFirstName: AKAFirstName,
     AKAMiddleName: AKAMiddleName,
-    AKALastName: AKALastName
+    AKALastName: AKALastName,
+    SessionId: SessionId
   };
 
   console.log('AKAHumanData',AKAHumanData)

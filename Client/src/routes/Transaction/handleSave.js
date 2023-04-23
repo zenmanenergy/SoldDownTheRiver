@@ -1,7 +1,7 @@
 const baseURL = 'http://192.168.1.182';
 
 // src/routes/Transactions/handleSubmit.js
-export function handleSave(transactionId, transactionDate, fromHumanId, toHumanId, transactionType, notes, act, page, notaryHumanId, volume, url, userId, formValid) {
+export function handleSave(SessionId,transactionId, transactionDate, fromHumanId, toHumanId, transactionType, notes, act, page, notaryHumanId, volume, url, userId, formValid) {
 
   if (!formValid) {
     const invalidFields = document.querySelectorAll("input:invalid");
@@ -23,7 +23,8 @@ export function handleSave(transactionId, transactionDate, fromHumanId, toHumanI
     NotaryHumanId: notaryHumanId,
     Volume: volume,
     URL: url,
-    UserId: userId
+    UserId: userId,
+    SessionId: SessionId
   };
 
   const queryString = Object.keys(transactionData)

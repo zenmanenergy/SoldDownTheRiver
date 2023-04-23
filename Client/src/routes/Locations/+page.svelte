@@ -4,12 +4,14 @@
 <script>
     import { onMount } from 'svelte';
     import handleGet from './handleGet.js';
+	  import {Session} from "../Session.js";
   
     export let locations = [];
     let isLoading = true;
   
     onMount(async () => {
-      locations = await handleGet();
+		  await Session.handleSession();
+      locations = await handleGet(Session.SessionId);
       isLoading = false;
     });
   

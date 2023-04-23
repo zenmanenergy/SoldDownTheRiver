@@ -28,7 +28,7 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		RoleId = urlParams.get("RoleId") || "";
 		if (RoleId) {
-			handleGet(RoleId, setRole);
+			handleGet(Session.SessionId,RoleId, setRole);
 		}
 		console.log("RoleId", RoleId);
 		isLoading = false;
@@ -65,9 +65,9 @@
 
 				<div class="field">
 					<div class="control">
-						<button class="button is-primary" type="button" on:click={() => handleSave(RoleId,Role, formValid)}>Save</button>
+						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,RoleId,Role, formValid)}>Save</button>
 						{#if Role.length}
-							<button class="button is-danger" type="button" on:click={() => handleDelete(RoleId,Role)}>Delete</button>
+							<button class="button is-danger" type="button" on:click={() => handleDelete(Session.WSessionId,RoleId,Role)}>Delete</button>
 						{/if}
 					</div>
 				</div>

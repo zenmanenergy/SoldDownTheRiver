@@ -27,7 +27,7 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		BusinessId = urlParams.get("BusinessId") || "";
 		if (BusinessId) {
-		handleGet(BusinessId, setName);
+		handleGet(Session.SessionId,BusinessId, setName);
 		}
 		console.log("BusinessId", BusinessId)
 		isLoading = false;
@@ -49,6 +49,7 @@
 		<h3 class="title is-2">Add a Business</h3>
   
 		<input type="hidden" bind:value={BusinessId} />
+		<input type="hidden" bind:value={Session.SessionId} />
   
 		<div class="field">
 		  <label class="label" for="BusinessName">Name</label>
@@ -66,9 +67,9 @@
   
 		<div class="field">
 		  <div class="control">
-			<button class="button is-primary" type="button" on:click={() => handleSave(BusinessId, BusinessName,formValid)}>Save</button>
+			<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, BusinessId, BusinessName,formValid)}>Save</button>
 			{#if BusinessId.length}
-			  <button class="button is-danger" type="button" on:click={() => handleDelete(BusinessId)}>Delete</button>
+			  <button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, BusinessId)}>Delete</button>
 			{/if}
 		  </div>
 		</div>

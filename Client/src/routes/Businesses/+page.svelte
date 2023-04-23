@@ -10,7 +10,7 @@
 
   onMount(async () => {
 		await Session.handleSession();
-    businesses = await handleGet();
+    businesses = await handleGet(Session.SessionId);
     isLoading = false;
   });
 

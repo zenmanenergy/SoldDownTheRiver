@@ -1,11 +1,12 @@
 const baseURL = 'http://192.168.1.182';
 
-export function handleSavePartner(HumanId, PartnerHumanId) {
+export function handleSavePartner(SessionId,HumanId, PartnerHumanId) {
 
   console.log('valid')
   const PartnerData = {
     HumanId: HumanId,
-    PartnerHumanId
+    PartnerHumanId: PartnerHumanId,
+    SessionId: SessionId
   };
 
   console.log('PartnerData',PartnerData)

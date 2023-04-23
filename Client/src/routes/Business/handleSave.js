@@ -1,7 +1,7 @@
 const baseURL = 'http://192.168.1.182';
 
 // src/routes/Businesses/handleSubmit.js
-export function handleSave(businessId, BusinessName,formValid) {
+export function handleSave(SessionId,BusinessId, BusinessName,formValid) {
 
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
@@ -11,8 +11,9 @@ export function handleSave(businessId, BusinessName,formValid) {
 		return;
 	}
   const businessData = {
-    BusinessId: businessId,
-    BusinessName: BusinessName
+    BusinessId: BusinessId,
+    BusinessName: BusinessName,
+    SessionId: SessionId
   };
 
   const queryString = Object.keys(businessData)

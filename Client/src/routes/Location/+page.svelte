@@ -37,7 +37,7 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		LocationId = urlParams.get("LocationId") || "";
 		if (LocationId) {
-			handleGet(LocationId, setLocation);
+			handleGet(Session.SessionId,LocationId, setLocation);
 		}
 		console.log("LocationId", LocationId);
 		isLoading = false;
@@ -94,9 +94,9 @@
 
 				<div class="field">
 					<div class="control">
-						<button type="button" on:click={() => handleSave(LocationId, City, State, Country, Latitude, Longitude, formValid)}>Save</button>
+						<button type="button" on:click={() => handleSave(Session.SessionId,LocationId, City, State, Country, Latitude, Longitude, formValid)}>Save</button>
 						{#if LocationId.length}
-							<button type="button" on:click={() => handleDelete(LocationId)}>Delete</button>
+							<button type="button" on:click={() => handleDelete(Session.SessionId,LocationId)}>Delete</button>
 						{/if}
 					</div>
 				</div>
