@@ -12,7 +12,7 @@ def save_user(UserId, FirstName, LastName, Email, Phone, Password, School, Semes
         values = (FirstName, LastName, Email, Phone, Password, School, SemesterYear, UserType, UserId)
     else:
         # If the UserId is not present, create a new user
-        UserId = str(uuid.uuid4())
+        UserId = "USR"+str(uuid.uuid4())
         query = "INSERT INTO Users (UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = (UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear,UserType)
 
