@@ -5,11 +5,13 @@
   <script>
     import { onMount } from 'svelte';
     import handleGet from './handleGet.js';
+	import {Session} from "../Session.js";
   
     export let roles = [];
     let isLoading = true;
   
     onMount(async () => {
+		  await Session.handleSession();
       roles = await handleGet();
       isLoading = false;
     });
