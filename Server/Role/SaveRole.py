@@ -13,9 +13,9 @@ def save_role(RoleId,Role):
         values = (Role, RoleId)
     else:
         # If the role doesn't exist, create a new row with a new role ID
-        role_id = "ROL"+str(uuid.uuid4())
+        RoleId = "ROL"+str(uuid.uuid4())
         query = "INSERT INTO Roles (RoleId, Role) VALUES (%s,%s)"
-        values = (role_id,Role,)
+        values = (RoleId,Role,)
 
     # Execute the query and commit the changes
     cursor.execute(query, values)
@@ -25,4 +25,4 @@ def save_role(RoleId,Role):
     connection.close()
 
     # Return the role as a JSON response
-    return {'success': True, 'role': Role}
+    return {'success': True, 'RoleId': RoleId}
