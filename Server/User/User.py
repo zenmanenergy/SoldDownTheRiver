@@ -1,4 +1,5 @@
 from Lib import Database
+from Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveUser import save_user
@@ -26,7 +27,7 @@ def SaveUser():
 
     # Call the save_user function from SaveUser.py with the extracted data
     result = save_user(UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear,UserType)
-    History.SaveHistory(user_data,"Transactions", "TransactionId", result["TransactionId"])
+    History.SaveHistory(user_data,"Users", "UserId", result["UserId"])
 
     return result
     
@@ -42,7 +43,7 @@ def DeleteUser():
     UserId = user_data.get('UserId')
     # Call the delete_user function from DeleteUser.py
     result = delete_user(UserId)
-    History.SaveHistory(user_data,"Transactions", "TransactionId", result["TransactionId"])
+    History.SaveHistory(user_data,"Users", "UserId", UserId)
     return result
 
 @blueprint.route("/User/GetUser", methods=['GET'])
