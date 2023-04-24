@@ -26,6 +26,7 @@ def SaveUser():
 
     # Call the save_user function from SaveUser.py with the extracted data
     result = save_user(UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear,UserType)
+    History.SaveHistory(user_data,"Transactions", "TransactionId", result["TransactionId"])
 
     return result
     
@@ -41,6 +42,7 @@ def DeleteUser():
     UserId = user_data.get('UserId')
     # Call the delete_user function from DeleteUser.py
     result = delete_user(UserId)
+    History.SaveHistory(user_data,"Transactions", "TransactionId", result["TransactionId"])
     return result
 
 @blueprint.route("/User/GetUser", methods=['GET'])
