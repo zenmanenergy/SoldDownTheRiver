@@ -8,4 +8,5 @@ def delete_location(location_id):
     connection.commit()
     connection.close()
 
-    return {'success': True,'message': f'Location with ID {location_id} deleted successfully.'}
+    return {'success': True, 'AKAHumanId': location_id}
+    
