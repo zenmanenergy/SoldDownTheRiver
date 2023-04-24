@@ -3,8 +3,8 @@
 </style>
 <script>
     import { onMount } from 'svelte';
-    import handleGet from './handleGet.js';
 	  import {Session} from "../Session.js";
+    import handleGet from './handleGet.js';
   
     export let humans = [];
     let isLoading = true;
