@@ -1,5 +1,6 @@
 import uuid
 from Lib import Database
+from Lib import History
 
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
