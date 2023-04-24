@@ -8,4 +8,5 @@ def delete_aka(AKAHumanId):
     connection.commit()
     connection.close()
 
-    return {'success': True,'message': f'Human with ID {AKAHumanId} deleted successfully.'}
+
+    return {'success': True, 'AKAHumanId': AKAHumanId}
