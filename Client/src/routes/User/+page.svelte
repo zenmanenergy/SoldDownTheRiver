@@ -41,9 +41,8 @@
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		UserId = urlParams.get("UserId") || "";
-		if (UserId) {
-			handleGet(Session.SessionId,UserId, setUser);
-		}
+		handleGet(Session.SessionId,UserId, setUser);
+		
 		console.log("UserId", UserId)
     	isLoading = false;
 	});

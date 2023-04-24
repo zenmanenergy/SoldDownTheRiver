@@ -8,6 +8,8 @@
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
 	import { handleGetFromHumans } from './handleGetFromHumans.js';
+	import { handleGetToHumans } from './handleGetToHumans.js';
+	import { handleGetNotaryHumans } from './handleGetNotaryHumans.js';
 	import {Session} from "../Session.js";
   
 	let TransactionId = "";
@@ -30,25 +32,33 @@
   let NotaryHumans= [];
   
 	async function setTransactionDetails(data) {
-    console.log("data.FromHumanId", data.FromHumanId)
-    console.log("data.ToHumanId", data.ToHumanId)
-		TransactionId = data.TransactionId;
-		TransactionDate = new Date(data.TransactionDate).toISOString().slice(0, 10); // convert to string in "YYYY-MM-DD" format
-    FromHumanId = data.FromHumanId;
-		ToHumanId = data.ToHumanId;
-		TransactionType = data.TransactionType;
-		Notes = data.Notes;
-		Act = data.Act;
-		Page = data.Page;
-		NotaryHumanId = data.NotaryHumanId;
-		Volume = data.Volume;
-		URL = data.URL;
-    console.log("TransactionId", TransactionId)
+      if (data.TransactionId){
+        TransactionId = data.TransactionId;
+        if (data.TransactionDate){
+          TransactionDate = new Date(data.TransactionDate).toISOString().slice(0, 10); // convert to string in "YYYY-MM-DD" format
+        }else{
+          TransactionDate = "";
+        }
+        FromHumanId = data.FromHumanId;
+        ToHumanId = data.ToHumanId;
+        TransactionType = data.TransactionType;
+        Notes = data.Notes;
+        Act = data.Act;
+        Page = data.Page;
+        NotaryHumanId = data.NotaryHumanId;
+        Volume = data.Volume;
+        URL = data.URL;
+        console.log("TransactionId", TransactionId)
+      }
 	}
   function setFromHumans(_fromHumans) {
     FromHumans = _fromHumans;
-    ToHumans = _fromHumans;
-    NotaryHumans= _fromHumans
+  }
+  function setToHumans(_toHumans) {
+    ToHumans = _toHumans;
+  }
+  function setNotaryHumans(_notaryHumans) {
+    NotaryHumans= _notaryHumans
   }
   
 	$: {
@@ -60,12 +70,14 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		TransactionId = urlParams.get("TransactionId") || "";
     
-		if (TransactionId, TransactionId) {
+		
 			await Promise.all([
         handleGetFromHumans(Session.SessionId,TransactionId, setFromHumans),
+        handleGetToHumans(Session.SessionId,TransactionId, setToHumans),
+        handleGetNotaryHumans(Session.SessionId,TransactionId, setNotaryHumans),
         handleGet(Session.SessionId,TransactionId, setTransactionDetails)
       ]);
-		}
+		
 		isLoading = false;
 	});
 </script>
