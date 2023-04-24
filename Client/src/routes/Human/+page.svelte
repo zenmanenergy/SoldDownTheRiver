@@ -75,15 +75,15 @@
 		await Session.handleSession();
     const urlParams = new URLSearchParams(window.location.search);
     HumanId = urlParams.get("HumanId") || "";
-    if (HumanId) {
-      await Promise.all([
-        handleGet(Session.SessionId,HumanId, setName),
-        handleGetAKA(Session.SessionId,HumanId, setAkaNames),
-        handleGetPartners(Session.SessionId,HumanId, setPartners),
-        handleGetPossiblePartners(Session.SessionId,HumanId, setPossiblePartners),
-        handleGetRoles(Session.SessionId,setRoles)
-      ]);
-    }
+    
+    await Promise.all([
+      handleGet(Session.SessionId,HumanId, setName),
+      handleGetAKA(Session.SessionId,HumanId, setAkaNames),
+      handleGetPartners(Session.SessionId,HumanId, setPartners),
+      handleGetPossiblePartners(Session.SessionId,HumanId, setPossiblePartners),
+      handleGetRoles(Session.SessionId,setRoles)
+    ]);
+   
     isLoading = false;
   });
 </script>
