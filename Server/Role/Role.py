@@ -1,9 +1,11 @@
 from Lib import Database
+from Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveRole import save_role
 from .DeleteRole import delete_role
 from .GetRole import get_role
+from Lib import History
 
 blueprint = Blueprint('Role', __name__)
 
@@ -18,6 +20,8 @@ def SaveRole():
 
     # Call the save_role function from SaveRole.py with the extracted data
     result = save_role(RoleId,Role)
+    print(result)
+    History.SaveHistory(role_data,"Roles", "RoleId", result["RoleId"])
 
     return result
     
@@ -33,6 +37,7 @@ def DeleteRole():
     RoleId = role_data.get('RoleId')
     # Call the delete_role function from DeleteRole.py
     result = delete_role(RoleId)
+    History.SaveHistory(role_data,"Roles", "RoleId", RoleId)
     return result
 
 @blueprint.route("/Role/GetRole", methods=['GET'])
