@@ -21,17 +21,20 @@
 	let NotaryHumanId = "";
 	let Volume = "";
 	let URL = "";
-	let UserId = "";
   
 	let formValid = false;
 	let isLoading = true;
 
-  let fromHumans = [];
+  let FromHumans = [];
+  let ToHumans = [];
+  let NotaryHumans= [];
   
 	async function setTransactionDetails(data) {
+    console.log("data.FromHumanId", data.FromHumanId)
+    console.log("data.ToHumanId", data.ToHumanId)
 		TransactionId = data.TransactionId;
-		TransactionDate = data.TransactionDate;
-		FromHumanId = data.FromHumanId;
+		TransactionDate = new Date(data.TransactionDate).toISOString().slice(0, 10); // convert to string in "YYYY-MM-DD" format
+    FromHumanId = data.FromHumanId;
 		ToHumanId = data.ToHumanId;
 		TransactionType = data.TransactionType;
 		Notes = data.Notes;
@@ -40,13 +43,14 @@
 		NotaryHumanId = data.NotaryHumanId;
 		Volume = data.Volume;
 		URL = data.URL;
-		UserId = data.UserId;
     console.log("TransactionId", TransactionId)
 	}
   function setFromHumans(_fromHumans) {
-    fromHumans = _fromHumans;
-    console.log("fromHumans", fromHumans)
+    FromHumans = _fromHumans;
+    ToHumans = _fromHumans;
+    NotaryHumans= _fromHumans
   }
+  
 	$: {
 	  formValid = TransactionDate && FromHumanId && ToHumanId && TransactionType && Notes;
 	}
@@ -58,10 +62,9 @@
     
 		if (TransactionId, TransactionId) {
 			await Promise.all([
-        handleGet(Session.SessionId,TransactionId, setTransactionDetails),
-        handleGetFromHumans(Session.SessionId,TransactionId, setFromHumans)
+        handleGetFromHumans(Session.SessionId,TransactionId, setFromHumans),
+        handleGet(Session.SessionId,TransactionId, setTransactionDetails)
       ]);
-			console.log("TransactionId", TransactionId);
 		}
 		isLoading = false;
 	});
@@ -98,8 +101,8 @@
 					<div class="control">
 						<select class="input" id="FromHumanId" bind:value={FromHumanId} required>
               <option value="">Select From Human ID</option>
-              {#each fromHumans as fromHuman}
-                <option value={fromHuman.HumanId}>{fromHuman.FirstName} {fromHuman.LastName}</option>
+              {#each FromHumans as FromHuman}
+                <option value={FromHuman.HumanId}>{FromHuman.FirstName} {FromHuman.LastName}</option>
               {/each}
             </select>
 					</div>
@@ -110,8 +113,8 @@
 					<div class="control">
 						<select class="input" id="ToHumanId" bind:value={ToHumanId} required>
               <option value="">Select To Human ID</option>
-              {#each fromHumans as fromHuman}
-                <option value={fromHuman.HumanId}>{fromHuman.FirstName} {fromHuman.LastName}</option>
+              {#each ToHumans as ToHuman}
+                <option value={ToHuman.HumanId}>{ToHuman.FirstName} {ToHuman.LastName}</option>
               {/each}
             </select>
 					</div>
@@ -174,8 +177,8 @@
           <div class="control">
             <select class="input" id="NotaryHumanId" bind:value={NotaryHumanId} required>
               <option value="">Select From Human ID</option>
-              {#each fromHumans as fromHuman}
-                <option value={fromHuman.HumanId}>{fromHuman.FirstName} {fromHuman.LastName}</option>
+              {#each NotaryHumans as NotaryHuman}
+                <option value={NotaryHuman.HumanId}>{NotaryHuman.FirstName} {NotaryHuman.LastName}</option>
               {/each}
             </select>
           </div>
@@ -225,7 +228,6 @@
                   NotaryHumanId,
                   Volume,
                   URL,
-                  UserId,
                   formValid
                 )
               }
