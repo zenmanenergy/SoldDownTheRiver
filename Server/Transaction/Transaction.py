@@ -1,4 +1,5 @@
 from Lib import Database
+from Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveTransaction import save_transaction
@@ -12,6 +13,7 @@ blueprint = Blueprint('Transaction', __name__)
 @cross_origin()
 def SaveTransaction():
     transaction_data = request.args.to_dict()
+    print(transaction_data)
 
     # Extract the transaction data from the request
     TransactionId = transaction_data.get('TransactionId', None)
@@ -28,6 +30,7 @@ def SaveTransaction():
 
     # Call the save_transaction function from SaveTransaction.py with the extracted data
     result = save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL)
+    History.SaveHistory(transaction_data,"Transactions", "TransactionId", result["TransactionId"])
 
     return result
     
