@@ -26,9 +26,9 @@
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		BusinessId = urlParams.get("BusinessId") || "";
-		if (BusinessId) {
+		
 		handleGet(Session.SessionId,BusinessId, setName);
-		}
+		
 		console.log("BusinessId", BusinessId)
 		isLoading = false;
 	});

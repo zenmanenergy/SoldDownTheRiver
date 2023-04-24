@@ -9,5 +9,7 @@ export async function handleGet(SessionId,HumanId, setHumanName) {
     const { FirstName, MiddleName, LastName , StartYear, EndYear, Notes, RoleId} = data;
     // const humanName = `${FirstName} ${MiddleName} ${LastName}`.trim();
   
-    setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId);
+    if (HumanId){
+        setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId);
+    }
 }

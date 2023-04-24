@@ -36,9 +36,9 @@
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		LocationId = urlParams.get("LocationId") || "";
-		if (LocationId) {
-			handleGet(Session.SessionId,LocationId, setLocation);
-		}
+		
+		handleGet(Session.SessionId,LocationId, setLocation);
+		
 		console.log("LocationId", LocationId);
 		isLoading = false;
 	});

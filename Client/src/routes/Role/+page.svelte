@@ -19,17 +19,18 @@
 		formValid = Role;
 	}
 	async function setRole(_RoleId,_Role) {
-		console.log(RoleId,Role)
-		RoleId = _RoleId;
-		Role = _Role;
+		if (_RoleId){
+			RoleId = _RoleId;
+			Role = _Role;
+		}
+		
 	}
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		RoleId = urlParams.get("RoleId") || "";
-		if (RoleId) {
-			handleGet(Session.SessionId,RoleId, setRole);
-		}
+		handleGet(Session.SessionId,RoleId, setRole);
+		
 		console.log("RoleId", RoleId);
 		isLoading = false;
 	});
