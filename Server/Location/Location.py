@@ -1,4 +1,5 @@
 from Lib import Database
+from Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveLocation import save_location
@@ -22,6 +23,7 @@ def SaveLocation():
 
     # Call the save_location function from SaveLocation.py with the extracted data
     result = save_location(LocationId, City, State, Country, Latitude, Longitude)
+    History.SaveHistory(location_data,"Locations", "LocationId", result["LocationId"])
 
     return result
     
@@ -37,6 +39,7 @@ def DeleteLocation():
     LocationId = location_data.get('LocationId')
     # Call the delete_location function from DeleteLocation.py
     result = delete_location(LocationId)
+    History.SaveHistory(location_data,"Locations", "LocationId", LocationId)
     return result
 
 @blueprint.route("/Location/GetLocation", methods=['GET'])
