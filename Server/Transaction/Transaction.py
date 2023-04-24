@@ -6,6 +6,8 @@ from .SaveTransaction import save_transaction
 from .DeleteTransaction import delete_transaction
 from .GetTransaction import get_transaction
 from .GetFromHumans import get_from_humans
+from .GetToHumans import get_to_humans
+from .GetNotaryHumans import get_notary_humans
 
 blueprint = Blueprint('Transaction', __name__)
 
@@ -64,9 +66,30 @@ def GetTransaction():
 @blueprint.route("/Transaction/GetFromHumans", methods=['GET'])
 @cross_origin()
 def GetFromHumans():
-    # Get the transaction data from the request
+    # Get the transaction data to the request
     transaction_data = request.args.to_dict()
 
-    # Call the get_transaction function from GetTransaction.py
+    # Call the get_transaction function to GetTransaction.py
     result = get_from_humans()
+    return result
+
+@blueprint.route("/Transaction/GetToHumans", methods=['GET'])
+@cross_origin()
+def GetToHumans():
+    # Get the transaction data to the request
+    transaction_data = request.args.to_dict()
+
+    # Call the get_transaction function to GetTransaction.py
+    result = get_to_humans()
+    return result
+
+
+@blueprint.route("/Transaction/GetNotaryHumans", methods=['GET'])
+@cross_origin()
+def GetNotaryHumans():
+    # Get the transaction data to the request
+    transaction_data = request.args.to_dict()
+
+    # Call the get_transaction function to GetTransaction.py
+    result = get_notary_humans()
     return result
