@@ -25,10 +25,9 @@ def SaveTransaction():
     NotaryHumanId = transaction_data.get('NotaryHumanId', None)
     Volume = transaction_data.get('Volume', None)
     URL = transaction_data.get('URL', None)
-    UserId = transaction_data.get('UserId', None)
 
     # Call the save_transaction function from SaveTransaction.py with the extracted data
-    result = save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL, UserId)
+    result = save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL)
 
     return result
     
