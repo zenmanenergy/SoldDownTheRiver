@@ -1,5 +1,6 @@
 
 from Lib import Database
+from Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveBusiness import save_business
@@ -19,6 +20,7 @@ def SaveBusiness():
 
     # Call the save_business function from SaveBusiness.py with the extracted data
     result = save_business(BusinessId, BusinessName)
+    History.SaveHistory(business_data,"Business", "BusinessId", result["BusinessId"])
 
     return result
     
@@ -34,6 +36,7 @@ def DeleteBusiness():
     BusinessId = business_data.get('BusinessId')
     # Call the delete_business function from DeleteBusiness.py
     result = delete_business(BusinessId)
+    History.SaveHistory(business_data,"Business", "BusinessId",BusinessId)
     return result
 
 @blueprint.route("/Business/GetBusiness", methods=['GET'])
