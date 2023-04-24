@@ -1,7 +1,7 @@
 // src/routes/Transactions/handleGet.js
 const baseURL = 'http://192.168.1.182';
 export async function handleGetFromHumans(SessionId,TransactionId, setTransactionData) {
-  const url="${baseURL}/Transaction/GetFromHumans?TransactionId=${TransactionId}&SessionId=${SessionId}"
+  const url=`${baseURL}/Transaction/GetFromHumans?TransactionId=${TransactionId}&SessionId=${SessionId}`
   console.log(url)
   const response = await fetch(url);
   const data = await response.json();
