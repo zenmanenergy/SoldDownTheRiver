@@ -24,7 +24,6 @@ export function handleSaveAkaName(SessionId,AKAHumanId,HumanId, AKAFirstName, AK
     .map(key => key + '=' + encodeURIComponent(AKAHumanData[key]))
     .join('&');
 
-	console.log('queryString',queryString)
   const url = baseURL + '/Human/SaveHumanAKA?' + queryString; 
   console.log(url)
   fetch(url, {

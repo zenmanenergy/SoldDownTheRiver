@@ -2,7 +2,9 @@
 const baseURL = "http://192.168.1.182";
 export async function handleDelete(SessionId,UserId) {
 	try {
-		const response = await fetch(`${baseURL}/User/DeleteUser?UserId=${UserId}&SessionId=${SessionId}`);
+		const url = `${baseURL}/User/DeleteUser?UserId=${UserId}&SessionId=${SessionId}`;
+		console.log(url);
+		const response = await fetch(url);
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);

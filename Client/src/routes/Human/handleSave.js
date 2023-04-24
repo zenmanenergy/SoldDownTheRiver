@@ -27,7 +27,6 @@ export function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName, S
     .map(key => key + '=' + encodeURIComponent(humanData[key]))
     .join('&');
 
-	console.log('queryString',queryString)
   const url = baseURL + '/Human/SaveHuman?' + queryString; 
   console.log(url)
   fetch(url, {

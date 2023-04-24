@@ -2,7 +2,9 @@
 const baseURL = 'http://192.168.1.182';
 
 export async function handleGet(SessionId,RoleId, setRole) {
-    const response = await fetch(`${baseURL}/Role/GetRole?RoleId=${RoleId}&SessionId=${SessionId}`);
+    const url="${baseURL}/Role/GetRole?RoleId=${RoleId}&SessionId=${SessionId}"
+    console.log(url)
+    const response = await fetch(url);
     const data = await response.json();
   
     setRole(data.RoleId,data.Role);
