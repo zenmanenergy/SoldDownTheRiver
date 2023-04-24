@@ -2,7 +2,7 @@ const baseURL = 'http://192.168.1.182';
 
 export async function handleDelete(SessionId,HumanId) {
   try {
-    const url="${baseURL}/Human/DeleteHuman?HumanId=${HumanId}&SessionId=${SessionId}"
+    const url=`${baseURL}/Human/DeleteHuman?HumanId=${HumanId}&SessionId=${SessionId}`
     console.log(url)
     const response = await fetch(url);
 

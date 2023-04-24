@@ -2,9 +2,8 @@
 const baseURL = 'http://192.168.1.182';
 
 export async function handleDelete(SessionId,RoleId) {
-  console.log(`${baseURL}/Role/DeleteRole?RoleId=${RoleId}&SessionId=${SessionId}`)
   try {
-    const url="${baseURL}/Role/DeleteRole?RoleId=${RoleId}&SessionId=${SessionId}"
+    const url=`${baseURL}/Role/DeleteRole?RoleId=${RoleId}&SessionId=${SessionId}`
     console.log(url)
     const response = await fetch(url);
 
