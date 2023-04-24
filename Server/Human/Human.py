@@ -1,4 +1,5 @@
 from Lib import Database
+from Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveHuman import save_human
@@ -32,6 +33,7 @@ def SaveHuman():
 
     # Call the save_human function from SaveHuman.py with the extracted data
     result = save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId )
+    History.SaveHistory(human_data,"Humans", "HumanId", result["HumanId"])
 
 
     return result
@@ -46,6 +48,7 @@ def DeleteHuman():
     HumanId = human_data.get('HumanId')
     # Call the delete_human function from DeleteHuman.py
     result = delete_human(HumanId)
+    History.SaveHistory(human_data,"Humans", "HumanId")
     return result
 
 @blueprint.route("/Human/GetHuman", methods=['GET'])
@@ -89,6 +92,7 @@ def SaveHumanAKA():
     
     # Call the get_human function from GetHuman.py
     result = save_aka(AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName)
+    History.SaveHistory(human_data,"humansaka", "AKAHumanId", result["AKAHumanId"])
     return result
 
 
@@ -103,6 +107,8 @@ def DeleteAKAName():
     
     # Call the get_human function from GetHuman.py
     result = delete_aka(AKAHumanId)
+    print(result)
+    History.SaveHistory(human_data,"humansaka", "AKAHumanId", result["AKAHumanId"])
     return result
 
 
@@ -119,6 +125,7 @@ def SavePartner():
     
     # Call the get_human function from GetHuman.py
     result = save_partner(HumanId, PartnerHumanId)
+    History.SaveHistory(human_data,"Partners", "PartnerHumanId", PartnerHumanId)
     return result
 
 
@@ -161,6 +168,7 @@ def DeletePartner():
     
     # Call the get_human function from GetHuman.py
     result = delete_partner(HumanId, PartnerHumanId)
+    History.SaveHistory(human_data,"Partners", "PartnerHumanId", PartnerHumanId)
     return result
 
 @blueprint.route("/Human/GetRoles", methods=['GET'])
