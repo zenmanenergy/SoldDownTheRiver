@@ -1,5 +1,5 @@
 // src/routes/Businesses/handleDelete.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 export async function handleDelete(SessionId, BusinessId) {
   try {
     const url=`${baseURL}/Business/DeleteBusiness?BusinessId=${BusinessId}&SessionId=${SessionId}`

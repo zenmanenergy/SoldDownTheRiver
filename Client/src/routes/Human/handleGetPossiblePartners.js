@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 
 export async function handleGetPossiblePartners(SessionId,HumanId,setPossiblePartners) {
     const url=`${baseURL}/Human/GetPossiblePartners?HumanId=${HumanId}&SessionId=${SessionId}`

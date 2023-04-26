@@ -1,5 +1,5 @@
 // src/routes/Transactions/handleDelete.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 export async function handleDelete(SessionId,TransactionId) {
   try {
     const url=`${baseURL}/Transaction/DeleteTransaction?TransactionId=${TransactionId}&SessionId=${SessionId}`

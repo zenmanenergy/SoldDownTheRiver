@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 
 // src/routes/Businesses/handleSubmit.js
 export function handleLogin(Email, Password,formValid) {

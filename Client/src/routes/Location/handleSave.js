@@ -1,5 +1,5 @@
 // src/routes/Locations/handleSave.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 // src/routes/Locations/handleSave.js
 export function handleSave(SessionId,locationId, city, state, country, latitude, longitude, formValid) {
 

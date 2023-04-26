@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 
 // src/routes/Transactions/handleSubmit.js
 export function handleSave(SessionId,transactionId, transactionDate, fromHumanId, toHumanId, transactionType, notes, act, page, notaryHumanId, volume, url,  formValid) {

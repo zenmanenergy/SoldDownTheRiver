@@ -1,5 +1,5 @@
 // src/routes/Transactions/handleGet.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 export async function handleGetFromHumans(SessionId,TransactionId, setTransactionData) {
   const url=`${baseURL}/Transaction/GetFromHumans?TransactionId=${TransactionId}&SessionId=${SessionId}`
   console.log(url)

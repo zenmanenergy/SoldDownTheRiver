@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 
 export async function handleGet(SessionId,HumanId, setHumanName) {
     const url=`${baseURL}/Human/GetHuman?HumanId=${HumanId}&SessionId=${SessionId}`

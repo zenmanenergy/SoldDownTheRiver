@@ -1,5 +1,5 @@
 // src/routes/Businesses/handleGet.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 // src/routes/Business/handleGet.js
 export async function handleGet(SessionId, BusinessId, setName) {
     const url = `${baseURL}/Business/GetBusiness?BusinessId=${BusinessId}&SessionId=${SessionId}`

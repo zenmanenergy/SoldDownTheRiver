@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 
 // src/routes/Roles/handleSave.js
 export function handleSave(SessionId,RoleId,Role, formValid) {

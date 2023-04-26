@@ -1,5 +1,5 @@
 // src/routes/Locations/handleGet.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 // src/routes/Locations/handleGet.js
 export async function handleGet(SessionId,LocationId, setLocation) {
     const url=`${baseURL}/Location/GetLocation?LocationId=${LocationId}&SessionId=${SessionId}`

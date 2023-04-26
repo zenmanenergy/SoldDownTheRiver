@@ -1,5 +1,5 @@
 // src/routes/Users/handleGet.js
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 export async function handleGet(SessionId,UserId, setUser) {
     const url=`${baseURL}/User/GetUser?UserId=${UserId}&SessionId=${SessionId}`
     console.log(url)

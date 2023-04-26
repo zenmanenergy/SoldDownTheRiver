@@ -1,4 +1,4 @@
-const baseURL = 'http://192.168.1.182';
+import { baseURL } from '../Settings';
 
 async function handleGet(SessionId,) {
   const url=`${baseURL}/Transactions/GetTransactions?SessionId=${SessionId}`
