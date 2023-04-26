@@ -1,7 +1,10 @@
 <style>
   @import '/static/FormPages.css';
+  
 </style>
 <script>
+  
+  import moment from 'moment';
   import { onMount } from 'svelte';
   import handleGet from './handleGet.js';
 	import {Session} from "../Session.js";
@@ -28,15 +31,25 @@
     <a href="/AdminMenu">Back to Menu</a>
 	  <div class="ActionBox">
       <h3 class="title is-2">List of Businesses</h3>
-      <ul>
-        {#each businesses as business}
-          <li>
-            <a href={`/Business?BusinessId=${business.BusinessId}`}>
-              {business.BusinessName}
-            </a>
-          </li>
-        {/each}
-      </ul>
+      <table width=100%>
+        <thead>
+          <tr>
+            <th>Business Name</th>
+            <th>Last Modified</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each businesses as business}
+            
+              <tr style="cursor: pointer;" on:click={location.href=`/Business?BusinessId=${business.BusinessId}`}>
+                <td>{business.BusinessName}</td>
+                <td>{moment(business.LastModified).fromNow()}</td>
+              </tr>
+            
+          {/each}
+        </tbody>
+      </table>
+      
       <button on:click={addBusiness}>Add Business</button>
     </div>
   </div>

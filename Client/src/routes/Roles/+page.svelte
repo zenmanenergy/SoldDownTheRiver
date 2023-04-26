@@ -3,6 +3,7 @@
   </style>
   
   <script>
+    import moment from 'moment';
     import { onMount } from 'svelte';
     import handleGet from './handleGet.js';
 	  import {Session} from "../Session.js";
@@ -26,19 +27,29 @@
       <div class="spinner"></div>
     </div>
   {:else}
-    <div class="section">
-      <a href="/AdminMenu">Back to Menu</a>
-      <div class="ActionBox">
-        <h3 class="title is-2">List of Roles</h3>
-        <ul>
+  <div class="section">
+    <a href="/AdminMenu">Back to Menu</a>
+    <div class="ActionBox">
+      <h3 class="title is-2">List of Roles</h3>
+      <table width=100%>
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Last Modified</th>
+          </tr>
+        </thead>
+        <tbody>
           {#each roles as role}
-            <li>
-              <a href={`/Role?RoleId=${role.RoleId}`}>{role.Role}</a>
-            </li>
+            <tr style="cursor: pointer;" on:click={location.href=`/Role?RoleId=${role.RoleId}`}>
+              <td>{role.Role}</td>
+              <td>{moment(role.LastModified).fromNow()}</td>
+            </tr>
           {/each}
-        </ul>
-        <button on:click={addRole}>Add Role</button>
-      </div>
+        </tbody>
+      </table>
+      <button on:click={addRole}>Add Role</button>
     </div>
+  </div>
+  
   {/if}
   

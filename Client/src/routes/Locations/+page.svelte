@@ -2,6 +2,7 @@
   @import '/static/FormPages.css';
 </style>
 <script>
+    import moment from 'moment';
     import { onMount } from 'svelte';
     import handleGet from './handleGet.js';
 	  import {Session} from "../Session.js";
@@ -26,20 +27,32 @@
     </div>
   {:else}
   <div class="section">
-		<a href="/AdminMenu">Back to Menu</a>
+    <a href="/AdminMenu">Back to Menu</a>
     <div class="ActionBox">
       <h3 class="title is-2">List of Locations</h3>
-      <ul>
-        {#each locations as location}
-          <li>
-            <a href={`/Location?LocationId=${location.LocationId}`}>
-              {location.City}, {location.State}, {location.Country}
-            </a>
-          </li>
-        {/each}
-      </ul>
+      <table width=100%>
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>State</th>
+            <th>Country</th>
+            <th>Last Modified</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each locations as location}
+            <tr style="cursor: pointer;" on:click={location.href=`/Location?LocationId=${location.LocationId}`}>
+              <td>{location.City}</td>
+              <td>{location.State}</td>
+              <td>{location.Country}</td>
+              <td>{moment(location.LastModified).fromNow()}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
       <button on:click={addLocation}>Add Location</button>
     </div>
   </div>
+  
   {/if}
   
