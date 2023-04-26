@@ -38,7 +38,7 @@ export function handleSave(SessionId,transactionId, transactionDate, fromHumanId
   .then(response => response.json())
   .then(data => {
     console.log("Save success", data);
-    // window.location.href = '/Transactions';
+    window.location.href = '/Transactions';
     // Handle the response data as needed
   })
   .catch(error => {
