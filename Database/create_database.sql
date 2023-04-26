@@ -4,6 +4,17 @@ CREATE TABLE `businesses` (
   PRIMARY KEY (`BusinessId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `history` (
+  `HistoryId` char(39) NOT NULL,
+  `TableName` varchar(45) DEFAULT NULL,
+  `PKName` varchar(45) DEFAULT NULL,
+  `PKValue` varchar(45) DEFAULT NULL,
+  `UserId` char(39) DEFAULT NULL,
+  `Data` varchar(2000) DEFAULT NULL,
+  `DateAdded` datetime DEFAULT NULL,
+  PRIMARY KEY (`HistoryId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `humanroles` (
   `HumanId` char(39) NOT NULL,
   `RoleId` varchar(45) NOT NULL,
@@ -50,8 +61,8 @@ CREATE TABLE `notary` (
 
 CREATE TABLE `partners` (
   `HumanId` char(39) NOT NULL,
-  `PartnerHumanId` char(39) DEFAULT NULL,
-  PRIMARY KEY (`HumanId`)
+  `PartnerHumanId` char(39) NOT NULL,
+  PRIMARY KEY (`HumanId`,`PartnerHumanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `roles` (
