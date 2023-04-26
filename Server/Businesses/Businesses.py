@@ -16,3 +16,11 @@ def GetBusinesses():
     # Call the get_business function from GetBusinesses.py
     result = get_businesses()
     return result
+
+@blueprint.route("/Businesses/LastModified", methods=['GET'])
+@cross_origin()
+def LastModified():
+
+    # Get the business ID from the request
+    result = History.LastModified("Business", "BusinessId")
+    return result

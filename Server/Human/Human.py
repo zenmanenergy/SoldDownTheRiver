@@ -192,7 +192,7 @@ def LastModified():
     business_data = request.args.to_dict()
 
 
-    HistoryArray=[{"Table": "Humans","PKName": "HumanId", "PKValue" : business_data.get('HumanId')},{"Table": "Partners", "PKName":"HumanId", "PKValue": business_data.get('HumanId')}]
+    HistoryArray=[{"Table": "Humans","KeyName": "HumanId", "KeyValue" : business_data.get('HumanId')},{"Table": "Partners", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table": "HumansAKA", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
     result=History.LastModifiedArray(HistoryArray)
     return result
     

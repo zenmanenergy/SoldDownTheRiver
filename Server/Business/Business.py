@@ -58,6 +58,5 @@ def LastModified():
     business_data = request.args.to_dict()
 
     # Get the business ID from the request
-    BusinessId = business_data.get('BusinessId')
-    result = History.LastModified("Business", "BusinessId", BusinessId)
+    result = History.LastModified("Business", "BusinessId", business_data.get('BusinessId'))
     return result

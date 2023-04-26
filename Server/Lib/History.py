@@ -10,14 +10,17 @@ import datetime
 
 
 
-def LastModified(Table, PKName,PKValue ):
+def LastModified(Table, KeyName,KeyValue ):
     # Add a comment
     Cursor,Connection=ConnectToDatabase()
+    if KeyValue:
     
-    # Construct the SQL query
-    query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and PKName = %s and PKValue = %s"
-    values = (Table, PKName, PKValue)
-
+        # Construct the SQL query
+        query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and KeyName = %s and KeyValue = %s"
+        values = (Table, KeyName, KeyValue)
+    else:
+        query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and KeyName = %s group by %s"
+        values = (Table, KeyName , KeyName)
 
     # Execute the query and get the results
     Cursor.execute(query, values)
@@ -38,8 +41,8 @@ def LastModifiedArray(Data):
     Response=[]
     for key in Data:
         # Construct the SQL query
-        query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and PKName = %s and PKValue = %s"
-        values = (key.get("Table"),key.get("PKName"),key.get("PKValue"))
+        query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and KeyName = %s and KeyValue = %s"
+        values = (key.get("Table"),key.get("KeyName"),key.get("KeyValue"))
 
         print(query % tuple(map(repr, values)))
         # # Execute the query and get the results
@@ -57,12 +60,12 @@ def LastModifiedArray(Data):
     
     return sorted_Response
 
-def SaveHistory(Data, Table, PKName,PKValue ):
+def SaveHistory(Data, Table, KeyName,KeyValue ):
     # Add a comment
     Cursor,Connection=ConnectToDatabase()
     
-    if not PKValue:
-        PKValue=Data['PKName']
+    if not KeyValue:
+        KeyValue=Data['KeyName']
 
     # Construct the SQL query
     query = "SELECT UserId FROM UserSessions WHERE SessionId = %s"
@@ -80,8 +83,8 @@ def SaveHistory(Data, Table, PKName,PKValue ):
     now = datetime.datetime.now()
     now_str = now.strftime('%Y-%m-%d %H:%M:%S')
     HistoryId="HIS"+str(uuid.uuid4())
-    query="INSERT INTO History (HistoryId, TableName, PKName, PKValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-    values=(HistoryId, Table, PKName, PKValue, UserId, json.dumps(Data),now_str)
+    query="INSERT INTO History (HistoryId, TableName, KeyName, KeyValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    values=(HistoryId, Table, KeyName, KeyValue, UserId, json.dumps(Data),now_str)
     
     print(query % tuple(map(repr, values)))
     # Add a comment
