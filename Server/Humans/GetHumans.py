@@ -6,7 +6,8 @@ def get_humans():
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Humans order by LastName, FirstName"
+    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Humans.HumanId and History.TableName='Humans' and History.KeyName='HumanId') LastModified"
+    query +=" FROM Humans order by LastName, FirstName"
     values = ()
 
 

@@ -6,7 +6,8 @@ def get_transactions():
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Transactions ORDER BY TransactionDate DESC"
+    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Transactions.TransactionId  and History.TableName='Transactions' and History.KeyName='TransactionId') LastModified"
+    query +=" FROM Transactions ORDER BY TransactionDate DESC"
     values = ()
 
     # Execute the query and get the results

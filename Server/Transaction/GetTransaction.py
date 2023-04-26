@@ -8,7 +8,8 @@ def get_transaction(transaction_id):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Transactions WHERE TransactionId = %s"
+    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Transactions.TransactionId  and History.TableName='Transactions' and History.KeyName='TransactionId') LastModified"
+    query +=" FROM Transactions WHERE TransactionId = %s"
     values = (transaction_id,)
 
     # Execute the query and get the results

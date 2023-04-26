@@ -8,7 +8,8 @@ def get_location(LocationId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Locations WHERE LocationId = %s"
+    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Locations.LocationId  and History.TableName='Locations' and History.KeyName='LocationId') LastModified"
+    query +="  FROM Locations WHERE LocationId = %s"
     values = (LocationId,)
 
 

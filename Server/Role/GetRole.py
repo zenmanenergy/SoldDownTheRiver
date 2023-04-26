@@ -5,7 +5,8 @@ def get_role(RoleId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Roles WHERE RoleId = %s"
+    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Roles.RoleId  and History.TableName='Roles' and History.KeyName='RoleId') LastModified"
+    query +="   FROM Roles WHERE RoleId = %s"
     values = (RoleId,)
 
     # Execute the query and get the results

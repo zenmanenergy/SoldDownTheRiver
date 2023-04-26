@@ -8,7 +8,8 @@ def get_human(HumanId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Humans left join HumanRoles on Humans.HumanId=HumanRoles.HumanId WHERE Humans.HumanId = %s"
+    query = "SELECT * , (select max(dateAdded) from History where History.KeyValue=Humans.HumanId and History.TableName='Humans' and History.KeyName='HumanId') LastModified"
+    query +=" FROM Humans left join HumanRoles on Humans.HumanId=HumanRoles.HumanId WHERE Humans.HumanId = %s"
     values = (HumanId,)
 
     # Execute the query and get the results
