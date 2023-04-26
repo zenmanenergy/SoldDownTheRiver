@@ -14,6 +14,8 @@ from .GetPartners import get_partners
 from .GetPossiblePartners import get_possible_partners
 from .GetRoles import get_roles
 
+
+
 blueprint = Blueprint('Human', __name__)
 
 @blueprint.route("/Human/SaveHuman", methods=['GET'])
@@ -126,6 +128,7 @@ def SavePartner():
     # Call the get_human function from GetHuman.py
     result = save_partner(HumanId, PartnerHumanId)
     History.SaveHistory(human_data,"Partners", "PartnerHumanId", PartnerHumanId)
+    History.SaveHistory(human_data,"Partners", "HumanId", HumanId)
     return result
 
 
@@ -181,3 +184,15 @@ def GetRoles():
     result = get_roles()
 
     return result
+
+@blueprint.route("/Human/LastModified", methods=['GET'])
+@cross_origin()
+def LastModified():
+    # Get the business data from the request
+    business_data = request.args.to_dict()
+
+
+    HistoryArray=[{"Table": "Humans","PKName": "HumanId", "PKValue" : business_data.get('HumanId')},{"Table": "Partners", "PKName":"HumanId", "PKValue": business_data.get('HumanId')}]
+    result=History.LastModifiedArray(HistoryArray)
+    return result
+    
