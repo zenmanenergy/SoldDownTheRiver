@@ -4,6 +4,7 @@
 </style>
 
 <script>
+	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
