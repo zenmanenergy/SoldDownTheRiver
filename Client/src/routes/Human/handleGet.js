@@ -6,10 +6,10 @@ export async function handleGet(SessionId,HumanId, setHumanName) {
     const response = await fetch(url);
     const data = await response.json();
   
-    const { FirstName, MiddleName, LastName , StartYear, EndYear, Notes, RoleId} = data;
+    const { FirstName, MiddleName, LastName , StartYear, EndYear, Notes, RoleId,LastModified} = data;
     // const humanName = `${FirstName} ${MiddleName} ${LastName}`.trim();
   
     if (HumanId){
-        setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId);
+        setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId, LastModified);
     }
 }

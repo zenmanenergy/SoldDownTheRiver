@@ -19,6 +19,9 @@
     function addLocation() {
       window.location.href = '/Location?LocationId=';
     }
+    function go(LocationId) {
+      window.location.href = `/Location?LocationId=`+LocationId;
+    }
   </script>
   
   {#if isLoading}
@@ -41,7 +44,7 @@
         </thead>
         <tbody>
           {#each locations as location}
-            <tr style="cursor: pointer;" on:click={location.href=`/Location?LocationId=${location.LocationId}`}>
+            <tr style="cursor: pointer;" on:click={go(`${location.LocationId}`)}>
               <td>{location.City}</td>
               <td>{location.State}</td>
               <td>{location.Country}</td>

@@ -35,7 +35,7 @@ def SaveTransaction():
 
     # Call the save_transaction function from SaveTransaction.py with the extracted data
     result = save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL)
-    # History.SaveHistory(transaction_data,"Transactions", "TransactionId", result["TransactionId"])
+    History.SaveHistory(transaction_data,"Transactions", "TransactionId", result["TransactionId"])
 
     return result
     

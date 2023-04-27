@@ -7,6 +7,6 @@ export async function handleGet(SessionId, BusinessId, setName) {
     const response = await fetch(url);
     const data = await response.json();
   
-    setName(data.BusinessName);
+    setName(data.BusinessName, data.LastModified);
 }
   

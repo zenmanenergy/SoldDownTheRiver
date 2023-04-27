@@ -12,11 +12,13 @@
   
 	let BusinessId="";
 	let BusinessName = "";
+	let LastModified = "";
 	let formValid = false;
 	let isLoading = true;
   
-	async function setName(newBusinessName) {
+	async function setName(newBusinessName, newLastModified) {
 	  BusinessName = newBusinessName;
+	  LastModified = newLastModified;
 	}
   
 	$: {
@@ -75,6 +77,7 @@
 		  </div>
 		</div>
 	  </form>
+		<small>Last Modified: {moment(LastModified).fromNow()}</small>
 	</div>
 	</div>
   {/if}

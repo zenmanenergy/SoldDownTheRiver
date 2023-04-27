@@ -6,6 +6,9 @@ async function handleGet(SessionId) {
   const response = await fetch(url);
   const businesses = await response.json();
   return businesses;
+
+  
+
 }
 
 export default handleGet;

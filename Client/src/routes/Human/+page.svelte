@@ -19,6 +19,7 @@
   import { handleGetRoles } from './handleGetRoles.js';
 	import {Session} from "../Session.js";
   
+  let LastModified='';
   let HumanId = '';
   let FirstName = '';
   let MiddleName = '';
@@ -45,7 +46,7 @@
 
   let FormValid = false;
   let AKAFormValid = false;
-  async function setName(_FirstName, _MiddleName, _LastName, _StartYear, _EndYear, _Notes, _RoleId) {
+  async function setName(_FirstName, _MiddleName, _LastName, _StartYear, _EndYear, _Notes, _RoleId, _LastModified) {
     FirstName=_FirstName;
     MiddleName=_MiddleName;
     LastName=_LastName;
@@ -53,7 +54,8 @@
     EndYear=_EndYear;
     Notes=_Notes;
     RoleId=_RoleId;
-    console.log(RoleId)
+    LastModified=_LastModified;
+    
   }
   $: {
     FormValid = FirstName && LastName && StartYear && EndYear && StartYear <= EndYear;
@@ -205,6 +207,7 @@
       </div>
     </div>
   </form>
+  <small>Last Modified: {moment(LastModified).fromNow()}</small>
 </div>
 </div>
   {/if}

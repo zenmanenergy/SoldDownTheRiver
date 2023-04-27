@@ -74,6 +74,7 @@
 					</div>
 				</div>
 			</form>
+			<small>Last Modified: {moment(LastModified).fromNow()}</small>
 		</div>
 	</div>
 {/if}

@@ -12,6 +12,7 @@
 	import { handleGet } from "./handleGet.js";
 	import {Session} from "../Session.js";
 
+	let LastModified='';
 	let LocationId = "";
 	let City = "";
 	let State = "";
@@ -21,12 +22,13 @@
 	let formValid = false;
 	let isLoading = true;
 
-	async function setLocation(city, state, country, latitude, longitude) {
+	async function setLocation(city, state, country, latitude, longitude, lastModified) {
 		City = city;
 		State = state;
 		Country = country;
 		Latitude = latitude;
 		Longitude = longitude;
+		LastModified = lastModified;
 	}
 
 	$: {
@@ -102,6 +104,7 @@
 					</div>
 				</div>
 			</form>
+			<small>Last Modified: {moment(LastModified).fromNow()}</small>
 		</div>
 	</div>
 {/if}

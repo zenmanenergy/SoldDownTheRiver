@@ -7,5 +7,5 @@ export async function handleGet(SessionId,LocationId, setLocation) {
     const response = await fetch(url);
     const data = await response.json();
   
-    setLocation(data.City, data.State, data.Country, data.Latitude, data.Longitude);
+    setLocation(data.City, data.State, data.Country, data.Latitude, data.Longitude, data.LastModified);
 }

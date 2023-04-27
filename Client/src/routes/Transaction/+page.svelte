@@ -13,6 +13,7 @@
 	import { handleGetNotaryHumans } from './handleGetNotaryHumans.js';
 	import {Session} from "../Session.js";
   
+  let LastModified='';
 	let TransactionId = "";
 	let TransactionDate = "";
 	let FromHumanId = "";
@@ -49,6 +50,7 @@
         NotaryHumanId = data.NotaryHumanId;
         Volume = data.Volume;
         URL = data.URL;
+        LastModified = data.LastModified;
         console.log("TransactionId", TransactionId)
       }
 	}
@@ -259,6 +261,7 @@
           </div>
         </div>
       </form>
+      <small>Last Modified: {moment(LastModified).fromNow()}</small>
     </div>
   </div>
   
