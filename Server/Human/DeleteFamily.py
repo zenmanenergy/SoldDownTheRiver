@@ -1,14 +1,14 @@
 from Lib import Database
 
-def delete_partner(HumanId, PartnerHumanId):
+def delete_Family(HumanId, FamilyHumanId):
     # Delete the specified row from the Humans table
-    query = "DELETE FROM Partners WHERE HumanId = %s and PartnerHumanId = %s"
-    values = (HumanId, PartnerHumanId)
+    query = "DELETE FROM Familys WHERE HumanId = %s and FamilyHumanId = %s"
+    values = (HumanId, FamilyHumanId)
     cursor, connection = Database.ConnectToDatabase()
     cursor.execute(query, values)
     connection.commit()
-    query = "DELETE FROM Partners WHERE HumanId = %s and PartnerHumanId = %s"
-    values = (PartnerHumanId,HumanId)
+    query = "DELETE FROM Familys WHERE HumanId = %s and FamilyHumanId = %s"
+    values = (FamilyHumanId,HumanId)
     cursor, connection = Database.ConnectToDatabase()
     cursor.execute(query, values)
     connection.commit()

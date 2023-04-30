@@ -14,7 +14,6 @@ from Human import Human
 from Locations import Locations
 from Location import Location
 from Notary import Notary
-from Partners import Partners
 from Transactions import Transactions
 from Users import Users
 from User import User

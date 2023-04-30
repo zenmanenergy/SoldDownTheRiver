@@ -8,10 +8,10 @@ from .GetHuman import get_human
 from .GetAKANames import get_aka
 from .SaveAKANames import save_aka
 from .DeleteAKAName import delete_aka
-from .SavePartner import save_partner
-from .DeletePartner import delete_partner
-from .GetPartners import get_partners
-from .GetPossiblePartners import get_possible_partners
+from .SaveFamily import save_Family
+from .DeleteFamily import delete_Family
+from .GetFamilys import get_Familys
+from .GetPossibleFamilys import get_possible_Familys
 from .GetRoles import get_roles
 
 
@@ -50,7 +50,8 @@ def DeleteHuman():
     HumanId = human_data.get('HumanId')
     # Call the delete_human function from DeleteHuman.py
     result = delete_human(HumanId)
-    History.SaveHistory(human_data,"Humans", "HumanId")
+    History.SaveHistory(human_data,"Humans", "HumanId", HumanId)
+
     return result
 
 @blueprint.route("/Human/GetHuman", methods=['GET'])
@@ -115,26 +116,28 @@ def DeleteAKAName():
 
 
 
-@blueprint.route("/Human/SavePartner", methods=['GET'])
+@blueprint.route("/Human/SaveFamily", methods=['GET'])
 @cross_origin()
-def SavePartner():
+def SaveFamily():
     # Get the human data from the request
     human_data = request.args.to_dict()
 
+    print(human_data)
     # Get the human ID from the request
     HumanId = human_data.get('HumanId', None)
-    PartnerHumanId = human_data.get('PartnerHumanId', None)
+    FamilyHumanId = human_data.get('FamilyHumanId', None)
+    Relationship = human_data.get('Relationship', None)
     
     # Call the get_human function from GetHuman.py
-    result = save_partner(HumanId, PartnerHumanId)
-    History.SaveHistory(human_data,"Partners", "PartnerHumanId", PartnerHumanId)
-    History.SaveHistory(human_data,"Partners", "HumanId", HumanId)
+    result = save_Family(HumanId, FamilyHumanId, Relationship)
+    History.SaveHistory(human_data,"Familys", "FamilyHumanId", FamilyHumanId)
+    History.SaveHistory(human_data,"Familys", "HumanId", HumanId)
     return result
 
 
-@blueprint.route("/Human/GetPartners", methods=['GET'])
+@blueprint.route("/Human/GetFamilys", methods=['GET'])
 @cross_origin()
-def getPartners():
+def getFamilys():
     # Get the human data from the request
     human_data = request.args.to_dict()
 
@@ -142,13 +145,13 @@ def getPartners():
     HumanId = human_data.get('HumanId', None)
     
     # Call the get_human function from GetHuman.py
-    result = get_partners(HumanId)
+    result = get_Familys(HumanId)
     return result
 
 
-@blueprint.route("/Human/GetPossiblePartners", methods=['GET'])
+@blueprint.route("/Human/GetPossibleFamilys", methods=['GET'])
 @cross_origin()
-def GetPossiblePartners():
+def GetPossibleFamilys():
     # Get the human data from the request
     human_data = request.args.to_dict()
 
@@ -156,22 +159,22 @@ def GetPossiblePartners():
     HumanId = human_data.get('HumanId', None)
     
     # Call the get_human function from GetHuman.py
-    result = get_possible_partners(HumanId)
+    result = get_possible_Familys(HumanId)
     return result
 
-@blueprint.route("/Human/DeletePartner", methods=['GET'])
+@blueprint.route("/Human/DeleteFamily", methods=['GET'])
 @cross_origin()
-def DeletePartner():
+def DeleteFamily():
     # Get the human data from the request
     human_data = request.args.to_dict()
 
     # Get the human ID from the request
     HumanId = human_data.get('HumanId', None)
-    PartnerHumanId = human_data.get('PartnerHumanId', None)
+    FamilyHumanId = human_data.get('FamilyHumanId', None)
     
     # Call the get_human function from GetHuman.py
-    result = delete_partner(HumanId, PartnerHumanId)
-    History.SaveHistory(human_data,"Partners", "PartnerHumanId", PartnerHumanId)
+    result = delete_Family(HumanId, FamilyHumanId)
+    History.SaveHistory(human_data,"Familys", "FamilyHumanId", FamilyHumanId)
     return result
 
 @blueprint.route("/Human/GetRoles", methods=['GET'])
@@ -192,7 +195,7 @@ def LastModified():
     business_data = request.args.to_dict()
 
 
-    HistoryArray=[{"Table": "Humans","KeyName": "HumanId", "KeyValue" : business_data.get('HumanId')},{"Table": "Partners", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table": "HumansAKA", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
+    HistoryArray=[{"Table": "Humans","KeyName": "HumanId", "KeyValue" : business_data.get('HumanId')},{"Table": "Familys", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table": "HumansAKA", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
     result=History.LastModifiedArray(HistoryArray)
     return result
     

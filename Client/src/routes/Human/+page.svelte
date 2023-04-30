@@ -12,13 +12,14 @@
   import { handleGetAKA } from './handleGetAKA.js';
   import { handleSaveAkaName } from './handleSaveAkaName.js';
   import { handleDeleteAkaName } from './handleDeleteAkaName.js';
-  import { handleGetPartners } from './handleGetPartners.js';
-  import { handleDeletePartner } from './handleDeletePartner.js';
-  import { handleGetPossiblePartners } from './handleGetPossiblePartners.js';
-  import { handleSavePartner } from './handleSavePartner.js';
+  import { handleGetFamilys } from './handleGetFamilys.js';
+  import { handleDeleteFamily } from './handleDeleteFamily.js';
+  import { handleGetPossibleFamilys } from './handleGetPossibleFamilys.js';
+  import { handleSaveFamily } from './handleSaveFamily.js';
   import { handleGetRoles } from './handleGetRoles.js';
 	import {Session} from "../Session.js";
   
+  let Relationship = '';
   let LastModified='';
   let HumanId = '';
   let FirstName = '';
@@ -34,10 +35,10 @@
   let AKAMiddleName = '';
   let AKALastName = '';
 
-  let Partners=[];
+  let Familys=[];
 
-  let PartnerHumanId='';
-  let PossiblePartners=[]
+  let FamilyHumanId='';
+  let PossibleFamilys=[]
 
   let RoleId='';
   let Roles=[];
@@ -58,18 +59,19 @@
     
   }
   $: {
-    FormValid = FirstName && LastName && StartYear && EndYear && StartYear <= EndYear;
+    FormValid = FirstName && LastName;
     AKAFormValid = AKAFirstName && AKALastName;
   }
 
   async function setAkaNames(data) {
     AkaNames = data;
   }
-  async function setPartners(data) {
-    Partners = data;
+  async function setFamilys(data) {
+    Familys = data;
+    console.log(Familys)
   }
-  async function setPossiblePartners(data) {
-    PossiblePartners = data;
+  async function setPossibleFamilys(data) {
+    PossibleFamilys = data;
   }
   async function setRoles(data) {
     Roles = data;
@@ -82,8 +84,8 @@
     await Promise.all([
       handleGet(Session.SessionId,HumanId, setName),
       handleGetAKA(Session.SessionId,HumanId, setAkaNames),
-      handleGetPartners(Session.SessionId,HumanId, setPartners),
-      handleGetPossiblePartners(Session.SessionId,HumanId, setPossiblePartners),
+      handleGetFamilys(Session.SessionId,HumanId, setFamilys),
+      handleGetPossibleFamilys(Session.SessionId,HumanId, setPossibleFamilys),
       handleGetRoles(Session.SessionId,setRoles)
     ]);
    
@@ -173,13 +175,13 @@
     </div>
 
     <div class="ActionBox">
-      <label class="label" for="AkaNames">Partners:</label>
-      {#if Partners.length}
+      <label class="label" for="AkaNames">Familys:</label>
+      {#if Familys.length}
         <ul>
-          {#each Partners as partner}
+          {#each Familys as Family}
             <li>
-              {partner.FirstName} {partner.MiddleName} {partner.LastName}
-              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeletePartner(Session.SessionId,partner.PartnerHumanId, HumanId)}>X</button>
+              {Family.FirstName} {Family.MiddleName} {Family.LastName} {Family.Relationship}
+              <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteFamily(Session.SessionId,Family.FamilyHumanId, HumanId)}>X</button>
             </li>
           {/each}
         </ul>
@@ -188,14 +190,22 @@
       {/if}
       <div class="control">
        
-        <select id="PartnerHumanId" bind:value={PartnerHumanId}>
-          <option value="">Select Partner</option>
-          {#each PossiblePartners as possiblePartner}
-            <option value={possiblePartner.HumanId}>{possiblePartner.FirstName} {possiblePartner.MiddleName} {possiblePartner.LastName}</option>
+        <select id="FamilyHumanId" bind:value={FamilyHumanId}>
+          <option value="">Select Family</option>
+          {#each PossibleFamilys as possibleFamily}
+            <option value={possibleFamily.HumanId}>{possibleFamily.FirstName} {possibleFamily.MiddleName} {possibleFamily.LastName}</option>
           {/each}
         </select>
-        
-        <button class="button is-primary" type="button" on:click={() => handleSavePartner(Session.SessionId,HumanId, PartnerHumanId)}>Add Partner</button>
+        <select id="Relationship" bind:value={Relationship}>
+          <option>Father</option>
+          <option>Mother</option>
+          <option>Sister</option>
+          <option>Brother</option>
+          <option>Son</option>
+          <option>Daughter</option>
+          <option>Unknown</option>
+        </select>
+        <button class="button is-primary" type="button" on:click={() => handleSaveFamily(Session.SessionId,HumanId, FamilyHumanId, Relationship)}>Add Family</button>
       </div>
     </div>
     <div class="field">

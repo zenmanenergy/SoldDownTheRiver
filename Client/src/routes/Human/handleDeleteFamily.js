@@ -1,8 +1,8 @@
 import { baseURL } from '../Settings';
 
 
-export async function handleDeletePartner(SessionId,PartnerHumanId, HumanId) {
-    const url=`${baseURL}/Human/DeletePartner?HumanId=${HumanId}&PartnerHumanId=${PartnerHumanId}&SessionId=${SessionId}`
+export async function handleDeleteFamily(SessionId,FamilyHumanId, HumanId) {
+    const url=`${baseURL}/Human/DeleteFamily?HumanId=${HumanId}&FamilyHumanId=${FamilyHumanId}&SessionId=${SessionId}`
     console.log(url)
     const response = await fetch(url);
     if (!response.ok) {
