@@ -1,18 +1,28 @@
 CREATE TABLE `businesses` (
   `BusinessId` char(39) NOT NULL,
   `BusinessName` varchar(45) DEFAULT NULL,
+  `RoleId` char(39) DEFAULT NULL,
   PRIMARY KEY (`BusinessId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `familys` (
+  `HumanId` char(39) NOT NULL,
+  `FamilyHumanId` char(39) NOT NULL,
+  `Relationship` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`HumanId`,`FamilyHumanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `history` (
   `HistoryId` char(39) NOT NULL,
   `TableName` varchar(45) DEFAULT NULL,
-  `PKName` varchar(45) DEFAULT NULL,
-  `PKValue` varchar(45) DEFAULT NULL,
+  `KeyName` varchar(45) DEFAULT NULL,
+  `KeyValue` varchar(45) DEFAULT NULL,
   `UserId` char(39) DEFAULT NULL,
   `Data` varchar(2000) DEFAULT NULL,
   `DateAdded` datetime DEFAULT NULL,
-  PRIMARY KEY (`HistoryId`)
+  PRIMARY KEY (`HistoryId`),
+  KEY `tableKeyValue` (`TableName`,`KeyName`,`KeyValue`,`UserId`),
+  KEY `tableKey` (`TableName`,`KeyName`,`UserId`) /*!80000 INVISIBLE */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `humanroles` (
@@ -26,9 +36,14 @@ CREATE TABLE `humans` (
   `FirstName` varchar(45) DEFAULT NULL,
   `MiddleName` varchar(45) DEFAULT NULL,
   `LastName` varchar(45) DEFAULT NULL,
-  `StartYear` int DEFAULT NULL,
-  `EndYear` int DEFAULT NULL,
+  `StartYear` varchar(10) DEFAULT NULL,
+  `EndYear` varchar(10) DEFAULT NULL,
   `Notes` text,
+  `BirthDate` datetime DEFAULT NULL,
+  `BirthPlace` varchar(45) DEFAULT NULL,
+  `RaceId` char(39) DEFAULT NULL,
+  `PhysicalDescription` varchar(150) DEFAULT NULL,
+  `gender` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`HumanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -43,7 +58,9 @@ CREATE TABLE `humansaka` (
 
 CREATE TABLE `locations` (
   `LocationId` char(39) NOT NULL,
+  `Address` varchar(45) DEFAULT NULL,
   `City` varchar(45) DEFAULT NULL,
+  `County` varchar(45) DEFAULT NULL,
   `State` varchar(45) DEFAULT NULL,
   `Country` varchar(45) DEFAULT NULL,
   `Latitude` float DEFAULT NULL,
@@ -59,16 +76,18 @@ CREATE TABLE `notary` (
   PRIMARY KEY (`HumanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `partners` (
-  `HumanId` char(39) NOT NULL,
-  `PartnerHumanId` char(39) NOT NULL,
-  PRIMARY KEY (`HumanId`,`PartnerHumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `roles` (
   `RoleId` char(39) NOT NULL,
   `Role` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`RoleId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `transactionhumans` (
+  `TransactionId` char(39) NOT NULL,
+  `HumanId` char(39) DEFAULT NULL,
+  `Notes` varchar(45) DEFAULT NULL,
+  `price` float DEFAULT NULL,
+  PRIMARY KEY (`TransactionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `transactions` (
@@ -84,6 +103,8 @@ CREATE TABLE `transactions` (
   `Volume` int DEFAULT NULL,
   `URL` varchar(255) DEFAULT NULL,
   `TranscriberId` char(39) DEFAULT NULL,
+  `price` float DEFAULT NULL,
+  `NeedsReview` int DEFAULT NULL,
   PRIMARY KEY (`TransactionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
