@@ -30,13 +30,11 @@ export function handleLogin(Email, Password,formValid) {
     if (SessionId){
       console.log("Save success, SessionId:",SessionId);
       Cookies.set("SessionId", SessionId, { expires: 365 });
-      console.log("hmmm")
       window.location.href = Cookies.get("previousLocation");
       // Handle the response data as needed
     }else {
 			Cookies.remove("sessionId");
       const formFields = document.querySelectorAll("input");
-      console.log("hmmm")
 			formFields[2].focus();
     }
     
