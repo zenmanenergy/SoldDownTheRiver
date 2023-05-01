@@ -24,7 +24,7 @@ export function handleSaveFamily(SessionId,HumanId, FamilyHumanId, Relationship)
   .then(response => response.json())
   .then(data => {
     console.log("Save success",data);
-    window.location.href = '/Human?HumanId=' + HumanId + '&tab=Familys';
+    window.location.href = '/Human?HumanId=' + HumanId + '&tab=Families';
     // Handle the response data as needed
   })
   .catch(error => {
