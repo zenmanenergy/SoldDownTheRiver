@@ -12,9 +12,9 @@
   import { handleGetAKA } from './handleGetAKA.js';
   import { handleSaveAkaName } from './handleSaveAkaName.js';
   import { handleDeleteAkaName } from './handleDeleteAkaName.js';
-  import { handleGetFamilys } from './handleGetFamilys.js';
+  import { handleGetFamilies } from './handleGetFamilies.js';
   import { handleDeleteFamily } from './handleDeleteFamily.js';
-  import { handleGetPossibleFamilys } from './handleGetPossibleFamilys.js';
+  import { handleGetPossibleFamilies } from './handleGetPossibleFamilies.js';
   import { handleSaveFamily } from './handleSaveFamily.js';
   import { handleGetRoles } from './handleGetRoles.js';
 	import {Session} from "../Session.js";
@@ -35,10 +35,10 @@
   let AKAMiddleName = '';
   let AKALastName = '';
 
-  let Familys=[];
+  let Families=[];
 
   let FamilyHumanId='';
-  let PossibleFamilys=[]
+  let PossibleFamilies=[]
 
   let RoleId='';
   let Roles=[];
@@ -66,12 +66,12 @@
   async function setAkaNames(data) {
     AkaNames = data;
   }
-  async function setFamilys(data) {
-    Familys = data;
-    console.log(Familys)
+  async function setFamilies(data) {
+    Families = data;
+    console.log(Families)
   }
-  async function setPossibleFamilys(data) {
-    PossibleFamilys = data;
+  async function setPossibleFamilies(data) {
+    PossibleFamilies = data;
   }
   async function setRoles(data) {
     Roles = data;
@@ -84,8 +84,8 @@
     await Promise.all([
       handleGet(Session.SessionId,HumanId, setName),
       handleGetAKA(Session.SessionId,HumanId, setAkaNames),
-      handleGetFamilys(Session.SessionId,HumanId, setFamilys),
-      handleGetPossibleFamilys(Session.SessionId,HumanId, setPossibleFamilys),
+      handleGetFamilies(Session.SessionId,HumanId, setFamilies),
+      handleGetPossibleFamilies(Session.SessionId,HumanId, setPossibleFamilies),
       handleGetRoles(Session.SessionId,setRoles)
     ]);
    
@@ -175,10 +175,10 @@
     </div>
 
     <div class="ActionBox">
-      <label class="label" for="AkaNames">Familys:</label>
-      {#if Familys.length}
+      <label class="label" for="AkaNames">Families:</label>
+      {#if Families.length}
         <ul>
-          {#each Familys as Family}
+          {#each Families as Family}
             <li>
               {Family.FirstName} {Family.MiddleName} {Family.LastName} {Family.Relationship}
               <button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteFamily(Session.SessionId,Family.FamilyHumanId, HumanId)}>X</button>
@@ -192,7 +192,7 @@
        
         <select id="FamilyHumanId" bind:value={FamilyHumanId}>
           <option value="">Select Family</option>
-          {#each PossibleFamilys as possibleFamily}
+          {#each PossibleFamilies as possibleFamily}
             <option value={possibleFamily.HumanId}>{possibleFamily.FirstName} {possibleFamily.MiddleName} {possibleFamily.LastName}</option>
           {/each}
         </select>

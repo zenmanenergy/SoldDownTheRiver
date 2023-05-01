@@ -6,7 +6,7 @@ def save_Family(HumanId, FamilyHumanId, Relationship):
     cursor, connection = Database.ConnectToDatabase()
 
     # Check if the HumanId is present
-    query = "INSERT INTO Familys (HumanId, FamilyHumanId,Relationship) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE FamilyHumanId=values(FamilyHumanId),HumanId=values(HumanId),Relationship=values(Relationship)"
+    query = "INSERT INTO Families (HumanId, FamilyHumanId,Relationship) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE FamilyHumanId=values(FamilyHumanId),HumanId=values(HumanId),Relationship=values(Relationship)"
     values = (HumanId, FamilyHumanId,Relationship)
     print(query % tuple(map(repr, values))) 
     # Execute the query and commit the changes
@@ -23,7 +23,7 @@ def save_Family(HumanId, FamilyHumanId, Relationship):
 
 
     # Check if the HumanId is present
-    query = "INSERT INTO Familys (HumanId, FamilyHumanId,Relationship) VALUES (%s, %s,%s) ON DUPLICATE KEY UPDATE FamilyHumanId=values(FamilyHumanId),HumanId=values(HumanId),Relationship=values(Relationship)"
+    query = "INSERT INTO Families (HumanId, FamilyHumanId,Relationship) VALUES (%s, %s,%s) ON DUPLICATE KEY UPDATE FamilyHumanId=values(FamilyHumanId),HumanId=values(HumanId),Relationship=values(Relationship)"
     values = (FamilyHumanId,HumanId,OppositeRelationship)
     print(query % tuple(map(repr, values)))
     # Execute the query and commit the changes

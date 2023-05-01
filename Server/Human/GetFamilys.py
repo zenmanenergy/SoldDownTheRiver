@@ -1,6 +1,6 @@
 from Lib import Database
 
-def get_Familys(HumanId):
+def get_Families(HumanId):
     if not HumanId:
         HumanId="-1"
     
@@ -8,7 +8,7 @@ def get_Familys(HumanId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT * FROM Familys join Humans on Humans.HumanId=Familys.FamilyHumanId WHERE Familys.HumanId = %s"
+    query = "SELECT * FROM Families join Humans on Humans.HumanId=Families.FamilyHumanId WHERE Families.HumanId = %s"
     values = (HumanId,)
     print(query, values)
     # Execute the query and get the results

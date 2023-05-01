@@ -10,8 +10,8 @@ from .SaveAKANames import save_aka
 from .DeleteAKAName import delete_aka
 from .SaveFamily import save_Family
 from .DeleteFamily import delete_Family
-from .GetFamilys import get_Familys
-from .GetPossibleFamilys import get_possible_Familys
+from .GetFamilies import get_Families
+from .GetPossibleFamilies import get_possible_Families
 from .GetRoles import get_roles
 
 
@@ -130,14 +130,14 @@ def SaveFamily():
     
     # Call the get_human function from GetHuman.py
     result = save_Family(HumanId, FamilyHumanId, Relationship)
-    History.SaveHistory(human_data,"Familys", "FamilyHumanId", FamilyHumanId)
-    History.SaveHistory(human_data,"Familys", "HumanId", HumanId)
+    History.SaveHistory(human_data,"Families", "FamilyHumanId", FamilyHumanId)
+    History.SaveHistory(human_data,"Families", "HumanId", HumanId)
     return result
 
 
-@blueprint.route("/Human/GetFamilys", methods=['GET'])
+@blueprint.route("/Human/GetFamilies", methods=['GET'])
 @cross_origin()
-def getFamilys():
+def getFamilies():
     # Get the human data from the request
     human_data = request.args.to_dict()
 
@@ -145,13 +145,13 @@ def getFamilys():
     HumanId = human_data.get('HumanId', None)
     
     # Call the get_human function from GetHuman.py
-    result = get_Familys(HumanId)
+    result = get_Families(HumanId)
     return result
 
 
-@blueprint.route("/Human/GetPossibleFamilys", methods=['GET'])
+@blueprint.route("/Human/GetPossibleFamilies", methods=['GET'])
 @cross_origin()
-def GetPossibleFamilys():
+def GetPossibleFamilies():
     # Get the human data from the request
     human_data = request.args.to_dict()
 
@@ -159,7 +159,7 @@ def GetPossibleFamilys():
     HumanId = human_data.get('HumanId', None)
     
     # Call the get_human function from GetHuman.py
-    result = get_possible_Familys(HumanId)
+    result = get_possible_Families(HumanId)
     return result
 
 @blueprint.route("/Human/DeleteFamily", methods=['GET'])
@@ -174,7 +174,7 @@ def DeleteFamily():
     
     # Call the get_human function from GetHuman.py
     result = delete_Family(HumanId, FamilyHumanId)
-    History.SaveHistory(human_data,"Familys", "FamilyHumanId", FamilyHumanId)
+    History.SaveHistory(human_data,"Families", "FamilyHumanId", FamilyHumanId)
     return result
 
 @blueprint.route("/Human/GetRoles", methods=['GET'])
@@ -195,7 +195,7 @@ def LastModified():
     business_data = request.args.to_dict()
 
 
-    HistoryArray=[{"Table": "Humans","KeyName": "HumanId", "KeyValue" : business_data.get('HumanId')},{"Table": "Familys", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table": "HumansAKA", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
+    HistoryArray=[{"Table": "Humans","KeyName": "HumanId", "KeyValue" : business_data.get('HumanId')},{"Table": "Families", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table": "HumansAKA", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
     result=History.LastModifiedArray(HistoryArray)
     return result
     
