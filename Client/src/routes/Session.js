@@ -51,7 +51,6 @@ class session {
         } else {
             this.SessionId = "";
             Cookies.set("previousLocation", location.href)
-            console.log(Cookies.get("previousLocation"))
             location.href = "/Login?s=1";
         }
         return true;

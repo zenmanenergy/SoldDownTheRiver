@@ -2,6 +2,7 @@ import { baseURL } from '../Settings';
 
 // src/routes/Businesses/handleSubmit.js
 export function handleLogin(Email, Password,formValid) {
+  
   console.log("handleLogin",Email, Password,formValid)
 
   if (!formValid) {
@@ -9,7 +10,7 @@ export function handleLogin(Email, Password,formValid) {
 		if (invalidFields.length > 0) {
 			invalidFields[0].focus();
 		}
-		return;
+		return true;
 	}
   const LoginData = {
     Email: Email,
@@ -43,4 +44,5 @@ export function handleLogin(Email, Password,formValid) {
     console.error("save error",error);
     // Handle the error as needed
   });
+return true
 }

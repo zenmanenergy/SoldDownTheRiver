@@ -13,6 +13,8 @@
     
     let Email="";
     let Password="";
+
+	let invalidPassword=false
   
 	$: {
 	  formValid = Email && Password;
@@ -47,11 +49,13 @@
 			  id="Email"
 			  placeholder="Enter your Email"
 			  bind:value={Email}
+			  on:click={()=>invalidPassword = false}
 			  required
 			/>
 		  </div>
 		</div>
-        <div class="field">
+        <br>
+		<div class="field">
             <label class="label" for="Password">Password</label>
             <div class="control">
               <input
@@ -60,13 +64,21 @@
                 id="Password"
                 placeholder="Enter your Password"
                 bind:value={Password}
+				on:click={()=>invalidPassword = false}
                 required
               />
             </div>
           </div>
 		<div class="field">
 		  <div class="control">
-			<button class="button is-primary" type="button" on:click={() => handleLogin(Email, Password,formValid)}>Save</button>
+			{#if invalidPassword}
+				<p style="color: red;">Invalid Email or Password</p>
+			{:else }
+			<p style="color: white;">Enter Email and Password</p>
+
+			{/if}
+
+			<button class="button is-primary" type="button" on:click={() => invalidPassword = handleLogin(Email, Password,formValid)}>Login</button>
 			
 		  </div>
 		</div>
