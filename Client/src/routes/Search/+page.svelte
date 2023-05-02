@@ -13,7 +13,7 @@
 	import { Session } from "../Session.js";
   
 	let selectedButton = null;
-	const buttons = [    { id: 1, label: 'Business', boxes: 1, boxnames: ["BusinessName"], arg:[""]},    { id: 2, label: 'Humans', boxes: 2, boxnames: ["FirstName", "LastName"], arg:[""]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"], arg:[""]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"], arg:[""]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:[""]}];
+	const buttons = [    { id: 1, label: 'Businesses', boxes: 1, boxnames: ["BusinessName"], arg:[""]},    { id: 2, label: 'Humans', boxes: 2, boxnames: ["FirstName", "LastName"], arg:["", ""]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"], arg:["", "", ""]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"], arg:[""]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:["", "", ""]}];
 	
 
 // 
