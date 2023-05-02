@@ -121,7 +121,7 @@
 	
 	  {#each datas as data}
 		
-		  <tr style="cursor: pointer;" on:click={location.href=`/${selectedButton.label[1]}?${selectedButton.label[1]}Id=${data[selectedButton.label[1]+'Id']}`}>
+		  <tr style="cursor: pointer;" on:click={window.open(`/${selectedButton.label[1]}?${selectedButton.label[1]}Id=${data[selectedButton.label[1]+'Id']}`)}>
 			{#each selectedButton.boxnames as box}
 				<td>{data[box]}</td>
 			{/each}
