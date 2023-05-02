@@ -1,6 +1,6 @@
 from Lib import Database
 
-def get_business(BusinessName):
+def get_businesses(BusinessName):
     if not BusinessName:
         BusinessName="-1"
     
@@ -8,14 +8,12 @@ def get_business(BusinessName):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT *"
-    query += " FROM Businesses WHERE BusinessName like '"+BusinessName+"%'"
-    values = ()
+    query = "SELECT * FROM Businesses WHERE BusinessName like %s"
+    values = (BusinessName + '%',)
 
-    print(query)
 
     # Execute the query and get the results
-    cursor.execute(query)
+    cursor.execute(query, values)
     result = cursor.fetchall()
     if not result:
         result=[]

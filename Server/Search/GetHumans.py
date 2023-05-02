@@ -8,13 +8,12 @@ def get_humans(FirstName, LastName):
 
     # Construct the SQL query
     query = "SELECT *"
-    query += " FROM Humans WHERE FirstName like '"+FirstName+"%' and LastName like '"+LastName+"%'"
-    values = ()
+    query += " FROM Humans WHERE FirstName like %s and LastName like %s"
+    values = (FirstName + '%', LastName + '%')
 
-    print(query)
 
     # Execute the query and get the results
-    cursor.execute(query)
+    cursor.execute(query, values)
     result = cursor.fetchall()
     if not result:
         result=[]
