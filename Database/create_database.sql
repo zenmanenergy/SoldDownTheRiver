@@ -127,3 +127,6 @@ CREATE TABLE `usersessions` (
   `DateAdded` datetime DEFAULT NULL,
   PRIMARY KEY (`UserId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE USER 'developer'@'localhost' IDENTIFIED BY 'developer';
+GRANT ALL PRIVILEGES ON *.* TO 'developer'@'localhost' WITH GRANT OPTION;
