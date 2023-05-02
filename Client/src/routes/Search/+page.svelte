@@ -12,6 +12,7 @@
 	import { handleSearch } from './handleSearch.js';
 	import { Session } from "../Session.js";
 	let datas = [];
+	let columns = false
   
 	let selectedButton = null;
 	const buttons = [    
@@ -21,7 +22,7 @@
 	{ id: 2, label: ['Humans', 'Human'], boxes: 3, boxnames: ["FirstName", "MiddleName", "LastName"], arg:["", "", ""]},    
 	{ id: 3, label: ['Locations', 'Location'], boxes: 3,  boxnames: ["City", "State", "Country"], arg:["", "", ""]},    
 	{ id: 4, label: ['Roles', 'Role'], boxes: 1,  boxnames: ["Role"], arg:[""]},    
-	{ id: 5, label: ['Transactions', 'Transaction'], boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:["", "", ""]}];
+	{ id: 5, label: ['Transactions', 'Transaction'], boxes: 2,  boxnames: ["TransactionId", "TransactionDate"], arg:["", ""]}];
 	
 	
 // 
@@ -58,6 +59,7 @@
 		// set new selected button
 		selectedButton = button;
 		datas = []
+		columns = false
 		}
 	}
 	function setData(data){
@@ -104,8 +106,9 @@
     {/each}
   {/if}
   </div>
-  <button on:click={() => {handleSearch(Session.SessionId, selectedButton, setData)}}>Search</button>
   {#if selectedButton}
+  <button on:click={() =>{columns=true;handleSearch(Session.SessionId, selectedButton, setData)}}>Search</button>
+  {#if columns}
   <table width=100%>
 	<thead>
 	  <tr>
@@ -132,6 +135,7 @@
 	</tbody>
 
   </table>
+  {/if}
   {/if}
 </div>
 
