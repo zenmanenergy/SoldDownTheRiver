@@ -14,7 +14,14 @@
 	let datas = [];
   
 	let selectedButton = null;
-	const buttons = [    { id: 1, label: 'Businesses', boxes: 1, boxnames: ["BusinessName"], arg:[""]},    { id: 2, label: 'Humans', boxes: 3, boxnames: ["FirstName", "MiddleName", "LastName"], arg:["", "", ""]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"], arg:["", "", ""]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"], arg:[""]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:["", "", ""]}];
+	const buttons = [    
+		//id is the array number
+		//label is the plural label followed by the singular label in an array
+	{ id: 1, label: ['Businesses', 'Business'], boxes: 1, boxnames: ["BusinessName"], arg:[""]},    
+	{ id: 2, label: ['Humans', 'Human'], boxes: 3, boxnames: ["FirstName", "MiddleName", "LastName"], arg:["", "", ""]},    
+	{ id: 3, label: ['Locations', 'Location'], boxes: 3,  boxnames: ["City", "State", "Country"], arg:["", "", ""]},    
+	{ id: 4, label: ['Roles', 'Role'], boxes: 1,  boxnames: ["Role"], arg:[""]},    
+	{ id: 5, label: ['Transactions', 'Transaction'], boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:["", "", ""]}];
 	
 	
 // 
@@ -70,13 +77,13 @@
 
 <div class="row">
 	{#each buttons.slice(0,3) as button}
-	  <button class="button {selectedButton && selectedButton.id === button.id ? 'selected' : ''} {selectedButton ? 'disabled' : ''}" on:click={() => handleButton(button)}>{button.label}</button>
+	  <button class="button {selectedButton && selectedButton.id === button.id ? 'selected' : ''} {selectedButton ? 'disabled' : ''}" on:click={() => handleButton(button)}>{button.label[0]}</button>
 	{/each}
   </div>
   
   <div class="row">
 	{#each buttons.slice(3,6) as button}
-	  <button class="button {selectedButton && selectedButton.id === button.id ? 'selected' : ''} {selectedButton ? 'disabled' : ''}" on:click={() => handleButton(button)}>{button.label}</button>
+	  <button class="button {selectedButton && selectedButton.id === button.id ? 'selected' : ''} {selectedButton ? 'disabled' : ''}" on:click={() => handleButton(button)}>{button.label[0]}</button>
 	{/each}
   </div>
   
@@ -88,7 +95,7 @@
   
 	<br>
 	{#if selectedButton}
-    <h3>Search for {selectedButton.label} by:</h3>
+    <h3>Search for {selectedButton.label[0]} by:</h3>
     {#each Array(selectedButton.boxes) as _, i}
       <div>
         <label for="textbox{i}">{selectedButton.boxnames[i]}</label>
@@ -114,7 +121,7 @@
 	
 	  {#each datas as data}
 		
-		  <tr style="cursor: pointer;" on:click={location.href=`/Business?BusinessId=${data.BusinessId}`}>
+		  <tr style="cursor: pointer;" on:click={location.href=`/${selectedButton.label[1]}?${selectedButton.label[1]}Id=${data[selectedButton.label[1]+'Id']}`}>
 			{#each selectedButton.boxnames as box}
 				<td>{data[box]}</td>
 			{/each}
