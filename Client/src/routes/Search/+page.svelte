@@ -10,12 +10,11 @@
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { handleSearch } from './handleSearch.js';
-	import { handleSearch } from './handleSearchBusiness.js';
 	import { Session } from "../Session.js";
   
 	let selectedButton = null;
-	const buttons = [    { id: 1, label: 'Business', boxes: 1, boxnames: ["BusinessName"]},    { id: 2, label: 'Humans', boxes: 2, boxnames: ["FirstName", "LastName"]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"]}];
-
+	const buttons = [    { id: 1, label: 'Business', boxes: 1, boxnames: ["BusinessName"], arg:[""]},    { id: 2, label: 'Humans', boxes: 2, boxnames: ["FirstName", "LastName"], arg:[""]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"], arg:[""]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"], arg:[""]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:[""]}];
+	
 
 // 
 // 
@@ -44,10 +43,6 @@
 		
 		isLoading = false;
 	});
-	function displayBusiness(data){
-
-	}
-
 	function handleButton(button) {
     if (selectedButton && selectedButton.id === button.id) {
       //change this, why didn't != work??
@@ -92,38 +87,18 @@
 <div class="field">
 	
   
-	{#if isBusiness}
-		Business Name: <input>
-	{:else if isHuman}
-		First Name: <input>
-		Last Name: <input>
-	{:else if Locations}
-		City: <input>
-		State: <input>
-		Google map <div id=Map></div>
-	{/if}
-
-
 	<br>
 	{#if selectedButton}
     <h3>Search for {selectedButton.label} by:</h3>
     {#each Array(selectedButton.boxes) as _, i}
       <div>
         <label for="textbox{i}">{selectedButton.boxnames[i]}</label>
-        <input type="text" id="textbox{i}">
-
+        <input type="text" id="textbox{i}" bind:value={selectedButton.arg[i]}>
       </div>
     {/each}
   {/if}
   </div>
-  {#if isBusiness}
-  	<button on:click={() => handleSearchBusiness(Session.SessionId, BusinessName , displayBusiness)}>Search</button>
-  {:else if isHuman}
-  	<button on:click={() => handleSearchHuman(Session.SessionId, FirstName,LastName )}>Search</button>
-  {:else if isHuman}
-  	<button on:click={() => handleSearchLocation(Session.SessionId, City,StateL)}>Search</button>
-		
-	{/if}
+  <button on:click={() => handleSearch(Session.SessionId, selectedButton)}>Search</button>
  </div>
 
 <div class="field">
