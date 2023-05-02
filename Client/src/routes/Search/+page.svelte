@@ -11,11 +11,12 @@
 	import { onMount } from 'svelte';
 	import { handleSearch } from './handleSearch.js';
 	import { Session } from "../Session.js";
+	let datas = [];
   
 	let selectedButton = null;
-	const buttons = [    { id: 1, label: 'Businesses', boxes: 1, boxnames: ["BusinessName"], arg:[""]},    { id: 2, label: 'Humans', boxes: 2, boxnames: ["FirstName", "LastName"], arg:["", ""]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"], arg:["", "", ""]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"], arg:[""]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:["", "", ""]}];
+	const buttons = [    { id: 1, label: 'Businesses', boxes: 1, boxnames: ["BusinessName"], arg:[""]},    { id: 2, label: 'Humans', boxes: 3, boxnames: ["FirstName", "MiddleName", "LastName"], arg:["", "", ""]},    { id: 3, label: 'Locations', boxes: 3,  boxnames: ["City", "State", "Country"], arg:["", "", ""]},    { id: 4, label: 'Roles', boxes: 1,  boxnames: ["Role"], arg:[""]},    { id: 5, label: 'Transactions', boxes: 3,  boxnames: ["TransactionId", "Business", "TransactionDate"], arg:["", "", ""]}];
 	
-
+	
 // 
 // 
 // TRANSACTIONS ROLES AND HUMANS NOT WORKING??
@@ -44,19 +45,17 @@
 		isLoading = false;
 	});
 	function handleButton(button) {
-    if (selectedButton && selectedButton.id === button.id) {
-      //change this, why didn't != work??
-    } else {
-      // set new selected button
-      selectedButton = button;
-    }
+		if (selectedButton && selectedButton.id === button.id) {
+		//change this, why didn't != work??
+		} else {
+		// set new selected button
+		selectedButton = button;
+		datas = []
+		}
 	}
-	function search() {
-    // Code to perform search based on selectedButton and textboxes goes here
-    console.log('Searching with button', selectedButton.id);
-  }
-
-  
+	function setData(data){
+		datas = data
+	}
 </script>
 {#if isLoading}
 <div class="loading-screen">
@@ -98,9 +97,40 @@
     {/each}
   {/if}
   </div>
-  <button on:click={() => handleSearch(Session.SessionId, selectedButton)}>Search</button>
- </div>
+  <button on:click={() => {handleSearch(Session.SessionId, selectedButton, setData)}}>Search</button>
+  {#if selectedButton}
+  <table width=100%>
+	<thead>
+	  <tr>
+		
+	{#each selectedButton.boxnames as box}
+		<th>{box}</th>
+	{/each}
+	  </tr>
+	</thead>
 
+	<tbody>
+	<!-- {#each selectedButton.boxnames as box} -->
+	
+	  {#each datas as data}
+		
+		  <tr style="cursor: pointer;" on:click={location.href=`/Business?BusinessId=${data.BusinessId}`}>
+			{#each selectedButton.boxnames as box}
+				<td>{data[box]}</td>
+			{/each}
+		  </tr>
+		
+	  {/each}
+	<!-- {/each} -->
+	</tbody>
+
+  </table>
+  {/if}
+</div>
+
+
+
+ 
 <div class="field">
   <div class="control">
   </div>

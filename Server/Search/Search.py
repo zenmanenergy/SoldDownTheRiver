@@ -29,9 +29,10 @@ def SearchHumans():
     # Extract the BusinessId and BusinessName from the business_data
     FirstName = human_data.get('FirstName', None)
     LastName = human_data.get('LastName', None)
+    MiddleName = human_data.get('MiddleName', None)
 
     # Call the save_business function from SaveBusiness.py with the extracted data
-    result = get_humans(FirstName, LastName)
+    result = get_humans(FirstName, MiddleName, LastName)
 
 
     return result

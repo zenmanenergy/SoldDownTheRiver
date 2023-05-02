@@ -1,6 +1,6 @@
 from Lib import Database
 
-def get_humans(FirstName, LastName):
+def get_humans(FirstName, MiddleName, LastName):
     
     
     # Connect to the database
@@ -8,8 +8,8 @@ def get_humans(FirstName, LastName):
 
     # Construct the SQL query
     query = "SELECT *"
-    query += " FROM Humans WHERE FirstName like %s and LastName like %s"
-    values = (FirstName + '%', LastName + '%')
+    query += " FROM Humans WHERE FirstName like %s and MiddleName like %s and LastName like %s"
+    values = (FirstName + '%', MiddleName + '%', LastName + '%')
 
 
     # Execute the query and get the results
