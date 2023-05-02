@@ -5,7 +5,7 @@ CREATE TABLE `businesses` (
   PRIMARY KEY (`BusinessId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `familys` (
+CREATE TABLE `families` (
   `HumanId` char(39) NOT NULL,
   `FamilyHumanId` char(39) NOT NULL,
   `Relationship` varchar(45) DEFAULT NULL,
