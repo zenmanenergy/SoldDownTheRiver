@@ -2,6 +2,7 @@ import { baseURL } from '../Settings';
 
 // src/routes/Businesses/handleSubmit.js
 export function handleLogin(Email, Password,formValid) {
+  
   console.log("handleLogin",Email, Password,formValid)
 
   if (!formValid) {
@@ -9,7 +10,7 @@ export function handleLogin(Email, Password,formValid) {
 		if (invalidFields.length > 0) {
 			invalidFields[0].focus();
 		}
-		return;
+		return true;
 	}
   const LoginData = {
     Email: Email,
@@ -30,12 +31,11 @@ export function handleLogin(Email, Password,formValid) {
     if (SessionId){
       console.log("Save success, SessionId:",SessionId);
       Cookies.set("SessionId", SessionId, { expires: 365 });
-      // window.location.href = '/AdminMenu';
+      window.location.href = Cookies.get("previousLocation");
       // Handle the response data as needed
     }else {
 			Cookies.remove("sessionId");
       const formFields = document.querySelectorAll("input");
-		
 			formFields[2].focus();
     }
     
@@ -44,4 +44,5 @@ export function handleLogin(Email, Password,formValid) {
     console.error("save error",error);
     // Handle the error as needed
   });
+return true
 }
