@@ -144,10 +144,9 @@ def getFamilies():
     # Get the human ID from the request
     HumanId = human_data.get('HumanId', None)
     
-    # Call the get_human function from GetHuman.py
+    # # Call the get_human function from GetHuman.py
     result = get_Families(HumanId)
     return result
-
 
 @blueprint.route("/Human/GetPossibleFamilies", methods=['GET'])
 @cross_origin()
