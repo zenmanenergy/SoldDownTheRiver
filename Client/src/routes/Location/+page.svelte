@@ -32,7 +32,7 @@
 	}
 
 	$: {
-		formValid = City && State && Country && Latitude && Longitude;
+		formValid = City;
 	}
 
 	onMount(async () => {
@@ -40,7 +40,9 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		LocationId = urlParams.get("LocationId") || "";
 		
-		handleGet(Session.SessionId,LocationId, setLocation);
+		if (LocationId){
+			handleGet(Session.SessionId,LocationId, setLocation);
+		}
 		
 		console.log("LocationId", LocationId);
 		isLoading = false;
@@ -70,28 +72,28 @@
 				<div class="field">
 					<label class="label" for="State">State</label>
 					<div class="control">
-						<input type="text" id="State" placeholder="Enter State Name" bind:value={State} required />
+						<input type="text" id="State" placeholder="Enter State Name" bind:value={State}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Country">Country</label>
 					<div class="control">
-						<input type="text" id="Country" placeholder="Enter Country Name" bind:value={Country} required />
+						<input type="text" id="Country" placeholder="Enter Country Name" bind:value={Country}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Latitude">Latitude</label>
 					<div class="control">
-						<input type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Latitude} required />
+						<input type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Latitude}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Longitude">Longitude</label>
 					<div class="control">
-						<input type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Longitude} required />
+						<input type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Longitude}  />
 					</div>
 				</div>
 

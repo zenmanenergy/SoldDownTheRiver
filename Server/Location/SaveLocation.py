@@ -14,8 +14,9 @@ def save_location(LocationId, City, State, Country, Latitude, Longitude):
         # If the LocationId is not present, create a new location
         LocationId = "LOC"+str(uuid.uuid4())
         query = "INSERT INTO Locations (LocationId, City, State, Country, Latitude, Longitude) VALUES (%s, %s, %s, %s, %s, %s)"
-        values = (LocationId, City, State, Country, Latitude, Longitude)
+        values = (LocationId, City, State, Country, float(Latitude or 0.0), float(Longitude or 0.0))
 
+    print(values)
     # Execute the query and commit the changes
     cursor.execute(query, values)
     connection.commit()
