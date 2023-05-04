@@ -30,8 +30,9 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		BusinessId = urlParams.get("BusinessId") || "";
 		
-		handleGet(Session.SessionId,BusinessId, setName);
-		
+		if (BusinessId){
+			handleGet(Session.SessionId,BusinessId, setName);
+		}
 		console.log("BusinessId", BusinessId)
 		isLoading = false;
 	});
