@@ -5,6 +5,13 @@ CREATE TABLE `businesses` (
   PRIMARY KEY (`BusinessId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `businesshumans` (
+  `BusinessId` char(39) NOT NULL,
+  `HumanId` char(39) NOT NULL,
+  `RoleId` char(39) DEFAULT NULL,
+  PRIMARY KEY (`BusinessId`,`HumanId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `families` (
   `HumanId` char(39) NOT NULL,
   `FamilyHumanId` char(39) NOT NULL,
@@ -97,10 +104,10 @@ CREATE TABLE `transactions` (
   `ToHumanId` char(39) DEFAULT NULL,
   `TransactionType` varchar(45) DEFAULT NULL,
   `Notes` varchar(255) DEFAULT NULL,
-  `Act` int DEFAULT NULL,
-  `Page` int DEFAULT NULL,
+  `Act` varchar(10) DEFAULT NULL,
+  `Page` varchar(10) DEFAULT NULL,
   `NotaryHumanId` char(39) DEFAULT NULL,
-  `Volume` int DEFAULT NULL,
+  `Volume` varchar(10) DEFAULT NULL,
   `URL` varchar(255) DEFAULT NULL,
   `TranscriberId` char(39) DEFAULT NULL,
   `price` float DEFAULT NULL,
@@ -127,6 +134,7 @@ CREATE TABLE `usersessions` (
   `DateAdded` datetime DEFAULT NULL,
   PRIMARY KEY (`UserId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 CREATE USER 'developer'@'localhost' IDENTIFIED BY 'developer';
 GRANT ALL PRIVILEGES ON *.* TO 'developer'@'localhost' WITH GRANT OPTION;

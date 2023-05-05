@@ -106,7 +106,9 @@
 					</div>
 				</div>
 			</form>
-			<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
+			{#if LastModified}
+				<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
+			{/if}
 		</div>
 	</div>
 {/if}
