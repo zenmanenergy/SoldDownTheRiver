@@ -43,7 +43,7 @@
             <tr style="cursor: pointer;" on:click={location.href=`/Human?HumanId=${human.HumanId}`}>
               <td>{human.FirstName}</td>
               <td>{human.LastName}</td>
-              <td>{moment(human.LastModified).fromNow()}</td>
+              <td>{moment.utc(human.LastModified).local().fromNow()}</td>
             </tr>
           {/each}
         </tbody>

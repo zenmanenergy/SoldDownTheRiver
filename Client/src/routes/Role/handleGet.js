@@ -7,5 +7,5 @@ export async function handleGet(SessionId,RoleId, setRole) {
     const response = await fetch(url);
     const data = await response.json();
   
-    setRole(data.RoleId,data.Role);
+    setRole(data.RoleId,data.Role, data.LastModified);
 }

@@ -45,7 +45,7 @@
               <td>{transaction.TransactionId}</td>
               <td>{transaction.BusinessName}</td>
               <td>{moment(transaction.TransactionDate).format('MMMM Do YYYY, h:mm:ss a')}</td>
-              <td>{moment(transaction.LastModified).fromNow()}</td>
+              <td>{moment.utc(transaction.LastModified).local().fromNow()}</td>
             </tr>
           {/each}
         </tbody>

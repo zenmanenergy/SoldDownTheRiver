@@ -43,7 +43,7 @@
             
               <tr style="cursor: pointer;" on:click={location.href=`/Business?BusinessId=${business.BusinessId}`}>
                 <td>{business.BusinessName}</td>
-                <td>{moment(business.LastModified).fromNow()}</td>
+                <td>{moment.utc(business.LastModified).local().fromNow()}</td>
               </tr>
             
           {/each}

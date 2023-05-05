@@ -42,7 +42,7 @@
           {#each roles as role}
             <tr style="cursor: pointer;" on:click={location.href=`/Role?RoleId=${role.RoleId}`}>
               <td>{role.Role}</td>
-              <td>{moment(role.LastModified).fromNow()}</td>
+              <td>{moment.utc(role.LastModified).local().fromNow()}</td>
             </tr>
           {/each}
         </tbody>

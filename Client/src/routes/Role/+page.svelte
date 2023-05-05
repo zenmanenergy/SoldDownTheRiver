@@ -13,16 +13,18 @@
 
 	let RoleId = "";
 	let Role = "";
+	let LastModified = "";
 	let formValid = false;
 	let isLoading = true;
 
 	$: {
 		formValid = Role;
 	}
-	async function setRole(_RoleId,_Role) {
+	async function setRole(_RoleId,_Role,_LastModified) {
 		if (_RoleId){
 			RoleId = _RoleId;
 			Role = _Role;
+			LastModified = _LastModified;
 		}
 		
 	}
@@ -74,7 +76,7 @@
 					</div>
 				</div>
 			</form>
-			<small>Last Modified: {moment(LastModified).fromNow()}</small>
+			<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
 		</div>
 	</div>
 {/if}

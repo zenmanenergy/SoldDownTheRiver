@@ -48,7 +48,7 @@
               <td>{location.City}</td>
               <td>{location.State}</td>
               <td>{location.Country}</td>
-              <td>{moment(location.LastModified).fromNow()}</td>
+              <td>{moment.utc(location.LastModified).local().fromNow()}</td>
             </tr>
           {/each}
         </tbody>
