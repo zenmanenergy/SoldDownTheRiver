@@ -38,6 +38,7 @@ In the command line run this:
 	```
 	pip install flask-cors
 	pip install pymysql
+	pip install pytz
 	```
 
 7. Open two terminal windows in VS Code.
