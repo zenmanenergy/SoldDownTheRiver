@@ -2,7 +2,7 @@ import uuid
 from Lib import Database
 import datetime
 
-def save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL):
+def save_transaction(TransactionId, TransactionDate, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL):
     
     print("TransactionDate", TransactionDate)
     print("TransactionDate1", datetime.datetime.strptime(str(TransactionDate), '%Y-%m-%d %H:%M:%S'))
@@ -19,13 +19,13 @@ def save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, Tra
     # Check if the TransactionId is present
     if TransactionId:
         # If the TransactionId is present, update the existing transaction
-        query = "UPDATE Transactions SET TransactionDate = %s, FromHumanId = %s, ToHumanId = %s, TransactionType = %s, Notes = %s, Act = %s, Page = %s, NotaryHumanId = %s, Volume = %s, URL = %s WHERE TransactionId = %s"
-        values = (TransactionDateTime, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL, TransactionId)
+        query = "UPDATE Transactions SET TransactionDate = %s, FromBusinessId = %s, ToBusinessId = %s, TransactionType = %s, Notes = %s, Act = %s, Page = %s, NotaryBusinessId = %s, Volume = %s, URL = %s WHERE TransactionId = %s"
+        values = (TransactionDateTime, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL, TransactionId)
     else:
         # If the TransactionId is not present, create a new transaction
         TransactionId = "TRN"+str(uuid.uuid4())
-        query = "INSERT INTO Transactions (TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (TransactionId, TransactionDateTime, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL)
+        query = "INSERT INTO Transactions (TransactionId, TransactionDate, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        values = (TransactionId, TransactionDateTime, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL)
 
     print(query.format(*values))
 

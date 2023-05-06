@@ -6,10 +6,13 @@ def get_transactions():
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Transactions.TransactionId  and History.TableName='Transactions' and History.KeyName='TransactionId') LastModified"
-    query +=" FROM Transactions ORDER BY TransactionDate DESC"
+    query = "SELECT Transactions.*, FromBusiness.BusinessName FromBusinessName, ToBusinesses.BusinessName ToBusinessName, (select max(dateAdded) from History where History.KeyValue=Transactions.TransactionId  and History.TableName='Transactions' and History.KeyName='TransactionId') LastModified"
+    query +=" FROM Transactions join Businesses FromBusiness on Transactions.FromBusinessId=FromBusiness.BusinessId"
+    query +=" join Businesses ToBusinesses on Transactions.ToBusinessId=ToBusinesses.BusinessId"
+    query +=" ORDER BY TransactionDate DESC"
     values = ()
 
+    print(query % values)
     # Execute the query and get the results
     cursor.execute(query, values)
     result = cursor.fetchall()

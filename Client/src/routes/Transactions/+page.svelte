@@ -33,7 +33,6 @@
       <table width=100%>
         <thead>
           <tr>
-            <th>Transaction ID</th>
             <th>Business Name</th>
             <th>Transaction Date</th>
             <th>Last Modified</th>
@@ -42,8 +41,8 @@
         <tbody>
           {#each transactions as transaction}
             <tr style="cursor: pointer;" on:click={location.href=`/Transaction?TransactionId=${transaction.TransactionId}`}>
-              <td>{transaction.TransactionId}</td>
-              <td>{transaction.BusinessName}</td>
+              
+              <td>{transaction.FromBusinessName}--->{transaction.ToBusinessName}</td>
               <td>{moment(transaction.TransactionDate).format('MMMM Do YYYY, h:mm:ss a')}</td>
               <td>{moment.utc(transaction.LastModified).local().fromNow()}</td>
             </tr>

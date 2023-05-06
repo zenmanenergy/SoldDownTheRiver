@@ -9,6 +9,7 @@ from .GetTransaction import get_transaction
 from .GetFromHumans import get_from_humans
 from .GetToHumans import get_to_humans
 from .GetNotaryHumans import get_notary_humans
+from .GetBusinesses import get_businesses
 
 blueprint = Blueprint('Transaction', __name__)
 
@@ -23,18 +24,18 @@ def SaveTransaction():
     TransactionDate = transaction_data.get('TransactionDate', None)
     TransactionDate = datetime.datetime.strptime(TransactionDate, '%Y-%m-%d')
     
-    FromHumanId = transaction_data.get('FromHumanId', None)
-    ToHumanId = transaction_data.get('ToHumanId', None)
+    FromBusinessId = transaction_data.get('FromBusinessId', None)
+    ToBusinessId = transaction_data.get('ToBusinessId', None)
     TransactionType = transaction_data.get('TransactionType', None)
     Notes = transaction_data.get('Notes', None)
     Act = transaction_data.get('Act', None)
     Page = transaction_data.get('Page', None)
-    NotaryHumanId = transaction_data.get('NotaryHumanId', None)
+    NotaryBusinessId = transaction_data.get('NotaryBusinessId', None)
     Volume = transaction_data.get('Volume', None)
     URL = transaction_data.get('URL', None)
 
     # Call the save_transaction function from SaveTransaction.py with the extracted data
-    result = save_transaction(TransactionId, TransactionDate, FromHumanId, ToHumanId, TransactionType, Notes, Act, Page, NotaryHumanId, Volume, URL)
+    result = save_transaction(TransactionId, TransactionDate, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL)
     History.SaveHistory(transaction_data,"Transactions", "TransactionId", result["TransactionId"])
 
     return result
@@ -95,4 +96,16 @@ def GetNotaryHumans():
 
     # Call the get_transaction function to GetTransaction.py
     result = get_notary_humans()
+    return result
+
+
+
+@blueprint.route("/Transaction/GetBusinesses", methods=['GET'])
+@cross_origin()
+def GetBusinesses():
+    # Get the transaction data to the request
+    transaction_data = request.args.to_dict()
+
+    # Call the get_transaction function to GetTransaction.py
+    result = get_businesses()
     return result

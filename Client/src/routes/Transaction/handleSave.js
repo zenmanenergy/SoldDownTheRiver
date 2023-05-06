@@ -1,7 +1,7 @@
 import { baseURL } from '../Settings';
 
 // src/routes/Transactions/handleSubmit.js
-export function handleSave(SessionId,transactionId, transactionDate, fromHumanId, toHumanId, transactionType, notes, act, page, notaryHumanId, volume, url,  formValid) {
+export function handleSave(SessionId,transactionId, transactionDate, fromBusinessId, toBusinessId, transactionType, notes, act, page, notaryBusinessId, volume, url,  formValid) {
 
   if (!formValid) {
     const invalidFields = document.querySelectorAll("input:invalid");
@@ -14,13 +14,13 @@ export function handleSave(SessionId,transactionId, transactionDate, fromHumanId
   const transactionData = {
     TransactionId: transactionId,
     TransactionDate: transactionDate,
-    FromHumanId: fromHumanId,
-    ToHumanId: toHumanId,
+    FromBusinessId: fromBusinessId,
+    ToBusinessId: toBusinessId,
     TransactionType: transactionType,
     Notes: notes,
     Act: act,
     Page: page,
-    NotaryHumanId: notaryHumanId,
+    NotaryBusinessId: notaryBusinessId,
     Volume: volume,
     URL: url,
     SessionId: SessionId
