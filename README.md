@@ -8,7 +8,7 @@ The system contains two different codebases that work together. The first is the
 Steps to get this installed
 The exact version numbers listed below may not be overly important, but if you struggle to get the system working, try matching the version numbers with what is below.
 
-On the server side:
+On your development computer:
 1.	Download and install NodeJS v18.14.2
 	- Windows: https://nodejs.org/download/release/v18.14.2/node-v18.14.2-x64.msi
 	- Mac: https://nodejs.org/download/release/v18.14.2/node-v18.14.2.pkg
@@ -44,3 +44,20 @@ In the command line run this:
 7. Open two terminal windows in VS Code.
 	In the first terminal window go to the /Client folder so do `cd Client` Then turn on the svelte development server with: `npm run dev`
 	In the second terminal window go to the /Server folder so do: `cd Server` Then turn on the python development server with: `flask run --host=0.0.0.0 --port=`
+
+Once you have all of this code installed, 
+you will need to:
+
+1. Fork this repository (button in the upper right corner of this web page)
+
+2. Clone this repository onto your laptop
+
+3. Find an issue to work on (look at the issues link on this oage)
+
+4. Work and test the issue on your laptop.
+
+5. As you make changes to the code you will commit and push the code to your forked version of the code
+
+6. Once the code is working correctly you will issue a pull request
+
+7. I will accept or reject the changes, merging your code into the main codebase
