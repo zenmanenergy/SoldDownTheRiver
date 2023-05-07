@@ -6,6 +6,10 @@ from flask_cors import CORS, cross_origin
 from .SaveBusiness import save_business
 from .DeleteBusiness import delete_business
 from .GetBusiness import get_business
+from .GetBusinessHumans import get_BusinessHumans
+from .GetHumans import get_Humans
+from .SaveBusinessHuman import save_BusinessHuman
+from .GetRoles import get_roles
 
 blueprint = Blueprint('Business', __name__)
 
@@ -51,6 +55,52 @@ def GetBusiness():
     result = get_business(BusinessId)
     return result
 
+@blueprint.route("/Business/GetBusinessHumans", methods=['GET'])
+@cross_origin()
+def GetBusinessHumans():
+    # Get the business data from the request
+    business_data = request.args.to_dict()
+
+    # Get the business ID from the request
+    BusinessId = business_data.get('BusinessId')
+    # Call the get_business function from GetBusiness.py
+    result = get_BusinessHumans(BusinessId)
+    return result
+
+@blueprint.route("/Business/GetHumans", methods=['GET'])
+@cross_origin()
+def GetHumans():
+    # Get the business data from the request
+    business_data = request.args.to_dict()
+
+    # Call the get_business function from GetBusiness.py
+    result = get_Humans()
+    return result
+
+@blueprint.route("/Business/SaveBusinessHuman", methods=['GET'])
+@cross_origin()
+def SaveBusinessHuman():
+    business_data = request.args.to_dict()
+
+    # Extract the BusinessId and BusinessName from the business_data
+    BusinessId = business_data.get('BusinessId', None)
+    HumanId = business_data.get('HumanId', None)
+
+    # Call the save_business function from SaveBusiness.py with the extracted data
+    result = save_BusinessHuman(BusinessId, HumanId)
+    History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId", BusinessId+":"+HumanId)
+
+    return result
+
+@blueprint.route("/Business/GetRoles", methods=['GET'])
+@cross_origin()
+def GetRoles():
+    # Get the business data from the request
+    business_data = request.args.to_dict()
+
+    # Call the get_business function from GetBusiness.py
+    result = get_roles()
+    return result
 @blueprint.route("/Business/LastModified", methods=['GET'])
 @cross_origin()
 def LastModified():

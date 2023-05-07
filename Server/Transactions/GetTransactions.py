@@ -24,3 +24,4 @@ def get_transactions():
 
     # Return the result as a list of dictionaries
     return result
+ 
