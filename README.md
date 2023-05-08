@@ -43,7 +43,8 @@ In the command line run this:
 
 7. Open two terminal windows in VS Code.
 	In the first terminal window go to the /Client folder so do `cd Client` Then turn on the svelte development server with: `npm run dev`
-	In the second terminal window go to the /Server folder so do: `cd Server` Then turn on the python development server with: `flask run --host=0.0.0.0 --port=`
+	In the second terminal window go to the /Server folder so do: `cd Server` Then turn on the python development server with: `flask run --host=0.0.0.0 --port=80`
+	
 
 Once you have all of this code installed, 
 you will need to:
