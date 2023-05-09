@@ -9,6 +9,7 @@
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
 	import { handleGetBusinesses } from './handleGetBusinesses.js';
+	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
 	import {Session} from "../Session.js";
 	
 	let LastModified='';
@@ -28,6 +29,7 @@
 	let isLoading = true;
 
 	let Businesses=[];
+	let TransactionHumans=[];
 
 	async function setTransactionDetails(data) {
 		if (data.TransactionId){
@@ -54,7 +56,9 @@
 	async function setBusinesses(data) {
 		Businesses = data;
 	}
-	
+	async function setTransactionHumans(data) {
+		TransactionHumans = data;
+	}
 	
 	$: {
 		formValid = TransactionDate && FromBusinessId && ToBusinessId;
@@ -68,7 +72,8 @@
 		
 			await Promise.all([
 				handleGetBusinesses(Session.SessionId,setBusinesses),
-				handleGet(Session.SessionId,TransactionId, setTransactionDetails)
+				handleGet(Session.SessionId,TransactionId, setTransactionDetails),
+				handleGetTransactionHumans(Session.SessionId,TransactionId, setTransactionHumans)
 			]);
 		
 		isLoading = false;

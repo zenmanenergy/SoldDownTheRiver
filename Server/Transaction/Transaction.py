@@ -6,10 +6,9 @@ from flask_cors import CORS, cross_origin
 from .SaveTransaction import save_transaction
 from .DeleteTransaction import delete_transaction
 from .GetTransaction import get_transaction
-from .GetFromHumans import get_from_humans
-from .GetToHumans import get_to_humans
 from .GetNotaryHumans import get_notary_humans
 from .GetBusinesses import get_businesses
+from .GetTransactionHumans import get_transactionHumans
 
 blueprint = Blueprint('Transaction', __name__)
 
@@ -67,25 +66,6 @@ def GetTransaction():
     return result
 
 
-@blueprint.route("/Transaction/GetFromHumans", methods=['GET'])
-@cross_origin()
-def GetFromHumans():
-    # Get the transaction data to the request
-    transaction_data = request.args.to_dict()
-
-    # Call the get_transaction function to GetTransaction.py
-    result = get_from_humans()
-    return result
-
-@blueprint.route("/Transaction/GetToHumans", methods=['GET'])
-@cross_origin()
-def GetToHumans():
-    # Get the transaction data to the request
-    transaction_data = request.args.to_dict()
-
-    # Call the get_transaction function to GetTransaction.py
-    result = get_to_humans()
-    return result
 
 
 @blueprint.route("/Transaction/GetNotaryHumans", methods=['GET'])
@@ -108,4 +88,16 @@ def GetBusinesses():
 
     # Call the get_transaction function to GetTransaction.py
     result = get_businesses()
+    return result
+
+@blueprint.route("/Transaction/GetTransactionHumans", methods=['GET'])
+@cross_origin()
+def GetTransactionHumans():
+    # Get the transaction data from the request
+    transaction_data = request.args.to_dict()
+
+    # Get the transaction ID from the request
+    TransactionId = transaction_data.get('TransactionId')
+    # Call the get_transaction function from GetTransaction.py
+    result = get_transactionHumans(TransactionId)
     return result
