@@ -6,6 +6,5 @@ export async function handleGet(SessionId,TransactionId, setTransactionData) {
   console.log(url)
   const response = await fetch(url);
   const data = await response.json();
-
-  setTransactionData(data);
+  setTransactionData(data[0]);
 }

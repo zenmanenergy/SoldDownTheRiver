@@ -14,9 +14,9 @@ def get_transaction(transaction_id):
 
     # Execute the query and get the results
     cursor.execute(query, values)
-    result = cursor.fetchone()
+    result = cursor.fetchall()
     if not result:
-        result = {}
+        result = []
 
     # Close the database connection
     connection.close()
