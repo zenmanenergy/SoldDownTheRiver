@@ -9,6 +9,8 @@ from .GetTransaction import get_transaction
 from .GetNotaryHumans import get_notary_humans
 from .GetBusinesses import get_businesses
 from .GetTransactionHumans import get_transactionHumans
+from .SaveTransactionHuman import save_transactionhuman
+from .GetHumans import get_Humans
 
 blueprint = Blueprint('Transaction', __name__)
 
@@ -100,4 +102,35 @@ def GetTransactionHumans():
     TransactionId = transaction_data.get('TransactionId')
     # Call the get_transaction function from GetTransaction.py
     result = get_transactionHumans(TransactionId)
+    return result
+
+
+@blueprint.route("/Transaction/SaveTransactionHuman", methods=['GET'])
+@cross_origin()
+def SaveTransactionHuman():
+    transaction_data = request.args.to_dict()
+    print(transaction_data)
+
+    # Extract the transaction data from the request
+    HumanId = transaction_data.get('HumanId', None)
+    TransactionId = transaction_data.get('TransactionId', None)
+
+    # Call the save_transaction function from SaveTransaction.py with the extracted data
+    saveresult = save_transactionhuman(TransactionId, HumanId)
+    print(saveresult)
+    History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+": "+HumanId)
+    result = get_transactionHumans(TransactionId)
+
+    return result
+
+
+@blueprint.route("/Transaction/GetHumans", methods=['GET'])
+@cross_origin()
+def GetHumans():
+    transaction_data = request.args.to_dict()
+
+    # Get the transaction ID from the request
+    TransactionId = transaction_data.get('TransactionId')
+    
+    result = get_Humans(TransactionId)
     return result
