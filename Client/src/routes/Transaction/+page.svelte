@@ -9,7 +9,9 @@
 	import { handleDelete } from './handleDelete.js';
 	import { handleGet } from './handleGet.js';
 	import { handleGetBusinesses } from './handleGetBusinesses.js';
+	import { handleGetHumans } from './handleGetHumans.js';
 	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
+	import { handleSaveTransactionHuman } from './handleSaveTransactionHuman.js';
 	import {Session} from "../Session.js";
 	
 	let LastModified='';
@@ -24,12 +26,14 @@
 	let NotaryBusinessId = "";
 	let Volume = "";
 	let URL = "";
+	let TransactionHumanId="";
 	
 	let formValid = false;
 	let isLoading = true;
 
 	let Businesses=[];
 	let TransactionHumans=[];
+	let Humans=[];
 
 	async function setTransactionDetails(data) {
 		if (data.TransactionId){
@@ -59,6 +63,10 @@
 	async function setTransactionHumans(data) {
 		TransactionHumans = data;
 	}
+	async function setHumans(data) {
+		Humans = data;
+	}
+	
 	
 	$: {
 		formValid = TransactionDate && FromBusinessId && ToBusinessId;
@@ -73,7 +81,9 @@
 			await Promise.all([
 				handleGetBusinesses(Session.SessionId,setBusinesses),
 				handleGet(Session.SessionId,TransactionId, setTransactionDetails),
-				handleGetTransactionHumans(Session.SessionId,TransactionId, setTransactionHumans)
+				handleGetTransactionHumans(Session.SessionId,TransactionId, setTransactionHumans),
+				
+				handleGetHumans(Session.SessionId,TransactionId, setHumans),
 			]);
 		
 		isLoading = false;
@@ -181,6 +191,39 @@
 						<input class="input" type="url" id="URL" placeholder="Enter URL" bind:value={URL}/>
 					</div>
 				</div>
+				<div class="field">
+					<label class="label" for="Tran">Human ID</label>
+					<div class="control">
+						<select class="input" id="HumanId" bind:value={TransactionHumanId} required>
+							<option value="">Select From Human ID</option>
+							{#each Humans as Human}
+								<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
+							{/each}
+						</select>
+						<button class="button "type="button"on:click={() => handleSaveTransactionHuman(Session.SessionId,TransactionId,TransactionHumanId, setTransactionHumans)} >Add to Transaction</button>
+					</div>
+				</div>
+				<div class="ActionBox">
+					<h3 class="title is-2">List of Humans</h3>
+					<table width=100%>
+					  <thead>
+						<tr>
+						  <th>First Name</th>
+						  <th>Last Name</th>
+						  <th>Last Modified</th>
+						</tr>
+					  </thead>
+					  <tbody>
+						{#each TransactionHumans as human}
+						  <tr style="cursor: pointer;" on:click={location.href=`/Human?HumanId=${human.HumanId}`}>
+							<td>{human.FirstName}</td>
+							<td>{human.LastName}</td>
+							<td>{moment.utc(human.LastModified).local().fromNow()}</td>
+						  </tr>
+						{/each}
+					  </tbody>
+					</table>
+				  </div>
 	
 				<div class="field">
 					<div class="control">
