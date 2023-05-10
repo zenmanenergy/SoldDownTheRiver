@@ -80,7 +80,7 @@
 		  </div>
 		</div>
 		<div class="field">
-			<label class="label" for="NotaryBusinessId">Notary Human ID</label>
+			<label class="label" for="BusinessHuman">Human</label>
 			<div class="control">
 				<select class="input" id="HumanId" bind:value={HumanId} required>
 					<option value="">Select From Human ID</option>
