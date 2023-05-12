@@ -7,7 +7,7 @@ def get_transactionHumans(TransactionId):
     cursor, connection = Database.ConnectToDatabase()
 
     # Construct the SQL query
-    query = "SELECT Humans.*, TransactionHumans.* FROM Humans join TransactionHumans on Humans.HumanId=TransactionHumans.HumanId where TransactionHumans.TransactionId=%s order by Firstname, Lastname"
+    query = "SELECT Humans.*, TransactionHumans.*,TransactionHumans.notes as TransactionNotes FROM Humans join TransactionHumans on Humans.HumanId=TransactionHumans.HumanId where TransactionHumans.TransactionId=%s order by Firstname, Lastname"
     values = (TransactionId,)
     # Execute the query and get the results
 

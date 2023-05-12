@@ -1,8 +1,8 @@
 // src/routes/Transactions/handleGet.js
 import { baseURL } from '../Settings';
-export async function handleSaveTransactionHuman(SessionId,TransactionId, HumanId, callback) {
+export async function handleSaveTransactionHuman(SessionId,TransactionId, HumanId,Price,Notes, callback) {
   
-  const url=`${baseURL}/Transaction/SaveTransactionHuman?TransactionId=${TransactionId}&HumanId=${HumanId}&SessionId=${SessionId}`
+  const url=`${baseURL}/Transaction/SaveTransactionHuman?TransactionId=${TransactionId}&HumanId=${HumanId}&Price=${Price}&Notes=${Notes}&SessionId=${SessionId}`
   console.log(url)
   const response = await fetch(url);
   const data = await response.json();

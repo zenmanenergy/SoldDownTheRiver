@@ -2,7 +2,7 @@ import uuid
 from Lib import Database
 import datetime
 
-def save_transactionhuman(TransactionId, HumanId):
+def save_transactionhuman(TransactionId, HumanId, Price, Notes):
     
     # Connect to the database
     cursor, connection = Database.ConnectToDatabase()
@@ -10,10 +10,10 @@ def save_transactionhuman(TransactionId, HumanId):
 
 
     
-    query = "INSERT INTO TransactionHumans (TransactionId, HumanId) VALUES (%s, %s)"
-    query +=" ON DUPLICATE KEY UPDATE TransactionId=values(TransactionId),HumanId=values(HumanId)"
+    query = "INSERT INTO TransactionHumans (TransactionId, HumanId, Price, Notes) VALUES (%s, %s, %s, %s)"
+    query +=" ON DUPLICATE KEY UPDATE TransactionId=values(TransactionId),HumanId=values(HumanId),Price=values(Price),Notes=values(Notes)"
         
-    values = (TransactionId, HumanId)
+    values = (TransactionId, HumanId, Price, Notes)
 
     print(query % values)
 

@@ -114,10 +114,12 @@ def SaveTransactionHuman():
     # Extract the transaction data from the request
     HumanId = transaction_data.get('HumanId', None)
     TransactionId = transaction_data.get('TransactionId', None)
+    Price = transaction_data.get('Price', None)
+    Notes = transaction_data.get('Notes', None)
 
     # Call the save_transaction function from SaveTransaction.py with the extracted data
-    saveresult = save_transactionhuman(TransactionId, HumanId)
-    print(saveresult)
+    saveresult = save_transactionhuman(TransactionId, HumanId, Price, Notes)
+    
     History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+": "+HumanId)
     result = get_transactionHumans(TransactionId)
 

@@ -27,7 +27,9 @@
 	let Volume = "";
 	let URL = "";
 	let TransactionHumanId="";
-	
+	let HumanPrice="";
+	let HumanNotes="";
+
 	let formValid = false;
 	let isLoading = true;
 
@@ -200,7 +202,13 @@
 								<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
 							{/each}
 						</select>
-						<button class="button "type="button"on:click={() => handleSaveTransactionHuman(Session.SessionId,TransactionId,TransactionHumanId, setTransactionHumans)} >Add to Transaction</button>
+						<br/>
+						<input class="input" type="text" id="HumanPrice" placeholder="Enter Price" bind:value={HumanPrice}/>
+						<br/>
+						<input class="input" type="text" id="HumanNotes" placeholder="Enter Notes" bind:value={HumanNotes}/>
+						<br/>
+						
+						<button class="button "type="button"on:click={() => handleSaveTransactionHuman(Session.SessionId,TransactionId,TransactionHumanId,HumanPrice,HumanNotes, setTransactionHumans)} >Add to Transaction</button>
 					</div>
 				</div>
 				<div class="ActionBox">
