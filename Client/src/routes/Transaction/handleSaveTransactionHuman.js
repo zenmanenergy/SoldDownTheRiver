@@ -7,4 +7,5 @@ export async function handleSaveTransactionHuman(SessionId,TransactionId, HumanI
   const response = await fetch(url);
   const data = await response.json();
   callback(data[0]);
+  window.location.href = `/Transaction?TransactionId=${TransactionId}`;
 }
