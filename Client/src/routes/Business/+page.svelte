@@ -11,6 +11,8 @@
 	import { handleGetBusinessHumans } from './handleGetBusinessHumans.js';
 	import { handleGetHumans } from './handleGetHumans.js';
 	import { handleSaveBusinessHuman } from './handleSaveBusinessHuman.js';
+	import { handleDeleteBusinessHuman } from './handleDeleteBusinessHuman.js';
+	
 	import { handleGetRoles } from './handleGetRoles.js';
 	
 	import {Session} from "../Session.js";
@@ -82,13 +84,13 @@
 		<div class="field">
 			<label class="label" for="BusinessHuman">Human</label>
 			<div class="control">
-				<select class="input" id="HumanId" bind:value={HumanId} required>
+				<select class="input" id="HumanId" bind:value={HumanId} >
 					<option value="">Select From Human ID</option>
 					{#each Humans as Human}
 						<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
 					{/each}
 				</select>
-				<button class="button "type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId)} >Add to Business</button>
+				<button class="button" type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId)} >Add to Business</button>
 			</div>
 		</div>
 		<div class="ActionBox">
@@ -99,14 +101,17 @@
 				  <th>First Name</th>
 				  <th>Last Name</th>
 				  <th>Last Modified</th>
+				  <th>Delete</th>
 				</tr>
 			  </thead>
 			  <tbody>
 				{#each BusinessHumans as human}
-				  <tr style="cursor: pointer;" on:click={location.href=`/Human?HumanId=${human.HumanId}`}>
+				  <tr>
 					<td>{human.FirstName}</td>
 					<td>{human.LastName}</td>
 					<td>{moment.utc(human.LastModified).local().fromNow()}</td>
+					<td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteBusinessHuman(Session.SessionId,BusinessId, human.HumanId)}>X</button></td>
+        
 				  </tr>
 				{/each}
 			  </tbody>
