@@ -1,7 +1,7 @@
 import { baseURL } from '../Settings';
 
 // src/routes/Businesses/handleSubmit.js
-export function handleSave(SessionId,BusinessId, BusinessName,formValid) {
+export function handleSave(SessionId,BusinessId, BusinessName, LocationId, formValid) {
 
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
@@ -13,7 +13,8 @@ export function handleSave(SessionId,BusinessId, BusinessName,formValid) {
   const businessData = {
     BusinessId: BusinessId,
     BusinessName: BusinessName,
-    SessionId: SessionId
+    SessionId: SessionId,
+    LocationId: LocationId
   };
 
   const queryString = Object.keys(businessData)
