@@ -10,6 +10,7 @@ from .GetNotaryHumans import get_notary_humans
 from .GetBusinesses import get_businesses
 from .GetTransactionHumans import get_transactionHumans
 from .SaveTransactionHuman import save_transactionhuman
+from .DeleteTransactionHuman import delete_transactionhuman
 from .GetHumans import get_Humans
 
 blueprint = Blueprint('Transaction', __name__)
@@ -120,12 +121,29 @@ def SaveTransactionHuman():
     # Call the save_transaction function from SaveTransaction.py with the extracted data
     saveresult = save_transactionhuman(TransactionId, HumanId, Price, Notes)
     
-    History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+": "+HumanId)
+    History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
     result = get_transactionHumans(TransactionId)
 
     return result
 
 
+@blueprint.route("/Transaction/DeleteTransactionHuman", methods=['GET'])
+@cross_origin()
+def DeleteTransactionHuman():
+    transaction_data = request.args.to_dict()
+    print(transaction_data)
+
+    # Extract the transaction data from the request
+    HumanId = transaction_data.get('HumanId', None)
+    TransactionId = transaction_data.get('TransactionId', None)
+
+    # Call the save_transaction function from SaveTransaction.py with the extracted data
+    deleteresult = delete_transactionhuman(TransactionId, HumanId)
+    
+    History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
+    result = get_transactionHumans(TransactionId)
+
+    return result
 @blueprint.route("/Transaction/GetHumans", methods=['GET'])
 @cross_origin()
 def GetHumans():
