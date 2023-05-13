@@ -218,6 +218,7 @@
 						<tr>
 						  <th>First Name</th>
 						  <th>Last Name</th>
+						  <th>Price</th>
 						  <th>Last Modified</th>
 						</tr>
 					  </thead>
@@ -226,6 +227,10 @@
 						  <tr style="cursor: pointer;" on:click={location.href=`/Human?HumanId=${human.HumanId}`}>
 							<td>{human.FirstName}</td>
 							<td>{human.LastName}</td>
+							<td>{human.Price.toLocaleString('en-US', {
+								style: 'currency',
+								currency: 'USD',
+							  })}</td>
 							<td>{moment.utc(human.LastModified).local().fromNow()}</td>
 						  </tr>
 						{/each}
