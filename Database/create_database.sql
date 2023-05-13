@@ -1,7 +1,7 @@
 CREATE TABLE `businesses` (
   `BusinessId` char(39) NOT NULL,
   `BusinessName` varchar(45) DEFAULT NULL,
-  `RoleId` char(39) DEFAULT NULL,
+  `LocationId` char(39) DEFAULT NULL,
   PRIMARY KEY (`BusinessId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -23,7 +23,7 @@ CREATE TABLE `history` (
   `HistoryId` char(39) NOT NULL,
   `TableName` varchar(45) DEFAULT NULL,
   `KeyName` varchar(45) DEFAULT NULL,
-  `KeyValue` varchar(45) DEFAULT NULL,
+  `KeyValue` varchar(156) DEFAULT NULL,
   `UserId` char(39) DEFAULT NULL,
   `Data` varchar(2000) DEFAULT NULL,
   `DateAdded` datetime DEFAULT NULL,
@@ -89,24 +89,41 @@ CREATE TABLE `roles` (
   PRIMARY KEY (`RoleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `shipowners` (
+  `ShipId` char(39) NOT NULL,
+  `BusinessId` char(39) NOT NULL,
+  `StartDate` datetime NOT NULL,
+  `EndDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`ShipId`,`BusinessId`,`StartDate`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `ships` (
+  `ShipId` char(39) NOT NULL,
+  `BuildDate` datetime DEFAULT NULL,
+  `Notes` varchar(255) DEFAULT NULL,
+  `ShipType` varchar(45) DEFAULT NULL,
+  `Size` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`ShipId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `transactionhumans` (
   `TransactionId` char(39) NOT NULL,
-  `HumanId` char(39) DEFAULT NULL,
+  `HumanId` char(39) NOT NULL,
   `Notes` varchar(45) DEFAULT NULL,
-  `price` float DEFAULT NULL,
-  PRIMARY KEY (`TransactionId`)
+  `Price` float DEFAULT NULL,
+  PRIMARY KEY (`TransactionId`,`HumanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `transactions` (
   `TransactionId` char(39) NOT NULL,
   `TransactionDate` datetime DEFAULT NULL,
-  `FromHumanId` char(39) DEFAULT NULL,
-  `ToHumanId` char(39) DEFAULT NULL,
+  `FromBusinessId` char(39) DEFAULT NULL,
+  `ToBusinessId` char(39) DEFAULT NULL,
   `TransactionType` varchar(45) DEFAULT NULL,
   `Notes` varchar(255) DEFAULT NULL,
   `Act` varchar(10) DEFAULT NULL,
   `Page` varchar(10) DEFAULT NULL,
-  `NotaryHumanId` char(39) DEFAULT NULL,
+  `NotaryBusinessId` char(39) DEFAULT NULL,
   `Volume` varchar(10) DEFAULT NULL,
   `URL` varchar(255) DEFAULT NULL,
   `TranscriberId` char(39) DEFAULT NULL,
@@ -134,6 +151,36 @@ CREATE TABLE `usersessions` (
   `DateAdded` datetime DEFAULT NULL,
   PRIMARY KEY (`UserId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `voyagecargo` (
+  `CargoId` char(39) NOT NULL,
+  `VoyageId` char(39) DEFAULT NULL,
+  `Description` varchar(255) DEFAULT NULL,
+  `Quantity` float DEFAULT NULL,
+  `Value` float DEFAULT NULL,
+  `Notes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`CargoId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `voyagehuman` (
+  `VoyageId` char(39) NOT NULL,
+  `HumanId` char(39) DEFAULT NULL,
+  `RoleId` char(39) DEFAULT NULL,
+  `Notes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`VoyageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `voyages` (
+  `VoyageId` char(39) NOT NULL,
+  `ShipId` char(39) DEFAULT NULL,
+  `StartLocationId` char(39) DEFAULT NULL,
+  `EndLocationId` char(39) DEFAULT NULL,
+  `StartDate` datetime DEFAULT NULL,
+  `EndDate` datetime DEFAULT NULL,
+  `Notes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`VoyageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 
 CREATE USER 'developer'@'localhost' IDENTIFIED BY 'developer';
