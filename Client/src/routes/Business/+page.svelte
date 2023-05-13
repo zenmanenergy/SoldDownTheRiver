@@ -12,11 +12,13 @@
 	import { handleGetHumans } from './handleGetHumans.js';
 	import { handleSaveBusinessHuman } from './handleSaveBusinessHuman.js';
 	import { handleDeleteBusinessHuman } from './handleDeleteBusinessHuman.js';
+	import { handleGetLocations } from './handleGetLocations.js';
 	
 	import { handleGetRoles } from './handleGetRoles.js';
 	
 	import {Session} from "../Session.js";
   
+	let LocationId=""
 	let RoleId=""
 	let HumanId=""
 	let BusinessId="";
@@ -27,10 +29,11 @@
 	let BusinessHumans=[]
 	let Humans=[]
 	let Roles=[]
+	let Locations=[]
+	let Business = {};
   
-	async function setName(newBusinessName, newLastModified) {
-	  BusinessName = newBusinessName;
-	  LastModified = newLastModified;
+	async function setBusiness(data) {
+	  Business=data
 	}
 	async function setBusinessHumans(data) {
 	  BusinessHumans=data;
@@ -40,6 +43,9 @@
 	}
 	async function setRoles(data) {
 		Roles=data;
+	}
+	async function setLocations(data) {
+		Locations=data;
 	}
 	$: {
 	  formValid = BusinessName;
@@ -52,10 +58,11 @@
 		
 		if (BusinessId){
 			await Promise.all([
-				handleGet(Session.SessionId,BusinessId, setName),
+				handleGet(Session.SessionId,BusinessId, setBusiness),
 				handleGetBusinessHumans(Session.SessionId,BusinessId, setBusinessHumans),
 				handleGetHumans(Session.SessionId, setHumans),
-				handleGetRoles(Session.SessionId, setRoles)
+				handleGetRoles(Session.SessionId, setRoles),
+				handleGetLocations(Session.SessionId, setLocations)
 			]);
 		
 		}
@@ -78,15 +85,28 @@
 	  <form>
 		<h3 class="title is-2">Add a Business</h3>
   
-		<input type="hidden" bind:value={BusinessId} />
+		<input type="hidden" bind:value={Business.BusinessId} />
 		<input type="hidden" bind:value={Session.SessionId} />
   
 		<div class="field">
 		  <label class="label" for="BusinessName">Name</label>
 		  <div class="control">
-			<input class="input" type="text" id="BusinessName" placeholder="Enter Business Name" bind:value={BusinessName} required/>
+			<input class="input" type="text" id="BusinessName" placeholder="Enter Business Name" bind:value={Business.BusinessName} required/>
 		  </div>
 		</div>
+
+		<div class="field">
+			<label class="label" for="LocationId">Location</label>
+			<div class="control">
+				<select class="input" id="LocationId" bind:value={Business.LocationId} required>
+					<option value="">Select Location</option>
+					{#each Locations as Location}
+						<option value={Location.LocationId}>{#if Location.Address}{Location.Address} {/if}{Location.City}</option>
+					{/each}
+				</select>
+			</div>
+		  </div>
+		
 		<div class="field">
 			<label class="label" for="BusinessHuman">Human</label>
 			<div class="control">
@@ -135,7 +155,7 @@
 
 		<div class="field">
 		  <div class="control">
-			<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, BusinessId, BusinessName,formValid)}>Save</button>
+			<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, BusinessId, BusinessName, LocationId, formValid)}>Save</button>
 			{#if BusinessId.length}
 			  <button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, BusinessId)}>Delete</button>
 			{/if}
