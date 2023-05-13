@@ -25,4 +25,4 @@ def save_transactionhuman(TransactionId, HumanId, Price, Notes):
     connection.close()
 
     # Return the TransactionId as a JSON response
-    return {'success': True, 'TransactionId:HumanId': TransactionId+": "+HumanId}
+    return {'success': True, 'TransactionId:HumanId': TransactionId+":"+HumanId}
