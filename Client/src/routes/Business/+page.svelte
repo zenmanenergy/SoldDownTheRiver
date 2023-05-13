@@ -17,6 +17,7 @@
 	
 	import {Session} from "../Session.js";
   
+	let RoleId=""
 	let HumanId=""
 	let BusinessId="";
 	let BusinessName = "";
@@ -25,6 +26,7 @@
 	let isLoading = true;
 	let BusinessHumans=[]
 	let Humans=[]
+	let Roles=[]
   
 	async function setName(newBusinessName, newLastModified) {
 	  BusinessName = newBusinessName;
@@ -35,6 +37,9 @@
 	}
 	async function setHumans(data) {
 	  Humans=data;
+	}
+	async function setRoles(data) {
+		Roles=data;
 	}
 	$: {
 	  formValid = BusinessName;
@@ -49,7 +54,8 @@
 			await Promise.all([
 				handleGet(Session.SessionId,BusinessId, setName),
 				handleGetBusinessHumans(Session.SessionId,BusinessId, setBusinessHumans),
-				handleGetHumans(Session.SessionId, setHumans)
+				handleGetHumans(Session.SessionId, setHumans),
+				handleGetRoles(Session.SessionId, setRoles)
 			]);
 		
 		}
@@ -84,13 +90,19 @@
 		<div class="field">
 			<label class="label" for="BusinessHuman">Human</label>
 			<div class="control">
-				<select class="input" id="HumanId" bind:value={HumanId} >
-					<option value="">Select From Human ID</option>
+				<select class="input" id="HumanId" bind:value={HumanId} required>
+					<option value="">Select Human</option>
 					{#each Humans as Human}
 						<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
 					{/each}
 				</select>
-				<button class="button" type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId)} >Add to Business</button>
+				<select class="input" id="RoleId" bind:value={RoleId} required>
+					<option value="">Select Role</option>
+					{#each Roles as Role}
+						<option value={Role.RoleId}>{Role.Role}</option>
+					{/each}
+				</select>
+				<button class="button" type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId, RoleId)} >Add to Business</button>
 			</div>
 		</div>
 		<div class="ActionBox">
@@ -100,6 +112,7 @@
 				<tr>
 				  <th>First Name</th>
 				  <th>Last Name</th>
+				  <th>Role</th>
 				  <th>Last Modified</th>
 				  <th>Delete</th>
 				</tr>
@@ -109,6 +122,7 @@
 				  <tr>
 					<td>{human.FirstName}</td>
 					<td>{human.LastName}</td>
+					<td>{human.Role}</td>
 					<td>{moment.utc(human.LastModified).local().fromNow()}</td>
 					<td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteBusinessHuman(Session.SessionId,BusinessId, human.HumanId)}>X</button></td>
         
