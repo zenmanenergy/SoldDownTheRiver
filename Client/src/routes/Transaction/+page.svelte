@@ -12,6 +12,7 @@
 	import { handleGetHumans } from './handleGetHumans.js';
 	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
 	import { handleSaveTransactionHuman } from './handleSaveTransactionHuman.js';
+	import { handleDeleteTransactionHuman } from './handleDeleteTransactionHuman.js';
 	import {Session} from "../Session.js";
 	
 	let LastModified='';
@@ -220,11 +221,12 @@
 						  <th>Last Name</th>
 						  <th>Price</th>
 						  <th>Last Modified</th>
+						  <th>Delete</th>
 						</tr>
 					  </thead>
 					  <tbody>
 						{#each TransactionHumans as human}
-						  <tr style="cursor: pointer;" on:click={location.href=`/Human?HumanId=${human.HumanId}`}>
+						  <tr>
 							<td>{human.FirstName}</td>
 							<td>{human.LastName}</td>
 							<td>{human.Price.toLocaleString('en-US', {
@@ -232,6 +234,8 @@
 								currency: 'USD',
 							  })}</td>
 							<td>{moment.utc(human.LastModified).local().fromNow()}</td>
+							<td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteTransactionHuman(Session.SessionId,TransactionId, human.HumanId)}>X</button></td>
+        
 						  </tr>
 						{/each}
 					  </tbody>
