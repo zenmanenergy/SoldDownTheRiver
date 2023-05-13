@@ -9,6 +9,7 @@ from .GetBusiness import get_business
 from .GetBusinessHumans import get_BusinessHumans
 from .GetHumans import get_Humans
 from .SaveBusinessHuman import save_BusinessHuman
+from .DeleteBusinessHuman import Delete_BusinessHuman
 from .GetRoles import get_roles
 
 blueprint = Blueprint('Business', __name__)
@@ -90,6 +91,20 @@ def SaveBusinessHuman():
     result = save_BusinessHuman(BusinessId, HumanId)
     History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId", BusinessId+":"+HumanId)
 
+    return result
+
+@blueprint.route("/Business/DeleteBusinessHuman", methods=['GET'])
+@cross_origin()
+def DeleteBusinessHuman():
+    # Get the business data from the request
+    business_data = request.args.to_dict()
+
+    # Get the business ID from the request
+    BusinessId = business_data.get('BusinessId')
+    HumanId = business_data.get('HumanId')
+    # Call the delete_business function from DeleteBusiness.py
+    result = Delete_BusinessHuman(BusinessId,HumanId)
+    History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId",BusinessId+":"+HumanId)
     return result
 
 @blueprint.route("/Business/GetRoles", methods=['GET'])
