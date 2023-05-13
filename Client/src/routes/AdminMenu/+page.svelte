@@ -29,6 +29,7 @@
 			<li><a href={`/Locations`}>Locations</a></li>
 			<li><a href={`/Roles`}>Roles</a></li>
 			<li><a href={`/Transactions`}>Transactions</a></li>
+			<li><a href={`/Ships`}>Ships</a></li><br>
 			<li><a href={`/Users`}>Users</a></li><br>
 				
 			<li><a href={`/Search`}>Search</a></li>
