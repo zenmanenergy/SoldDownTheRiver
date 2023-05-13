@@ -11,6 +11,7 @@ from .GetHumans import get_Humans
 from .SaveBusinessHuman import save_BusinessHuman
 from .DeleteBusinessHuman import Delete_BusinessHuman
 from .GetRoles import get_roles
+from .GetLocations import get_locations
 
 blueprint = Blueprint('Business', __name__)
 
@@ -22,9 +23,10 @@ def SaveBusiness():
     # Extract the BusinessId and BusinessName from the business_data
     BusinessId = business_data.get('BusinessId', None)
     BusinessName = business_data.get('BusinessName', None)
+    LocationId = business_data.get('LocationId', None)
 
     # Call the save_business function from SaveBusiness.py with the extracted data
-    result = save_business(BusinessId, BusinessName)
+    result = save_business(BusinessId, BusinessName, LocationId)
     History.SaveHistory(business_data,"Business", "BusinessId", result["BusinessId"])
 
     return result
@@ -125,4 +127,14 @@ def LastModified():
 
     # Get the business ID from the request
     result = History.LastModified("Business", "BusinessId", business_data.get('BusinessId'))
+    return result
+    
+@blueprint.route("/Business/GetLocations", methods=['GET'])
+@cross_origin()
+def GetLocations():
+    # Get the business data from the request
+    business_data = request.args.to_dict()
+
+    # Call the get_business function from GetBusiness.py
+    result = get_locations()
     return result
