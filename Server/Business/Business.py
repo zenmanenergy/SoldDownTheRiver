@@ -86,10 +86,11 @@ def SaveBusinessHuman():
     # Extract the BusinessId and BusinessName from the business_data
     BusinessId = business_data.get('BusinessId', None)
     HumanId = business_data.get('HumanId', None)
+    RoleId = business_data.get('RoleId', None)
 
     # Call the save_business function from SaveBusiness.py with the extracted data
-    result = save_BusinessHuman(BusinessId, HumanId)
-    History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId", BusinessId+":"+HumanId)
+    result = save_BusinessHuman(BusinessId, HumanId, RoleId)
+    History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId:RoleId", BusinessId+":"+HumanId+":"+RoleId)
 
     return result
 
