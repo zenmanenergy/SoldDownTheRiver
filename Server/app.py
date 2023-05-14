@@ -25,6 +25,7 @@ from Login import Login
 from Search import Search
 from Ships import Ships
 from Ship import Ship
+from Voyages import Voyages
 
 
 app = Flask(__name__)
@@ -45,6 +46,7 @@ app.register_blueprint(Login.blueprint)
 app.register_blueprint(Search.blueprint)
 app.register_blueprint(Ships.blueprint)
 app.register_blueprint(Ship.blueprint)
+app.register_blueprint(Voyages.blueprint)
 
 @app.route("/")
 @cross_origin()
