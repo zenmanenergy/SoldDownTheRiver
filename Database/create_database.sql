@@ -89,14 +89,6 @@ CREATE TABLE `roles` (
   PRIMARY KEY (`RoleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `shipowners` (
-  `ShipId` char(39) NOT NULL,
-  `BusinessId` char(39) NOT NULL,
-  `StartDate` datetime NOT NULL,
-  `EndDate` datetime DEFAULT NULL,
-  PRIMARY KEY (`ShipId`,`BusinessId`,`StartDate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `ships` (
   `ShipId` char(39) NOT NULL,
   `BuildDate` datetime DEFAULT NULL,
