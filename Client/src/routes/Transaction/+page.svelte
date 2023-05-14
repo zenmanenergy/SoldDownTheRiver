@@ -173,7 +173,7 @@
 					<label class="label" for="NotaryBusinessId">Notary Human ID</label>
 					<div class="control">
 						<select class="input" id="NotaryBusinessId" bind:value={NotaryBusinessId} required>
-							<option value="">Select From Human ID</option>
+							<option value="">Select a Notary</option>
 							{#each Businesses as Business}
 								<option value={Business.BusinessId}>{Business.BusinessName}</option>
 							{/each}
