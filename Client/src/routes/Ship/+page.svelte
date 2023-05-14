@@ -8,6 +8,7 @@
     import { handleSave } from './handleSave.js';
     import { handleDelete } from './handleDelete.js';
     import { handleGet } from './handleGet.js';
+    import { handleGetOwners } from './handleGetOwners.js';
     import { Session } from "../Session.js";
   
     let ShipId = "";
@@ -15,7 +16,8 @@
     let Notes = "";
     let ShipType = "";
     let Size = "";
-    let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:""};
+    let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:"", OwnerBusinessId:""};
+    let Owners = [];
   
     let formValid = false;
     let isLoading = true;
@@ -30,12 +32,15 @@
       Ship.Notes = data.Notes || "";
       Ship.ShipType = data.ShipType || "";
       Ship.Size = data.Size || "";
-      
+      Ship.OwnerBusinessId = data.OwnerBusinessId || "";
       
       console.log("Ship", Ship)
       console.log("Ship.ShipId.length", Ship.ShipId.length)
     }
-  
+    async function setOwners(data) {
+      Owners = data;
+    }
+
     $: {
       formValid = Ship.ShipName;
     }
@@ -44,7 +49,11 @@
       await Session.handleSession();
       const urlParams = new URLSearchParams(window.location.search);
       ShipId = urlParams.get("ShipId") || "";
-      handleGet(Session.SessionId, ShipId, setShip);
+      await Promise.all([
+        handleGet(Session.SessionId, ShipId, setShip),
+        handleGetOwners(Session.SessionId, ShipId, setOwners)
+      ]);
+      
   
       console.log("ShipId", ShipId)
       isLoading = false;
@@ -100,6 +109,17 @@
             </div>
           </div>
   
+          <div class="field">
+            <label class="label" for="Size">Owner</label>
+            <div class="control">
+              <select class="input" id="OwnerBusinessId" bind:value={Ship.OwnerBusinessId} required>
+                <option value="">Select From Human ID</option>
+                {#each Owners as Owner}
+                  <option value={Owner.BusinessId}>{Owner.BusinessName}</option>
+                {/each}
+              </select>
+            </div>
+          </div>
           <div class="field">
             <div class="control">
               <button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, Ship, formValid)}>Save</button>
