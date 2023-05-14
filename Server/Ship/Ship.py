@@ -5,6 +5,7 @@ from flask_cors import CORS, cross_origin
 from .SaveShip import save_ship
 from .DeleteShip import delete_ship
 from .GetShip import get_ship
+from .GetOwners import get_owners
 
 blueprint = Blueprint('Ship', __name__)
 
@@ -20,9 +21,10 @@ def SaveShip():
     Notes = ship_data.get('Notes', None)
     ShipType = ship_data.get('ShipType', None)
     Size = ship_data.get('Size', None)
+    OwnerBusinessId = ship_data.get('OwnerBusinessId', None)
 
     # Call the save_ship function from SaveShip.py with the extracted data
-    result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size)
+    result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, OwnerBusinessId)
     History.SaveHistory(ship_data, "Ships", "ShipId", result["ShipId"])
 
     return result
@@ -51,4 +53,17 @@ def GetShip():
     ShipId = ship_data.get('ShipId')
     # Call the get_ship function from GetShip.py
     result = get_ship(ShipId)
+    return result
+
+
+@blueprint.route("/Ship/GetOwners", methods=['GET'])
+@cross_origin()
+def GetOwners():
+    # Get the ship data from the request
+    ship_data = request.args.to_dict()
+
+    # Get the ship ID from the request
+    ShipId = ship_data.get('ShipId')
+    # Call the get_ship function from GetOwners.py
+    result = get_owners(ShipId)
     return result
