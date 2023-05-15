@@ -198,3 +198,14 @@ def LastModified():
     result=History.LastModifiedArray(HistoryArray)
     return result
     
+
+@blueprint.route("/Human/GetBusinesses", methods=['GET'])
+@cross_origin()
+def GetBusinesses():
+    # Get the role data from the request
+    role_data = request.args.to_dict()
+
+    # Call the get_role function from GetRoles.py
+    result = get_roles()
+
+    return result
