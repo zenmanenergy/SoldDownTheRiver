@@ -28,13 +28,17 @@ In the command line run this:
 
 4. install the latest version of pip `python.exe -m pip install --upgrade pip`
 
-5. Install flask
+5. Install github desktop https://desktop.github.com/
+
+6. Clone the repository from github to your laptop and download the latest code
+
+7. Install flask
 	```
 	cd ./Server
 	pip install flask
 	```
 
-6. Install cors and pymysql
+8. Install cors and pymysql
 	```
 	pip install flask-cors
 	pip install pymysql
@@ -42,7 +46,7 @@ In the command line run this:
 	pip install moment
 	```
 
-7. Open two terminal windows in VS Code.
+9. Open two terminal windows in VS Code.
 	In the first terminal window go to the /Client folder so do `cd Client` Then turn on the svelte development server with: `npm run dev`
 	In the second terminal window go to the /Server folder so do: `cd Server` Then turn on the python development server with: `flask run --host=0.0.0.0 --port=80`
 	
