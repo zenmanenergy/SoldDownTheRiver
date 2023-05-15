@@ -209,7 +209,7 @@
 						<input class="input" type="text" id="HumanNotes" placeholder="Enter Notes" bind:value={HumanNotes}/>
 						<br/>
 						
-						<button class="button "type="button"on:click={() => handleSaveTransactionHuman(Session.SessionId,TransactionId,TransactionHumanId,HumanPrice,HumanNotes, setTransactionHumans)} >Add to Transaction</button>
+						<button class="button "type="button"on:click={() => handleSaveTransactionHuman(Session.SessionId,TransactionId,TransactionHumanId,HumanPrice,HumanNotes, setTransactionHumans)} >Add Enslaved Human</button>
 					</div>
 				</div>
 				<div class="ActionBox">
