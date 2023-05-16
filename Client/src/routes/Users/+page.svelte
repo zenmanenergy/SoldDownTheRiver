@@ -4,15 +4,20 @@
 <script>
   import moment from 'moment';
   import { onMount } from 'svelte';
-  import handleGet from './handleGet.js';
+  import {handleGet} from './handleGet.js';
 	import {Session} from "../Session.js";
 
-  export let users = [];
+  export let Users = [];
   let isLoading = true;
+  async function setUsers(data) {
+    Users = data;
+  } 
 
   onMount(async () => {
 		await Session.handleSession();
-    users = await handleGet(Session.SessionId);
+    await Promise.all([
+			handleGet(Session.SessionId,setUsers),
+		]);
     isLoading = false;
   });
 
@@ -31,7 +36,7 @@
 	<div class="ActionBox">
 		<h3 class="title is-2">List of Users</h3>
     <ul>
-      {#each users as user}
+      {#each Users as user}
         <li>
           <a href={`/User?UserId=${user.UserId}`}>
             {user.FirstName} {user.LastName}
