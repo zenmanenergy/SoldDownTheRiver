@@ -1,11 +1,9 @@
 import { baseURL } from '../Settings';
 
-async function handleGet(SessionId) {
+export async function handleGet(SessionId, dallback) {
   const url=`${baseURL}/Roles/GetRoles?SessionId=${SessionId}`
   console.log(url)
   const response = await fetch(url);
   const roles = await response.json();
-  return roles;
+  dallback(roles);
 }
-
-export default handleGet;
