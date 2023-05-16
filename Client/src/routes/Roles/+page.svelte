@@ -5,15 +5,21 @@
   <script>
     import moment from 'moment';
     import { onMount } from 'svelte';
-    import handleGet from './handleGet.js';
+    import {handleGet} from './handleGet.js';
 	  import {Session} from "../Session.js";
   
-    export let roles = [];
+    export let Roles = [];
     let isLoading = true;
-  
+    async function setRoles(data) {
+      
+      Roles=data;
+    }
     onMount(async () => {
 		  await Session.handleSession();
-      roles = await handleGet(Session.SessionId);
+      await Promise.all([
+        await handleGet(Session.SessionId,setRoles)
+        
+      ]);
       isLoading = false;
     });
   
@@ -39,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each roles as role}
+          {#each Roles as role}
             <tr style="cursor: pointer;" on:click={location.href=`/Role?RoleId=${role.RoleId}`}>
               <td>{role.Role}</td>
               <td>{moment.utc(role.LastModified).local().fromNow()}</td>
