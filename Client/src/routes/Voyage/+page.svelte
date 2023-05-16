@@ -9,6 +9,10 @@
     import { handleDelete } from './handleDelete.js';
     import { handleGet } from './handleGet.js';
     import { handleGetShips } from './handleGetShips.js';
+    import { handleGetHumans } from './handleGetHumans.js';
+    import { handleSaveVoyageHuman } from './handleSaveVoyageHuman.js';
+    import { handleGetVoyageHumans } from './handleGetVoyageHumans.js';
+    import { handleDeleteVoyageHuman } from './handleDeleteVoyageHuman.js';
     import { Session } from '../Session.js';
   
     let VoyageId = '';
@@ -18,8 +22,11 @@
     let StartDate = null;
     let EndDate = null;
     let Notes = '';
+    let VoyageHumanId="";
     let Voyage={VoyageId:"", ShipId:"", StartLocationId:"", EndLocationId:"", StartDate:null, EndDate:null, Notes:""};
     let Ships=[]
+    let Humans = [];
+    let VoyageHumans=[];
   
     let formValid = false;
     let isLoading = true;
@@ -42,6 +49,12 @@
     async function setShips(data) {
       Ships = data;
     }
+    async function setHumans(data) {
+      Humans = data;
+    }
+    async function setVoyageHumans(data) {
+      VoyageHumans = data;
+    }
     $: {
       formValid = Voyage.ShipId;
     }
@@ -53,7 +66,9 @@
       
       await Promise.all([
 				handleGet(Session.SessionId, VoyageId, setVoyage),
-        handleGetShips(Session.SessionId, setShips)
+        handleGetShips(Session.SessionId, setShips),
+        handleGetHumans(Session.SessionId,VoyageId,setHumans),
+        handleGetVoyageHumans(Session.SessionId,VoyageId,setVoyageHumans)
 
 			]);
       isLoading = false;
@@ -115,6 +130,42 @@
               <input class="input" type="text" id="Notes" placeholder="Enter Notes" bind:value={Voyage.Notes}/>
             </div>
           </div>
+          <div class="field">
+            <label class="label" for="Tran">Human ID</label>
+            <div class="control">
+              <select class="input" id="VoyageHumanId" bind:value={VoyageHumanId} required>
+                <option value="">Select a Human</option>
+                {#each Humans as Human}
+                  <option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
+                {/each}
+              </select>
+              <br/>
+              
+              <button class="button "type="button"on:click={() => handleSaveVoyageHuman(Session.SessionId,Voyage.VoyageId,VoyageHumanId, setHumans)} >Add Human</button>
+            </div>
+          </div>
+          <div class="ActionBox">
+            <h3 class="title is-2">List of Humans</h3>
+            <table width=100%>
+              <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Delete</th>
+              </tr>
+              </thead>
+              <tbody>
+              {#each VoyageHumans as Human}
+                <tr>
+                <td>{Human.FirstName}</td>
+                <td>{Human.LastName}</td>
+                
+                <td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteVoyageHuman(Session.SessionId,VoyageId, Human.HumanId)}>X</button></td>
+                </tr>
+              {/each}
+              </tbody>
+            </table>
+            </div>
           <div class="field">
             <div class="control">
               <button class="button is-primary" type="button" on:click={() =>   handleSave(Session.SessionId,Voyage,formValid   ) }> Save</button>
