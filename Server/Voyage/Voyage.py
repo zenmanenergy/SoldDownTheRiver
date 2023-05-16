@@ -1,58 +1,62 @@
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
-from .SaveVoyage import save_voyage
-from .DeleteVoyage import delete_voyage
-from .GetVoyage import get_voyage
+from .SaveVoyage import save_Voyage
+from .DeleteVoyage import delete_Voyage
+from .GetVoyage import get_Voyage
 from Lib import Database
 from Lib import History
-from .GetShips import get_ships
+from .GetShips import get_Ships
+from .GetHumans import get_Humans
+from .SaveVoyageHuman import save_VoyageHuman
+from .GetVoyageHumans import get_VoyageHumans
+from .DeleteVoyageHuman import delete_VoyageHuman
 
 blueprint = Blueprint('Voyage', __name__)
 
 @blueprint.route("/Voyage/SaveVoyage", methods=['GET'])
 @cross_origin()
 def SaveVoyage():
-    voyage_data = request.args.to_dict()
+    Voyage_data = request.args.to_dict()
 
-    # Extract the VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, and Notes from the voyage_data
-    VoyageId = voyage_data.get('VoyageId', None)
-    ShipId = voyage_data.get('ShipId', None)
-    StartLocationId = voyage_data.get('StartLocationId', None)
-    EndLocationId = voyage_data.get('EndLocationId', None)
-    StartDate = voyage_data.get('StartDate', None)
-    EndDate = voyage_data.get('EndDate', None)
-    Notes = voyage_data.get('Notes', None)
+    # Extract the VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, and Notes from the Voyage_data
+    VoyageId = Voyage_data.get('VoyageId', None)
+    ShipId = Voyage_data.get('ShipId', None)
+    StartLocationId = Voyage_data.get('StartLocationId', None)
+    EndLocationId = Voyage_data.get('EndLocationId', None)
+    StartDate = Voyage_data.get('StartDate', None)
+    EndDate = Voyage_data.get('EndDate', None)
+    Notes = Voyage_data.get('Notes', None)
 
-    # Call the save_voyage function from SaveVoyage.py with the extracted data
-    result = save_voyage(VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
-    History.SaveHistory(voyage_data, "Voyages", "VoyageId", result["VoyageId"])
+    # Call the save_Voyage function from SaveVoyage.py with the extracted data
+    result = save_Voyage(VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
+    History.SaveHistory(Voyage_data, "Voyages", "VoyageId", result["VoyageId"])
 
     return result
 
 @blueprint.route("/Voyage/DeleteVoyage", methods=['GET'])
 @cross_origin()
 def DeleteVoyage():
-    voyage_data = request.args.to_dict()
+    Voyage_data = request.args.to_dict()
 
     # Get the VoyageId from the request data
-    VoyageId = voyage_data.get('VoyageId')
+    VoyageId = Voyage_data.get('VoyageId')
 
-    # Call the delete_voyage function from DeleteVoyage.py
-    result = delete_voyage(VoyageId)
-    History.SaveHistory(voyage_data, "Voyages", "VoyageId", VoyageId)
+    # Call the delete_Voyage function from DeleteVoyage.py
+    result = delete_Voyage(VoyageId)
+    History.SaveHistory(Voyage_data, "Voyages", "VoyageId", VoyageId)
 
     return result
 
 @blueprint.route("/Voyage/GetVoyage", methods=['GET'])
 @cross_origin()
 def GetVoyage():
-    voyage_data = request.args.to_dict()
+    Voyage_data = request.args.to_dict()
 
     # Get the VoyageId from the request data
-    VoyageId = voyage_data.get('VoyageId')
+    VoyageId = Voyage_data.get('VoyageId')
 
-    # Call the get_voyage function from GetVoyage.py
-    result = get_voyage(VoyageId)
+    # Call the get_Voyage function from GetVoyage.py
+    result = get_Voyage(VoyageId)
 
     return result
 
@@ -60,8 +64,63 @@ def GetVoyage():
 @cross_origin()
 def GetShips():
     # Get the user data from the request
-    user_data = request.args.to_dict()
+    Voyage_data = request.args.to_dict()
 
-    # Call the get_ships function from GetShips.py
-    result = get_ships()
+    # Call the get_Ships function from GetShips.py
+    result = get_Ships()
+    return result
+
+@blueprint.route("/Voyage/GetHumans", methods=['GET'])
+@cross_origin()
+def GetHumans():
+    # Get the user data from the request
+    Voyage_data = request.args.to_dict()
+    VoyageId = Voyage_data.get('VoyageId')
+
+    # Call the get_Ships function from GetShips.py
+    result = get_Humans(VoyageId)
+    return result
+
+    
+@blueprint.route("/Voyage/SaveVoyageHuman", methods=['GET'])
+@cross_origin()
+def SaveVoyageHuman():
+    Voyage_data = request.args.to_dict()
+
+    # Extract the VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, and Notes from the Voyage_data
+    VoyageId = Voyage_data.get('VoyageId', None)
+    HumanId = Voyage_data.get('HumanId', None)
+
+    # Call the save_Voyage function from SaveVoyage.py with the extracted data
+    result = save_VoyageHuman(VoyageId, HumanId)
+    History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
+
+    return result
+
+
+    
+@blueprint.route("/Voyage/GetVoyageHumans", methods=['GET'])
+@cross_origin()
+def GetVoyageHumans():
+    # Get the user data from the request
+    Voyage_data = request.args.to_dict()
+    VoyageId = Voyage_data.get('VoyageId')
+
+    # Call the get_Ships function from GetShips.py
+    result = get_VoyageHumans(VoyageId)
+    return result
+
+
+    
+@blueprint.route("/Voyage/DeleteVoyageHuman", methods=['GET'])
+@cross_origin()
+def DeleteVoyageHumans():
+    # Get the user data from the request
+    Voyage_data = request.args.to_dict()
+    VoyageId = Voyage_data.get('VoyageId')
+    HumanId = Voyage_data.get('HumanId')
+
+    # Call the get_Ships function from GetShips.py
+    result = delete_VoyageHuman(VoyageId, HumanId)
+    History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
     return result
