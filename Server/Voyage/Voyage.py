@@ -5,6 +5,7 @@ from .DeleteVoyage import delete_voyage
 from .GetVoyage import get_voyage
 from Lib import Database
 from Lib import History
+from .GetShips import get_ships
 
 blueprint = Blueprint('Voyage', __name__)
 
@@ -53,4 +54,14 @@ def GetVoyage():
     # Call the get_voyage function from GetVoyage.py
     result = get_voyage(VoyageId)
 
+    return result
+
+@blueprint.route("/Voyage/GetShips", methods=['GET'])
+@cross_origin()
+def GetShips():
+    # Get the user data from the request
+    user_data = request.args.to_dict()
+
+    # Call the get_ships function from GetShips.py
+    result = get_ships()
     return result
