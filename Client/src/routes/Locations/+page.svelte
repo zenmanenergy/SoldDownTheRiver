@@ -4,15 +4,22 @@
 <script>
     import moment from 'moment';
     import { onMount } from 'svelte';
-    import handleGet from './handleGet.js';
+    import {handleGet} from './handleGet.js';
 	  import {Session} from "../Session.js";
   
-    export let locations = [];
+    let Locations = [];
     let isLoading = true;
   
+    async function setLocations(data) {
+      Locations=data
+      
+    }
     onMount(async () => {
 		  await Session.handleSession();
-      locations = await handleGet(Session.SessionId);
+      await Promise.all([
+				await handleGet(Session.SessionId,setLocations)
+				
+			]);
       isLoading = false;
     });
   
@@ -43,7 +50,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each locations as location}
+          {#each Locations as location}
             <tr style="cursor: pointer;" on:click={go(`${location.LocationId}`)}>
               <td>{location.City}</td>
               <td>{location.State}</td>
