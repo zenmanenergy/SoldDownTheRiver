@@ -85,7 +85,6 @@
 				handleGetBusinesses(Session.SessionId,setBusinesses),
 				handleGet(Session.SessionId,TransactionId, setTransactionDetails),
 				handleGetTransactionHumans(Session.SessionId,TransactionId, setTransactionHumans),
-				
 				handleGetHumans(Session.SessionId,TransactionId, setHumans),
 			]);
 		
