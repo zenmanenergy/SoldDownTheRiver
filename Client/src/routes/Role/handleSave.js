@@ -1,8 +1,8 @@
 import { baseURL } from '../Settings';
 
 // src/routes/Roles/handleSave.js
-export function handleSave(SessionId,RoleId,Role, formValid) {
-
+export function handleSave(SessionId,Role, formValid) {
+  console.log("handleSave",SessionId,Role, formValid)
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
 		if (invalidFields.length > 0) {
@@ -10,14 +10,10 @@ export function handleSave(SessionId,RoleId,Role, formValid) {
 		}
 		return;
 	}
-  const roleData = {
-    RoleId: RoleId,
-    Role: Role,
-    SessionId: SessionId
-  };
+  Role.SessionId= SessionId
 
-  const queryString = Object.keys(roleData)
-    .map(key => key + '=' + encodeURIComponent(roleData[key]))
+  const queryString = Object.keys(Role)
+    .map(key => key + '=' + encodeURIComponent(Role[key]))
     .join('&');
 
   const url = baseURL + '/Role/SaveRole?' + queryString; 
