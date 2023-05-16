@@ -5,14 +5,20 @@
     import moment from 'moment';
     import { onMount } from 'svelte';
 	  import {Session} from "../Session.js";
-    import handleGet from './handleGet.js';
+    import { handleGet } from './handleGet.js';
   
-    export let humans = [];
+    let Humans = [];
     let isLoading = true;
-  
+    
+    async function setHumans(data) {
+      Humans = data;
+    }
     onMount(async () => {
       await Session.handleSession();
-      humans = await handleGet(Session.SessionId);
+      await Promise.all([
+        await handleGet(Session.SessionId, setHumans)
+          
+      ]);
       isLoading = false;
     });
   
@@ -39,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each humans as human}
+          {#each Humans as human}
             <tr style="cursor: pointer;" on:click={location.href=`/Human?HumanId=${human.HumanId}`}>
               <td>{human.FirstName}</td>
               <td>{human.LastName}</td>
