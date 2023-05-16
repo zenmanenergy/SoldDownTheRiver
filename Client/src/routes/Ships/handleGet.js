@@ -1,11 +1,10 @@
 import { baseURL } from '../Settings';
 
-async function handleGet(SessionId) {
+export async function handleGet(SessionId, callback) {
   const url = `${baseURL}/Ships/GetShips?SessionId=${SessionId}`;
   console.log(url);
   const response = await fetch(url);
   const ships = await response.json();
-  return ships;
+  callback(ships);
 }
 
-export default handleGet;
