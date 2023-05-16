@@ -1,6 +1,6 @@
 from Lib import Database
 
-def get_voyage(VoyageId):
+def get_Voyage(VoyageId):
     if not VoyageId:
         VoyageId = "-1"
     
