@@ -1,7 +1,7 @@
 // src/routes/Locations/handleSave.js
 import { baseURL } from '../Settings';
 // src/routes/Locations/handleSave.js
-export function handleSave(SessionId,locationId, city, state, country, latitude, longitude, formValid) {
+export function handleSave(SessionId,Location, formValid) {
 
   if (!formValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
@@ -11,19 +11,11 @@ export function handleSave(SessionId,locationId, city, state, country, latitude,
 		return;
 	}
 
-  const locationData = {
-    LocationId: locationId,
-    City: city,
-    State: state,
-    Country: country,
-    Latitude: latitude,
-    Longitude: longitude,
-    SessionId: SessionId
+  Location.SessionId=SessionId
+  
 
-  };
-
-  const queryString = Object.keys(locationData)
-    .map(key => key + '=' + encodeURIComponent(locationData[key]))
+  const queryString = Object.keys(Location)
+    .map(key => key + '=' + encodeURIComponent(Location[key]))
     .join('&');
 
   const url = baseURL + '/Location/SaveLocation?' + queryString; 
