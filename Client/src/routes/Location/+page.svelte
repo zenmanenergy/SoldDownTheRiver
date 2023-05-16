@@ -21,27 +21,34 @@
 	let Longitude = "";
 	let formValid = false;
 	let isLoading = true;
+	let Location={LocationId :"", City : "", State : "", Country : "", Latitude : "", Longitude : "", LastModified : ""}
 
-	async function setLocation(city, state, country, latitude, longitude, lastModified) {
-		City = city;
-		State = state;
-		Country = country;
-		Latitude = latitude;
-		Longitude = longitude;
-		LastModified = lastModified;
+	async function setLocation(data) {
+		Location.LocationId : data.LocationId || "";
+		Location.City : data.City || "";
+		Location.State = data.State || "";
+		Location.Country = data.Country || "";
+		Location.Latitude = data.Latitude || "";
+		Location.Longitude = data.Longitude || "";
+		Location.LastModified = data.LastModified || "";
+		
 	}
 
 	$: {
-		formValid = City;
+		formValid = Location.City;
 	}
-
+	
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		LocationId = urlParams.get("LocationId") || "";
 		
 		if (LocationId){
-			handleGet(Session.SessionId,LocationId, setLocation);
+			
+			await Promise.all([
+				await handleGet(Session.SessionId,LocationId, setLocation)
+				
+			]);
 		}
 		
 		console.log("LocationId", LocationId);
@@ -60,46 +67,46 @@
 			<form>
 				<h3 class="title is-2">Edit a Location</h3>
 
-				<input type="hidden" bind:value={LocationId} />
+				<input type="hidden" bind:value={Location.LocationId} />
 
 				<div class="field">
 					<label class="label" for="City">City</label>
 					<div class="control">
-						<input type="text" id="City" placeholder="Enter City Name" bind:value={City} required />
+						<input type="text" id="City" placeholder="Enter City Name" bind:value={Location.City} required />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="State">State</label>
 					<div class="control">
-						<input type="text" id="State" placeholder="Enter State Name" bind:value={State}  />
+						<input type="text" id="State" placeholder="Enter State Name" bind:value={Location.State}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Country">Country</label>
 					<div class="control">
-						<input type="text" id="Country" placeholder="Enter Country Name" bind:value={Country}  />
+						<input type="text" id="Country" placeholder="Enter Country Name" bind:value={Location.Country}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Latitude">Latitude</label>
 					<div class="control">
-						<input type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Latitude}  />
+						<input type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Location.Latitude}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Longitude">Longitude</label>
 					<div class="control">
-						<input type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Longitude}  />
+						<input type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Location.Longitude}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<div class="control">
-						<button type="button" on:click={() => handleSave(Session.SessionId,LocationId, City, State, Country, Latitude, Longitude, formValid)}>Save</button>
+						<button type="button" on:click={() => handleSave(Session.SessionId,Location, formValid)}>Save</button>
 						{#if LocationId.length}
 							<button type="button" on:click={() => handleDelete(Session.SessionId,LocationId)}>Delete</button>
 						{/if}
