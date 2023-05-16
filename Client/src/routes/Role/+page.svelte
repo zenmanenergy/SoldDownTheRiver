@@ -11,30 +11,29 @@
 	import { handleGet } from './handleGet.js';
 	import {Session} from "../Session.js";
 
-	let RoleId = "";
-	let Role = "";
-	let LastModified = "";
+	
 	let formValid = false;
 	let isLoading = true;
-
+	let Role={RoleId :"", Role : "", LastModified : ""}
 	$: {
-		formValid = Role;
+		formValid = Role.Role;
 	}
-	async function setRole(_RoleId,_Role,_LastModified) {
-		if (_RoleId){
-			RoleId = _RoleId;
-			Role = _Role;
-			LastModified = _LastModified;
-		}
+	async function setRole(data) {
+		Role.RoleId = data.RoleId || "";
+		Role.Role = data.Role || "";
+		Role.LastModified = data.LastModified || "";
 		
 	}
+		
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
-		RoleId = urlParams.get("RoleId") || "";
-		handleGet(Session.SessionId,RoleId, setRole);
+		Role.RoleId = urlParams.get("RoleId") || "";
+		await Promise.all([
+			await handleGet(Session.SessionId,Role.RoleId,setRole)
+			
+		]);
 		
-		console.log("RoleId", RoleId);
 		isLoading = false;
 	});
 </script>
@@ -55,13 +54,13 @@
 					<div class="control">
 						<input type="hidden" 
 							id="RoleId" 
-							bind:value={RoleId} />
+							bind:value={Role.RoleId} />
 						<input
 							class="input"
 							type="text"
 							id="Role"
 							placeholder="Enter Role Name"
-							bind:value={Role}
+							bind:value={Role.Role}
 							required
 						/>
 					</div>
@@ -69,15 +68,15 @@
 
 				<div class="field">
 					<div class="control">
-						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,RoleId,Role, formValid)}>Save</button>
+						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Role, formValid)}>Save</button>
 						{#if Role.length}
-							<button class="button is-danger" type="button" on:click={() => handleDelete(Session.WSessionId,RoleId,Role)}>Delete</button>
+							<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,Role.RoleId)}>Delete</button>
 						{/if}
 					</div>
 				</div>
 			</form>
-			{#if LastModified}
-				<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
+			{#if Role.LastModified}
+				<small>Last Modified: {moment.utc(Role.LastModified).local().fromNow()}</small>
 			{/if}
 		</div>
 	</div>
