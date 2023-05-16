@@ -1,11 +1,9 @@
 import { baseURL } from '../Settings';
 
-async function handleGet(SessionId) {
-  const url = `${baseURL}/Voyages/GetVoyages?SessionId=${SessionId}`; // Update the API endpoint for voyages
+export async function handleGet(SessionId, callback) {
+  const url = `${baseURL}/Voyages/GetVoyages?SessionId=${SessionId}`; // Update the API endpoint for Voyages
   console.log(url);
   const response = await fetch(url);
-  const voyages = await response.json(); // Update the variable name to `voyages`
-  return voyages;
+  const Voyages = await response.json(); // Update the variable name to `Voyages`
+  callback(Voyages);
 }
-
-export default handleGet;
