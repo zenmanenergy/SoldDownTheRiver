@@ -8,6 +8,7 @@
     import { handleSave } from './handleSave.js';
     import { handleDelete } from './handleDelete.js';
     import { handleGet } from './handleGet.js';
+    import { handleGetShips } from './handleGetShips.js';
     import { Session } from '../Session.js';
   
     let VoyageId = '';
@@ -18,6 +19,7 @@
     let EndDate = null;
     let Notes = '';
     let Voyage={VoyageId:"", ShipId:"", StartLocationId:"", EndLocationId:"", StartDate:null, EndDate:null, Notes:""};
+    let Ships=[]
   
     let formValid = false;
     let isLoading = true;
@@ -37,7 +39,9 @@
       Voyage.Notes = data.Notes || "";
       
     }
-  
+    async function setShips(data) {
+      Ships = data;
+    }
     $: {
       formValid = Voyage.ShipId;
     }
@@ -46,9 +50,12 @@
       await Session.handleSession();
       const urlParams = new URLSearchParams(window.location.search);
       VoyageId = urlParams.get('VoyageId') || '';
-      handleGet(Session.SessionId, VoyageId, setVoyage);
-  
-      console.log('VoyageId', VoyageId);
+      
+      await Promise.all([
+				handleGet(Session.SessionId, VoyageId, setVoyage),
+        handleGetShips(Session.SessionId, setShips)
+
+			]);
       isLoading = false;
     });
   </script>
@@ -66,12 +73,16 @@
           <input type="hidden" bind:value={Voyage.VoyageId} />
   
           <div class="field">
-            <label class="label" for="ShipId">Ship ID</label>
+            <label class="label" for="FromBusinessId">From:</label>
             <div class="control">
-              <input class="input" type="text" id="ShipId" placeholder="Enter Voyage ID" bind:value={Voyage.ShipId} required/>
+              <select class="input" id="ShipId" bind:value={Voyage.ShipId} required>
+                <option value=""></option>
+                {#each Ships as Ship}
+                  <option value={Ship.ShipId}>{Ship.ShipName}</option>
+                {/each}
+              </select>
             </div>
           </div>
-  
           <div class="field">
             <label class="label" for="StartLocationId">Start Location ID</label>
             <div class="control">
@@ -89,13 +100,13 @@
           <div class="field">
             <label class="label" for="StartDate">Start Date</label>
             <div class="control">
-              <input class="input" type="datetime-local" id="StartDate" bind:value={Voyage.StartDate} />
+              <input class="input" type="date" id="StartDate" bind:value={Voyage.StartDate} />
             </div>
           </div>
           <div class="field">
             <label class="label" for="EndDate">End Date</label>
             <div class="control">
-              <input class="input" type="datetime-local" id="EndDate" bind:value={Voyage.EndDate} />
+              <input class="input" type="date" id="EndDate" bind:value={Voyage.EndDate} />
             </div>
           </div>
           <div class="field">
