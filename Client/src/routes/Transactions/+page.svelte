@@ -4,15 +4,20 @@
   <script>
     import moment from 'moment';
     import { onMount } from 'svelte';
-    import handleGet from './handleGet.js';
+    import {handleGet} from './handleGet.js';
 	  import {Session} from "../Session.js";
   
-    export let transactions = [];
+    let Transactions = [];
     let isLoading = true;
   
+    async function setTransactions(data) {
+      Transactions = data
+    }
     onMount(async () => {
 		await Session.handleSession();
-      transactions = await handleGet(Session.SessionId);
+      await Promise.all([
+				handleGet(Session.SessionId,setTransactions),
+			]);
       isLoading = false;
     });
   
@@ -39,7 +44,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each transactions as transaction}
+          {#each Transactions as transaction}
             <tr style="cursor: pointer;" on:click={location.href=`/Transaction?TransactionId=${transaction.TransactionId}`}>
               
               <td>{transaction.FromBusinessName}--->{transaction.ToBusinessName}</td>
