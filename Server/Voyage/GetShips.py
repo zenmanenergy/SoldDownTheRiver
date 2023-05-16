@@ -1,6 +1,6 @@
 from Lib import Database
 
-def get_ships():
+def get_Ships():
     # Connect to the database
     cursor, connection = Database.ConnectToDatabase()
 
