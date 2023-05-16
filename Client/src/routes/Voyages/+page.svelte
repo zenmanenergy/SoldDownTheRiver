@@ -5,15 +5,21 @@
   <script>
     import moment from 'moment';
     import { onMount } from 'svelte';
-    import handleGet from './handleGet.js';
+    import {handleGet} from './handleGet.js';
     import { Session } from "../Session.js";
   
     export let voyages = [];
     let isLoading = true;
+    async function setVoyages(data) {
+      voyages = data;
+    } 
   
     onMount(async () => {
       await Session.handleSession();
-      voyages = await handleGet(Session.SessionId);
+      await Promise.all([
+				handleGet(Session.SessionId, setVoyages),
+
+			]);
       isLoading = false;
     });
   
