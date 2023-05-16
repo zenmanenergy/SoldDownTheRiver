@@ -1,7 +1,7 @@
 import uuid
 from Lib import Database
 
-def save_voyage(VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes):
+def save_Voyage(VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes):
     # Connect to the database
     cursor, connection = Database.ConnectToDatabase()
 
@@ -11,12 +11,12 @@ def save_voyage(VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, End
         EndDate = None
     # Check if the VoyageId is present
     if VoyageId:
-        # If the VoyageId is present, update the existing voyage
+        # If the VoyageId is present, update the existing Voyage
         query = "UPDATE Voyages SET ShipId = %s, StartLocationId = %s, EndLocationId = %s, StartDate = %s, EndDate = %s, Notes = %s WHERE VoyageId = %s"
         values = (ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes, VoyageId)
     else:
-        # If the VoyageId is not present, create a new voyage
-        VoyageId = str(uuid.uuid4())
+        # If the VoyageId is not present, create a new Voyage
+        VoyageId = "VYG" + str(uuid.uuid4())
         query = "INSERT INTO Voyages (VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         values = (VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
 
