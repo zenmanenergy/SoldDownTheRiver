@@ -1,11 +1,10 @@
 import { baseURL } from '../Settings';
 
-async function handleGet(SessionId) {
+export async function handleGet(SessionId, callback) {
   const url=`${baseURL}/Locations/GetLocations?SessionId=${SessionId}`
   console.log(url)
   const response = await fetch(url);
   const locations = await response.json();
-  return locations;
+  callback(locations);
 }
 
-export default handleGet;
