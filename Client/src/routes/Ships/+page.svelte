@@ -5,7 +5,7 @@
   <script>
     import moment from 'moment';
     import { onMount } from 'svelte';
-    import {handleGet} from './handleGet.js';
+    import {handleGetShips} from './handleGetShips.js';
     import { Session } from "../Session.js";
   
     let Ships = [];
@@ -16,7 +16,7 @@
     onMount(async () => {
       await Session.handleSession();
       await Promise.all([
-        await handleGet(Session.SessionId,setShips)
+        await handleGetShips(Session.SessionId,setShips)
         
       ]);
       isLoading = false;

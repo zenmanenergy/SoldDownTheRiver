@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
-	import { handleGet } from './handleGet.js';
+	import { handleGetBusiness } from './handleGetBusiness.js';
 	import { handleGetBusinessHumans } from './handleGetBusinessHumans.js';
 	import { handleGetHumans } from './handleGetHumans.js';
 	import { handleSaveBusinessHuman } from './handleSaveBusinessHuman.js';
@@ -58,7 +58,7 @@
 		
 		if (BusinessId){
 			await Promise.all([
-				handleGet(Session.SessionId,BusinessId, setBusiness),
+				handleGetBusiness(Session.SessionId,BusinessId, setBusiness),
 				handleGetBusinessHumans(Session.SessionId,BusinessId, setBusinessHumans),
 				handleGetHumans(Session.SessionId, setHumans),
 				handleGetRoles(Session.SessionId, setRoles),

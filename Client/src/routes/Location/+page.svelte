@@ -9,7 +9,7 @@
 	import { onMount } from "svelte";
 	import { handleSave } from "./handleSave.js";
 	import { handleDelete } from "./handleDelete.js";
-	import { handleGet } from "./handleGet.js";
+	import { handleGetLocation } from "./handleGetLocation.js";
 	import {Session} from "../Session.js";
 
 	let LastModified='';
@@ -24,8 +24,8 @@
 	let Location={LocationId :"", City : "", State : "", Country : "", Latitude : "", Longitude : "", LastModified : ""}
 
 	async function setLocation(data) {
-		Location.LocationId : data.LocationId || "";
-		Location.City : data.City || "";
+		Location.LocationId = data.LocationId || "";
+		Location.City = data.City || "";
 		Location.State = data.State || "";
 		Location.Country = data.Country || "";
 		Location.Latitude = data.Latitude || "";
@@ -46,7 +46,7 @@
 		if (LocationId){
 			
 			await Promise.all([
-				await handleGet(Session.SessionId,LocationId, setLocation)
+				await handleGetLocation(Session.SessionId,LocationId, setLocation)
 				
 			]);
 		}

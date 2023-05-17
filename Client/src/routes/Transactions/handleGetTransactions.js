@@ -1,6 +1,6 @@
 import { baseURL } from '../Settings';
 
-export async function handleGet(SessionId,callback) {
+export async function handleGetTransactions(SessionId,callback) {
   const url=`${baseURL}/Transactions/GetTransactions?SessionId=${SessionId}`
   console.log(url)
   const response = await fetch(url);

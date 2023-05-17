@@ -1,6 +1,6 @@
-// src/routes/Transactions/handleGet.js
+
 import { baseURL } from '../Settings';
-export async function handleGet(SessionId,TransactionId, setTransactionData) {
+export async function handleGetTransaction(SessionId,TransactionId, setTransactionData) {
   
   const url=`${baseURL}/Transaction/GetTransaction?TransactionId=${TransactionId}&SessionId=${SessionId}`
   console.log(url)

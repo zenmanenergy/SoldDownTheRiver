@@ -6,7 +6,7 @@
   
   import moment from 'moment';
   import { onMount } from 'svelte';
-  import {handleGet} from './handleGet.js';
+  import {handleGetBusinesses} from './handleGetBusinesses.js';
 	import {Session} from "../Session.js";
 
   let businesses = [];
@@ -18,7 +18,7 @@
   onMount(async () => {
 		await Session.handleSession();
     await Promise.all([
-      await handleGet(Session.SessionId, setGetBusinesses),
+      await handleGetBusinesses(Session.SessionId, setGetBusinesses),
     ]);
     isLoading = false;
   });

@@ -1,6 +1,6 @@
 import { baseURL } from '../Settings';
 
-export async function handleGet(SessionId,HumanId, setHumanName) {
+export async function handleGetHuman(SessionId,HumanId, setHumanName) {
     const url=`${baseURL}/Human/GetHuman?HumanId=${HumanId}&SessionId=${SessionId}`
     console.log(url)
     const response = await fetch(url);

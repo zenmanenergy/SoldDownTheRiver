@@ -1,6 +1,6 @@
 // src/routes/Users/handleGet.js
 import { baseURL } from '../Settings';
-export async function handleGet(SessionId,UserId, setUser) {
+export async function handleGetUser(SessionId,UserId, setUser) {
     const url=`${baseURL}/User/GetUser?UserId=${UserId}&SessionId=${SessionId}`
     console.log(url)
     const response = await fetch(url);

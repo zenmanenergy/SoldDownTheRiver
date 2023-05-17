@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
-	import { handleGet } from './handleGet.js';
+	import { handleGetUser } from './handleGetUser.js';
 	import {Session} from "../Session.js";
 
 	let UserId="";
@@ -43,7 +43,7 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		UserId = urlParams.get("UserId") || "";
 		await Promise.all([
-			handleGet(Session.SessionId,UserId, setUser),
+			handleGetUser(Session.SessionId,UserId, setUser),
 		]);
 		
 		console.log("UserId", UserId)

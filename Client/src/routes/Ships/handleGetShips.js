@@ -1,6 +1,6 @@
 import { baseURL } from '../Settings';
 
-export async function handleGet(SessionId, callback) {
+export async function handleGetShips(SessionId, callback) {
   const url = `${baseURL}/Ships/GetShips?SessionId=${SessionId}`;
   console.log(url);
   const response = await fetch(url);

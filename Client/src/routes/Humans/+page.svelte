@@ -5,7 +5,7 @@
     import moment from 'moment';
     import { onMount } from 'svelte';
 	  import {Session} from "../Session.js";
-    import { handleGet } from './handleGet.js';
+    import { handleGetHumans } from './handleGetHumans.js';
   
     let Humans = [];
     let isLoading = true;
@@ -16,7 +16,7 @@
     onMount(async () => {
       await Session.handleSession();
       await Promise.all([
-        await handleGet(Session.SessionId, setHumans)
+        await handleGetHumans(Session.SessionId, setHumans)
           
       ]);
       isLoading = false;

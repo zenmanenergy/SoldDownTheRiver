@@ -8,7 +8,7 @@
   import { page } from '$app/stores';
   import { handleSave } from './handleSave.js';
   import { handleDelete } from './handleDelete.js';
-  import { handleGet } from './handleGet.js';
+  import { handleGetHuman } from './handleGetHuman.js';
   import { handleGetAKA } from './handleGetAKA.js';
   import { handleSaveAkaName } from './handleSaveAkaName.js';
   import { handleDeleteAkaName } from './handleDeleteAkaName.js';
@@ -82,7 +82,7 @@
     HumanId = urlParams.get("HumanId") || "";
     
     await Promise.all([
-      handleGet(Session.SessionId,HumanId, setName),
+      handleGetHuman(Session.SessionId,HumanId, setName),
       handleGetAKA(Session.SessionId,HumanId, setAkaNames),
       handleGetFamilies(Session.SessionId,HumanId, setFamilies),
       handleGetPossibleFamilies(Session.SessionId,HumanId, setPossibleFamilies),
