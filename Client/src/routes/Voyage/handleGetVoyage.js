@@ -1,6 +1,6 @@
 import { baseURL } from '../Settings';
 
-export async function handleGet(SessionId, VoyageId, callback) {
+export async function handleGetVoyage(SessionId, VoyageId, callback) {
   const url = `${baseURL}/Voyage/GetVoyage?VoyageId=${VoyageId}&SessionId=${SessionId}`;
   console.log(url);
   const response = await fetch(url);
