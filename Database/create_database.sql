@@ -91,10 +91,12 @@ CREATE TABLE `roles` (
 
 CREATE TABLE `ships` (
   `ShipId` char(39) NOT NULL,
+  `ShipName` varchar(45) DEFAULT NULL,
   `BuildDate` datetime DEFAULT NULL,
   `Notes` varchar(255) DEFAULT NULL,
   `ShipType` varchar(45) DEFAULT NULL,
   `Size` varchar(45) DEFAULT NULL,
+  `OwnerBusinessId` char(39) DEFAULT NULL,
   PRIMARY KEY (`ShipId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -154,7 +156,7 @@ CREATE TABLE `voyagecargo` (
   PRIMARY KEY (`CargoId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `voyagehuman` (
+CREATE TABLE `voyagehumans` (
   `VoyageId` char(39) NOT NULL,
   `HumanId` char(39) DEFAULT NULL,
   `RoleId` char(39) DEFAULT NULL,
