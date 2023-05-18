@@ -15,7 +15,8 @@
     import { handleDeleteVoyageHuman } from './handleDeleteVoyageHuman.js';
     import { handleGetRoles } from './handleGetRoles.js';
     import { Session } from '../Session.js';
-  
+    import {handleGetLocations} from './handleGetLocations.js';
+
     let VoyageId = '';
     let ShipId = '';
     let StartLocationId = '';
@@ -31,10 +32,16 @@
     let Humans = [];
     let VoyageHumans=[];
     let Roles = [];
+    let Locations = [];
   
     let formValid = false;
     let isLoading = true;
   
+async function setLocations(data) {
+      Locations=data
+
+}
+
     async function setVoyage(data) {
 
       Voyage.VoyageId = data.VoyageId || "";
@@ -78,6 +85,7 @@
         handleGetHumans(Session.SessionId,VoyageId,setHumans),
         handleGetVoyageHumans(Session.SessionId,VoyageId,setVoyageHumans),
         handleGetRoles(Session.SessionId,setRoles),
+        handleGetLocations(Session.SessionId,setLocations)
 
 			]);
       isLoading = false;
