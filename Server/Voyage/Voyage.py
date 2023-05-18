@@ -11,6 +11,7 @@ from .SaveVoyageHuman import save_VoyageHuman
 from .GetVoyageHumans import get_VoyageHumans
 from .DeleteVoyageHuman import delete_VoyageHuman
 from .GetRoles import get_roles
+from .GetLocations import get_locations
 
 blueprint = Blueprint('Voyage', __name__)
 
@@ -138,4 +139,11 @@ def GetRoles():
 
     # Call the get_Ships function from GetShips.py
     result = get_roles(VoyageId)
+    return result
+
+@blueprint.route("/Voyage/GetLocations", methods=['GET'])
+@cross_origin()
+def GetLocations():
+    # Call the get_locations function to retrieve location data
+    result = get_locations()
     return result
