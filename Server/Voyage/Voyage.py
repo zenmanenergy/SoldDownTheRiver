@@ -10,6 +10,7 @@ from .GetHumans import get_Humans
 from .SaveVoyageHuman import save_VoyageHuman
 from .GetVoyageHumans import get_VoyageHumans
 from .DeleteVoyageHuman import delete_VoyageHuman
+from .GetRoles import get_roles
 
 blueprint = Blueprint('Voyage', __name__)
 
@@ -90,9 +91,11 @@ def SaveVoyageHuman():
     # Extract the VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, and Notes from the Voyage_data
     VoyageId = Voyage_data.get('VoyageId', None)
     HumanId = Voyage_data.get('HumanId', None)
+    HumanRoleId = Voyage_data.get('VoyageHumanRoleId', None)
+    HumanNotes = Voyage_data.get('VoyageHumanNotes', None)
 
     # Call the save_Voyage function from SaveVoyage.py with the extracted data
-    result = save_VoyageHuman(VoyageId, HumanId)
+    result = save_VoyageHuman(VoyageId, HumanId, HumanRoleId, HumanNotes)
     History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
 
     return result
@@ -123,4 +126,16 @@ def DeleteVoyageHumans():
     # Call the get_Ships function from GetShips.py
     result = delete_VoyageHuman(VoyageId, HumanId)
     History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
+    return result
+
+
+@blueprint.route("/Voyage/GetRoles", methods=['GET'])
+@cross_origin()
+def GetRoles():
+    # Get the user data from the request
+    Voyage_data = request.args.to_dict()
+    VoyageId = Voyage_data.get('VoyageId')
+
+    # Call the get_Ships function from GetShips.py
+    result = get_roles(VoyageId)
     return result
