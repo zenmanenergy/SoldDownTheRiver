@@ -13,6 +13,7 @@
     import { handleSaveVoyageHuman } from './handleSaveVoyageHuman.js';
     import { handleGetVoyageHumans } from './handleGetVoyageHumans.js';
     import { handleDeleteVoyageHuman } from './handleDeleteVoyageHuman.js';
+    import { handleGetRoles } from './handleGetRoles.js';
     import { Session } from '../Session.js';
   
     let VoyageId = '';
@@ -23,10 +24,13 @@
     let EndDate = null;
     let Notes = '';
     let VoyageHumanId="";
+    let VoyageHumanRoleId="";
+    let VoyageHumanNotes="";
     let Voyage={VoyageId:"", ShipId:"", StartLocationId:"", EndLocationId:"", StartDate:null, EndDate:null, Notes:""};
     let Ships=[]
     let Humans = [];
     let VoyageHumans=[];
+    let Roles = [];
   
     let formValid = false;
     let isLoading = true;
@@ -55,6 +59,10 @@
     async function setVoyageHumans(data) {
       VoyageHumans = data;
     }
+    async function setRoles(data) {
+      Roles = data;
+    }
+    
     $: {
       formValid = Voyage.ShipId;
     }
@@ -68,7 +76,8 @@
 				handleGetVoyage(Session.SessionId, VoyageId, setVoyage),
         handleGetShips(Session.SessionId, setShips),
         handleGetHumans(Session.SessionId,VoyageId,setHumans),
-        handleGetVoyageHumans(Session.SessionId,VoyageId,setVoyageHumans)
+        handleGetVoyageHumans(Session.SessionId,VoyageId,setVoyageHumans),
+        handleGetRoles(Session.SessionId,setRoles),
 
 			]);
       isLoading = false;
@@ -140,8 +149,17 @@
                 {/each}
               </select>
               <br/>
+              <select class="input" id="HumanRoleId" bind:value={VoyageHumanRoleId} required>
+                <option value="">Select Role</option>
+                {#each Roles as Role}
+                  <option value={Role.RoleId}>{Role.Role}</option>
+                {/each}
+              </select>
+              <br/>
+              <input class="input" type="text" id="VoyageHumanNotes" placeholder="Enter Notes" bind:value={VoyageHumanNotes}/>
+						  <br/>
               
-              <button class="button "type="button"on:click={() => handleSaveVoyageHuman(Session.SessionId,Voyage.VoyageId,VoyageHumanId, setHumans)} >Add Human</button>
+              <button class="button "type="button"on:click={() => handleSaveVoyageHuman(Session.SessionId,Voyage.VoyageId,VoyageHumanId, VoyageHumanRoleId, VoyageHumanNotes, setHumans)} >Add Human</button>
             </div>
           </div>
           <div class="ActionBox">
@@ -151,6 +169,7 @@
               <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Role</th>
                 <th>Delete</th>
               </tr>
               </thead>
@@ -159,6 +178,7 @@
                 <tr>
                 <td>{Human.FirstName}</td>
                 <td>{Human.LastName}</td>
+                <td>{Human.Role}</td>
                 
                 <td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteVoyageHuman(Session.SessionId,VoyageId, Human.HumanId)}>X</button></td>
                 </tr>
