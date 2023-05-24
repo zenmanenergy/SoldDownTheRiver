@@ -3,21 +3,21 @@ CREATE TABLE `businesses` (
   `BusinessName` varchar(45) DEFAULT NULL,
   `LocationId` char(39) DEFAULT NULL,
   PRIMARY KEY (`BusinessId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `businesshumans` (
   `BusinessId` char(39) NOT NULL,
   `HumanId` char(39) NOT NULL,
   `RoleId` char(39) DEFAULT NULL,
   PRIMARY KEY (`BusinessId`,`HumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `families` (
   `HumanId` char(39) NOT NULL,
   `FamilyHumanId` char(39) NOT NULL,
   `Relationship` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`HumanId`,`FamilyHumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `history` (
   `HistoryId` char(39) NOT NULL,
@@ -30,13 +30,13 @@ CREATE TABLE `history` (
   PRIMARY KEY (`HistoryId`),
   KEY `tableKeyValue` (`TableName`,`KeyName`,`KeyValue`,`UserId`),
   KEY `tableKey` (`TableName`,`KeyName`,`UserId`) /*!80000 INVISIBLE */
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `humanroles` (
   `HumanId` char(39) NOT NULL,
   `RoleId` varchar(45) NOT NULL,
   PRIMARY KEY (`HumanId`,`RoleId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `humans` (
   `HumanId` char(39) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE `humans` (
   `PhysicalDescription` varchar(150) DEFAULT NULL,
   `gender` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`HumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `humansaka` (
   `AKAHumanId` char(39) NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE `humansaka` (
   `AKAMiddleName` varchar(45) DEFAULT NULL,
   `AKALastName` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`AKAHumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `locations` (
   `LocationId` char(39) NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE `locations` (
   `Latitude` float DEFAULT NULL,
   `Longitude` float DEFAULT NULL,
   PRIMARY KEY (`LocationId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `notary` (
   `HumanId` char(39) NOT NULL,
@@ -81,13 +81,13 @@ CREATE TABLE `notary` (
   `StartYear` int DEFAULT NULL,
   `EndYear` int DEFAULT NULL,
   PRIMARY KEY (`HumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `roles` (
   `RoleId` char(39) NOT NULL,
   `Role` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`RoleId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `ships` (
   `ShipId` char(39) NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE `ships` (
   `Size` varchar(45) DEFAULT NULL,
   `OwnerBusinessId` char(39) DEFAULT NULL,
   PRIMARY KEY (`ShipId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `transactionhumans` (
   `TransactionId` char(39) NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE `transactionhumans` (
   `Notes` varchar(45) DEFAULT NULL,
   `Price` float DEFAULT NULL,
   PRIMARY KEY (`TransactionId`,`HumanId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `transactions` (
   `TransactionId` char(39) NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE `transactions` (
   `price` float DEFAULT NULL,
   `NeedsReview` int DEFAULT NULL,
   PRIMARY KEY (`TransactionId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `users` (
   `UserId` char(39) NOT NULL,
@@ -137,14 +137,14 @@ CREATE TABLE `users` (
   `Phone` varchar(45) DEFAULT NULL,
   `UserType` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`UserId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `usersessions` (
   `SessionId` char(39) DEFAULT NULL,
   `UserId` char(39) NOT NULL,
   `DateAdded` datetime DEFAULT NULL,
   PRIMARY KEY (`UserId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `voyagecargo` (
   `CargoId` char(39) NOT NULL,
@@ -154,7 +154,7 @@ CREATE TABLE `voyagecargo` (
   `Value` float DEFAULT NULL,
   `Notes` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`CargoId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `voyagehumans` (
   `VoyageId` char(39) NOT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE `voyagehumans` (
   `RoleId` char(39) DEFAULT NULL,
   `Notes` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`VoyageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `voyages` (
   `VoyageId` char(39) NOT NULL,
@@ -173,7 +173,7 @@ CREATE TABLE `voyages` (
   `EndDate` datetime DEFAULT NULL,
   `Notes` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`VoyageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
