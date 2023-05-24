@@ -62,6 +62,38 @@ def save_ship_manifest(ShipName, ShipType,VoyageId, voyageDate, spreadsheet_arra
             CaptainLastName=CaptainName.split(",")[0].strip()
             CaptainFirstName=CaptainName.split(",")[1].strip()
             
+    query = "select Humans.HumanId from Humans "
+    query += " where Humans.FirstName = %s and Humans.LastName=%s "
+    values=(CaptainFirstName, CaptainLastName,)
+    
+    cursor.execute(query, values)
+    result = cursor.fetchone()
+
+    if result is None:
+        CaptainHumanId = "HUM" + str(uuid.uuid4())
+        query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+       
+        values = (CaptainHumanId, CaptainFirstName, CaptainLastName,)
+        cursor.execute(query, values)
+        connection.commit()
+    else:
+        CaptainHumanId = result['HumanId']
+
+
+    BusinessId = "BUS" + str(uuid.uuid4())
+    query = "INSERT INTO Businesses(BusinessId, BusinessName) VALUES (%s, %s) "
+
+    values = (BusinessId, ShipName,)
+    cursor.execute(query, values)
+    connection.commit()
+
+    query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+
+    values = (BusinessId, CaptainHumanId,"ROL-CAP-2da-c1cc-4100-abbb-3da1508fc827")
+    cursor.execute(query, values)
+    connection.commit()
+
+
     for row in spreadsheet_array:
         
         EnslavedLastName=row["Last Name"]
