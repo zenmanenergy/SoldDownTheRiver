@@ -31,7 +31,11 @@ export function handleLogin(Email, Password,formValid) {
     if (SessionId){
       console.log("Save success, SessionId:",SessionId);
       Cookies.set("SessionId", SessionId, { expires: 365 });
-      window.location.href = Cookies.get("previousLocation");
+      if (Cookies.get("previousLocation")){
+        window.location.href = Cookies.get("previousLocation");
+      }else{
+        window.location.href = "/?s=0";
+      }
       // Handle the response data as needed
     }else {
 			Cookies.remove("sessionId");
