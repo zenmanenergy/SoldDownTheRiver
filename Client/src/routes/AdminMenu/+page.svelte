@@ -4,10 +4,11 @@
 <script>
 	import { onMount } from "svelte";
 	import {Session} from "../Session.js";
+	import { handleLogout } from './handleLogout.js';
 	
 	
 	let isLoading = true;
-
+	
 	onMount(async () => {
 		isLoading = false;
 		await Session.handleSession();
@@ -34,6 +35,10 @@
 			<li><a href={`/Users`}>Users</a></li>
 				
 			<li><a href={`/Search`}>Search</a></li>
+			<li><a on:click={handleLogout}>Logout</a></li>
+			<br>
+			
+			<li><a href={`/Import`}>Import Data</a></li>
 		</ul>
 	</div>
 </div>
