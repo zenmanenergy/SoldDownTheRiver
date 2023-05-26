@@ -30,7 +30,6 @@ from Voyage import Voyage
 from Import import Import
 
 
-app = Flask(__name__)
 
 app.register_blueprint(Businesses.blueprint)
 app.register_blueprint(Business.blueprint)
