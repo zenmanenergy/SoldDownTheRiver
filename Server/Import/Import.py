@@ -3,6 +3,7 @@ from Lib import Database
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS, cross_origin
 from .ImportShipManifest import save_ship_manifest
+from .ImportNotary import save_Notary
 
 blueprint = Blueprint('Import', __name__)
 
@@ -25,6 +26,9 @@ def ImportData():
     print(len(spreadsheet_array[0]))
     if len(spreadsheet_array[0]) == 14:
         print("notary")
+
+        save_Notary(spreadsheet_name,spreadsheet_array)
+
     elif len(spreadsheet_array[0]) == 24:
         voyage = spreadsheet_name.split(" ")
         VoyageId = voyage[0]
