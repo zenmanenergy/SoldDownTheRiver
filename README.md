@@ -44,6 +44,7 @@ In the command line run this:
 	pip install pymysql
 	pip install pytz
 	pip install moment
+	pip install python-dateutil
 	```
 
 9. Open two terminal windows in VS Code.
