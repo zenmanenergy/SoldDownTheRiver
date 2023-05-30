@@ -4,108 +4,109 @@ from datetime import datetime, timedelta
 from dateutil import parser
 
 
-def save_Notary( spreadsheet_name, spreadsheet_array):
-    # Connect to the database
+def import_Notary( Notary):
     cursor, connection = Database.ConnectToDatabase()
-    
-    Notary = spreadsheet_name.split("-")[1]
-    NotaryLastName= Notary.split(",")[0].strip()
-    NotaryFirstName = Notary.split(",")[1]
-    NotaryFirstName = NotaryFirstName.split("(")[0].strip()
     
 
     NotaryHumanId = "HUM" + str(uuid.uuid4())
     query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
     query += "ON DUPLICATE KEY UPDATE FirstName=values(FirstName),LastName=values(LastName)"
 
-    values = (NotaryHumanId, NotaryFirstName, NotaryLastName,)
+    values = (NotaryHumanId, Notary[0]['NotaryFirstName'], Notary[0]['NotaryLastName'],)
     cursor.execute(query, values)
     connection.commit()
 
-    BusinessId = "BUS" + str(uuid.uuid4())
+    NotaryBusinessId = "BUS" + str(uuid.uuid4())
     query = "INSERT INTO Businesses(BusinessId, BusinessName) VALUES (%s, %s) "
 
-    values = (BusinessId, NotaryFirstName+" "+NotaryLastName,)
+    values = (NotaryBusinessId, Notary[0]['NotaryFirstName']+" "+Notary[0]['NotaryLastName'],)
     cursor.execute(query, values)
     connection.commit()
 
     query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
 
-    values = (BusinessId, NotaryHumanId,"ROL-NOT-d66-db51-46a9-b699-169789a3d9df")
+    values = (NotaryBusinessId, NotaryHumanId,"ROL-NOT-d66-db51-46a9-b699-169789a3d9df")
     cursor.execute(query, values)
     connection.commit()
 
+    # ['FromHumans', 'FromCity', 'FromState', 'ToHumans', 'ToCity', 'ToState', 'TransactionType', 'TransactionDate', 'Act', 'Page', 'NotaryFirstName', 'NotaryLastName', 'Notes', 'url', 'Transcriber']
+    #  'FromCity', 'FromState',  'ToCity', 'ToState', 'TransactionType', 'TransactionDate', 'Act', 'Page', 'Notes', 'url', 'TranscriberFirstName 'TranscriberLastName']
+    # 
 
-    rows=[]
-    for row in spreadsheet_array:
-        rowData={}
-        FromParty=row["First Party (From) - [Last Name, First and Middle Names]  Be sure to add connections to this person especially if they are acting as an agent for someone else."].split("and")
-        rowData['FromHumans']=[]
-        for party in FromParty:
-            party=party.replace("Mr.", "").strip()
-            From={}
-            if ',' in party:
-                From['FirstName']= party.split(",")[1].strip()
-                From['LastName']=""
-                if len(party.split(",")[0].strip()) > 1:
-                    From['LastName']= party.split(",")[0].strip()
-
-            else:
-                
-                From['FirstName']= party.split(" ")[0].strip()
-                if len(party.split(" ")) > 1:
-                    From['LastName']= party.split(" ")[1].strip()
-            rowData['FromHumans'].append(From)
-
-        rowData['FromCity']=""
-        rowData['FromState']=""
-
-        FromLocation=row['Location of First Party [Locality, State]'].split(",")
-        if len(FromLocation) > 0:
-            rowData['FromCity']=FromLocation[0].strip()
-        if len(FromLocation) > 1:
-            rowData['FromState']=FromLocation[1].strip()
-
-
-
-
-
-        ToParty=row["Second Party (To) - [Last Name, First and Middle Names]"].split("and")
-        rowData['ToHumans']=[]
-       
-        for party in ToParty:
-            party=party.replace("Mr.", "").strip()
-            To={}
-            if ',' in party:
-                To['FirstName']= party.split(",")[1].strip()
-                To['LastName']=""
-                if len(party.split(",")[0].strip()) > 1:
-                    To['LastName']= party.split(",")[0].strip()
-
-            else:
-                
-                To['FirstName']= party.split(" ")[0].strip()
-                if len(party.split(" ")) > 1:
-                    To['LastName']= party.split(" ")[1].strip()
-            rowData['ToHumans'].append(To)
-
-
+    for row in Notary:
         
-        rowData['ToCity']=""
-        rowData['ToState']=""
+        FromBusinessId = "BUS" + str(uuid.uuid4())
+        query = "INSERT INTO Businesses(BusinessId, BusinessName) VALUES (%s, %s) "
 
-        ToLocation=row['Location of Second Party [Locality, State]'].split(",")
-        if len(ToLocation) > 0:
-            rowData['ToCity']=ToLocation[0].strip()
-        if len(ToLocation) > 1:
-            rowData['ToState']=ToLocation[1].strip()
+        values = (FromBusinessId, row['FromParty'],)
+        cursor.execute(query, values)
+        connection.commit()
 
+        for FromHuman in row['FromHumans']:
+            
+            FromHumanId = "HUM" + str(uuid.uuid4())
+            query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+            query += "ON DUPLICATE KEY UPDATE FirstName=values(FirstName),LastName=values(LastName)"
+
+            values = (FromHumanId, FromHuman['FirstName'], FromHuman['LastName'],)
+            cursor.execute(query, values)
+            connection.commit()
+
+            query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+
+            values = (FromBusinessId, FromHumanId,"ROL-SLV-OWN-8f-82-49b-8aee-1b5b6e696ca9")
+            cursor.execute(query, values)
+            connection.commit()
         
-        rowData['TransactionType']=row['Type of Transaction']
-        rowData['TransactionDate']=row['Date (yyyy-mm-dd) - [ex. 1825-05-05]']
-        rowData['TransactionDate']=parser.parse(rowData['TransactionDate'])
-        rows.append(rowData)
-        print(rowData['TransactionDate'])
-    # print(rows)
 
-    return {'success': True}
+        ToBusinessId = "BUS" + str(uuid.uuid4())
+        query = "INSERT INTO Businesses(BusinessId, BusinessName) VALUES (%s, %s) "
+
+        values = (ToBusinessId, row['ToParty'],)
+        cursor.execute(query, values)
+        connection.commit()
+
+        for ToHuman in row['ToHumans']:
+            # names = list(ToHuman.keys())
+            # print(names)
+            ToHumanId = "HUM" + str(uuid.uuid4())
+            query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+            query += "ON DUPLICATE KEY UPDATE FirstName=values(FirstName),LastName=values(LastName)"
+
+            values = (ToHumanId, ToHuman['FirstName'], ToHuman['LastName'],)
+            cursor.execute(query, values)
+            connection.commit()
+
+            query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+
+            values = (ToBusinessId, ToHumanId,"ROL-SLV-OWN-8f-82-49b-8aee-1b5b6e696ca9")
+            cursor.execute(query, values)
+            connection.commit()
+
+        query = "Select UserId from Users where FirstName=%s and LastName=%s"
+        values = ( row['TranscriberFirstName'], row['TranscriberLastName'], )
+        cursor.execute(query, values)
+        result = cursor.fetchone()
+        if result is None:
+
+            TranscriberUserId = "USR" + str(uuid.uuid4())
+            query = "INSERT INTO Users(UserId,FirstName,LastName, UserType) VALUES (%s, %s, %s, %s) "
+            query += "ON DUPLICATE KEY UPDATE FirstName=values(FirstName),LastName=values(LastName)"
+
+            values = (TranscriberUserId, row['TranscriberFirstName'], row['TranscriberLastName'],"Transcriber", )
+            cursor.execute(query, values)
+            connection.commit()
+        else:
+            TranscriberUserId=result['UserId']
+
+        TransactionId = "TRN" + str(uuid.uuid4())
+        query = "INSERT INTO Transactions(TransactionId, TransactionDate, FromBusinessId, FromCity, FromState, ToBusinessId, ToCity, ToState, TransactionType, Notes, Act, Page,Volume, URL, NotaryBusinessId, TranscriberUserId, NeedsReview ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+        
+        values = (TransactionId, row['TransactionDate'],FromBusinessId, row['FromCity'],row['FromState'],ToBusinessId,row['ToCity'],row['ToState'],row['TransactionType'],row['Notes'],row['Act'],row['Page'],row['Volume'],row['URL'],NotaryBusinessId,TranscriberUserId, 1)
+        # print(query%values)
+        cursor.execute(query, values)
+        connection.commit()
+
+    return True
+
+
