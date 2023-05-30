@@ -2,8 +2,10 @@
 from Lib import Database
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS, cross_origin
+from .ExtractShipManifest import Extract_ShipManifest
 from .ImportShipManifest import save_ship_manifest
-from .ImportNotary import save_Notary
+from .ExtractNotary import extract_Notary
+from .ImportNotary import import_Notary
 
 blueprint = Blueprint('Import', __name__)
 
@@ -23,12 +25,12 @@ def ImportData():
         cells = row.split("\t")
         row_dict = dict(zip(headers, cells))  # Combine headers and cells into a dictionary
         spreadsheet_array.append(row_dict)
-    print(len(spreadsheet_array[0]))
     if len(spreadsheet_array[0]) == 14:
         print("notary")
 
-        save_Notary(spreadsheet_name,spreadsheet_array)
-
+        Notary=extract_Notary(spreadsheet_name,spreadsheet_array)
+        import_Notary(Notary)
+        # print(Notary)
     elif len(spreadsheet_array[0]) == 24:
         voyage = spreadsheet_name.split(" ")
         VoyageId = voyage[0]
@@ -43,8 +45,9 @@ def ImportData():
         ShipName = " ".join(ShipName)
 
         
+        ShipInfo,ShipManifest=Extract_ShipManifest(ShipName,ShipType, VoyageId, VoyageDate,spreadsheet_array)
         
-        save_ship_manifest( ShipName,ShipType, VoyageId, VoyageDate, spreadsheet_array)
+        save_ship_manifest( ShipInfo,ShipManifest)
 
     result = {"message": "Data imported successfully"}
     return result
