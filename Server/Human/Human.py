@@ -28,13 +28,11 @@ def SaveHuman():
     FirstName = human_data.get('FirstName', None)
     MiddleName = human_data.get('MiddleName', None)
     LastName = human_data.get('LastName', None)
-    StartYear = human_data.get('StartYear', None)
-    EndYear = human_data.get('EndYear', None)
     Notes = human_data.get('Notes', None)
     RoleId = human_data.get('RoleId', None)
 
     # Call the save_human function from SaveHuman.py with the extracted data
-    result = save_human(HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId )
+    result = save_human(HumanId, FirstName, MiddleName, LastName, Notes,RoleId )
     History.SaveHistory(human_data,"Humans", "HumanId", result["HumanId"])
 
 
