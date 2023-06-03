@@ -132,18 +132,7 @@
         </select>
       </div>
     </div>
-    <div class="field">
-      <label class="label" for="StartYear">Start Year:</label>
-      <div class="control">
-        <input class="input" type="number" id="StartYear" bind:value={StartYear} required>
-      </div>
-    </div>
-    <div class="field">
-      <label class="label" for="EndYear">End Year:</label>
-      <div class="control">
-        <input class="input" type="number" id="EndYear" bind:value={EndYear} required>
-      </div>
-    </div>
+    
     <div class="field">
       <label class="label" for="Notes">Notes:</label>
       <div class="control">
@@ -210,7 +199,7 @@
     </div>
     <div class="field">
       <div class="control">
-        <button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes,RoleId, FormValid)}>Save</button>
+        <button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,HumanId, FirstName, MiddleName, LastName, Notes,RoleId, FormValid)}>Save</button>
         {#if HumanId.length}
           <button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,HumanId)}>Delete</button>
         {/if}
