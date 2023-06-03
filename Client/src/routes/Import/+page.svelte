@@ -35,9 +35,12 @@
 	  <div class="spinner"></div>
 	</div>
   {:else}
-  
+	
+  	
 	<div class="section">
+		<a href="/AdminMenu">Back to Menu</a>
 		<div class="ActionBox">
+			
 	  <form>
 		<h3 class="title is-2">Import data into the database</h3>
   
