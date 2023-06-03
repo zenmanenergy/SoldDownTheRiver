@@ -87,7 +87,7 @@ def SaveHistory(Data, Table, KeyName,KeyValue ):
     query="INSERT INTO History (HistoryId, TableName, KeyName, KeyValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"
     values=(HistoryId, Table, KeyName, KeyValue, UserId, json.dumps(Data),now_str)
     
-    print(query % tuple(map(repr, values)))
+    # print(query % tuple(map(repr, values)))
     # Add a comment
     Cursor.execute(query,values)
     
