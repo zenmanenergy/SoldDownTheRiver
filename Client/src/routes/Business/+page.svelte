@@ -139,9 +139,10 @@
 			  </thead>
 			  <tbody>
 				{#each BusinessHumans as human}
-				  <tr>
-					<td>{human.FirstName}</td>
-					<td>{human.LastName}</td>
+				
+				  <tr >
+					<td><a href="/Human?HumanId={human.HumanId}">{human.FirstName}</a></td>
+					<td><a href="/Human?HumanId={human.HumanId}">{human.LastName}</a></td>
 					<td>{human.Role}</td>
 					<td>{moment.utc(human.LastModified).local().fromNow()}</td>
 					<td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteBusinessHuman(Session.SessionId,BusinessId, human.HumanId)}>X</button></td>
