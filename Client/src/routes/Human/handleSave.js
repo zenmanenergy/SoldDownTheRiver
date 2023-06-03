@@ -1,6 +1,6 @@
 import { baseURL } from '../Settings';
 
-export function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId, formValid ) {
+export function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName,  Notes, RoleId, formValid ) {
 
   if (!formValid) {
     const invalidFields = document.querySelectorAll("input:invalid");
@@ -15,8 +15,7 @@ export function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName, S
     FirstName: FirstName,
     MiddleName: MiddleName,
     LastName: LastName,
-    StartYear: StartYear,
-    EndYear: EndYear,
+    
     Notes: Notes,
     RoleId: RoleId,
     SessionId: SessionId
