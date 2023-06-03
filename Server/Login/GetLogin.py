@@ -32,7 +32,7 @@ def get_login(Email, Password):
         connection.commit()
 
         SessionId = "SES" + str(uuid.uuid4())
-        query = "INSERT INTO userSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
+        query = "INSERT INTO UserSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
         values = (SessionId, result['UserId'], datetime.datetime.now(),)
         cursor.execute(query, values)
         
