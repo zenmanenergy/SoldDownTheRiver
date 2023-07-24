@@ -1,7 +1,10 @@
 import { baseURL } from './Settings';
 class session {
     SessionId = "";
-
+    async logout() {
+        console.log("Handling logout...");
+        
+    }
     async handleSession() {
         // Add your session handling logic here
         console.log("Handling session...");
