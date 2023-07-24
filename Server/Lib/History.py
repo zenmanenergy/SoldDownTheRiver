@@ -80,8 +80,10 @@ def SaveHistory(Data, Table, KeyName,KeyValue ):
     if not result:
         return False
     UserId=result["UserId"]
-    # Convert the TransactionDate string into a datetime object
-    now = datetime.datetime.now(pytz.timezone('GMT'))
+
+    eastern_tz = pytz.timezone('America/New_York')
+    now = datetime.datetime.now(eastern_tz)
+
     now_str = now.strftime('%Y-%m-%d %H:%M:%S')
     HistoryId="HIS"+str(uuid.uuid4())
     query="INSERT INTO History (HistoryId, TableName, KeyName, KeyValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"
