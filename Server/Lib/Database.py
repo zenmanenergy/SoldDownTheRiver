@@ -12,8 +12,8 @@ def ConnectToDatabase():
     
     # Add a comment
     endpoint="localhost"
-    username="developer"
-    password="developer"
+    username="steve"
+    password="Lz7#YxRMMdb8"
     databaseName="SoldDownTheRiver"
     
     # Add a comment
