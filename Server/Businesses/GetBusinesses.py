@@ -8,6 +8,7 @@ def get_businesses():
     # Construct the SQL query
     query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Businesses.BusinessId and History.TableName='Businesses' and History.KeyName='BusinessId') LastModified"
     query +=" FROM Businesses order by BusinessName"
+    query +=" limit 50"
     values = ()
 
 

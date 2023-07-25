@@ -54,4 +54,4 @@ app.register_blueprint(Import.blueprint)
 @app.route("/")
 @cross_origin()
 def index():
-    return "404"
+    return "it works"

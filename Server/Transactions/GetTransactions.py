@@ -10,6 +10,7 @@ def get_transactions():
     query +=" FROM Transactions join Businesses FromBusiness on Transactions.FromBusinessId=FromBusiness.BusinessId"
     query +=" join Businesses ToBusinesses on Transactions.ToBusinessId=ToBusinesses.BusinessId"
     query +=" ORDER BY TransactionDate DESC"
+    query +=" limit 50"
     values = ()
 
     print(query % values)
