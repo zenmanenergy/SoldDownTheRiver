@@ -56,16 +56,14 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		BusinessId = urlParams.get("BusinessId") || "";
 		
-		if (BusinessId){
-			await Promise.all([
-				handleGetBusiness(Session.SessionId,BusinessId, setBusiness),
-				handleGetBusinessHumans(Session.SessionId,BusinessId, setBusinessHumans),
-				handleGetHumans(Session.SessionId, setHumans),
-				handleGetRoles(Session.SessionId, setRoles),
-				handleGetLocations(Session.SessionId, setLocations)
-			]);
+		await Promise.all([
+			handleGetBusiness(Session.SessionId,BusinessId, setBusiness),
+			handleGetBusinessHumans(Session.SessionId,BusinessId, setBusinessHumans),
+			handleGetHumans(Session.SessionId, setHumans),
+			handleGetRoles(Session.SessionId, setRoles),
+			handleGetLocations(Session.SessionId, setLocations)
+		]);
 		
-		}
 		console.log("BusinessId", BusinessId)
 		isLoading = false;
 	});

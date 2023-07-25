@@ -8,7 +8,7 @@ export async function handleGetHuman(SessionId,HumanId, callback) {
 		SessionId:SessionId,
 		HumanId:HumanId
 	};
-	const url = baseURL + '/Humans/GetHuman?'; 
+	const url = baseURL + '/Human/GetHuman?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

@@ -8,7 +8,7 @@ export async function handleDelete(SessionId,HumanId) {
 		SessionId:SessionId,
 		HumanId:HumanId
 	};
-	const url = baseURL + '/Humans/DeleteHuman?'; 
+	const url = baseURL + '/Human/DeleteHuman?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

@@ -11,7 +11,7 @@ export async function handleSaveFamily(SessionId,HumanId, FamilyHumanId, Relatio
 		SessionId: SessionId,
 		Relationship:Relationship
 	};
-	const url = baseURL + '/Humans/SaveFamily?'; 
+	const url = baseURL + '/Human/SaveFamily?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

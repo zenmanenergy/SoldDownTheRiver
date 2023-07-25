@@ -10,7 +10,7 @@ export async function handleDeleteFamily(SessionId,FamilyHumanId, HumanId) {
 		HumanId:HumanId,
 		FamilyHumanId:FamilyHumanId
 	};
-	const url = baseURL + '/Humans/DeleteFamily?'; 
+	const url = baseURL + '/Human/DeleteFamily?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

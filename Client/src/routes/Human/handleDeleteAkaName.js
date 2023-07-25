@@ -8,7 +8,7 @@ export async function handleDeleteAkaName(SessionId,AKAHumanId, HumanId) {
 		SessionId:SessionId,
 		AKAHumanId:AKAHumanId
 	};
-	const url = baseURL + '/Humans/GetHumans?'; 
+	const url = baseURL + '/Human/GetHumans?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

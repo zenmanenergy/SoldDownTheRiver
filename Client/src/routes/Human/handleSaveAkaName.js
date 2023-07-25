@@ -13,7 +13,7 @@ export async function handleSaveAkaName(SessionId,AKAHumanId,HumanId, AKAFirstNa
     AKALastName: AKALastName,
     SessionId: SessionId
 	};
-	const url = baseURL + '/Humans/SaveHumanAKA?'; 
+	const url = baseURL + '/Human/SaveHumanAKA?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 
