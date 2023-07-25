@@ -1,15 +1,16 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
-export async function handleGetHuman(SessionId,HumanId, setHumanName) {
-    const url=`${baseURL}/Human/GetHuman?HumanId=${HumanId}&SessionId=${SessionId}`
-    console.log(url)
-    const response = await fetch(url);
-    const data = await response.json();
-  
-    const { FirstName, MiddleName, LastName , StartYear, EndYear, Notes, RoleId,LastModified} = data;
-    // const humanName = `${FirstName} ${MiddleName} ${LastName}`.trim();
-  
-    if (HumanId){
-        setHumanName(FirstName, MiddleName, LastName, StartYear, EndYear, Notes, RoleId, LastModified);
-    }
+export async function handleGetHuman(SessionId,HumanId, callback) {
+	
+
+	const Data = {
+		SessionId:SessionId,
+		HumanId:HumanId
+	};
+	const url = baseURL + '/Humans/GetHuman?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }

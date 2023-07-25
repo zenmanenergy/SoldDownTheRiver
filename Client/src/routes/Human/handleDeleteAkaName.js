@@ -1,16 +1,17 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 
 export async function handleDeleteAkaName(SessionId,AKAHumanId, HumanId) {
-    const url=`${baseURL}/Human/DeleteAKAName?AKAHumanId=${AKAHumanId}&SessionId=${SessionId}`
-    console.log(url)
-    const response = await fetch(url);
-    if (!response.ok) {
-      const err = await response.json();
-      console.error(err.message);
-    }
-    else {
-      window.location.href = '/Human?HumanId=' + HumanId + '&tab=AKANames';
-    }
-  }
+	
+	const Data = {
+		SessionId:SessionId,
+		AKAHumanId:AKAHumanId
+	};
+	const url = baseURL + '/Humans/GetHumans?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	window.location.href = '/Human?HumanId=' + HumanId + '&tab=AKANames';
+}
   

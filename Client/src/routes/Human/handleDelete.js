@@ -1,18 +1,17 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleDelete(SessionId,HumanId) {
-  try {
-    const url=`${baseURL}/Human/DeleteHuman?HumanId=${HumanId}&SessionId=${SessionId}`
-    console.log(url)
-    const response = await fetch(url);
+	
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+	const Data = {
+		SessionId:SessionId,
+		HumanId:HumanId
+	};
+	const url = baseURL + '/Humans/DeleteHuman?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
 
-    console.log(`Human with ID ${HumanId} has been deleted.`);
-    window.location.href = '/Humans';
-  } catch (error) {
-    console.error('There was a problem deleting the human:', error);
-  }
+	window.location.href = '/Humans';
+
 }

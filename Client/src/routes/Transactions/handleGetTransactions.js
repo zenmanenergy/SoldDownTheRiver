@@ -1,10 +1,14 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetTransactions(SessionId,callback) {
-  const url=`${baseURL}/Transactions/GetTransactions?SessionId=${SessionId}`
-  console.log(url)
-  const response = await fetch(url);
-  const Transactions = await response.json();
-  callback(Transactions);
+	const Data = {
+		SessionId:SessionId
+	};
+	const url = baseURL + '/Transactions/GetTransactions?SessionId?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }
 

@@ -47,15 +47,15 @@
 
   let FormValid = false;
   let AKAFormValid = false;
-  async function setName(_FirstName, _MiddleName, _LastName, _StartYear, _EndYear, _Notes, _RoleId, _LastModified) {
-    FirstName=_FirstName;
-    MiddleName=_MiddleName;
-    LastName=_LastName;
-    StartYear=_StartYear;
-    EndYear=_EndYear;
-    Notes=_Notes;
-    RoleId=_RoleId;
-    LastModified=_LastModified;
+  async function setName(data) {
+    FirstName=data._FirstName;
+    MiddleName=data._MiddleName;
+    LastName=data._LastName;
+    StartYear=data._StartYear;
+    EndYear=data._EndYear;
+    Notes=data._Notes;
+    RoleId=data._RoleId;
+    LastModified=data._LastModified;
     
   }
   $: {

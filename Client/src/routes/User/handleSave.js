@@ -1,45 +1,24 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 // src/routes/Users/handleSave.js
-export function handleSave(SessionId,userId, firstName, lastName, email, phone, password, school, semesterYear,UserType, formValid) {
+export async function handleSave(SessionId,userId, firstName, lastName, email, phone, password, school, semesterYear,UserType, FormValid) {
 
-  if (!formValid) {
-		const invalidFields = document.querySelectorAll("input:invalid");
-		if (invalidFields.length > 0) {
-			invalidFields[0].focus();
-		}
-		return;
-	}
-  const userData = {
-    UserId: userId,
-    FirstName: firstName,
-    LastName: lastName,
-    Email: email,
-    Phone: phone,
-    Password: password,
-    School: school,
-    SemesterYear: semesterYear,
-    UserType: UserType,
-    SessionId: SessionId
-  };
+	const Data = {
+		UserId: userId,
+		FirstName: firstName,
+		LastName: lastName,
+		Email: email,
+		Phone: phone,
+		Password: password,
+		School: school,
+		SemesterYear: semesterYear,
+		UserType: UserType,
+		SessionId: SessionId
+	};
+	const url = baseURL + '/User/SaveUser?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
 
-  const queryString = Object.keys(userData)
-    .map(key => key + '=' + encodeURIComponent(userData[key]))
-    .join('&');
-
-  const url = baseURL + '/User/SaveUser?' + queryString; 
-  console.log(url)
-  fetch(url, {
-    method: 'GET'
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log("Save success",data);
-    window.location.href = '/Users';
-    // Handle the response data as needed
-  })
-  .catch(error => {
-    console.error("save error",error);
-    // Handle the error as needed
-  });
+	window.location.href = '/Users';
 }

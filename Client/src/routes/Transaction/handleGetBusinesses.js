@@ -1,10 +1,16 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetBusinesses(SessionId,callback) {
-  const url=`${baseURL}/Transaction/GetBusinesses?SessionId=${SessionId}`
-  console.log(url)
-  const response = await fetch(url);
-  const businesses = await response.json();
-  callback(businesses);
+	
+
+	const Data = {
+		SessionId:SessionId
+	};
+	const url = baseURL + '/Transaction/GetBusinesses?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 
 }

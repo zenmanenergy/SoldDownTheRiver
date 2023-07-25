@@ -1,11 +1,16 @@
 // src/routes/Humans/handleGetAKA.js
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
-export async function handleGetFamilies(SessionId,HumanId, setFamily) {
-  const url=`${baseURL}/Human/GetFamilies?HumanId=${HumanId}&SessionId=${SessionId}`
-  console.log(url)
-  const response = await fetch(url);
-  const data = await response.json();
+export async function handleGetFamilies(SessionId,HumanId, callback) {
 
-  setFamily(data);
+	const Data = {
+		SessionId:SessionId,
+		HumanId:HumanId
+	};
+	const url = baseURL + '/Humans/GetHumans?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }

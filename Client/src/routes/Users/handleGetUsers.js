@@ -1,10 +1,15 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetUsers(SessionId, callback) {
-  const url=`${baseURL}/Users/GetUsers?SessionId=${SessionId}`
-  console.log(url)
-  const response = await fetch(url);
-  const Users = await response.json();
-  callback(Users);
+
+	const Data = {
+		SessionId:SessionId
+	};
+	const url = baseURL + '/Users/GetUsers?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }
 

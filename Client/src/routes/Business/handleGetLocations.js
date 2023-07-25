@@ -1,10 +1,15 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetLocations(SessionId, callback) {
-  const url=`${baseURL}/Business/GetLocations?SessionId=${SessionId}`
-  console.log(url)
-  const response = await fetch(url);
-  const locations = await response.json();
-  callback(locations);
+
+	const Data = {
+		SessionId:SessionId
+	};
+	const url=`${baseURL}/Business/GetLocations?SessionId=${SessionId}`
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }
 

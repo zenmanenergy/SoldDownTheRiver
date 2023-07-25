@@ -1,11 +1,16 @@
 // src/routes/Roles/handleGet.js
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetRole(SessionId,RoleId,callback) {
-    const url=`${baseURL}/Role/GetRole?RoleId=${RoleId}&SessionId=${SessionId}`
-    console.log(url)
-    const response = await fetch(url);
-    const data = await response.json();
-  
-    callback(data);
+
+	const Data = {
+		SessionId:SessionId,
+		RoleId:RoleId
+	};
+	const url = baseURL + '/Role/GetRole?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }

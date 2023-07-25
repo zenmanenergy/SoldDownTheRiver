@@ -1,9 +1,14 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetVoyages(SessionId, callback) {
-  const url = `${baseURL}/Voyages/GetVoyages?SessionId=${SessionId}`; // Update the API endpoint for Voyages
-  console.log(url);
-  const response = await fetch(url);
-  const Voyages = await response.json(); // Update the variable name to `Voyages`
-  callback(Voyages);
+
+	const Data = {
+		SessionId:SessionId
+	};
+	const url = baseURL + '/Voyages/GetVoyages?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }

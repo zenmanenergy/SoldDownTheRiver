@@ -1,19 +1,16 @@
 // src/routes/Ships/handleDelete.js
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleDelete(SessionId, ShipId) {
-  try {
-    const url = `${baseURL}/Ship/DeleteShip?ShipId=${ShipId}&SessionId=${SessionId}`;
-    console.log(url);
-    const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+	const Data = {
+		SessionId:SessionId,
+		ShipId:ShipId
+	};
+	const url = baseURL + '/Ship/DeleteShip?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
 
-    console.log(`Ship with ID ${ShipId} has been deleted.`);
-    window.location.href = "/Ships";
-  } catch (error) {
-    console.error("There was a problem deleting the ship:", error);
-  }
+	window.location.href = "/Ships";
 }

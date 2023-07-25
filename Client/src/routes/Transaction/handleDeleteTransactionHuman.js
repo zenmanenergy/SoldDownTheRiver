@@ -1,19 +1,17 @@
 
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 export async function handleDeleteTransactionHuman(SessionId,TransactionId,HumanId) {
-  try {
-    const url=`${baseURL}/Transaction/DeleteTransactionHuman?TransactionId=${TransactionId}&HumanId=${HumanId}&SessionId=${SessionId}`
-    console.log(url)
-    const response = await fetch(url);
+	
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+	const Data = {
+		SessionId:SessionId,
+		TransactionId:TransactionId,
+		HumanId:HumanId
+	};
+	const url = baseURL + '/Transaction/DeleteTransactionHuman?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
 
-    console.log(`Transaction with ID ${TransactionId} has been deleted.`);
-    
-    window.location.href = `/Transaction?TransactionId=${TransactionId}`;
-  } catch (error) {
-    console.error('There was a problem deleting the transaction:', error);
-  }
+	window.location.href = `/Transaction?TransactionId=${TransactionId}`;
 }

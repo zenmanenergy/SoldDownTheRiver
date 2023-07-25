@@ -1,10 +1,15 @@
 import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetShips(SessionId, callback) {
-  const url = `${baseURL}/Ships/GetShips?SessionId=${SessionId}`;
-  console.log(url);
-  const response = await fetch(url);
-  const ships = await response.json();
-  callback(ships);
+
+	const Data = {
+		SessionId:SessionId
+	};
+	const url = baseURL + '/Ships/GetShips?SessionId?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }
 

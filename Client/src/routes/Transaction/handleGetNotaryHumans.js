@@ -1,10 +1,15 @@
-// src/routes/Transactions/handleGet.js
-import { baseURL } from '../Settings';
-export async function handleGetNotaryHumans(SessionId,TransactionId, setTransactionData) {
-  const url=`${baseURL}/Transaction/GetNotaryHumans?TransactionId=${TransactionId}&SessionId=${SessionId}`
-  console.log(url)
-  const response = await fetch(url);
-  const data = await response.json();
 
-  setTransactionData(data);
+import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
+export async function handleGetNotaryHumans(SessionId,TransactionId, callback) {
+
+	const Data = {
+		SessionId:SessionId,
+		TransactionId:TransactionId
+	};
+	const url = baseURL + '/Transaction/GetNotaryHumans?'; 
+	const FormValid=true
+	let data = await SuperFetch(url, Data, FormValid)
+
+	callback(data);
 }
