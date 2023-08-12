@@ -10,7 +10,7 @@ def get_roles():
     query +=" FROM Roles ORDER BY Role"
     values = ()
 
-
+    print(query)
     # Execute the query and get the results
     cursor.execute(query, values)
     result = cursor.fetchall()

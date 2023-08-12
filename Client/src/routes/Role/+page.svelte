@@ -69,7 +69,7 @@
 				<div class="field">
 					<div class="control">
 						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Role, formValid)}>Save</button>
-						{#if Role.length}
+						{#if Role.RoleId.length}
 							<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,Role.RoleId)}>Delete</button>
 						{/if}
 					</div>

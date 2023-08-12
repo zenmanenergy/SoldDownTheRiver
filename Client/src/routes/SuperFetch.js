@@ -1,7 +1,6 @@
 
 
 export async function SuperFetch(url, Data, FormValid){
-
 	if (!FormValid) {
 		const invalidFields = document.querySelectorAll("input:invalid");
 		if (invalidFields.length > 0) {

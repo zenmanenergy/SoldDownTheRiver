@@ -24,15 +24,16 @@
   	let isLoading = true;
 	
 
-	async function setUser(_FirstName, _LastName, _Email, _Phone, _Password, _School, _SemesterYear,_UserType) {
-		FirstName = _FirstName;
-		LastName = _LastName;
-		Email = _Email;
-		Phone = _Phone;
-		Password = _Password;
-		School = _School;
-		SemesterYear = _SemesterYear;
-		UserType= _UserType
+	async function setUser(data) {
+		console.log("setUser",data.FirstName)
+		FirstName = data.FirstName;
+		LastName = data.LastName;
+		Email = data.Email;
+		Phone = data.Phone;
+		Password = data.Password;
+		School = data.School;
+		SemesterYear = data.SemesterYear;
+		UserType= data.UserType
 	}
 
 	$: {
