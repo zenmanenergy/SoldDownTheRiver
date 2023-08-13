@@ -8,7 +8,7 @@ def get_humans():
 	# Construct the SQL query
 	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Humans.HumanId and History.TableName='Humans' and History.KeyName='HumanId') LastModified"
 	query +=" FROM Humans order by LastName, FirstName"
-	query +=" limit 50"
+	# query +=" limit 50"
 	values = ()
 
 

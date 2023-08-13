@@ -1,7 +1,7 @@
 <!-- src/routes/Businesses/+page.svelte -->
 <style>
 	@import '/static/FormPages.css';
-  </style>
+</style>
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
@@ -17,7 +17,7 @@
 	import { handleGetRoles } from './handleGetRoles.js';
 	
 	import {Session} from "../Session.js";
-  
+	
 	let LocationId=""
 	let RoleId=""
 	let HumanId=""
@@ -31,15 +31,15 @@
 	let Roles=[]
 	let Locations=[]
 	let Business = {};
-  
+	
 	async function setBusiness(data) {
-	  Business=data
+		Business=data
 	}
 	async function setBusinessHumans(data) {
-	  BusinessHumans=data;
+		BusinessHumans=data;
 	}
 	async function setHumans(data) {
-	  Humans=data;
+		Humans=data;
 	}
 	async function setRoles(data) {
 		Roles=data;
@@ -48,9 +48,9 @@
 		Locations=data;
 	}
 	$: {
-	  formValid = BusinessName;
+		formValid = BusinessName;
 	}
-  
+	
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
@@ -67,104 +67,104 @@
 		console.log("BusinessId", BusinessId)
 		isLoading = false;
 	});
-  </script>
-  
-  
-  
-  {#if isLoading}
+</script>
+	
+	
+	
+{#if isLoading}
 	<div class="loading-screen">
-	  <div class="spinner"></div>
+		<div class="spinner"></div>
 	</div>
-  {:else}
-  
+{:else}
+	
 	<div class="section">
 		<a href="/Businesses">Back to Businesses</a>
 		<div class="ActionBox">
-	  <form>
-		<h3 class="title is-2">Add a Business</h3>
-  
-		<input type="hidden" bind:value={Business.BusinessId} />
-		<input type="hidden" bind:value={Session.SessionId} />
-  
-		<div class="field">
-		  <label class="label" for="BusinessName">Name</label>
-		  <div class="control">
-			<input class="input" type="text" id="BusinessName" placeholder="Enter Business Name" bind:value={Business.BusinessName} required/>
-		  </div>
-		</div>
+			<form>
+				<h3 class="title is-2">Add a Business</h3>
+			
+				<input type="hidden" bind:value={Business.BusinessId} />
+				<input type="hidden" bind:value={Session.SessionId} />
+			
+				<div class="field">
+					<label class="label" for="BusinessName">Name</label>
+					<div class="control">
+						<input class="input" type="text" id="BusinessName" placeholder="Enter Business Name" bind:value={Business.BusinessName} required/>
+					</div>
+				</div>
 
-		<div class="field">
-			<label class="label" for="LocationId">Location</label>
-			<div class="control">
-				<select class="input" id="LocationId" bind:value={Business.LocationId} required>
-					<option value="">Select Location</option>
-					{#each Locations as Location}
-						<option value={Location.LocationId}>{#if Location.Address}{Location.Address} {/if}{Location.City}</option>
-					{/each}
-				</select>
-			</div>
-		  </div>
-		
-		<div class="field">
-			<label class="label" for="BusinessHuman">Human</label>
-			<div class="control">
-				<select class="input" id="HumanId" bind:value={HumanId} required>
-					<option value="">Select Human</option>
-					{#each Humans as Human}
-						<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
-					{/each}
-				</select>
-				<select class="input" id="RoleId" bind:value={RoleId} required>
-					<option value="">Select Role</option>
-					{#each Roles as Role}
-						<option value={Role.RoleId}>{Role.Role}</option>
-					{/each}
-				</select>
-				<button class="button" type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId, RoleId)} >Add to Business</button>
-			</div>
-		</div>
-		<div class="ActionBox">
-			<h3 class="title is-2">List of Humans</h3>
-			<table width=100%>
-			  <thead>
-				<tr>
-				  <th>First Name</th>
-				  <th>Last Name</th>
-				  <th>Role</th>
-				  <th>Last Modified</th>
-				  <th>Delete</th>
-				</tr>
-			  </thead>
-			  <tbody>
-				{#each BusinessHumans as human}
+				<div class="field">
+					<label class="label" for="LocationId">Location</label>
+					<div class="control">
+						<select class="input" id="LocationId" bind:value={Business.LocationId} required>
+							<option value="">Select Location</option>
+							{#each Locations as Location}
+								<option value={Location.LocationId}>{#if Location.Address}{Location.Address} {/if}{Location.City}</option>
+							{/each}
+						</select>
+					</div>
+				</div>
 				
-				  <tr >
-					<td><a href="/Human?HumanId={human.HumanId}">{human.FirstName}</a></td>
-					<td><a href="/Human?HumanId={human.HumanId}">{human.LastName}</a></td>
-					<td>{human.Role}</td>
-					<td>{moment.utc(human.LastModified).local().fromNow()}</td>
-					<td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteBusinessHuman(Session.SessionId,BusinessId, human.HumanId)}>X</button></td>
-        
-				  </tr>
-				{/each}
-			  </tbody>
-			</table>
-		  </div>
+				<div class="field">
+					<label class="label" for="BusinessHuman">Human</label>
+					<div class="control">
+						<select class="input" id="HumanId" bind:value={HumanId} required>
+							<option value="">Select Human</option>
+							{#each Humans as Human}
+								<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
+							{/each}
+						</select>
+						<select class="input" id="RoleId" bind:value={RoleId} required>
+							<option value="">Select Role</option>
+							{#each Roles as Role}
+								<option value={Role.RoleId}>{Role.Role}</option>
+							{/each}
+						</select>
+						<button class="button" type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId, RoleId)} >Add to Business</button>
+					</div>
+				</div>
+				<div class="ActionBox">
+					<h3 class="title is-2">List of Humans</h3>
+					<table width=100%>
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Role</th>
+								<th>Last Modified</th>
+								<th>Delete</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each BusinessHumans as human}
+							
+								<tr >
+									<td><a href="/Human?HumanId={human.HumanId}">{human.FirstName}</a></td>
+									<td><a href="/Human?HumanId={human.HumanId}">{human.LastName}</a></td>
+									<td>{human.Role}</td>
+									<td>{moment.utc(human.LastModified).local().fromNow()}</td>
+									<td><button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteBusinessHuman(Session.SessionId,BusinessId, human.HumanId)}>X</button></td>
+							
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 
-
-		<div class="field">
-		  <div class="control">
-			<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, BusinessId, BusinessName, LocationId, formValid)}>Save</button>
-			{#if BusinessId.length}
-			  <button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, BusinessId)}>Delete</button>
-			{/if}
-		  </div>
+				<div class="field">
+					<div class="control">
+					<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, Business.BusinessId, Business.BusinessName, Business.LocationId, formValid)}>Save</button>
+					{#if BusinessId.length}
+						<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, Business.BusinessId)}>Delete</button>
+					{/if}
+					</div>
+				</div>
+			</form>
+		
 		</div>
-	  </form>
-	  {#if LastModified}
+		{#if LastModified}
 		<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
-	  {/if}
+		{/if}
 	</div>
-	</div>
-  {/if}
-  
+{/if}
+	

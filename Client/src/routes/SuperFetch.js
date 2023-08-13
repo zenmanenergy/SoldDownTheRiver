@@ -1,7 +1,9 @@
 
 
 export async function SuperFetch(url, Data, FormValid){
+	console.log(Data)
 	if (!FormValid) {
+		console.log("Form not valid")
 		const invalidFields = document.querySelectorAll("input:invalid");
 		if (invalidFields.length > 0) {
 			invalidFields[0].focus();
@@ -11,7 +13,7 @@ export async function SuperFetch(url, Data, FormValid){
 	
 
 	const queryString = Object.keys(Data)
-		.map(key => key + '=' + encodeURIComponent(Data[key]))
+		.map(key => key + '=' + (Data[key] === undefined ? '' : encodeURIComponent(Data[key])))
 		.join('&');
 
 	url += queryString

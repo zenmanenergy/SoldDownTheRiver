@@ -8,7 +8,7 @@ def get_locations():
 	# Construct the SQL query
 	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Locations.LocationId  and History.TableName='Locations' and History.KeyName='LocationId') LastModified"
 	query +="   FROM Locations order by City"
-	query +=" limit 50"
+	# query +=" limit 50"
 	values = ()
 
 
