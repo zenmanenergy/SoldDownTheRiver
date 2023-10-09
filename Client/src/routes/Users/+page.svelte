@@ -1,5 +1,11 @@
 <style>
 	@import '/static/FormPages.css';
+	
+	/* Add styles for row hover effect */
+	tbody tr:hover {
+		background-color: #444444; /* or any other color you like */
+		cursor: pointer;
+	}
 </style>
 <script>
 	import moment from 'moment';
@@ -14,6 +20,7 @@
 
 	async function setUsers(data) {
 		Users = data;
+		console.log(Users)
 	}
 
 	onMount(async () => {
@@ -44,23 +51,31 @@
 		<div class="ActionBox">
 			<h3 class="title is-2">List of Users</h3>
 			<button on:click={addUser}>Add User</button>
-			<form>
-				<div class="field">
-					<div class="control">
-						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by  name" />
-					</div>
-			
+			<div class="field">
+				<div class="control">
+					<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" />
 				</div>
-			</form>
-			<ul>
-				{#each filteredUsers as user}
-					<li>
-						<a href={`/User?UserId=${user.UserId}`}>
-							{user.FirstName} {user.LastName}
-						</a>
-					</li>
-				{/each}
-			</ul>
+			</div>
+			<div class="table-container">
+				<table class="table is-striped is-fullwidth">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Phone Number</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each filteredUsers as user}
+							<tr on:click={() => window.location.href = `/User?UserId=${user.UserId}`}>
+								<td>{user.FirstName || 'unknown'} {user.LastName || 'unknown'}</td>
+								<td>{user.Email || 'unknown'}</td>
+								<td>{user.Phone || 'unknown'}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 			<button on:click={addUser}>Add User</button>
 		</div>
 	</div>
