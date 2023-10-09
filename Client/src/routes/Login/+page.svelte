@@ -14,7 +14,7 @@
     let Email="";
     let Password="";
 
-	let invalidPassword=false
+	let validPassword=true
   
 	$: {
 	  formValid = Email && Password;
@@ -24,6 +24,21 @@
 	  
 	  isLoading = false;
 	});
+
+	function loggedIn(formValid){
+
+		validPassword = formValid
+	}
+
+
+	function doLogin(){
+
+		handleLogin(Email, Password,formValid, loggedIn)
+		
+	}
+
+
+
   </script>
   
   
@@ -49,7 +64,7 @@
 			  id="Email"
 			  placeholder="Enter your Email"
 			  bind:value={Email}
-			  on:click={()=>invalidPassword = false}
+			  on:click={()=>validPassword = true}
 			  required
 			/>
 		  </div>
@@ -64,22 +79,24 @@
                 id="Password"
                 placeholder="Enter your Password"
                 bind:value={Password}
-				on:click={()=>invalidPassword = false}
+				on:click={()=> validPassword = true}
                 required
               />
             </div>
           </div>
 		<div class="field">
 		  <div class="control">
-			{#if invalidPassword}
-				<p style="color: red;">Invalid Email or Password</p>
-			{:else }
+			<button class="button is-primary" type="button" on:click={doLogin}>Login</button>
+			
+			{#if validPassword}
 			<p style="color: white;">Enter Email and Password</p>
+
+			{:else }
+			<p style="color: red;">Invalid Email or Password</p>
+
 
 			{/if}
 
-			<button class="button is-primary" type="button" on:click={() => invalidPassword = handleLogin(Email, Password,formValid)}>Login</button>
-			
 		  </div>
 		</div>
 	  </form>
