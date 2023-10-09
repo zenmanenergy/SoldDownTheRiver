@@ -9,19 +9,23 @@
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
 	import { handleGetRole } from './handleGetRole.js';
+	import { handleGetRoleHumans } from './handleGetRoleHumans.js';
 	import {Session} from "../Session.js";
 
 	
 	let formValid = false;
 	let isLoading = true;
 	let Role={RoleId :"", Role : "", LastModified : ""}
-	$: {
-		formValid = Role.Role;
-	}
+	let RoleHumans=[]
+	
 	async function setRole(data) {
 		Role.RoleId = data.RoleId || "";
 		Role.Role = data.Role || "";
 		Role.LastModified = data.LastModified || "";
+		
+	}
+	async function setRoleHumans(data) {
+		RoleHumans=data
 		
 	}
 		
@@ -30,7 +34,8 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		Role.RoleId = urlParams.get("RoleId") || "";
 		await Promise.all([
-			await handleGetRole(Session.SessionId,Role.RoleId,setRole)
+			await handleGetRole(Session.SessionId,Role.RoleId,setRole),
+			await handleGetRoleHumans(Session.SessionId,Role.RoleId,setRoleHumans)
 			
 		]);
 		
@@ -78,6 +83,39 @@
 			{#if Role.LastModified}
 				<small>Last Modified: {moment.utc(Role.LastModified).local().fromNow()}</small>
 			{/if}
+
+			<div class="ActionBox">
+				<h3 class="title is-2">List of Humans</h3>
+				<form>
+				<div class="field">
+					<div class="control">
+						<!-- <input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" /> -->
+					</div>
+				
+					</div>
+				</form>
+				<table width=100%>
+					<thead>
+						<tr>
+							<th>First Name</th>
+							<th>Last Name</th>
+							<th>Last Modified</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each RoleHumans as human}
+							<tr style="cursor: pointer;" on:click={() => location.href=`/Human?HumanId=${human.HumanId}`}>
+								<td>{human.FirstName}</td>
+								<td>{human.LastName}</td>
+								<td>{moment.utc(human.LastModified).local().fromNow()}</td>
+							</tr>
+						{/each}
+						
+					</tbody>
+				</table>
+				
+				<!-- <button on:click={addHuman}>Add Human</button> -->
+			</div>
 		</div>
 	</div>
 {/if}

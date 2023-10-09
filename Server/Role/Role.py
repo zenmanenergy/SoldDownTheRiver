@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 from .SaveRole import save_role
 from .DeleteRole import delete_role
 from .GetRole import get_role
+from .GetRoleHumans import get_roleHumans
 from Lib import History
 
 blueprint = Blueprint('Role', __name__)
@@ -64,3 +65,19 @@ def GetRole():
 	except Exception as e:
 		return Debugger(e)
 
+@blueprint.route("/Role/GetRoleHumans", methods=['GET'])
+@cross_origin()
+def GetRoleHumans():
+	try:
+		# Get the role data from the request
+		role_data = request.args.to_dict()
+
+		# Get the role from the request
+		RoleId = role_data.get('RoleId')
+		
+		# Call the get_role function from GetRoles.py
+		result = get_roleHumans(RoleId)
+
+		return result
+	except Exception as e:
+		return Debugger(e)
