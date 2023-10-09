@@ -11,6 +11,10 @@
 		let filteredHumans = [];
 		let isLoading = true;
 		let searchQuery = '';
+
+		let currentPage = 1;
+		let itemsPerPage = 50;
+		let totalPages = 1;
 		
 		async function setHumans(data) {
 			Humans = data;
@@ -23,10 +27,16 @@
 			]);
 			isLoading = false;
 		});
+		
+
 		$: filteredHumans = Humans.filter(human => {
 			const fullName = `${human.FirstName} ${human.LastName}`.toLowerCase();
 			return fullName.includes(searchQuery.toLowerCase());
 		});
+		$: totalPages = Math.ceil(filteredHumans.length / itemsPerPage);
+		$: displayedHumans = filteredHumans.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+
 		function addHuman() {
 			window.location.href = '/Human?HumanId=';
 		}
@@ -58,15 +68,25 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filteredHumans as human}
+						{#each displayedHumans as human}
 							<tr style="cursor: pointer;" on:click={() => location.href=`/Human?HumanId=${human.HumanId}`}>
 								<td>{human.FirstName}</td>
 								<td>{human.LastName}</td>
 								<td>{moment.utc(human.LastModified).local().fromNow()}</td>
 							</tr>
 						{/each}
+						
 					</tbody>
 				</table>
+				<div class="pagination">
+					<button on:click={() => currentPage = Math.max(currentPage - 1, 1)} disabled={currentPage === 1}>
+						Previous
+					</button>
+					<span>{currentPage} / {totalPages}</span>
+					<button on:click={() => currentPage = Math.min(currentPage + 1, totalPages)} disabled={currentPage === totalPages}>
+						Next
+					</button>
+				</div>
 				<button on:click={addHuman}>Add Human</button>
 			</div>
 		</div>
