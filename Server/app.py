@@ -28,6 +28,7 @@ from Ship import Ship
 from Voyages import Voyages
 from Voyage import Voyage
 from Import import Import
+from Human.ShipOwner import ShipOwner
 
 
 
@@ -50,6 +51,7 @@ app.register_blueprint(Ship.blueprint)
 app.register_blueprint(Voyages.blueprint)
 app.register_blueprint(Voyage.blueprint)
 app.register_blueprint(Import.blueprint)
+app.register_blueprint(ShipOwner.blueprint)
 
 @app.route("/")
 @cross_origin()
