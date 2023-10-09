@@ -17,7 +17,7 @@ export async function handleSave(SessionId,userId, firstName, lastName, email, p
 		SessionId: SessionId
 	};
 	const url = baseURL + '/User/SaveUser?'; 
-	let data = await SuperFetch(url, Data, FormValid)
+	let data = await SuperFetch(url, Data, true)
 
 	window.location.href = '/Users';
 }
