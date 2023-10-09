@@ -2,7 +2,7 @@ import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
 // src/routes/Businesses/handleSubmit.js
-export async function handleLogin(Email, Password,formValid) {
+export async function handleLogin(Email, Password,formValid, callback) {
 	
 	console.log("handleLogin",Email, Password,formValid)
 
@@ -11,7 +11,8 @@ export async function handleLogin(Email, Password,formValid) {
 		if (invalidFields.length > 0) {
 			invalidFields[0].focus();
 		}
-		return true;
+		callback(false)
+		return false;
 	}
 	const LoginData = {
 		Email: Email,
@@ -35,6 +36,7 @@ export async function handleLogin(Email, Password,formValid) {
 		if (Cookies.get("previousLocation")){
 		window.location.href = Cookies.get("previousLocation");
 		}else{
+		callback(true)
 		window.location.href = "/?s=0";
 		}
 		// Handle the response data as needed
@@ -49,5 +51,6 @@ export async function handleLogin(Email, Password,formValid) {
 		console.error("save error",error);
 		// Handle the error as needed
 	});
-	return true
+
+	callback(true)
 }
