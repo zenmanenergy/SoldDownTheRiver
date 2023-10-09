@@ -9,9 +9,9 @@ blueprint = Blueprint('Ships', __name__)
 @blueprint.route("/Ships/GetShips", methods=['GET'])
 @cross_origin()
 def GetShips():
-    # Get the user data from the request
-    user_data = request.args.to_dict()
+	# Get the user data from the request
+	user_data = request.args.to_dict()
 
-    # Call the get_ships function from GetShips.py
-    result = get_ships()
-    return result
+	# Call the get_ships function from GetShips.py
+	result = get_ships()
+	return result

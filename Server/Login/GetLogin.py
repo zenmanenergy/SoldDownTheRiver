@@ -3,44 +3,44 @@ import uuid
 import datetime
 
 def get_login(Email, Password):
-    if not Email or not Password:
-        Email="-1"
-    
-    # Connect to the database
-    cursor, connection = Database.ConnectToDatabase()
+	if not Email or not Password:
+		Email="-1"
+	
+	# Connect to the database
+	cursor, connection = Database.ConnectToDatabase()
 
-    # Construct the SQL query
-    query = "SELECT * FROM Users WHERE Email = %s and Password = %s"
-    values = (Email, Password,)
-
-
-    print(query % tuple(map(repr, values)))
+	# Construct the SQL query
+	query = "SELECT * FROM Users WHERE Email = %s and Password = %s"
+	values = (Email, Password,)
 
 
-    # Execute the query and get the results
-    cursor.execute(query, values)
-    result = cursor.fetchone()
+	print(query % tuple(map(repr, values)))
 
 
-    if not result:
-        result=""
-    else:
-        print(result)
-        query = "delete from UserSessions where userId= %s "
-        values = (result['UserId'],)
-        cursor.execute(query, values)
-        connection.commit()
+	# Execute the query and get the results
+	cursor.execute(query, values)
+	result = cursor.fetchone()
 
-        SessionId = "SES" + str(uuid.uuid4())
-        query = "INSERT INTO UserSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
-        values = (SessionId, result['UserId'], datetime.datetime.now(),)
-        cursor.execute(query, values)
-        
-        connection.commit()
-        result=SessionId
-        
-    # Close the database connection
-    connection.close()
-    
-    # Return the result as a dictionary
-    return '"' + result+'"'
+
+	if not result:
+		result=""
+	else:
+		print(result)
+		query = "delete from UserSessions where userId= %s "
+		values = (result['UserId'],)
+		cursor.execute(query, values)
+		connection.commit()
+
+		SessionId = "SES" + str(uuid.uuid4())
+		query = "INSERT INTO UserSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
+		values = (SessionId, result['UserId'], datetime.datetime.now(),)
+		cursor.execute(query, values)
+		
+		connection.commit()
+		result=SessionId
+		
+	# Close the database connection
+	connection.close()
+	
+	# Return the result as a dictionary
+	return '"' + result+'"'

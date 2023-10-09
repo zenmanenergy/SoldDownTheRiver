@@ -288,33 +288,33 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 	
 
 	# else:
-	#     ShipId = result['ShipId']
+	#	 ShipId = result['ShipId']
 
 	# VoyageStartDate=None
 	# CaptainFirstName=None
 	# CaptainLastName=None
 	# for row in spreadsheet_array:
-	#     StartYear=row["Year of Manifest Recorded in Norfolk (yyyy)"]
-	#     MonthAndDay=row["Month and day of Manifest Recorded in Norfolk (mm-dd)"]
+	#	 StartYear=row["Year of Manifest Recorded in Norfolk (yyyy)"]
+	#	 MonthAndDay=row["Month and day of Manifest Recorded in Norfolk (mm-dd)"]
 		
-	#     if len(StartYear):
-	#         if "-" in MonthAndDay:
-	#             sd = MonthAndDay+ "-" + StartYear
-	#             # VoyageStartDate = datetime.strptime(sd, "%m-%d-%Y")
-	#         else:
-	#             sd = MonthAndDay+ " " + StartYear
-	#             # VoyageStartDate = datetime.strptime(sd, "%B %d %Y")
+	#	 if len(StartYear):
+	#		 if "-" in MonthAndDay:
+	#			 sd = MonthAndDay+ "-" + StartYear
+	#			 # VoyageStartDate = datetime.strptime(sd, "%m-%d-%Y")
+	#		 else:
+	#			 sd = MonthAndDay+ " " + StartYear
+	#			 # VoyageStartDate = datetime.strptime(sd, "%B %d %Y")
 
-	#         try:
-	#             VoyageStartDate = parser.parse(sd)
-	#         except Exception as e:
-	#             print("EXCEPTION!",e)
-	#             VoyageStartDate=None
-	#     print("VoyageStartDate",VoyageStartDate)
-	#     CaptainName=row["Ship Captain's Name (Last, First Middle)"]
-	#     if len(CaptainName):
-	#         CaptainLastName=CaptainName.split(",")[0].strip()
-	#         CaptainFirstName=CaptainName.split(",")[1].strip()
+	#		 try:
+	#			 VoyageStartDate = parser.parse(sd)
+	#		 except Exception as e:
+	#			 print("EXCEPTION!",e)
+	#			 VoyageStartDate=None
+	#	 print("VoyageStartDate",VoyageStartDate)
+	#	 CaptainName=row["Ship Captain's Name (Last, First Middle)"]
+	#	 if len(CaptainName):
+	#		 CaptainLastName=CaptainName.split(",")[0].strip()
+	#		 CaptainFirstName=CaptainName.split(",")[1].strip()
 			
 	# 
 
@@ -335,66 +335,66 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 	# for row in spreadsheet_array:
 		
-	#     EnslavedLastName=row["Last Name"]
-	#     EnslavedFirstName=row["First and Middle Names"]
-	#     EnslavedGender=row["Sex"]
-	#     EnslavedAge=row["Age"]
-	#     if "months" in EnslavedAge :
-	#         EnslavedAge = int(EnslavedAge.split(" ")[0])/12
-	#     EnslavedHeightInInches=float(row["Height (feet)"])*12+fraction_to_float(row["Height (inches)"])
-	#     EnslavedColor=row["Color"]
-	#     bd = "January 1 "+ str(int(StartYear)-int(EnslavedAge))
-	#     EnslavedBirthDate = datetime.strptime(bd, "%B %d %Y")
+	#	 EnslavedLastName=row["Last Name"]
+	#	 EnslavedFirstName=row["First and Middle Names"]
+	#	 EnslavedGender=row["Sex"]
+	#	 EnslavedAge=row["Age"]
+	#	 if "months" in EnslavedAge :
+	#		 EnslavedAge = int(EnslavedAge.split(" ")[0])/12
+	#	 EnslavedHeightInInches=float(row["Height (feet)"])*12+fraction_to_float(row["Height (inches)"])
+	#	 EnslavedColor=row["Color"]
+	#	 bd = "January 1 "+ str(int(StartYear)-int(EnslavedAge))
+	#	 EnslavedBirthDate = datetime.strptime(bd, "%B %d %Y")
 
-	#     OwnerName=row["Owner's Name (Last, First Middle)"]
-	#     OwnerFirstName=""
-	#     OwnerLastName=""
-	#     if len(OwnerName) and "," in OwnerName:
-	#         OwnerFirstName=OwnerName.split(",")[1].strip()
-	#         OwnerLastName=OwnerName.split(",")[0].strip()
+	#	 OwnerName=row["Owner's Name (Last, First Middle)"]
+	#	 OwnerFirstName=""
+	#	 OwnerLastName=""
+	#	 if len(OwnerName) and "," in OwnerName:
+	#		 OwnerFirstName=OwnerName.split(",")[1].strip()
+	#		 OwnerLastName=OwnerName.split(",")[0].strip()
 
-	#     OwnerLocation=row["Owner's Location (Locality, State)"]
-	#     OwnerLocationId=None
-	#     OwnerCity=""
-	#     OwnerState=""
-	#     if len(OwnerLocation) and "," in OwnerLocation:
-	#         OwnerCity=OwnerLocation.split(",")[0].strip()
-	#         OwnerState=OwnerLocation.split(",")[1].strip()
-	#     elif len(OwnerLocation) and " " in OwnerLocation:
-	#         OwnerCity=OwnerLocation.split(" ")[0].strip()
-	#         OwnerState=OwnerLocation.split(" ")[1].strip()
+	#	 OwnerLocation=row["Owner's Location (Locality, State)"]
+	#	 OwnerLocationId=None
+	#	 OwnerCity=""
+	#	 OwnerState=""
+	#	 if len(OwnerLocation) and "," in OwnerLocation:
+	#		 OwnerCity=OwnerLocation.split(",")[0].strip()
+	#		 OwnerState=OwnerLocation.split(",")[1].strip()
+	#	 elif len(OwnerLocation) and " " in OwnerLocation:
+	#		 OwnerCity=OwnerLocation.split(" ")[0].strip()
+	#		 OwnerState=OwnerLocation.split(" ")[1].strip()
 
 	
 
-	#     ShippingAgentName=row["Shipping Agent (Last Name, First and Middle)"]
-	#     ShippingAgentFirstName=None
-	#     ShippingAgentLastName=None
-	#     if len(ShippingAgentName) and "," in ShippingAgentName :
-	#         ShippingAgentFirstName=ShippingAgentName.split(",")[1].strip()
-	#         ShippingAgentLastName=ShippingAgentName.split(",")[0].strip()
+	#	 ShippingAgentName=row["Shipping Agent (Last Name, First and Middle)"]
+	#	 ShippingAgentFirstName=None
+	#	 ShippingAgentLastName=None
+	#	 if len(ShippingAgentName) and "," in ShippingAgentName :
+	#		 ShippingAgentFirstName=ShippingAgentName.split(",")[1].strip()
+	#		 ShippingAgentLastName=ShippingAgentName.split(",")[0].strip()
 
-	#     OwnerAgentName=row["Owner/Agent 2 Location (Locality, State)"]
-	#     OwnerAgentFirstName=None
-	#     OwnerAgentLastName=None
-	#     if len(OwnerAgentName) and "," in OwnerAgentName:
-	#         OwnerAgentFirstName=OwnerAgentName.split(",")[1].strip()
-	#         OwnerAgentLastName=OwnerAgentName.split(",")[0].strip()
+	#	 OwnerAgentName=row["Owner/Agent 2 Location (Locality, State)"]
+	#	 OwnerAgentFirstName=None
+	#	 OwnerAgentLastName=None
+	#	 if len(OwnerAgentName) and "," in OwnerAgentName:
+	#		 OwnerAgentFirstName=OwnerAgentName.split(",")[1].strip()
+	#		 OwnerAgentLastName=OwnerAgentName.split(",")[0].strip()
 
-	#     query = "select Humans.HumanId from Humans join HumanOwners on Humans.HumanId=HumanOwners.HumanId "
-	#     query += " join Businesses on Businesses.BusinessId=HumanOwners.OwnerBusinessId "
-	#     query += " join BusinessHumans on BusinessHumans.BusinessId=Businesses.BusinessId "
-	#     query += " join Humans Owners on Owners.HumanId = BusinessHumans.HumanId "
-	#     query += " where Humans.FirstName = %s and Humans.LastName=%s and Owners.FirstName = %s and Owners.LastName=%s"
-	#     values=(EnslavedFirstName,EnslavedLastName,OwnerFirstName,OwnerLastName,)
+	#	 query = "select Humans.HumanId from Humans join HumanOwners on Humans.HumanId=HumanOwners.HumanId "
+	#	 query += " join Businesses on Businesses.BusinessId=HumanOwners.OwnerBusinessId "
+	#	 query += " join BusinessHumans on BusinessHumans.BusinessId=Businesses.BusinessId "
+	#	 query += " join Humans Owners on Owners.HumanId = BusinessHumans.HumanId "
+	#	 query += " where Humans.FirstName = %s and Humans.LastName=%s and Owners.FirstName = %s and Owners.LastName=%s"
+	#	 values=(EnslavedFirstName,EnslavedLastName,OwnerFirstName,OwnerLastName,)
 		
-	#     cursor.execute(query, values)
-	#     result = cursor.fetchone()
+	#	 cursor.execute(query, values)
+	#	 result = cursor.fetchone()
 
 	
 
-	#     query = "select Humans.HumanId from Humans "
-	#     query += " join BusinessHumans on BusinessHumans.HumanId=Humans.HumanId "
-	#     query += " join HumanOwners on HumanOwners.OwnerBusinessId=BusinessHumans.BusinessId "
+	#	 query = "select Humans.HumanId from Humans "
+	#	 query += " join BusinessHumans on BusinessHumans.HumanId=Humans.HumanId "
+	#	 query += " join HumanOwners on HumanOwners.OwnerBusinessId=BusinessHumans.BusinessId "
 
 	
 
@@ -403,13 +403,13 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 	
 
-	#         query = "INSERT INTO HumanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
+	#		 query = "INSERT INTO HumanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
 		
-	#         values = (HumanId, BusinessId,VoyageStartDate)
-	#         cursor.execute(query, values)
-	#         connection.commit()
-	#     else:
-	#         OwnerHumanId = result['HumanId']
+	#		 values = (HumanId, BusinessId,VoyageStartDate)
+	#		 cursor.execute(query, values)
+	#		 connection.commit()
+	#	 else:
+	#		 OwnerHumanId = result['HumanId']
 
 	# connection.close()
 	

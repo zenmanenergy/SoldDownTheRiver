@@ -1,25 +1,25 @@
 from Lib import Database
 
 def get_transaction(transaction_id):
-    if not transaction_id:
-        transaction_id = "-1"
+	if not transaction_id:
+		transaction_id = "-1"
 
-    # Connect to the database
-    cursor, connection = Database.ConnectToDatabase()
+	# Connect to the database
+	cursor, connection = Database.ConnectToDatabase()
 
-    # Construct the SQL query
-    query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Transactions.TransactionId  and History.TableName='Transactions' and History.KeyName='TransactionId') LastModified"
-    query +=" FROM Transactions WHERE TransactionId = %s"
-    values = (transaction_id,)
+	# Construct the SQL query
+	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Transactions.TransactionId  and History.TableName='Transactions' and History.KeyName='TransactionId') LastModified"
+	query +=" FROM Transactions WHERE TransactionId = %s"
+	values = (transaction_id,)
 
-    # Execute the query and get the results
-    cursor.execute(query, values)
-    result = cursor.fetchall()
-    if not result:
-        result = []
+	# Execute the query and get the results
+	cursor.execute(query, values)
+	result = cursor.fetchall()
+	if not result:
+		result = []
 
-    # Close the database connection
-    connection.close()
+	# Close the database connection
+	connection.close()
 
-    # Return the result as a dictionary
-    return result
+	# Return the result as a dictionary
+	return result
