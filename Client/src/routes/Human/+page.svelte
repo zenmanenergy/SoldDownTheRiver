@@ -29,6 +29,8 @@
 	let EndYear = '';
 	let Notes = '';
 
+	let Human=[];
+
 	let AkaNames = [];
 	let AKAHumanId= '';
 	let AKAFirstName = '';
@@ -47,15 +49,16 @@
 
 	let FormValid = false;
 	let AKAFormValid = false;
-	async function setName(data) {
-		FirstName=data._FirstName;
-		MiddleName=data._MiddleName;
-		LastName=data._LastName;
-		StartYear=data._StartYear;
-		EndYear=data._EndYear;
-		Notes=data._Notes;
-		RoleId=data._RoleId;
-		LastModified=data._LastModified;
+	async function setHuman(data) {
+		Human=data;
+		// FirstName=data._FirstName;
+		// MiddleName=data._MiddleName;
+		// LastName=data._LastName;
+		// StartYear=data._StartYear;
+		// EndYear=data._EndYear;
+		// Notes=data._Notes;
+		// RoleId=data._RoleId;
+		// LastModified=data._LastModified;
 		
 	}
 	$: {
@@ -81,7 +84,7 @@
 		HumanId = urlParams.get("HumanId") || "";
 		
 		await Promise.all([
-			handleGetHuman(Session.SessionId,HumanId, setName),
+			handleGetHuman(Session.SessionId,HumanId, setHuman),
 			handleGetAKA(Session.SessionId,HumanId, setAkaNames),
 			handleGetFamilies(Session.SessionId,HumanId, setFamilies),
 			handleGetPossibleFamilies(Session.SessionId,HumanId, setPossibleFamilies),
@@ -105,25 +108,25 @@
 		<div class="field">
 			<label class="label" for="FirstName">First Name:</label>
 			<div class="control">
-				<input class="input" type="text" id="FirstName" bind:value={FirstName} required>
+				<input class="input" type="text" id="FirstName" bind:value={Human.FirstName} required>
 			</div>
 		</div>
 		<div class="field">
 			<label class="label" for="MiddleName">Middle Name:</label>
 			<div class="control">
-				<input class="input" type="text" id="MiddleName" bind:value={MiddleName}>
+				<input class="input" type="text" id="MiddleName" bind:value={Human.MiddleName}>
 			</div>
 		</div>
 		<div class="field">
 			<label class="label" for="LastName">Last Name:</label>
 			<div class="control">
-				<input class="input" type="text" id="LastName" bind:value={LastName} required>
+				<input class="input" type="text" id="LastName" bind:value={Human.LastName} required>
 			</div>
 		</div>
 		<div class="field">
 			<label class="label" for="Role">Role:</label>
 			<div class="control">
-				<select id="RoleId" bind:value={RoleId}>
+				<select id="RoleId" bind:value={Human.RoleId}>
 					<option value="">Select Role</option>
 					{#each Roles as Role}
 						<option value={Role.RoleId}>{Role.Role}</option>
@@ -135,7 +138,7 @@
 		<div class="field">
 			<label class="label" for="Notes">Notes:</label>
 			<div class="control">
-				<textarea class="textarea" id="Notes" bind:value={Notes}></textarea>
+				<textarea class="textarea" id="Notes" bind:value={Human.Notes}></textarea>
 			</div>
 		</div>
 		<div class="ActionBox">
@@ -184,7 +187,7 @@
 						<option value={possibleFamily.HumanId}>{possibleFamily.FirstName} {possibleFamily.MiddleName} {possibleFamily.LastName}</option>
 					{/each}
 				</select>
-				<select id="Relationship" bind:value={Relationship}>
+				<select id="Relationship" bind:value={Human.Relationship}>
 					<option>Father</option>
 					<option>Mother</option>
 					<option>Sister</option>
@@ -198,10 +201,10 @@
 		</div>
 		<div class="field">
 			<div class="control">
-				<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,HumanId, FirstName, MiddleName, LastName, Notes,RoleId, FormValid)}>Save</button>
-				{#if HumanId.length}
-					<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,HumanId)}>Delete</button>
-				{/if}
+				<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Human.HumanId, Human.FirstName, Human.MiddleName, Human.LastName, Human.Notes, Human.RoleId, FormValid)}>Save</button>
+				<!-- {#if Human.HumanId.length}
+					<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,Human.HumanId)}>Delete</button>
+				{/if} -->
 			</div>
 		</div>
 	</form>
