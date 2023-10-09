@@ -2,29 +2,29 @@ import uuid
 from Lib import Database
 
 def save_ship(ShipId, ShipName,BuildDate, Notes, ShipType, Size, OwnerBusinessId):
-    # Connect to the database
-    cursor, connection = Database.ConnectToDatabase()
+	# Connect to the database
+	cursor, connection = Database.ConnectToDatabase()
 
-    if len(BuildDate) == 0:
-        BuildDate = None
-    # Check if the ShipId is present
-    if ShipId:
-        # If the ShipId is present, update the existing ship
-        query = "UPDATE Ships SET ShipName=%s, BuildDate = %s, Notes = %s, ShipType = %s, Size = %s, OwnerBusinessId=%s WHERE ShipId = %s"
-        values = (ShipName, BuildDate, Notes, ShipType, Size, OwnerBusinessId, ShipId)
-    else:
-        # If the ShipId is not present, create a new ship
-        ShipId = "SHP" + str(uuid.uuid4())
-        query = "INSERT INTO Ships (ShipId, ShipName,BuildDate, Notes, ShipType, Size, OwnerBusinessId) VALUES (%s, %s,  %s, %s, %s, %s, %s)"
-        values = (ShipId, ShipName, BuildDate, Notes, ShipType, Size, OwnerBusinessId)
+	if len(BuildDate) == 0:
+		BuildDate = None
+	# Check if the ShipId is present
+	if ShipId:
+		# If the ShipId is present, update the existing ship
+		query = "UPDATE Ships SET ShipName=%s, BuildDate = %s, Notes = %s, ShipType = %s, Size = %s, OwnerBusinessId=%s WHERE ShipId = %s"
+		values = (ShipName, BuildDate, Notes, ShipType, Size, OwnerBusinessId, ShipId)
+	else:
+		# If the ShipId is not present, create a new ship
+		ShipId = "SHP" + str(uuid.uuid4())
+		query = "INSERT INTO Ships (ShipId, ShipName,BuildDate, Notes, ShipType, Size, OwnerBusinessId) VALUES (%s, %s,  %s, %s, %s, %s, %s)"
+		values = (ShipId, ShipName, BuildDate, Notes, ShipType, Size, OwnerBusinessId)
 
-    # Execute the query and commit the changes
-    print(query, values)
-    cursor.execute(query, values)
-    connection.commit()
+	# Execute the query and commit the changes
+	print(query, values)
+	cursor.execute(query, values)
+	connection.commit()
 
-    # Close the database connection
-    connection.close()
+	# Close the database connection
+	connection.close()
 
-    # Return the ShipId as a JSON response
-    return {'success': True, 'ShipId': ShipId}
+	# Return the ShipId as a JSON response
+	return {'success': True, 'ShipId': ShipId}
