@@ -5,16 +5,17 @@
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { handleSave } from './handleSave.js';
-	import { handleDelete } from './handleDelete.js';
-	import { handleGetHuman } from './handleGetHuman.js';
-	import { handleGetRoles } from './handleGetRoles.js';
-	// import { handleGetAKA } from './handleGetAKA.js';
-	// import { handleSaveAkaName } from './handleSaveAkaName.js';
-	// import { handleDeleteAkaName } from './handleDeleteAkaName.js';
+	import { handleSave } from '../handleSave.js';
+	import { handleDelete } from '../handleDelete.js';
+	import { handleGetHuman } from '../handleGetHuman.js';
+	import { handleGetRoles } from '../handleGetRoles.js';
+	// import { handleGetAKA } from '../handleGetAKA.js';
+	// import { handleSaveAkaName } from '../handleSaveAkaName.js';
+	// import { handleDeleteAkaName } from '../handleDeleteAkaName.js';
 	import {Session} from "../../Session.js";
 
 
+	let FormValid=true
 	let isLoading = true;
 	let HumanId="";
 

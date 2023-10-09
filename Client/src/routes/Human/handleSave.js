@@ -1,5 +1,5 @@
-import { baseURL } from '../../Settings';
-import { SuperFetch } from '../../SuperFetch';
+import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName,	Notes, RoleId, formValid ) {
 
@@ -16,6 +16,6 @@ export async function handleSave(SessionId,HumanId, FirstName, MiddleName, LastN
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 
-	// window.location.href = '/Humans';
+	window.location.href = '/Role/?RoleId='+RoleId;
 	
 }

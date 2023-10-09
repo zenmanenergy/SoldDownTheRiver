@@ -1,5 +1,5 @@
-import { baseURL } from '../../Settings';
-import { SuperFetch } from '../../SuperFetch';
+import { baseURL } from '../Settings';
+import { SuperFetch } from '../SuperFetch';
 
 export async function handleGetHuman(SessionId,HumanId, callback) {
 	

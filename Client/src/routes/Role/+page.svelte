@@ -45,6 +45,14 @@
 		
 		isLoading = false;
 	});
+
+	async function confirmDelete() {
+		const userConfirmed = confirm('Are you sure you want to delete this role?\n\nWarning!!! it will delete all associations with the human records too');
+		if (userConfirmed) {
+			console.log("delete")
+			await handleDelete(Session.SessionId, Role.RoleId);
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -56,8 +64,13 @@
 		<a href="/Roles">Back to Roles</a>
 		<div class="ActionBox">
 			<form>
-				<h3 class="title is-2">Add a Role</h3>
-
+				
+				<div class="title-container">
+					<h3 class="title is-2">Add/Edit a Role</h3>
+					{#if Role.RoleId.length}
+						<button class="button is-danger" type="button" on:click={confirmDelete}>Delete</button>
+					{/if}
+				</div>
 				<div class="field">
 					<label class="label" for="Role">Name</label>
 					<div class="control">
@@ -78,9 +91,7 @@
 				<div class="field">
 					<div class="control">
 						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Role, formValid)}>Save</button>
-						{#if Role.RoleId.length}
-							<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,Role.RoleId)}>Delete</button>
-						{/if}
+						
 					</div>
 				</div>
 			</form>
