@@ -9,7 +9,6 @@ export async function handleDelete(SessionId, BusinessId) {
 	};
 	const url = baseURL + '/Businesses/GetBusinesses?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = '/Businesses';

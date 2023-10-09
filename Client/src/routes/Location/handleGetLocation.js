@@ -11,7 +11,6 @@ export async function handleGetLocation(SessionId,LocationId, callback) {
 	};
 	const url = baseURL + '/Location/GetLocation?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

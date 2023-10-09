@@ -10,7 +10,6 @@ export async function handleGetHuman(SessionId,HumanId, callback) {
 	};
 	const url = baseURL + '/Human/GetHuman?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

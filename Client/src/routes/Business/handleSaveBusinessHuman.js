@@ -9,7 +9,6 @@ export async function handleSaveBusinessHuman(SessionId, BusinessId, HumanId, Ro
 	};
 	const url = `${baseURL}/Business/SaveBusinessHuman?BusinessId=${BusinessId}&HumanId=${HumanId}&RoleId=${RoleId}&SessionId=${SessionId}`
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 	window.location.href = `/Business?BusinessId=${BusinessId}`;
 

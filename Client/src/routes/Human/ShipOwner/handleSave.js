@@ -14,7 +14,6 @@ export async function handleSave(SessionId,HumanId, FirstName, MiddleName, LastN
 	};
 	const url = baseURL + '/Human/SaveHuman?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	// window.location.href = '/Humans';

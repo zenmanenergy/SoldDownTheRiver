@@ -9,7 +9,6 @@ export async function handleGetBusinessHumans(SessionId, BusinessId, callback) {
 	};
 	const url = `${baseURL}/Business/GetBusinessHumans?BusinessId=${BusinessId}&SessionId=${SessionId}`
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

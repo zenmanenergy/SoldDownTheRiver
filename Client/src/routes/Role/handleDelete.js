@@ -10,7 +10,6 @@ export async function handleDelete(SessionId,RoleId) {
 	};
 	const url = baseURL + '/Role/DeleteRole?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = '/Roles';

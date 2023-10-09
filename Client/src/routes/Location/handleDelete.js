@@ -8,7 +8,6 @@ export async function handleDelete(SessionId,LocationId) {
 	};
 	const url = baseURL + '/Location/DeleteLocation?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = '/Locations';

@@ -9,7 +9,6 @@ export async function handleDelete(SessionId,UserId) {
 	};
 	const url = baseURL + '/User/DeleteUser?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = "/Users";

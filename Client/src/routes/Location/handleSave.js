@@ -5,7 +5,7 @@ export async function handleSave(SessionId,Data, FormValid) {
 
 	Data.SessionId=SessionId
 	const url = baseURL + '/Location/SaveLocation?'; 
-	let FormValid=true 
+	FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 	window.location.href = '/Locations';
 }

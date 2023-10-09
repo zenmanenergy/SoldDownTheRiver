@@ -8,7 +8,6 @@ export async function handleGetUsers(SessionId, callback) {
 	};
 	const url = baseURL + '/Users/GetUsers?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

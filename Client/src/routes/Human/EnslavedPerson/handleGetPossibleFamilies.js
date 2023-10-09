@@ -10,7 +10,6 @@ export async function handleGetPossibleFamilies(SessionId,HumanId,callback) {
 	};
 	const url = baseURL + '/Human/GetPossibleFamilies?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

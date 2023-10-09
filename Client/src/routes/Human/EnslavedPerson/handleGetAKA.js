@@ -11,7 +11,6 @@ export async function handleGetAKA(SessionId,HumanId, callback) {
 	};
 	const url = baseURL + '/Human/GetAkaNames?'; 
 	const FormValid=true
-	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);
