@@ -14,6 +14,7 @@ export async function handleSave(SessionId,BusinessId, BusinessName, LocationId,
 	
 	const url = `${baseURL}/Business/SaveBusiness?`
 	FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 	window.location.href = '/Businesses';
 

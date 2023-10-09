@@ -10,8 +10,9 @@ export async function handleSave(SessionId,Role, FormValid) {
 		RoleId:Role.RoleId,
 		Role:Role.Role,
 	};
-	const url = baseURL + '/Role/SaveRole?'; 
+	const url = baseURL + '/Role/SaveRole?';
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
-	window.location.href = '/Roles';
+	// window.location.href = '/Roles';
 }

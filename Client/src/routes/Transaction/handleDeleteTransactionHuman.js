@@ -11,6 +11,7 @@ export async function handleDeleteTransactionHuman(SessionId,TransactionId,Human
 	};
 	const url = baseURL + '/Transaction/DeleteTransactionHuman?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = `/Transaction?TransactionId=${TransactionId}`;

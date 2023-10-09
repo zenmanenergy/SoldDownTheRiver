@@ -11,6 +11,7 @@ export async function handleSaveVoyageHuman(SessionId,VoyageId, HumanId, VoyageH
 	};
 	const url = baseURL + '/Voyage/SaveVoyageHuman?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

@@ -9,6 +9,7 @@ export async function handleGetTransaction(SessionId,TransactionId, callback) {
 	};
 	const url = baseURL + '/Transaction/GetTransaction?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

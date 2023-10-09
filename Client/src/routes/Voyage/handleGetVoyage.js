@@ -9,6 +9,7 @@ export async function handleGetVoyage(SessionId, VoyageId, callback) {
 	};
 	const url = baseURL + '/Voyage/GetVoyage?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

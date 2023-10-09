@@ -8,6 +8,7 @@ export async function handleGetShips(SessionId, callback) {
 	};
 	const url = baseURL + '/Voyage/GetShips?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

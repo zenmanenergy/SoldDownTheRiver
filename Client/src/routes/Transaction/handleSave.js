@@ -21,7 +21,8 @@ export async function handleSave(SessionId,transactionId, transactionDate, fromB
 
 	
 	const url = baseURL + '/Transaction/SaveTransaction?'; 
-	let data = await SuperFetch(url, Data, formValid)
+	let FormValid=true 
+	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = '/Transactions';
 }

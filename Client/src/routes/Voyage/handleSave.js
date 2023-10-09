@@ -18,6 +18,7 @@ export async function handleSave(SessionId,Data,FormValid) {
 	
 
 	const url = baseURL + '/Voyage/SaveVoyage?'; 
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

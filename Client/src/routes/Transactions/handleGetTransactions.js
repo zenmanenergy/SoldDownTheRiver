@@ -7,6 +7,7 @@ export async function handleGetTransactions(SessionId,callback) {
 	};
 	const url = baseURL + '/Transactions/GetTransactions?SessionId?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

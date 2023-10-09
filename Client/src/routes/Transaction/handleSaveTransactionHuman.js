@@ -9,6 +9,7 @@ export async function handleSaveTransactionHuman(SessionId,TransactionId, HumanI
 	};
 	const url = baseURL + '/Transaction/SaveTransactionHuman?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = `/Transaction?TransactionId=${TransactionId}`;

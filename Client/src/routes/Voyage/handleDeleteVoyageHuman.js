@@ -10,6 +10,7 @@ export async function handleDeleteVoyageHuman(SessionId,VoyageId,HumanId) {
 	};
 	const url = baseURL + '/Voyage/DeleteVoyageHuman?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = `/Voyage?VoyageId=${VoyageId}`;

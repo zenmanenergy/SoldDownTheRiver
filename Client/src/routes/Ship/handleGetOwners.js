@@ -9,6 +9,7 @@ export async function handleGetOwners(SessionId, ShipId, callback) {
 	};
 	const url = baseURL + '/Ship/GetOwners?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

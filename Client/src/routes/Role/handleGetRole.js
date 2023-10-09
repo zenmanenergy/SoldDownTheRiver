@@ -10,6 +10,7 @@ export async function handleGetRole(SessionId,RoleId,callback) {
 	};
 	const url = baseURL + '/Role/GetRole?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);

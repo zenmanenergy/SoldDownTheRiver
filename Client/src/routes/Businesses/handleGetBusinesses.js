@@ -7,6 +7,7 @@ export async function handleGetBusinesses(SessionId, callback) {
 	};
 	const url = baseURL + '/Businesses/GetBusinesses?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);
