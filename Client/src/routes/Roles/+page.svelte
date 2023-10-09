@@ -1,5 +1,9 @@
 <style>
 @import '/static/FormPages.css';
+tbody tr:hover {
+		background-color: #444444; /* or any other color you like */
+		cursor: pointer;
+	}
 </style>
 	
 <script>
