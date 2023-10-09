@@ -5,7 +5,7 @@ def get_roleHumans(RoleId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT Humans.HumanId, Humans.FirstName, Humans.LastName , (select max(dateAdded) from History where History.KeyValue=Humans.HumanId  and History.TableName='Humans' and History.KeyName='HumanId') LastModified"
+	query = "SELECT Humans.HumanId, Humans.FirstName, Humans.LastName , HumanRoles.RoleId,  (select max(dateAdded) from History where History.KeyValue=Humans.HumanId  and History.TableName='Humans' and History.KeyName='HumanId') LastModified"
 	query += f" FROM Humans join HumanRoles on Humans.HumanId=HumanRoles.HumanId "
 	query += f" where HumanRoles.RoleId = '{RoleId}'"
 	print(query)
