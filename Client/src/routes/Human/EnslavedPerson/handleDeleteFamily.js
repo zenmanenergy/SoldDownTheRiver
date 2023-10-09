@@ -2,16 +2,19 @@ import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
 
-export async function handleDeleteAkaName(SessionId,AKAHumanId, HumanId) {
+export async function handleDeleteFamily(SessionId,FamilyHumanId, HumanId) {
 	
+
 	const Data = {
 		SessionId:SessionId,
-		AKAHumanId:AKAHumanId
+		HumanId:HumanId,
+		FamilyHumanId:FamilyHumanId
 	};
-	const url = baseURL + '/Human/GetHumans?'; 
+	const url = baseURL + '/Human/DeleteFamily?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = '/Human?HumanId=' + HumanId + '&tab=AKANames';
 }
-  
+	

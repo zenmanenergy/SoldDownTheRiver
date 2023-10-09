@@ -15,6 +15,7 @@ export async function handleSaveAkaName(SessionId,AKAHumanId,HumanId, AKAFirstNa
 	};
 	const url = baseURL + '/Human/SaveHumanAKA?'; 
 	const FormValid=true
+	let FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
 	window.location.href = '/Human?HumanId=' + HumanId + '&tab=AKA';
