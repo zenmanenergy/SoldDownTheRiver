@@ -1,6 +1,10 @@
 <!-- src/routes/Roles/+page.svelte -->
 <style>
 	@import '/static/FormPages.css';
+	tbody tr:hover {
+		background-color: #444444; /* or any other color you like */
+		cursor: pointer;
+	}
 </style>
 
 <script>
@@ -26,7 +30,7 @@
 	}
 	async function setRoleHumans(data) {
 		RoleHumans=data
-		
+		console.log(RoleHumans)
 	}
 		
 	onMount(async () => {
@@ -84,6 +88,7 @@
 				<small>Last Modified: {moment.utc(Role.LastModified).local().fromNow()}</small>
 			{/if}
 
+			<br/>
 			<div class="ActionBox">
 				<h3 class="title is-2">List of Humans</h3>
 				<form>
@@ -104,7 +109,7 @@
 					</thead>
 					<tbody>
 						{#each RoleHumans as human}
-							<tr style="cursor: pointer;" on:click={() => location.href=`/Human?HumanId=${human.HumanId}`}>
+							<tr style="cursor: pointer;" on:click={() => location.href=`/Human/${human.RoleId}?HumanId=${human.HumanId}`}>
 								<td>{human.FirstName}</td>
 								<td>{human.LastName}</td>
 								<td>{moment.utc(human.LastModified).local().fromNow()}</td>
