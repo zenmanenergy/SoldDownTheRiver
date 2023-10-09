@@ -256,10 +256,11 @@ def GetBusinesses():
 def GetHumanLocations():
 	try:
 		# Get the role data from the request
-		role_data = request.args.to_dict()
+		human_data = request.args.to_dict()
 
+		HumanId = human_data.get('HumanId', None)
 		# Call the get_role function from GetRoles.py
-		result = get_humanlocations()
+		result = get_humanlocations(HumanId)
 
 		return result
 	except Exception as e:

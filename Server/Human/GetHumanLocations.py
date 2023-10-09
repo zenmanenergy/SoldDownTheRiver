@@ -9,11 +9,10 @@ def get_humanlocations(HumanId):
 
 	# Construct the SQL query
 	query = "SELECT * "
-	query +=" FROM HumanLocations WHERE Humans.HumanId = %s order by DateCirca"
-	values = (HumanId,)
-	print(query % values)
+	query +=f" FROM humanlocations join locations on locations.LocationId=humanlocations.LocationId WHERE humanlocations.HumanId = '{HumanId}' order by DateCirca"
+	print(query)
 	# Execute the query and get the results
-	cursor.execute(query, values)
+	cursor.execute(query)
 	result = cursor.fetchall()
 	if not result:
 		result=[]

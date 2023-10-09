@@ -9,6 +9,7 @@
 	import { handleDelete } from '../handleDelete.js';
 	import { handleGetHuman } from '../handleGetHuman.js';
 	import { handleGetRoles } from '../handleGetRoles.js';
+	import { handleGetHumanLocations } from '../handleGetHumanLocations.js';
 	// import { handleGetAKA } from '../handleGetAKA.js';
 	// import { handleSaveAkaName } from '../handleSaveAkaName.js';
 	// import { handleDeleteAkaName } from '../handleDeleteAkaName.js';
@@ -21,6 +22,7 @@
 
 	let Human=[];
 	let Roles=[];
+	let Locations=[];
 	// let AkaNames = [];
 
 	async function setHuman(data) {
@@ -33,6 +35,9 @@
 	async function setAkaNames(data) {
 		AkaNames = data;
 	}
+	async function setLocations(data){
+		Locations = data;
+	}
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
@@ -41,7 +46,8 @@
 		await Promise.all([
 			// handleGetAKA(Session.SessionId,HumanId, setAkaNames),
 			handleGetHuman(Session.SessionId,HumanId, setHuman),
-			handleGetRoles(Session.SessionId,setRoles)
+			handleGetRoles(Session.SessionId,setRoles),
+			handleGetHumanLocations(Session.SessionId,HumanId,setLocations)
 		]);
 	 
 		isLoading = false;
@@ -110,6 +116,31 @@
 	{#if Human.LastModified}
 		<small>Last Modified: {moment.utc(Human.LastModified).local().fromNow()}</small>
 	{/if}
+
+	<div class="ActionBox">
+		<h3 class="title is-2">Timeline of known locations</h3>
+		<form>
+		
+		<table width=100%>
+			<thead>
+				<tr>
+					<th>Location</th>
+					<th>When</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each Locations as Location}
+					<tr style="cursor: pointer;">
+						<td>{Location.City}, {Location.State}</td>
+						<td>{moment(Location.DateCirca).format('MM/DD/YYYY')}</td>
+					</tr>
+				{/each}
+				
+			</tbody>
+		</table>
+		
+		<!-- <button on:click={addHuman}>Add Human</button> -->
+	</div>
 </div>
 </div>
 	{/if}
