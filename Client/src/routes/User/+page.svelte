@@ -25,12 +25,12 @@
 	
 
 	async function setUser(data) {
-		console.log("setUser",data.FirstName)
+		console.log("setUser",data)
 		FirstName = data.FirstName;
 		LastName = data.LastName;
-		Email = data.Email;
+		Email = data.Email || "" ;
 		Phone = data.Phone;
-		Password = data.Password;
+		Password = data.Password || "";
 		School = data.School;
 		SemesterYear = data.SemesterYear;
 		UserType= data.UserType
@@ -63,6 +63,9 @@
 	<a href="/Users">Back to Users</a>
 	<div class="ActionBox">
 	<form>
+		<input type="email" style="display:none" />
+		<input type="password" style="display:none" />
+		<input type="tel" style="display:none" />
 		<h3 class="title is-2">Add a User</h3>
 		<input type="hidden" bind:value={UserId} />
 
@@ -72,7 +75,7 @@
 				<input
 					class="input"
 					type="text"
-					id="FirstName"
+					autocomplete="off"
 					placeholder="Enter First Name"
 					bind:value={FirstName}
 					required
@@ -86,7 +89,7 @@
 				<input
 					class="input"
 					type="text"
-					id="LastName"
+					autocomplete="off"
 					placeholder="Enter Last Name"
 					bind:value={LastName}
 					required
@@ -100,7 +103,7 @@
 				<input
 					class="input"
 					type="email"
-					id="Email"
+					autocomplete="off"
 					placeholder="Enter Email Address"
 					bind:value={Email}
 					required
@@ -109,12 +112,13 @@
 		</div>
 
 		<div class="field">
-			<label class="label" for="Phone">Phone</label>
+			<label class="label" for="PhoneNum">Phone</label>
 			<div class="control">
 				<input
 					class="input"
-					type="tel"
-					id="Phone"
+					id="PhoneNum"
+					type="text"
+					autocomplete="off"
 					placeholder="Enter Phone Number"
 					bind:value={Phone}
 					required
@@ -128,7 +132,7 @@
 				<input
 					class="input"
 					type="password"
-					id="Password"
+					autocomplete="off"
 					placeholder="Enter Password"
 					bind:value={Password}
 					required
@@ -142,7 +146,6 @@
 				<input
 					class="input"
 					type="text"
-					id="School"
 					placeholder="Enter School Name"
 					bind:value={School}
 					required
@@ -156,7 +159,6 @@
 				<input
 					class="input"
 					type="text"
-					id="SemesterYear"
 					placeholder="Enter Semester/Year"
 					bind:value={SemesterYear}
 					required
