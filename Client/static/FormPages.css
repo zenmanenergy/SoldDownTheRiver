@@ -1,21 +1,21 @@
 input:required:invalid {
-    border-color: #f14668;
-  }
+		border-color: #f14668;
+	}
 
-  input:required:valid {
-    border-color: #23d160;
-  }
+	input:required:valid {
+		border-color: #23d160;
+	}
 
-  .section {
-    max-width: 900px;
-    margin: auto;
-  }
-  .ActionBox {
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  input, button {
-    margin-top: 10px;
-  }
+	.section {
+		max-width: 900px;
+		margin: auto;
+	}
+	.ActionBox {
+		margin: auto;
+		padding: 20px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+	input, button {
+		margin-top: 10px;
+	}
