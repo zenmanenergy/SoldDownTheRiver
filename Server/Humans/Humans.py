@@ -12,9 +12,10 @@ def GetHumans():
 	try:
 		# Get the human data from the request
 		human_data = request.args.to_dict()
+		Query = human_data.get('Query', None)
 
 		# Call the get_humans function from GetHumans.py
-		result = get_humans()
+		result = get_humans(Query)
 		return result
 	except Exception as e:
 		return Debugger(e)
