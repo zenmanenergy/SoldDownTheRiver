@@ -6,18 +6,18 @@
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { handleSave } from './handleSave.js';
-	import { handleDelete } from './handleDelete.js';
-	import { handleGetHuman } from './handleGetHuman.js';
-	import { handleGetAKA } from './handleGetAKA.js';
-	import { handleSaveAkaName } from './handleSaveAkaName.js';
-	import { handleDeleteAkaName } from './handleDeleteAkaName.js';
-	import { handleGetFamilies } from './handleGetFamilies.js';
-	import { handleDeleteFamily } from './handleDeleteFamily.js';
-	import { handleGetPossibleFamilies } from './handleGetPossibleFamilies.js';
-	import { handleSaveFamily } from './handleSaveFamily.js';
-	import { handleGetRoles } from './handleGetRoles.js';
-	import {Session} from "../Session.js";
+	import { handleSave } from '../handleSave.js';
+	import { handleDelete } from '../handleDelete.js';
+	import { handleGetHuman } from '../handleGetHuman.js';
+	import { handleGetAKA } from '../handleGetAKA.js';
+	import { handleSaveAkaName } from '../handleSaveAkaName.js';
+	import { handleDeleteAkaName } from '../handleDeleteAkaName.js';
+	import { handleGetFamilies } from '../handleGetFamilies.js';
+	import { handleDeleteFamily } from '../handleDeleteFamily.js';
+	import { handleGetPossibleFamilies } from '../handleGetPossibleFamilies.js';
+	import { handleSaveFamily } from '../handleSaveFamily.js';
+	import { handleGetRoles } from '../handleGetRoles.js';
+	import {Session} from "../../Session.js";
 	
 	let Relationship = '';
 	let LastModified='';
@@ -93,6 +93,14 @@
 	 
 		isLoading = false;
 	});
+
+	async function confirmDelete() {
+		const userConfirmed = confirm('Are you sure you want to delete this Enslaved Person?\n\nWarning!!! it will delete all associations with the human records too');
+		if (userConfirmed) {
+			console.log("delete")
+			await handleDelete(Session.SessionId,Human.HumanId);
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -103,7 +111,12 @@
 <div class="section">
 	<a href="/Humans">Back to Humans</a>
 	<div class="ActionBox">
-		<h3 class="title is-2">Edit Human</h3>
+		<div class="title-container">
+			<h3 class="title is-2">Add/Edit Human</h3>
+			{#if Human.HumanId.length}
+				<button class="button is-danger" type="button" on:click={confirmDelete}>Delete</button>
+			{/if}
+		</div>
 	<form>
 		<div class="field">
 			<label class="label" for="FirstName">First Name:</label>
@@ -202,9 +215,7 @@
 		<div class="field">
 			<div class="control">
 				<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Human.HumanId, Human.FirstName, Human.MiddleName, Human.LastName, Human.Notes, Human.RoleId, FormValid)}>Save</button>
-				<!-- {#if Human.HumanId.length}
-					<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId,Human.HumanId)}>Delete</button>
-				{/if} -->
+				<!--  -->
 			</div>
 		</div>
 	</form>
