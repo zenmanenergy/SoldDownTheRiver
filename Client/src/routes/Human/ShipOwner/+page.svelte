@@ -10,6 +10,7 @@
 	import { handleGetHuman } from '../handleGetHuman.js';
 	import { handleGetRoles } from '../handleGetRoles.js';
 	import { handleGetHumanLocations } from '../handleGetHumanLocations.js';
+	import { handleGetShips } from './handleGetShips.js';
 	// import { handleGetAKA } from '../handleGetAKA.js';
 	// import { handleSaveAkaName } from '../handleSaveAkaName.js';
 	// import { handleDeleteAkaName } from '../handleDeleteAkaName.js';
@@ -23,6 +24,7 @@
 	let Human=[];
 	let Roles=[];
 	let Locations=[];
+	let Ships=[];
 	// let AkaNames = [];
 
 	async function setHuman(data) {
@@ -38,6 +40,10 @@
 	async function setLocations(data){
 		Locations = data;
 	}
+	async function setShips(data){
+		Ships = data;
+	}
+	
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
@@ -47,7 +53,9 @@
 			// handleGetAKA(Session.SessionId,HumanId, setAkaNames),
 			handleGetHuman(Session.SessionId,HumanId, setHuman),
 			handleGetRoles(Session.SessionId,setRoles),
-			handleGetHumanLocations(Session.SessionId,HumanId,setLocations)
+			handleGetHumanLocations(Session.SessionId,HumanId,setLocations),
+			handleGetShips(Session.SessionId,HumanId, setShips),
+			
 		]);
 	 
 		isLoading = false;
@@ -135,11 +143,36 @@
 						<td>{moment(Location.DateCirca).format('MM/DD/YYYY')}</td>
 					</tr>
 				{/each}
-				
 			</tbody>
 		</table>
 		
 		<!-- <button on:click={addHuman}>Add Human</button> -->
+	</div>
+
+	<div class="ActionBox">
+		<h3 class="title is-2">Ships</h3>
+		<form>
+		
+		<table width=100%>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Home Port</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each Ships as Ship}
+					<tr style="cursor: pointer;">
+						<td>{Ship.ShipName}</td>
+						<td>{Ship.ShipType}</td>
+						<td>{Ship.City}, {Ship.State}</td>
+					</tr>
+				{/each}
+				
+			</tbody>
+		</table>
+		
 	</div>
 </div>
 </div>

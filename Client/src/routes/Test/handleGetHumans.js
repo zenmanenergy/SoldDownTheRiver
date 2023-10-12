@@ -1,15 +1,16 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleGetOwners(SessionId, Query,callback) {
+export async function handleGetHumans(SessionId, Query, callback) {
+
 
 	const Data = {
-		SessionId:SessionId,
-		Query:Query,
-	}
-	const url = baseURL + '/Ship/GetOwners?'
+		SessionId:SessionId
+	};
+	const url = baseURL + "/Humans/GetHumans?Query="+Query+"&"; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 
 	callback(data);
+
 }

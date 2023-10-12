@@ -1,19 +1,23 @@
 from Lib import Database
 
-def get_owners(ShipId):
+def get_owners(Query):
 
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
-	# Construct the SQL query
-	query = f"SELECT *"
+	# Construct the SQL sql
+	sql = f"SELECT humans.HumanId , humans.FirstName, humans.LastName "
 	# , (select max(dateAdded) from History where History.KeyValue=Businesses.BusinessId and History.TableName='Businesses' and History.KeyName='BusinessId') LastModified"
-	query +=f" FROM  humans join humanroles on humans.HumanId=humanroles.HumanId and humanroles.RoleId='ShipOwner'"
+	sql +=f" FROM  humans join humanroles on humans.HumanId=humanroles.HumanId and humanroles.RoleId='ShipOwner'"
+	if len(Query):
+		sql +=f" where 1=1 and ("
+		sql +=f" humans.FirstName like '%{Query}%'"
+		sql +=f" or humans.LastName like '%{Query}%'"
+		sql +=f" )"
+	print(sql)
 
-	print(query)
-
-	# Execute the query and get the results
-	cursor.execute(query)
+	# Execute the sql and get the results
+	cursor.execute(sql)
 	result = cursor.fetchall()
 	if not result:
 		result=[]

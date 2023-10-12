@@ -1,5 +1,5 @@
-import { baseURL } from '../Settings';
-import { SuperFetch } from '../SuperFetch';
+import { baseURL } from '../../Settings';
+import { SuperFetch } from '../../SuperFetch';
 
 export async function handleGetShips(SessionId,HumanId, callback) {
 	
@@ -9,6 +9,7 @@ export async function handleGetShips(SessionId,HumanId, callback) {
 		HumanId:HumanId
 	};
 	const url = baseURL + '/Human/ShipOwner/GetShips?'; 
+	console.log(url)
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

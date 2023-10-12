@@ -74,9 +74,9 @@ def GetOwners():
 		ship_data = request.args.to_dict()
 
 		# Get the ship ID from the request
-		ShipId = ship_data.get('ShipId')
+		Query = ship_data.get('Query')
 		# Call the get_ship function from GetOwners.py
-		result = get_owners(ShipId)
+		result = get_owners(Query)
 		return result
 	except Exception as e:
 		return Debugger(e)
