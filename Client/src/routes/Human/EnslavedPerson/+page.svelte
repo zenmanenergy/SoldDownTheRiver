@@ -15,10 +15,12 @@
 	import { handleGetFamilies } from '../handleGetFamilies.js';
 	import { handleDeleteFamily } from '../handleDeleteFamily.js';
 	import { handleGetPossibleFamilies } from '../handleGetPossibleFamilies.js';
+	import { handleGetHumanRoles } from '../handleGetHumanRoles.js';
 	import { handleSaveFamily } from '../handleSaveFamily.js';
 	import { handleGetRoles } from '../handleGetRoles.js';
 	import {Session} from "../../Session.js";
 	
+	let RoleId="EnslavedPerson"
 	let Relationship = '';
 	let LastModified='';
 	let HumanId = '';
@@ -30,6 +32,7 @@
 	let Notes = '';
 
 	let Human=[];
+	let HumanRoles=[];
 
 	let AkaNames = [];
 	let AKAHumanId= '';
@@ -42,7 +45,6 @@
 	let FamilyHumanId='';
 	let PossibleFamilies=[]
 
-	let RoleId='';
 	let Roles=[];
 
 	let isLoading = true;
@@ -78,6 +80,9 @@
 	async function setRoles(data) {
 		Roles = data;
 	}
+	async function setHumanRoles(data){
+		HumanRoles = data;
+	}
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
@@ -88,6 +93,7 @@
 			handleGetAKA(Session.SessionId,HumanId, setAkaNames),
 			handleGetFamilies(Session.SessionId,HumanId, setFamilies),
 			handleGetPossibleFamilies(Session.SessionId,HumanId, setPossibleFamilies),
+			handleGetHumanRoles(Session.SessionId,HumanId,setHumanRoles),
 			handleGetRoles(Session.SessionId,setRoles)
 		]);
 	 
@@ -108,120 +114,131 @@
 		<div class="spinner"></div>
 	</div>
 {:else}
-<div class="section">
-	<a href="/Humans">Back to Humans</a>
-	<div class="ActionBox">
-		<div class="title-container">
-			<h3 class="title is-2">Add/Edit Human</h3>
-			{#if Human.HumanId.length}
-				<button class="button is-danger" type="button" on:click={confirmDelete}>Delete</button>
-			{/if}
-		</div>
-	<form>
-		<div class="field">
-			<label class="label" for="FirstName">First Name:</label>
-			<div class="control">
-				<input class="input" type="text" id="FirstName" bind:value={Human.FirstName} required>
-			</div>
-		</div>
-		<div class="field">
-			<label class="label" for="MiddleName">Middle Name:</label>
-			<div class="control">
-				<input class="input" type="text" id="MiddleName" bind:value={Human.MiddleName}>
-			</div>
-		</div>
-		<div class="field">
-			<label class="label" for="LastName">Last Name:</label>
-			<div class="control">
-				<input class="input" type="text" id="LastName" bind:value={Human.LastName} required>
-			</div>
-		</div>
-		<div class="field">
-			<label class="label" for="Role">Role:</label>
-			<div class="control">
-				<select id="RoleId" bind:value={Human.RoleId}>
-					<option value="">Select Role</option>
-					{#each Roles as Role}
-						<option value={Role.RoleId}>{Role.Role}</option>
-					{/each}
-				</select>
-			</div>
-		</div>
-		
-		<div class="field">
-			<label class="label" for="Notes">Notes:</label>
-			<div class="control">
-				<textarea class="textarea" id="Notes" bind:value={Human.Notes}></textarea>
-			</div>
-		</div>
+	<div class="section">
+		<a href="/Humans">Back to Humans</a>
 		<div class="ActionBox">
-			<label class="label" for="AkaNames">Also Known As:</label>
-			{#if AkaNames.length}
-				<ul>
-					{#each AkaNames as akaName}
-						<li>
-							{akaName.AKAFirstName} {akaName.AKAMiddleName} {akaName.AKALastName}
-							<button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteAkaName(Session.SessionId,akaName.AKAHumanId, HumanId)}>X</button>
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<p>No also known as names added yet.</p>
-			{/if}
-			<div class="control">
-			 
-				<input type="hidden" id="AKAHumanId" bind:value={AKAHumanId}>
-				<input class="input" type="text" id="AKAFirstName" placeholder="AKA First Name" bind:value={AKAFirstName}><br>
-				<input class="input" type="text" id="AKAMiddleName" placeholder="AKA Middle Name" bind:value={AKAMiddleName}><br>
-				<input class="input" type="text" id="AKALastName" placeholder="AKA Last Name" bind:value={AKALastName}><br>
-				<button class="button is-primary" type="button" on:click={() => handleSaveAkaName(Session.SessionId,AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid)}>Add Also Known As</button>
+			<div class="title-container">
+				<h3 class="title is-2">Add/Edit Human</h3>
+				{#if Human.HumanId.length}
+					<button class="button is-danger" type="button" on:click={confirmDelete}>Delete</button>
+				{/if}
 			</div>
-		</div>
+			<form>
+			<div class="field">
+				<label class="label" for="FirstName">First Name:</label>
+				<div class="control">
+					<input class="input" type="text" id="FirstName" bind:value={Human.FirstName} required>
+				</div>
+			</div>
+			<div class="field">
+				<label class="label" for="MiddleName">Middle Name:</label>
+				<div class="control">
+					<input class="input" type="text" id="MiddleName" bind:value={Human.MiddleName}>
+				</div>
+			</div>
+			<div class="field">
+				<label class="label" for="LastName">Last Name:</label>
+				<div class="control">
+					<input class="input" type="text" id="LastName" bind:value={Human.LastName} required>
+				</div>
+			</div>
+			
+			<div class="field">
+				<label class="label" for="Notes">Notes:</label>
+				<div class="control">
+					<textarea class="textarea" id="Notes" bind:value={Human.Notes}></textarea>
+				</div>
+			</div>
+			<div class="ActionBox">
+				<label class="label" for="AkaNames">Also Known As:</label>
+				{#if AkaNames.length}
+					<ul>
+						{#each AkaNames as akaName}
+							<li>
+								{akaName.AKAFirstName} {akaName.AKAMiddleName} {akaName.AKALastName}
+								<button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteAkaName(Session.SessionId,akaName.AKAHumanId, HumanId)}>X</button>
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<p>No also known as names added yet.</p>
+				{/if}
+				<div class="control">
+				
+					<input type="hidden" id="AKAHumanId" bind:value={AKAHumanId}>
+					<input class="input" type="text" id="AKAFirstName" placeholder="AKA First Name" bind:value={AKAFirstName}><br>
+					<input class="input" type="text" id="AKAMiddleName" placeholder="AKA Middle Name" bind:value={AKAMiddleName}><br>
+					<input class="input" type="text" id="AKALastName" placeholder="AKA Last Name" bind:value={AKALastName}><br>
+					<button class="button is-primary" type="button" on:click={() => handleSaveAkaName(Session.SessionId,AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName, AKAFormValid)}>Add Also Known As</button>
+				</div>
+			</div>
 
-		<div class="ActionBox">
-			<label class="label" for="AkaNames">Families:</label>
-			{#if Families.length}
-				<ul>
-					{#each Families as Family}
-						<li>
-							{Family.FirstName} {Family.MiddleName} {Family.LastName} {Family.Relationship}
-							<button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteFamily(Session.SessionId,Family.FamilyHumanId, HumanId)}>X</button>
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<p>No also known as names added yet.</p>
+			<div class="ActionBox">
+				<label class="label" for="AkaNames">Families:</label>
+				{#if Families.length}
+					<ul>
+						{#each Families as Family}
+							<li>
+								{Family.FirstName} {Family.MiddleName} {Family.LastName} {Family.Relationship}
+								<button style="padding:0px;padding-left:5px;padding-right:5px;" on:click={() => handleDeleteFamily(Session.SessionId,Family.FamilyHumanId, HumanId)}>X</button>
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<p>No also known as names added yet.</p>
+				{/if}
+				<div class="control">
+				
+					<select id="FamilyHumanId" bind:value={FamilyHumanId}>
+						<option value="">Select Family</option>
+						{#each PossibleFamilies as possibleFamily}
+							<option value={possibleFamily.HumanId}>{possibleFamily.FirstName} {possibleFamily.MiddleName} {possibleFamily.LastName}</option>
+						{/each}
+					</select>
+					<select id="Relationship" bind:value={Human.Relationship}>
+						<option>Father</option>
+						<option>Mother</option>
+						<option>Sister</option>
+						<option>Brother</option>
+						<option>Son</option>
+						<option>Daughter</option>
+						<option>Unknown</option>
+					</select>
+					<button class="button is-primary" type="button" on:click={() => handleSaveFamily(Session.SessionId,HumanId, FamilyHumanId, Relationship)}>Add Family</button>
+				</div>
+			</div>
+			<div class="field">
+				<div class="control">
+					<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Human.HumanId, Human.FirstName, Human.MiddleName, Human.LastName, Human.Notes, RoleId, FormValid)}>Save</button>
+					<!--  -->
+				</div>
+			</div>
+			</form>
+			{#if LastModified}
+				<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
 			{/if}
-			<div class="control">
-			 
-				<select id="FamilyHumanId" bind:value={FamilyHumanId}>
-					<option value="">Select Family</option>
-					{#each PossibleFamilies as possibleFamily}
-						<option value={possibleFamily.HumanId}>{possibleFamily.FirstName} {possibleFamily.MiddleName} {possibleFamily.LastName}</option>
-					{/each}
-				</select>
-				<select id="Relationship" bind:value={Human.Relationship}>
-					<option>Father</option>
-					<option>Mother</option>
-					<option>Sister</option>
-					<option>Brother</option>
-					<option>Son</option>
-					<option>Daughter</option>
-					<option>Unknown</option>
-				</select>
-				<button class="button is-primary" type="button" on:click={() => handleSaveFamily(Session.SessionId,HumanId, FamilyHumanId, Relationship)}>Add Family</button>
+			<br/>
+			<div class="ActionBox">
+				<h3 class="title is-2">Roles</h3>
+				<form>
+				
+				<table class="ClickableTable" width=100%>
+					<thead>
+						<tr>
+							<th>Role</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each HumanRoles as Role}
+							<tr style="cursor: pointer;">
+								<td>{Role.Role}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				
 			</div>
+			<br/>
 		</div>
-		<div class="field">
-			<div class="control">
-				<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId,Human.HumanId, Human.FirstName, Human.MiddleName, Human.LastName, Human.Notes, Human.RoleId, FormValid)}>Save</button>
-				<!--  -->
-			</div>
-		</div>
-	</form>
-	{#if LastModified}
-		<small>Last Modified: {moment.utc(LastModified).local().fromNow()}</small>
-	{/if}
-</div>
-</div>
-	{/if}
+	</div>
+{/if}
