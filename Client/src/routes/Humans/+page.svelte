@@ -50,7 +50,10 @@
 		<div class="section">
 			<a href="/AdminMenu">Back to Menu</a>
 			<div class="ActionBox">
-				<h3 class="title is-2">List of Humans</h3>
+				<div class="title-container">
+					<h3 class="title is-2">List of Humans</h3>
+					<button class="button is-primary" on:click={addHuman}>Add Human</button>
+				</div>
 				<form>
 				<div class="field">
 					<div class="control">
@@ -87,7 +90,6 @@
 						Next
 					</button>
 				</div>
-				<button on:click={addHuman}>Add Human</button>
 			</div>
 		</div>
 	

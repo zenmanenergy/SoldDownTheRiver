@@ -72,43 +72,43 @@
 				<div class="field">
 					<label class="label" for="City">City</label>
 					<div class="control">
-						<input type="text" id="City" placeholder="Enter City Name" bind:value={Location.City} required />
+						<input class="input" type="text" id="City" placeholder="Enter City Name" bind:value={Location.City} required />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="State">State</label>
 					<div class="control">
-						<input type="text" id="State" placeholder="Enter State Name" bind:value={Location.State}  />
+						<input class="input" type="text" id="State" placeholder="Enter State Name" bind:value={Location.State}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Country">Country</label>
 					<div class="control">
-						<input type="text" id="Country" placeholder="Enter Country Name" bind:value={Location.Country}  />
+						<input class="input" type="text" id="Country" placeholder="Enter Country Name" bind:value={Location.Country}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Latitude">Latitude</label>
 					<div class="control">
-						<input type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Location.Latitude}  />
+						<input class="input" type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Location.Latitude}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Longitude">Longitude</label>
 					<div class="control">
-						<input type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Location.Longitude}  />
+						<input class="input" type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Location.Longitude}  />
 					</div>
 				</div>
 
 				<div class="field">
 					<div class="control">
-						<button type="button" on:click={() => handleSave(Session.SessionId,Location, formValid)}>Save</button>
+						<button class="button is-primary" on:click={() => handleSave(Session.SessionId,Location, formValid)}>Save</button>
 						{#if LocationId.length}
-							<button type="button" on:click={() => handleDelete(Session.SessionId,LocationId)}>Delete</button>
+							<button class="button is-danger" on:click={() => handleDelete(Session.SessionId,LocationId)}>Delete</button>
 						{/if}
 					</div>
 				</div>
