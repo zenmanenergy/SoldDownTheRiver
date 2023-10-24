@@ -15,6 +15,7 @@ from .GetFamilies import get_Families
 from .GetPossibleFamilies import get_possible_Families
 from .GetRoles import get_roles
 from .GetHumanLocations import get_humanlocations
+from .GetHumanRoles import get_humanRoles
 
 
 
@@ -32,10 +33,9 @@ def SaveHuman():
 		MiddleName = human_data.get('MiddleName', None)
 		LastName = human_data.get('LastName', None)
 		Notes = human_data.get('Notes', None)
-		RoleId = human_data.get('RoleId', None)
 
 		# Call the save_human function from SaveHuman.py with the extracted data
-		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes,RoleId )
+		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes )
 		History.SaveHistory(human_data,"Humans", "HumanId", result["HumanId"])
 
 
@@ -261,6 +261,21 @@ def GetHumanLocations():
 		HumanId = human_data.get('HumanId', None)
 		# Call the get_role function from GetRoles.py
 		result = get_humanlocations(HumanId)
+
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Human/GetHumanRoles", methods=['GET'])
+@cross_origin()
+def GetHumanRoles():
+	try:
+		# Get the role data from the request
+		human_data = request.args.to_dict()
+
+		HumanId = human_data.get('HumanId', None)
+		# Call the get_role function from GetRoles.py
+		result = get_humanRoles(HumanId)
 
 		return result
 	except Exception as e:
