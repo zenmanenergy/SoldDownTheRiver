@@ -49,8 +49,10 @@
 	<div class="section">
 		<a href="/AdminMenu">Back to Menu</a>
 		<div class="ActionBox">
-			<h3 class="title is-2">List of Users</h3>
-			<button on:click={addUser}>Add User</button>
+			<div class="title-container">
+				<h3 class="title is-2">List of Users</h3>
+				<button class="button is-primary" on:click={addUser}>Add User</button>
+			</div>
 			<div class="field">
 				<div class="control">
 					<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" />
@@ -76,7 +78,6 @@
 					</tbody>
 				</table>
 			</div>
-			<button on:click={addUser}>Add User</button>
 		</div>
 	</div>
 {/if}
