@@ -13,6 +13,10 @@ from .GetVoyageHumans import get_VoyageHumans
 from .DeleteVoyageHuman import delete_VoyageHuman
 from .GetRoles import get_roles
 from .GetLocations import get_locations
+from .GetCaptains import get_Captains
+from .GetSlaveTraders import get_SlaveTraders
+from .GetSlaveShippingAgents import get_SlaveShippingAgents
+from .GetSlaveCollectingAgents import get_SlaveCollectingAgents
 
 blueprint = Blueprint('Voyage', __name__)
 
@@ -25,6 +29,7 @@ def SaveVoyage():
 		# Extract the VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, and Notes from the Voyage_data
 		VoyageId = Voyage_data.get('VoyageId', None)
 		ShipId = Voyage_data.get('ShipId', None)
+		CaptainHumanId = Voyage_data.get('CaptainHumanId', None)
 		StartLocationId = Voyage_data.get('StartLocationId', None)
 		EndLocationId = Voyage_data.get('EndLocationId', None)
 		StartDate = Voyage_data.get('StartDate', None)
@@ -32,7 +37,7 @@ def SaveVoyage():
 		Notes = Voyage_data.get('Notes', None)
 
 		# Call the save_Voyage function from SaveVoyage.py with the extracted data
-		result = save_Voyage(VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
+		result = save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId, StartDate, EndDate, Notes)
 		History.SaveHistory(Voyage_data, "Voyages", "VoyageId", result["VoyageId"])
 
 		return result
@@ -178,3 +183,40 @@ def GetLocations():
 		return result
 	except Exception as e:
 		return Debugger(e)
+
+
+@blueprint.route("/Voyage/GetCaptains", methods=['GET'])
+@cross_origin()
+def GetCaptains():
+	try:
+		# Call the get_Captains function to retrieve location data
+		result = get_Captains()
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Voyage/GetSlaveTraders", methods=['GET'])
+@cross_origin()
+def GetSlaveTraders():
+	try:
+		result = get_SlaveTraders()
+		return result
+	except Exception as e:
+		return Debugger(e)
+@blueprint.route("/Voyage/GetSlaveShippingAgents", methods=['GET'])
+@cross_origin()
+def GetSlaveShippingAgents():
+	try:
+		result = get_SlaveShippingAgents()
+		return result
+	except Exception as e:
+		return Debugger(e)
+@blueprint.route("/Voyage/GetSlaveCollectingAgents", methods=['GET'])
+@cross_origin()
+def GetSlaveCollectingAgents():
+	try:
+		result = get_SlaveCollectingAgents()
+		return result
+	except Exception as e:
+		return Debugger(e)
+
