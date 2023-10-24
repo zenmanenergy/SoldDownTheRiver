@@ -27,8 +27,10 @@ from Ships import Ships
 from Ship import Ship
 from Voyages import Voyages
 from Voyage import Voyage
+from Voyage.EnslavedPerson import EnslavedPerson
 from Import import Import
 from Human.ShipOwner import ShipOwner
+from Human.ShipAgent import ShipAgent
 
 
 
@@ -52,6 +54,9 @@ app.register_blueprint(Voyages.blueprint)
 app.register_blueprint(Voyage.blueprint)
 app.register_blueprint(Import.blueprint)
 app.register_blueprint(ShipOwner.blueprint)
+app.register_blueprint(ShipAgent.blueprint)
+app.register_blueprint(EnslavedPerson.blueprint)
+
 
 @app.route("/")
 @cross_origin()
