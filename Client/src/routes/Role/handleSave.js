@@ -14,5 +14,5 @@ export async function handleSave(SessionId,Role, FormValid) {
 	FormValid=true 
 	let data = await SuperFetch(url, Data, FormValid)
 
-	// window.location.href = '/Roles';
+	window.location.href = '/Roles';
 }
