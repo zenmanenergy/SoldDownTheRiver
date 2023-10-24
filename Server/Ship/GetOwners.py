@@ -1,6 +1,6 @@
 from Lib import Database
 
-def get_owners(Query):
+def get_Owners(Query):
 
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
