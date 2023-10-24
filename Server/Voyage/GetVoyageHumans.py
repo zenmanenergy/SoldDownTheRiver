@@ -6,16 +6,14 @@ def get_VoyageHumans(VoyageId):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
-	# Construct the SQL query
-	query = "SELECT Humans.*, VoyageHumans.*,VoyageHumans.notes as VoyageNotes, Roles.Role  "
-	query +=" FROM Humans join VoyageHumans on Humans.HumanId=VoyageHumans.HumanId "
-	query +=" left join Roles on VoyageHumans.RoleId=Roles.RoleId "
-	query +=" where VoyageHumans.VoyageId=%s order by Firstname, Lastname"
-	values = (VoyageId,)
-	# Execute the query and get the results
+	# Construct the SQL sql
+	sql = "SELECT Humans.*, VoyageHumans.*,VoyageHumans.notes as VoyageNotes, Roles.RoleId,Roles.Role  "
+	sql +=" FROM Humans join VoyageHumans on Humans.HumanId=VoyageHumans.HumanId "
+	sql +=" left join Roles on VoyageHumans.RoleId=Roles.RoleId "
+	sql +=f" where VoyageHumans.VoyageId='{VoyageId}' order by Firstname, Lastname"
 
-	# print(query % values)
-	cursor.execute(query, values)
+	print(sql)
+	cursor.execute(sql)
 	result = cursor.fetchall()
 	if not result:
 		result = []
