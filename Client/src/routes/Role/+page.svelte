@@ -1,10 +1,7 @@
 <!-- src/routes/Roles/+page.svelte -->
 <style>
 	@import '/static/FormPages.css';
-	tbody tr:hover {
-		background-color: #444444; /* or any other color you like */
-		cursor: pointer;
-	}
+	
 </style>
 
 <script>
@@ -21,6 +18,9 @@
 	let isLoading = true;
 	let Role={RoleId :"", Role : "", LastModified : ""}
 	let RoleHumans=[]
+	let HumanId=""
+	let Humans=[]
+	let Query="a"
 	
 	async function setRole(data) {
 		Role.RoleId = data.RoleId || "";
@@ -30,9 +30,11 @@
 	}
 	async function setRoleHumans(data) {
 		RoleHumans=data
-		console.log(RoleHumans)
 	}
-		
+	async function setHumans(data) {
+		Humans=data
+	}
+	
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
@@ -40,18 +42,23 @@
 		await Promise.all([
 			await handleGetRole(Session.SessionId,Role.RoleId,setRole),
 			await handleGetRoleHumans(Session.SessionId,Role.RoleId,setRoleHumans)
-			
 		]);
 		
 		isLoading = false;
 	});
-
+	
 	async function confirmDelete() {
 		const userConfirmed = confirm('Are you sure you want to delete this role?\n\nWarning!!! it will delete all associations with the human records too');
 		if (userConfirmed) {
 			console.log("delete")
 			await handleDelete(Session.SessionId, Role.RoleId);
 		}
+	}
+	function addExistingHuman(){
+		window.location.href = '/Role/NewOrOld?RoleId='+Role.RoleId+'&Role='+Role.Role;
+	}
+	function addNewHuman(){
+		window.location.href = '/Human/'+Role.RoleId;
 	}
 </script>
 
@@ -60,6 +67,9 @@
 		<div class="spinner"></div>
 	</div>
 {:else}
+
+	
+
 	<div class="section">
 		<a href="/Roles">Back to Roles</a>
 		<div class="ActionBox">
@@ -71,12 +81,26 @@
 						<button class="button is-danger" type="button" on:click={confirmDelete}>Delete</button>
 					{/if}
 				</div>
-				<div class="field">
-					<label class="label" for="Role">Name</label>
+				<div class="control">
+					
+					<div class="field">
+						<label class="label" for="RoleId">RoleId</label>
+							
+						<input
+							class="input"
+							type="text"
+							id="RoleId"
+							placeholder="Enter Role Id"
+							bind:value={Role.RoleId}
+							required
+						/>
+						</div>
+					</div>
+					<br/>
 					<div class="control">
-						<input type="hidden" 
-							id="RoleId" 
-							bind:value={Role.RoleId} />
+					<label class="label" for="Role">Name</label>
+				<div class="field">
+					
 						<input
 							class="input"
 							type="text"
@@ -101,7 +125,11 @@
 
 			<br/>
 			<div class="ActionBox">
-				<h3 class="title is-2">List of Humans</h3>
+				<div class="title-container">
+					<h3 class="title is-2">List of Humans</h3>
+					<button class="button is-danger" type="button" on:click={addExistingHuman}>Add Existing</button>
+					<button class="button is-danger" type="button" on:click={addNewHuman}>Add New</button>
+				</div>
 				<form>
 				<div class="field">
 					<div class="control">
@@ -110,7 +138,7 @@
 				
 					</div>
 				</form>
-				<table width=100%>
+				<table class="ClickableTable" width=100%>
 					<thead>
 						<tr>
 							<th>First Name</th>
@@ -120,7 +148,7 @@
 					</thead>
 					<tbody>
 						{#each RoleHumans as human}
-							<tr style="cursor: pointer;" on:click={() => location.href=`/Human/${human.RoleId}?HumanId=${human.HumanId}`}>
+							<tr on:click={() => location.href=`/Human/${human.RoleId}?HumanId=${human.HumanId}`}>
 								<td>{human.FirstName}</td>
 								<td>{human.LastName}</td>
 								<td>{moment.utc(human.LastModified).local().fromNow()}</td>
@@ -130,7 +158,6 @@
 					</tbody>
 				</table>
 				
-				<!-- <button on:click={addHuman}>Add Human</button> -->
 			</div>
 		</div>
 	</div>
