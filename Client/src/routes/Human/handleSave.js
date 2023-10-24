@@ -1,7 +1,7 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName,	Notes, RoleId, formValid ) {
+export async function handleSave(SessionId,HumanId, FirstName, MiddleName, LastName,	Notes, RoleId,formValid ) {
 
 	const Data = {
 		HumanId: HumanId,
@@ -9,7 +9,6 @@ export async function handleSave(SessionId,HumanId, FirstName, MiddleName, LastN
 		MiddleName: MiddleName,
 		LastName: LastName,
 		Notes: Notes,
-		RoleId: RoleId,
 		SessionId: SessionId
 	};
 	const url = baseURL + '/Human/SaveHuman?'; 
