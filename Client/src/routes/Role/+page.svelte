@@ -9,6 +9,7 @@
 	import { onMount } from 'svelte';
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
+	import { handleDeleteHumanRole } from './handleDeleteHumanRole.js';
 	import { handleGetRole } from './handleGetRole.js';
 	import { handleGetRoleHumans } from './handleGetRoleHumans.js';
 	import {Session} from "../Session.js";
@@ -55,7 +56,7 @@
 		}
 	}
 	function addExistingHuman(){
-		window.location.href = '/Role/NewOrOld?RoleId='+Role.RoleId+'&Role='+Role.Role;
+		window.location.href = '/Role/Existing?RoleId='+Role.RoleId+'&Role='+Role.Role;
 	}
 	function addNewHuman(){
 		window.location.href = '/Human/'+Role.RoleId;
@@ -152,6 +153,8 @@
 								<td>{human.FirstName}</td>
 								<td>{human.LastName}</td>
 								<td>{moment.utc(human.LastModified).local().fromNow()}</td>
+								<td><button class="button is-primary" type="button" on:click={e => { e.stopPropagation(); handleDeleteHumanRole(Session.SessionId,human.RoleId,human.HumanId); }}>Delete</button></td>
+
 							</tr>
 						{/each}
 						
