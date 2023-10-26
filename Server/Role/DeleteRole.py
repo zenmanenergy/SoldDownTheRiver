@@ -6,6 +6,8 @@ def delete_role(RoleId):
 	cursor, connection = Database.ConnectToDatabase()
 	cursor.execute(query)
 	connection.commit()
+
+	
 	connection.close()
 
 	return {'success': True,'message': f'Role "{RoleId}" deleted successfully.'}
