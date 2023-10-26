@@ -18,6 +18,7 @@
 	
 	import {Session} from "../Session.js";
 	
+	let Svelecte;
 	let LocationId=""
 	let RoleId=""
 	let HumanId=""
@@ -45,6 +46,7 @@
 		Roles=data;
 	}
 	async function setLocations(data) {
+		console.log(data)
 		Locations=data;
 	}
 	$: {
@@ -56,6 +58,10 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		BusinessId = urlParams.get("BusinessId") || "";
 		
+		const module = await import('svelecte');
+		Svelecte = module.default || module;
+
+
 		await Promise.all([
 			handleGetBusiness(Session.SessionId,BusinessId, setBusiness),
 			handleGetBusinessHumans(Session.SessionId,BusinessId, setBusinessHumans),
@@ -64,7 +70,6 @@
 			handleGetLocations(Session.SessionId, setLocations)
 		]);
 		
-		console.log("BusinessId", BusinessId)
 		isLoading = false;
 	});
 </script>
@@ -95,31 +100,46 @@
 
 				<div class="field">
 					<label class="label" for="LocationId">Location</label>
-					<div class="control">
+					<!-- <div class="control">
 						<select class="input" id="LocationId" bind:value={Business.LocationId} required>
 							<option value="">Select Location</option>
 							{#each Locations as Location}
 								<option value={Location.LocationId}>{#if Location.Address}{Location.Address} {/if}{Location.City}</option>
 							{/each}
 						</select>
+					</div> -->
+
+					<div class="control">
+						<div class="field" id="svelecteBusiness">
+							<Svelecte bind:value={Business.LocationId} options={Locations.map(Location => ({value: Location.LocationId, label: Location.Address+" "+Location.City}))} />
+						</div>
+						<br/>
 					</div>
 				</div>
 				
 				<div class="field">
 					<label class="label" for="BusinessHuman">Human</label>
 					<div class="control">
-						<select class="input" id="HumanId" bind:value={HumanId} required>
-							<option value="">Select Human</option>
-							{#each Humans as Human}
-								<option value={Human.HumanId}>{Human.FirstName} {Human.LastName}</option>
-							{/each}
-						</select>
-						<select class="input" id="RoleId" bind:value={RoleId} required>
-							<option value="">Select Role</option>
-							{#each Roles as Role}
-								<option value={Role.RoleId}>{Role.Role}</option>
-							{/each}
-						</select>
+						
+
+						<div class="control">
+							<div class="field" id="svelecteHumanId">
+								<Svelecte bind:value={HumanId} options={Humans.map(Human => ({value: Human.HumanId, label: Human.FirstName+" "+Human.LastName}))} />
+							</div>
+							<br/>
+						</div>
+					</div>
+				</div>
+				<div class="field">
+					<label class="label" for="BusinessHuman">Role</label>
+					<div class="control">
+						<div class="control">
+							<div class="field" id="svelecteRoleId">
+								<Svelecte bind:value={RoleId} options={Roles.map(Role => ({value: Role.RoleId, label: Role.Role}))} />
+							</div>
+							<br/>
+						</div>
+
 						<button class="button" type="button"on:click={() => handleSaveBusinessHuman(Session.SessionId,BusinessId,HumanId, RoleId)} >Add to Business</button>
 					</div>
 				</div>
