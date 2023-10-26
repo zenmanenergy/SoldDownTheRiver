@@ -28,7 +28,7 @@ def get_ShipVoyages(ShipId):
 	cursor.execute(sql)
 	result = cursor.fetchall()
 	if not result:
-		result = {}
+		result = []
 
 	# Close the database connection
 	connection.close()

@@ -5,17 +5,12 @@ import { SuperFetch } from '../SuperFetch';
 export async function handleSave(SessionId, ShipData, FormValid) {
 	
 	ShipData.SessionId = SessionId;
-	if (ShipData.BuildDate instanceof Date) {
-		ShipData.BuildDate = ShipData.BuildDate.toISOString();
-	} else {
-		ShipData.BuildDate = "";
-	}
+	// if (ShipData.BuildDate instanceof Date) {
+	// 	ShipData.BuildDate = ShipData.BuildDate.toISOString();
+	// } else {
+	// 	ShipData.BuildDate = "";
+	// }
 	
-
-
-	const Data = {
-		SessionId:SessionId
-	};
 	const url = baseURL + '/Ship/SaveShip?'; 
 	let data = await SuperFetch(url, ShipData, FormValid)
 
