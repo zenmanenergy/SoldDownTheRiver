@@ -35,7 +35,10 @@
 		<div class="section">
 			<a href="/AdminMenu">Back to Menu</a>
 			<div class="ActionBox">
-				<h3 class="title is-2">List of Ships</h3>
+				<div class="title-container">
+					<h3 class="title is-2">List of Ships</h3>
+					<button class="button is-primary"  on:click={addShip}>Add Ship</button>
+				</div>
 				<ul>
 					{#each Ships as Ship}
 						<li>
@@ -45,7 +48,6 @@
 						</li>
 					{/each}
 				</ul>
-				<button on:click={addShip}>Add Ship</button>
 			</div>
 		</div>
 	{/if}
