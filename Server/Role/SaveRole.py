@@ -1,24 +1,23 @@
 import uuid
 from Lib import Database
+from icecream import ic
 
 def save_role(RoleId,Role):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
 	
+	ic(RoleId,Role)
+	sql=""
+	
+	# If the role doesn't exist, create a new row with a new role ID
+	sql = f"INSERT INTO Roles (RoleId, Role) VALUES ('{RoleId}','{Role}')"
+	sql +=" ON DUPLICATE KEY UPDATE RoleId=values(RoleId),Role=values(Role) "
 
-	if RoleId:
-		# If the role already exists, update the existing row
-		query = "UPDATE Roles SET Role = %s WHERE RoleId = %s"
-		values = (Role, RoleId)
-	else:
-		# If the role doesn't exist, create a new row with a new role ID
-		RoleId = "ROL"+str(uuid.uuid4())
-		query = "INSERT INTO Roles (RoleId, Role) VALUES (%s,%s)"
-		values = (RoleId,Role,)
 
-	# Execute the query and commit the changes
-	cursor.execute(query, values)
+	ic(sql)
+	# Execute the sql and commit the changes
+	cursor.execute(sql)
 	connection.commit()
 
 	# Close the database connection
