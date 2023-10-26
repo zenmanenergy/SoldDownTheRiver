@@ -9,6 +9,7 @@ from .GetRole import get_role
 from .GetRoleHumans import get_roleHumans
 from .GetHumans import get_Humans
 from .SaveHumanRole import save_HumanRole
+from .DeleteHumanRole import delete_HumanRole
 
 from Lib import History
 
@@ -119,3 +120,21 @@ def SaveHumanRole():
 		return result
 	except Exception as e:
 		return Debugger(e)
+
+@blueprint.route("/Role/DeleteHumanRole", methods=['GET'])
+@cross_origin()
+def DeleteHumanRole():
+	try:
+		role_data = request.args.to_dict()
+		RoleId = role_data.get('RoleId')
+		HumanId = role_data.get('HumanId')
+		
+		
+		# Call the get_role function from GetRoles.py
+		result = delete_HumanRole(HumanId,RoleId)
+
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+		
