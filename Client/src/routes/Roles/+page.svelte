@@ -38,7 +38,11 @@
 	<div class="section">
 		<a href="/AdminMenu">Back to Menu</a>
 		<div class="ActionBox">
-			<h3 class="title is-2">List of Roles</h3>
+
+			<div class="title-container">
+				<h3 class="title is-2">List of Roles</h3>
+				<button class="button is-primary" on:click={addRole}>Add Role</button>
+			</div>
 			<table class="ClickableTable" width=100%>
 				<thead>
 					<tr>
@@ -55,7 +59,7 @@
 					{/each}
 				</tbody>
 			</table>
-			<button on:click={addRole}>Add Role</button>
+			
 		</div>
 	</div>
 {/if}
