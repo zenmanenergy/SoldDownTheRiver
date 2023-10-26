@@ -31,11 +31,11 @@
 	let isLoading = true;
 	
 	async function setShip(data) {
-		console.log(data)
 		Ship.ShipId = data.ShipId || "";
 		Ship.ShipName = data.ShipName || "";
 		if (data.BuildDate){
-		Ship.BuildDate = moment(data.BuildDate).format("YYYY-MM-DDTHH:mm:ss")||"";
+			Ship.BuildDate = moment(data.BuildDate).format("YYYY-MM-DD")||"";
+			
 		}
 		Ship.Notes = data.Notes || "";
 		Ship.ShipType = data.ShipType || "";
@@ -43,20 +43,17 @@
 		Ship.OwnerHumanId = data.OwnerHumanId || "";
 		Ship.AgentHumanId = data.AgentHumanId || "";
 		
-		// console.log("Ship", Ship)
+		console.log("Ship", Ship)
 		// console.log("Ship.ShipId.length", Ship.ShipId.length)
 	}
 	async function setOwners(data) {
 		Owners = data;
-		console.log("setOwners",data)
 	}
 	async function setAgents(data) {
 		Agents = data;
-		console.log("setAgents",data)
 	}
 	async function setVoyages(data){
 		Voyages=data;
-		console.log(Voyages)
 	}
 
 	$: {
@@ -83,16 +80,10 @@
 				svelecteOwnerSearch.addEventListener('input', handleOwnerInput);
 			}
 
-			const svelecteAgent = document.querySelector('#svelecteAgent');
-			const svelecteAgentSearch = svelecteAgent.querySelector('input');
-			if (svelecteAgentSearch) {
-				svelecteAgentSearch.addEventListener('input', handleAgentInput);
-			}
 		});
 
 		
 	
-		console.log("ShipId", ShipId)
 		isLoading = false;
 	});
 	$: if (OwnerHumanId) {
@@ -142,7 +133,7 @@
 				<div class="field">
 					<label class="label" for="BuildDate">Build Date</label>
 					<div class="control">
-						<input class="input" type="datetime" id="BuildDate" placeholder="Enter Build Date" bind:value={Ship.BuildDate} />
+						<input class="input" type="date" id="BuildDate" placeholder="Enter Build Date" bind:value={Ship.BuildDate} />
 					</div>
 				</div>
 		
@@ -177,15 +168,7 @@
 					</div>
 				</div>
 		
-				<div class="field">
-					<label class="label" for="Size">Agent</label>
-					<div class="control">
-						<div id="svelecteAgent">
-							<Svelecte bind:value={Ship.AgentHumanId} on:input={handleAgentInput} options={Agents.map(human => ({value: human.HumanId, label: human.FirstName+" "+human.LastName}))} />
-						</div>
-
-					</div>
-				</div>
+				
 				<div class="field">
 					<div class="control">
 						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, Ship, formValid)}>Save</button>
@@ -199,7 +182,10 @@
 			
 			<br/>
 			<div class="ActionBox">
-				<h3 class="title is-2">Voyages</h3>
+				<div class="title-container">
+					<h3 class="title is-2">Voyages</h3>
+					<button class="button is-primary" type="button" on:click={addVoyage}>Add Voyage</button>
+				</div>
 				<form>
 				
 				<table class="ClickableTable" width=100%>
@@ -221,7 +207,6 @@
 					</tbody>
 				</table>
 				
-				<button class="button is-primary" type="button" on:click={addVoyage}>Add Voyage</button>
 			</div>
 		</div>
 	</div>
