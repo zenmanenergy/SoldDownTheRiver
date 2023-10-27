@@ -16,6 +16,7 @@ from .GetPossibleFamilies import get_possible_Families
 from .GetRoles import get_roles
 from .GetHumanLocations import get_humanlocations
 from .GetHumanRoles import get_humanRoles
+from Role.SaveHumanRole import save_HumanRole
 
 
 
@@ -33,11 +34,16 @@ def SaveHuman():
 		MiddleName = human_data.get('MiddleName', None)
 		LastName = human_data.get('LastName', None)
 		Notes = human_data.get('Notes', None)
+		RoleId = human_data.get('RoleId', None)
 
 		# Call the save_human function from SaveHuman.py with the extracted data
 		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes )
+		HumanId=result['HumanId']
 		History.SaveHistory(human_data,"Humans", "HumanId", result["HumanId"])
 
+		print("RoleId",RoleId)
+		if RoleId:
+			save_HumanRole(HumanId,RoleId)
 
 		return result
 	except Exception as e:
