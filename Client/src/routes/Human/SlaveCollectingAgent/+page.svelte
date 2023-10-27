@@ -11,7 +11,6 @@
 	import { handleGetRoles } from '../handleGetRoles.js';
 	import { handleGetHumanLocations } from '../handleGetHumanLocations.js';
 	import { handleGetHumanRoles } from '../handleGetHumanRoles.js';
-	import { handleGetShips } from './handleGetShips.js';
 	// import { handleGetAKA } from '../handleGetAKA.js';
 	// import { handleSaveAkaName } from '../handleSaveAkaName.js';
 	// import { handleDeleteAkaName } from '../handleDeleteAkaName.js';
@@ -27,7 +26,6 @@
 	let Roles=[];
 	let Locations=[];
 	let HumanRoles=[];
-	let Ships=[];
 	// let AkaNames = [];
 
 	async function setHuman(data) {
@@ -42,9 +40,6 @@
 	}
 	async function setLocations(data){
 		Locations = data;
-	}
-	async function setShips(data){
-		Ships = data;
 	}
 	async function setHumanRoles(data){
 		HumanRoles = data;
@@ -61,7 +56,6 @@
 			handleGetRoles(Session.SessionId,setRoles),
 			handleGetHumanLocations(Session.SessionId,HumanId,setLocations),
 			handleGetHumanRoles(Session.SessionId,HumanId,setHumanRoles),
-			handleGetShips(Session.SessionId,HumanId, setShips),
 			
 		]);
 	 
@@ -78,9 +72,9 @@
 
 
 <div class="section">
-	<a href="/Role?RoleId=ShipOwner">Back to Ship Agents</a>
+	<a href="/Role?RoleId=SlaveCollectingAgents">Back to Slave Collecting Agents</a>
 	<div class="ActionBox">
-		<h3 class="title is-2">Edit Ship Agent</h3>
+		<h3 class="title is-2">Edit Slave Collecting Agent</h3>
 	<form>
 		<div class="field">
 			<label class="label" for="FirstName">First Name:</label>
@@ -122,7 +116,8 @@
 	{#if Human.LastModified}
 		<small>Last Modified: {moment.utc(Human.LastModified).local().fromNow()}</small>
 	{/if}
-	<br/>
+	{#if HumanId}
+		<br/>
 		<div class="ActionBox">
 			<h3 class="title is-2">Roles</h3>
 			<form>
@@ -145,55 +140,30 @@
 		</div>
 		<br/>
 	
-	<br/>
-	<div class="ActionBox">
-		<h3 class="title is-2">Ships</h3>
-		<form>
-		
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Type</th>
-					<th>Home Port</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each Ships as Ship}
-					<tr on:click={() => location.href=`/Ship/?ShipId=${Ship.ShipId}`}>
-						<td>{Ship.ShipName}</td>
-						<td>{Ship.ShipType}</td>
-						<td>{Ship.City}, {Ship.State}</td>
+		<br/>
+		<div class="ActionBox">
+			<h3 class="title is-2">Timeline of known locations</h3>
+			<form>
+			
+			<table class="ClickableTable" width=100%>
+				<thead>
+					<tr>
+						<th>Location</th>
+						<th>When</th>
 					</tr>
-				{/each}
-				
-			</tbody>
-		</table>
-		
-	</div>
-	<br/>
-	<div class="ActionBox">
-		<h3 class="title is-2">Timeline of known locations</h3>
-		<form>
-		
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>Location</th>
-					<th>When</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each Locations as Location}
-					<tr style="cursor: pointer;">
-						<td>{Location.City}, {Location.State}</td>
-						<td>{moment(Location.DateCirca).format('MM/DD/YYYY')}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-		
-	</div>
+				</thead>
+				<tbody>
+					{#each Locations as Location}
+						<tr style="cursor: pointer;">
+							<td>{Location.City}, {Location.State}</td>
+							<td>{moment(Location.DateCirca).format('MM/DD/YYYY')}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+			
+		</div>
+	{/if}
 </div>
 </div>
 	{/if}
