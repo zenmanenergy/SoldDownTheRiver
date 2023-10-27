@@ -10,7 +10,7 @@
 	import { handleGetShip } from './handleGetShip.js';
 	import { handleGetShipVoyages } from './handleGetShipVoyages.js';
 	import { handleGetOwners } from './handleGetOwners.js';
-	import { handleGetAgents } from './handleGetAgents.js';
+	import { handleGetLocations } from './handleGetLocations.js';
 	import { Session } from "../Session.js";
 	
 	let ShipId = "";
@@ -18,12 +18,12 @@
 	let Notes = "";
 	let ShipType = "";
 	let Size = "";
-	let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:"", OwnerHumanId:"",AgentHumanId:""};
+	let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:"", HomePortLocationId:"",AgentHumanId:""};
 	let Owners = [];
 	let Voyages = [];
-	let Agents = [];
+	let Locations = [];
 	let Svelecte;
-	let OwnerHumanId;
+	let HomePortLocationId;
 	let AgentHumanId;
 	let Query=""
 	
@@ -40,17 +40,19 @@
 		Ship.Notes = data.Notes || "";
 		Ship.ShipType = data.ShipType || "";
 		Ship.Size = data.Size || "";
-		Ship.OwnerHumanId = data.OwnerHumanId || "";
+		Ship.HomePortLocationId = data.HomePortLocationId || "";
 		Ship.AgentHumanId = data.AgentHumanId || "";
 		
 		console.log("Ship", Ship)
 		// console.log("Ship.ShipId.length", Ship.ShipId.length)
 	}
 	async function setOwners(data) {
-		Owners = data;
+		Owners = [{HumanId: "add_new", FirstName: "[Add New]", LastName: ""}, ...data];
 	}
-	async function setAgents(data) {
-		Agents = data;
+
+	async function setLocations(data) {
+		// Locations = [{HumanId: "add_new", City: "[Add New]", State: ""}, ...data];
+		Locations=data
 	}
 	async function setVoyages(data){
 		Voyages=data;
@@ -65,19 +67,19 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		ShipId = urlParams.get("ShipId") || "";
 		await Promise.all([
-		handleGetShip(Session.SessionId, ShipId, setShip),
-		handleGetShipVoyages(Session.SessionId, ShipId, setVoyages),
-		handleGetOwners(Session.SessionId,Query, setOwners),
-		handleGetAgents(Session.SessionId,Query, setAgents)
+			handleGetShip(Session.SessionId, ShipId, setShip),
+			handleGetShipVoyages(Session.SessionId, ShipId, setVoyages),
+			handleGetLocations(Session.SessionId,setLocations),
+			handleGetOwners(Session.SessionId,Query, setOwners)
 		]);
 		const module = await import('svelecte');
 		Svelecte = module.default || module;
 		
 		Promise.resolve().then(() => {
-			const svelecteOwner = document.querySelector('#svelecteOwner');
-			const svelecteOwnerSearch = svelecteOwner.querySelector('input');
-			if (svelecteOwnerSearch) {
-				svelecteOwnerSearch.addEventListener('input', handleOwnerInput);
+			const svelecteLocation = document.querySelector('#svelecteLocation');
+			const svelecteLocationSearch = svelecteLocation.querySelector('input');
+			if (svelecteLocationSearch) {
+				svelecteLocationSearch.addEventListener('input', handleLocationInput);
 			}
 
 		});
@@ -86,22 +88,31 @@
 	
 		isLoading = false;
 	});
-	$: if (OwnerHumanId) {
-		console.log("OwnerHumanId changed:", OwnerHumanId);
+	$: if (HomePortLocationId) {
+		console.log("HomePortLocationId changed:", HomePortLocationId);
 	}
-	function handleOwnerInput(event) {
-		console.log("Input changed to:", event.target.value);
+	function handleLocationInput(event) {
+		console.log("Input changed tssso:", event);
+		
+		if (Ship.HomePortLocationId === "add_new") {
+			// Redirect to the desired page
+			window.location.href = "/path_to_new_page"; // replace "path_to_new_page" with your desired path
+			return;
+		}
 		if (event.target.value.length<=1){
 			Query=event.target.value
 			handleGetOwners(Session.SessionId, Query, setOwners)
 		}
 	}
-	function handleAgentInput(event) {
-		console.log("Input changed to:", event.target.value);
-		if (event.target.value.length<=1){
-			Query=event.target.value
-			handleGetAgents(Session.SessionId, Query, setAgents)
+	function handleLocationSelection(event) {
+		console.log("GOOOOOOO", Ship.HomePortLocationId)
+		if (Ship.HomePortLocationId === "add_new") {
+			// Redirect to the desired page
+			window.location.href = "/path_to_new_page"; // replace "path_to_new_page" with your desired path
+			return;
 		}
+		// existing handleLocationInput logic
+		handleLocationInput(event);
 	}
 	
 	function addVoyage(){
@@ -159,12 +170,14 @@
 				</div>
 		
 				<div class="field">
-					<label class="label" for="Size">Owner</label>
+					<label class="label" for="Size">Home Port Location <a class="AddLink" href="/Location?LocationId=">Add Location</a></label>
 					<div class="control">
-						<div id="svelecteOwner">
-							<Svelecte bind:value={Ship.OwnerHumanId} on:input={handleOwnerInput} options={Owners.map(human => ({value: human.HumanId, label: human.FirstName+" "+human.LastName}))} />
-						</div>
+						
 
+						<div id="svelecteLocation">
+							<Svelecte bind:value={Ship.HomePortLocationId} on:input={handleLocationSelection} options={Locations.map(location => ({value: location.LocationId, label: location.City+" "+location.State}))} />
+						</div>
+						
 					</div>
 				</div>
 		
