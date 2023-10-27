@@ -9,6 +9,7 @@ from .GetShip import get_ship
 from .GetOwners import get_Owners
 from .GetAgents import get_Agents
 from .GetShipVoyages import get_ShipVoyages
+from .GetLocations import get_locations
 
 blueprint = Blueprint('Ship', __name__)
 
@@ -25,10 +26,10 @@ def SaveShip():
 		Notes = ship_data.get('Notes', None)
 		ShipType = ship_data.get('ShipType', None)
 		Size = ship_data.get('Size', None)
-		OwnerBusinessId = ship_data.get('OwnerBusinessId', None)
+		HomePortLocationId = ship_data.get('HomePortLocationId', None)
 
 		# Call the save_ship function from SaveShip.py with the extracted data
-		result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, OwnerBusinessId)
+		result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
 		History.SaveHistory(ship_data, "Ships", "ShipId", result["ShipId"])
 
 		return result
@@ -111,6 +112,16 @@ def GetShipVoyages():
 		ShipId = ship_data.get('ShipId')
 		# Call the get_ship function from GetShipVoyages.py
 		result = get_ShipVoyages(ShipId)
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Ship/GetLocations", methods=['GET'])
+@cross_origin()
+def GetLocations():
+	try:
+		# Call the get_locations function to retrieve location data
+		result = get_locations()
 		return result
 	except Exception as e:
 		return Debugger(e)
