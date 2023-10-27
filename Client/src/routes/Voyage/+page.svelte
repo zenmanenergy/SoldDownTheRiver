@@ -106,7 +106,9 @@
 			isLoading = false;
 		});
 
-		
+		function addEnslavedPerson() {
+			window.location.href = '/Voyage/EnslavedPerson?VoyageId='+VoyageId+'&HumanId=';
+		}
 		
 	</script>
 	
@@ -121,8 +123,6 @@
 				<form>
 					<h3 class="title is-2">Add a Voyage</h3>
 					<input type="hidden" bind:value={Voyage.VoyageId} />
-	
-
 					<div class="field">
 						<label class="label" for="Size">Ship</label>
 						<div class="control">
@@ -132,7 +132,7 @@
 						</div>
 					</div>
 					<div class="field">
-						<label class="label" for="Size">Ship Captain</label>
+						<label class="label" for="Size">Ship Captain <a class="AddLink" href="/Human/ShipCaptain">Add Captain</a></label>
 						<div class="control">
 							<div id="svelecteEndLocation">
 								<Svelecte bind:value={Voyage.CaptainHumanId} options={Captains.map(Captain => ({value: Captain.HumanId, label: Captain.FirstName+" "+Captain.LastName}))} />
@@ -142,7 +142,7 @@
 						</div>
 					</div>
 					<div class="field">
-						<label class="label" for="Size">Start Location</label>
+						<label class="label" for="Size">Start Location <a class="AddLink" href="/Location?LocationId=">Add Location</a></label>
 						<div class="control">
 							<div id="svelecteStartLocation">
 								<Svelecte bind:value={Voyage.StartLocationId} options={Locations.map(location => ({value: location.LocationId, label: location.City+" "+location.State}))} />
@@ -158,7 +158,7 @@
 	
 					
 					<div class="field">
-						<label class="label" for="Size">End Location</label>
+						<label class="label" for="Size">End Location <a class="AddLink" href="/Location?LocationId=">Add Location</a></label>
 						<div class="control">
 							<div id="svelecteEndLocation">
 								<Svelecte bind:value={Voyage.EndLocationId} options={Locations.map(location => ({value: location.LocationId, label: location.City+" "+location.State}))} />
@@ -192,27 +192,32 @@
 						</div>
 					</div>
 
-					<div class="ActionBox">
-						<h3 class="title is-2">List of Enslaved People</h3>
-						<table class="ClickableTable" width=100%>
-							<thead>
-							<tr>
-								<th>First Name</th>
-								<th>Last Name</th>
-								<th>Role</th>
-							</tr>
-							</thead>
-							<tbody>
-							{#each VoyageHumans as Human}
-								<tr on:click={() => window.location.href = `/Voyage/${Human.RoleId}?VoyageId=${VoyageId}&HumanId=${Human.HumanId}`}>
-									<td>{Human.FirstName}</td>
-									<td>{Human.LastName}</td>
-									<td>{Human.Role}</td>
+					{#if VoyageId}
+						<div class="ActionBox" style="disabled:true">
+							<div class="title-container">
+								<h3 class="title is-2">List of Enslaved People</h3>
+								<button class="button is-primary" on:click={addEnslavedPerson}>Add Enslaved Person</button>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+								<tr>
+									<th>First Name</th>
+									<th>Last Name</th>
+									<th>Role</th>
 								</tr>
-							{/each}
-							</tbody>
-						</table>
-					</div>
+								</thead>
+								<tbody>
+								{#each VoyageHumans as Human}
+									<tr on:click={() => window.location.href = `/Voyage/${Human.RoleId}?VoyageId=${VoyageId}&HumanId=${Human.HumanId}`}>
+										<td>{Human.FirstName}</td>
+										<td>{Human.LastName}</td>
+										<td>{Human.Role}</td>
+									</tr>
+								{/each}
+								</tbody>
+							</table>
+						</div>
+					{/if}
 				</form>
 			</div>
 		</div>
