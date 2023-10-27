@@ -36,7 +36,10 @@
 		{:else}
 			<a href="/AdminMenu">Back to Menu</a>
 			<div class="ActionBox">
-				<h3 class="title is-2">List of Voyages</h3>
+				<div class="title-container">
+					<h3 class="title is-2">List of Voyages</h3>
+					<button class="button is-primary"   on:click={addVoyage}>Add Voyage</button>
+				</div>
 				<table class="ClickableTable" width=100%>
 					<thead>
 						<tr>
@@ -57,7 +60,6 @@
 						
 					</tbody>
 				</table>
-				<button on:click={addVoyage}>Add Voyage</button>
 			</div>
 		{/if}
 	</div>
