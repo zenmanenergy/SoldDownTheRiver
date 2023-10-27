@@ -8,7 +8,7 @@ export async function handleGetShips(SessionId,HumanId, callback) {
 		SessionId:SessionId,
 		HumanId:HumanId
 	};
-	const url = baseURL + '/Human/ShipOwner/GetShips?'; 
+	const url = baseURL + '/Human/ShipCaptain/GetShips?'; 
 	console.log(url)
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
