@@ -10,7 +10,7 @@ export async function handleSave(SessionId, ShipData, FormValid) {
 	// } else {
 	// 	ShipData.BuildDate = "";
 	// }
-	
+	console.log("SHIPDATA",ShipData)
 	const url = baseURL + '/Ship/SaveShip?'; 
 	let data = await SuperFetch(url, ShipData, FormValid)
 
