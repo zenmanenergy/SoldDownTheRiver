@@ -121,76 +121,78 @@
 		{#if Human.LastModified}
 			<small>Last Modified: {moment.utc(Human.LastModified).local().fromNow()}</small>
 		{/if}
-		<br/>
-		<div class="ActionBox">
-			<h3 class="title is-2">Roles</h3>
-			<form>
-			
-			<table class="ClickableTable" width=100%>
-				<thead>
-					<tr>
-						<th>Role</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each HumanRoles as Role}
-						<tr style="cursor: pointer;">
-							<td>{Role.Role}</td>
+		{#if HumanId}
+			<br/>
+			<div class="ActionBox">
+				<h3 class="title is-2">Roles</h3>
+				<form>
+				
+				<table class="ClickableTable" width=100%>
+					<thead>
+						<tr>
+							<th>Role</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-			
-		</div>
-		<br/>
-		<div class="ActionBox">
-			<h3 class="title is-2">Timeline of known locations</h3>
-			<form>
-			
-			<table class="ClickableTable" width=100%>
-				<thead>
-					<tr>
-						<th>Location</th>
-						<th>When</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each Locations as Location}
-						<tr style="cursor: pointer;">
-							<td>{Location.City}, {Location.State}</td>
-							<td>{moment(Location.DateCirca).format('MM/DD/YYYY')}</td>
+					</thead>
+					<tbody>
+						{#each HumanRoles as Role}
+							<tr style="cursor: pointer;">
+								<td>{Role.Role}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				
+			</div>
+			<br/>
+			<div class="ActionBox">
+				<h3 class="title is-2">Timeline of known locations</h3>
+				<form>
+				
+				<table class="ClickableTable" width=100%>
+					<thead>
+						<tr>
+							<th>Location</th>
+							<th>When</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-			
-		</div>
-		<br/>
-		<div class="ActionBox">
-			<h3 class="title is-2">Ships</h3>
-			<form>
-			
-			<table class="ClickableTable" width=100%>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Type</th>
-						<th>Home Port</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each Ships as Ship}
-						<tr on:click={() => location.href=`/Ship/?ShipId=${Ship.ShipId}`}>
-							<td>{Ship.ShipName}</td>
-							<td>{Ship.ShipType}</td>
-							<td>{Ship.City}, {Ship.State}</td>
+					</thead>
+					<tbody>
+						{#each Locations as Location}
+							<tr style="cursor: pointer;">
+								<td>{Location.City}, {Location.State}</td>
+								<td>{moment(Location.DateCirca).format('MM/DD/YYYY')}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				
+			</div>
+			<br/>
+			<div class="ActionBox">
+				<h3 class="title is-2">Ships</h3>
+				<form>
+				
+				<table class="ClickableTable" width=100%>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Home Port</th>
 						</tr>
-					{/each}
-					
-				</tbody>
-			</table>
-			
-		</div>
+					</thead>
+					<tbody>
+						{#each Ships as Ship}
+							<tr on:click={() => location.href=`/Ship/?ShipId=${Ship.ShipId}`}>
+								<td>{Ship.ShipName}</td>
+								<td>{Ship.ShipType}</td>
+								<td>{Ship.City}, {Ship.State}</td>
+							</tr>
+						{/each}
+						
+					</tbody>
+				</table>
+				
+			</div>
+		{/if}
 		</div>
 	</div>
 {/if}
