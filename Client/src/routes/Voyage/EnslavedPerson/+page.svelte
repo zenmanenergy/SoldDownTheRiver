@@ -38,7 +38,6 @@
 		const urlParams = new URLSearchParams(window.location.search);
 		VoyageId = urlParams.get("VoyageId") || "";
 		HumanId = urlParams.get("HumanId") || "";
-		
 		await Promise.all([
 			handleGetVoyageHuman(Session.SessionId,VoyageId, HumanId, setVoyageHuman),
 			handleGetSlaveTraders(Session.SessionId,setSlaveTraders),
@@ -50,9 +49,8 @@
 			Svelecte = module.default || module;
 		isLoading = false;
 	});
-
+	
 </script>
-
 {#if isLoading}
 	<div class="loading-screen">
 		<div class="spinner"></div>
@@ -82,54 +80,41 @@
 			</div>
 		</div>
 		<div class="field">
-			<label class="label" for="Size">Selling Slave Trader</label>
+			<label class="label" for="Size">Selling Slave Trader <a class="AddLink" href="/Human/SlaveTrader">Add Slave Trader</a></label>
+						
 			<div class="control">
 				<div id="svelecteEndLocation">
 					<Svelecte bind:value={VoyageHuman.SellingSlaveTraderHumanId} options={SlaveTraders.map(SlaveTrader => ({value: SlaveTrader.HumanId, label: SlaveTrader.FirstName+" "+SlaveTrader.LastName}))} />
 					
 				</div>
-
 			</div>
 		</div>
 		<div class="field">
-			<label class="label" for="Size">Buying Slave Trader</label>
+			<label class="label" for="Size">Buying Slave Trader <a class="AddLink" href="/Human/SlaveTrader">Add Slave Trader</a></label>
 			<div class="control">
 				<div id="svelecteEndLocation">
 					<Svelecte bind:value={VoyageHuman.BuyingSlaveTraderHumanId} options={SlaveTraders.map(SlaveTrader => ({value: SlaveTrader.HumanId, label: SlaveTrader.FirstName+" "+SlaveTrader.LastName}))} />
-					
 				</div>
-
 			</div>
 		</div>
+		
 		<div class="field">
-			<label class="label" for="Size">Shipping Agent Trader</label>
+			<label class="label" for="Size">Shipping Agent <a class="AddLink" href="/Human/SlaveShippingAgent">Add Shipping Agent</a></label>
 			<div class="control">
 				<div id="svelecteEndLocation">
-					<Svelecte bind:value={VoyageHuman.ShippingAgentHumanId} options={SlaveShippingAgents.map(SlaveShippingAgent => ({value: SlaveTrader.HumanId, label: SlaveTrader.FirstName+" "+SlaveTrader.LastName}))} />
-					
+					<Svelecte bind:value={VoyageHuman.ShippingAgentHumanId} options={SlaveShippingAgents.map(SlaveShippingAgent => ({value: SlaveShippingAgent.HumanId, label: SlaveShippingAgent.FirstName+" "+SlaveShippingAgent.LastName}))} />
 				</div>
 			</div>
 		</div>
 		<div class="field">
-			<label class="label" for="Size">Collecting Agent Trader</label>
+			<label class="label" for="Size">Collecting Agent <a class="AddLink" href="/Human/SlaveCollectingAgent">Add Collecting Agent</a></label>
 			<div class="control">
 				<div id="svelecteEndLocation">
-					<Svelecte bind:value={VoyageHuman.CollectingAgentHumanId} options={SlaveCollectingAgents.map(SlaveCollectingAgent => ({value: SlaveTrader.HumanId, label: SlaveTrader.FirstName+" "+SlaveTrader.LastName}))} />
+					<Svelecte bind:value={VoyageHuman.CollectingAgentHumanId} options={SlaveCollectingAgents.map(SlaveCollectingAgent => ({value: SlaveCollectingAgent.HumanId, label: SlaveCollectingAgent.FirstName+" "+SlaveCollectingAgent.LastName}))} />
 					
 				</div>
 			</div>
 		</div>
-		<!-- <div class="field">
-			<label class="label" for="Role">Role:</label>
-			<div class="control">
-				<select id="RoleId" bind:value={VoyageHuman.RoleId}>
-					<option value="">Select Role</option>
-					{#each Roles as Role}
-						<option value={Role.RoleId}>{Role.Role}</option>
-					{/each}
-				</select>
-			</div>
-		</div> -->
 		
 		<div class="field">
 			<label class="label" for="Notes">Notes:</label>
@@ -141,4 +126,4 @@
 	</form>
 </div>
 </div>
-	{/if}
+{/if}
