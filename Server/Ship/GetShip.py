@@ -9,12 +9,12 @@ def get_ship(ShipId):
 
 	# Construct the SQL query
 	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Ships.ShipId and History.TableName='Ships' and History.KeyName='ShipId') LastModified"
-	query += f" FROM ships left join humans on ships.OwnerHumanId=humans.humanId WHERE ShipId = '{ShipId}'"
+	query += f" FROM ships  WHERE ShipId = '{ShipId}'"
 	
 	# Execute the query and get the results
 	cursor.execute(query)
 	result = cursor.fetchone()
-	ic(result)
+	print(result)
 	if not result:
 		result = {}
 
