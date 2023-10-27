@@ -76,7 +76,6 @@ function go(LocationId) {
 					{/each}
 				</tbody>
 			</table>
-			<button on:click={addLocation}>Add Location</button>
 		</div>
 	</div>
 {/if}
