@@ -2,7 +2,7 @@ import uuid
 from Lib import Database
 from datetime import datetime
 
-def save_ship(ShipId, ShipName,BuildDate, Notes, ShipType, Size, OwnerHumanId):
+def save_ship(ShipId, ShipName,BuildDate, Notes, ShipType, Size, HomePortLocationId):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
@@ -16,12 +16,12 @@ def save_ship(ShipId, ShipName,BuildDate, Notes, ShipType, Size, OwnerHumanId):
 	sql=""
 	if ShipId:
 		# If the ShipId is present, update the existing ship
-		sql = f"UPDATE Ships SET ShipName='{ShipName}', BuildDate = {BuildDate}, Notes = '{Notes}', ShipType = '{ShipType}', Size = '{Size}', OwnerHumanId='{OwnerHumanId}' WHERE ShipId = '{ShipId}'"
+		sql = f"UPDATE Ships SET ShipName='{ShipName}', BuildDate = {BuildDate}, Notes = '{Notes}', ShipType = '{ShipType}', Size = '{Size}', HomePortLocationId='{HomePortLocationId}' WHERE ShipId = '{ShipId}'"
 		
 	else:
 		# If the ShipId is not present, create a new ship
 		ShipId = "SHP" + str(uuid.uuid4())
-		sql = f"INSERT INTO Ships (ShipId, ShipName,BuildDate, Notes, ShipType, Size, OwnerHumanId) VALUES ('{ShipId}', '{ShipName}',  {BuildDate}, '{Notes}', '{ShipType}', '{Size}', '{OwnerHumanId}')"
+		sql = f"INSERT INTO Ships (ShipId, ShipName,BuildDate, Notes, ShipType, Size, HomePortLocationId) VALUES ('{ShipId}', '{ShipName}',  {BuildDate}, '{Notes}', '{ShipType}', '{Size}', '{HomePortLocationId}')"
 
 	# Execute the sql and commit the changes
 	print(sql)
