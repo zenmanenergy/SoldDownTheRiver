@@ -10,7 +10,7 @@ def get_VoyageHuman(VoyageId,HumanId):
 	sql = "SELECT Humans.*, VoyageHumans.*,VoyageHumans.notes as VoyageNotes, Roles.RoleId,Roles.Role  "
 	sql +=" FROM Humans join VoyageHumans on Humans.HumanId=VoyageHumans.HumanId "
 	sql +=" left join Roles on VoyageHumans.RoleId=Roles.RoleId "
-	sql +=f" where VoyageHumans.VoyageId='{VoyageId}' and VoyageHumans.VoyageId='{HumanId}' order by Firstname, Lastname"
+	sql +=f" where VoyageHumans.VoyageId='{VoyageId}' and VoyageHumans.HumanId='{HumanId}' order by Firstname, Lastname"
 
 	print(sql)
 	cursor.execute(sql)
