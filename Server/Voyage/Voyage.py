@@ -114,11 +114,24 @@ def SaveVoyageHuman():
 		# Extract the VoyageId, ShipId, StartLocationId, EndLocationId, StartDate, EndDate, and Notes from the Voyage_data
 		VoyageId = Voyage_data.get('VoyageId', None)
 		HumanId = Voyage_data.get('HumanId', None)
-		HumanRoleId = Voyage_data.get('VoyageHumanRoleId', None)
-		HumanNotes = Voyage_data.get('VoyageHumanNotes', None)
+		
+		RoleId = Voyage_data.get('RoleId', None)
+		SellingSlaveTraderHumanId = Voyage_data.get('SellingSlaveTraderHumanId', None)
+		BuyingSlaveTraderHumanId = Voyage_data.get('BuyingSlaveTraderHumanId', None)
+		ShippingAgentHumanId = Voyage_data.get('ShippingAgentHumanId', None)
+		CollectingAgentHumanId = Voyage_data.get('CollectingAgentHumanId', None)
+		Notes = Voyage_data.get('Notes', None)
+		
+		
+		
+		
+		
+		
+		
+		
 
 		# Call the save_Voyage function from SaveVoyage.py with the extracted data
-		result = save_VoyageHuman(VoyageId, HumanId, HumanRoleId, HumanNotes)
+		result = save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)
 		History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
 
 		return result
