@@ -72,7 +72,7 @@
 
 
 <div class="section">
-	<a href="/Role?RoleId=SlaveCollectingAgents">Back to Slave Collecting Agents</a>
+	<a href="/Role?RoleId=SlaveCollectingAgent">Back to Slave Collecting Agents</a>
 	<div class="ActionBox">
 		<h3 class="title is-2">Edit Slave Collecting Agent</h3>
 	<form>

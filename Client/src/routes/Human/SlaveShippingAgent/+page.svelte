@@ -74,7 +74,7 @@
 	</div>
 {:else}
 <div class="section">
-	<a href="/Role?RoleId=SlaveShippingAgents">Back to Shipping Agents</a>
+	<a href="/Role?RoleId=SlaveShippingAgent">Back to Shipping Agents</a>
 	<div class="ActionBox">
 		<h3 class="title is-2">Edit Shipping Agent</h3>
 	<form>
