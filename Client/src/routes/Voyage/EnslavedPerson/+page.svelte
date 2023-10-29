@@ -10,6 +10,7 @@
 	import { handleGetSlaveTraders} from './handleGetSlaveTraders.js';
 	import { handleGetSlaveShippingAgents} from './handleGetSlaveShippingAgents.js';
 	import { handleGetSlaveCollectingAgents} from './handleGetSlaveCollectingAgents.js';
+	import { handleSaveEnslavedPerson} from './handleSaveEnslavedPerson.js';
 	import {Session} from "../../Session.js";
 	
 	let Svelecte;
@@ -20,9 +21,12 @@
 	let SlaveShippingAgents=[];
 	let SlaveCollectingAgents=[];
 	let isLoading=true;
+
 	
 	async function setVoyageHuman(data) {
 		VoyageHuman = data;
+		VoyageHuman.RoleId="EnslavedPerson"
+		VoyageHuman.VoyageId=VoyageId
 	}
 	async function setSlaveTraders(data) {
 		SlaveTraders = data;
@@ -122,7 +126,14 @@
 				<textarea class="textarea" id="Notes" bind:value={VoyageHuman.Notes}></textarea>
 			</div>
 		</div>
-		
+		<div class="field">
+			<div class="control">
+				<button class="button is-primary" type="button" on:click={() =>   handleSaveEnslavedPerson(Session.SessionId,VoyageHuman,true   ) }> Save</button>
+				<!-- {#if VoyageId.length}
+					<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, VoyageId)}>Delete</button>
+				{/if} -->
+			</div>
+		</div>
 	</form>
 </div>
 </div>
