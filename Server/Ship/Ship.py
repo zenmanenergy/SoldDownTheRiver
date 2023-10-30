@@ -6,7 +6,7 @@ from flask_cors import CORS, cross_origin
 from .SaveShip import save_ship
 from .DeleteShip import delete_ship
 from .GetShip import get_ship
-from .GetOwners import get_Owners
+from .GetCaptains import get_Captains
 from .GetAgents import get_Agents
 from .GetShipVoyages import get_ShipVoyages
 from .GetLocations import get_locations
@@ -69,17 +69,17 @@ def GetShip():
 		return Debugger(e)
 
 
-@blueprint.route("/Ship/GetOwners", methods=['GET'])
+@blueprint.route("/Ship/GetCaptains", methods=['GET'])
 @cross_origin()
-def GetOwners():
+def GetCaptains():
 	try:
 		# Get the ship data from the request
 		ship_data = request.args.to_dict()
 
 		# Get the ship ID from the request
 		Query = ship_data.get('Query')
-		# Call the get_ship function from GetOwners.py
-		result = get_Owners(Query)
+		# Call the get_ship function from GetCaptains.py
+		result = get_Captains(Query)
 		return result
 	except Exception as e:
 		return Debugger(e)
