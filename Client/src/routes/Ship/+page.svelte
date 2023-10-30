@@ -9,8 +9,9 @@
 	import { handleDelete } from './handleDelete.js';
 	import { handleGetShip } from './handleGetShip.js';
 	import { handleGetShipVoyages } from './handleGetShipVoyages.js';
-	import { handleGetOwners } from './handleGetOwners.js';
+	import { handleGetCaptains } from './handleGetCaptains.js';
 	import { handleGetLocations } from './handleGetLocations.js';
+	import { handleGetTransactions } from './handleGetTransactions.js';
 	import { Session } from "../Session.js";
 	
 	let ShipId = "";
@@ -19,9 +20,10 @@
 	let ShipType = "";
 	let Size = "";
 	let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:"", HomePortLocationId:"",AgentHumanId:""};
-	let Owners = [];
+	let Captains = [];
 	let Voyages = [];
 	let Locations = [];
+	let Transactions=[]
 	let Svelecte;
 	let HomePortLocationId;
 	let AgentHumanId;
@@ -46,8 +48,8 @@
 		console.log("Ship", Ship)
 		// console.log("Ship.ShipId.length", Ship.ShipId.length)
 	}
-	async function setOwners(data) {
-		Owners = [{HumanId: "add_new", FirstName: "[Add New]", LastName: ""}, ...data];
+	async function setCaptains(data) {
+		Captains = [{HumanId: "add_new", FirstName: "[Add New]", LastName: ""}, ...data];
 	}
 
 	async function setLocations(data) {
@@ -57,7 +59,9 @@
 	async function setVoyages(data){
 		Voyages=data;
 	}
-
+	async function setTransactions(data) {
+		Transactions=data
+	}
 	$: {
 		formValid = Ship.ShipName;
 	}
@@ -70,7 +74,8 @@
 			handleGetShip(Session.SessionId, ShipId, setShip),
 			handleGetShipVoyages(Session.SessionId, ShipId, setVoyages),
 			handleGetLocations(Session.SessionId,setLocations),
-			handleGetOwners(Session.SessionId,Query, setOwners)
+			handleGetCaptains(Session.SessionId,Query, setCaptains),
+			handleGetTransactions(Session.SessionId,ShipId, setTransactions)
 		]);
 		const module = await import('svelecte');
 		Svelecte = module.default || module;
@@ -101,7 +106,7 @@
 		}
 		if (event.target.value.length<=1){
 			Query=event.target.value
-			handleGetOwners(Session.SessionId, Query, setOwners)
+			handleGetCaptains(Session.SessionId, Query, setCaptains)
 		}
 	}
 	function handleLocationSelection(event) {

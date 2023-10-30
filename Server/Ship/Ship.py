@@ -10,6 +10,7 @@ from .GetCaptains import get_Captains
 from .GetAgents import get_Agents
 from .GetShipVoyages import get_ShipVoyages
 from .GetLocations import get_locations
+from .GetTransactions import get_Transactions
 
 blueprint = Blueprint('Ship', __name__)
 
@@ -122,6 +123,18 @@ def GetLocations():
 	try:
 		# Call the get_locations function to retrieve location data
 		result = get_locations()
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Ship/GetTransactions", methods=['GET'])
+@cross_origin()
+def GetTransactions():
+	try:
+		ship_data = request.args.to_dict()
+		ShipId = ship_data.get('ShipId')
+		# Call the get_Transactions function to retrieve Transaction data
+		result = get_Transactions(ShipId)
 		return result
 	except Exception as e:
 		return Debugger(e)
