@@ -69,21 +69,24 @@ def SaveHistory(Data, Table, KeyName,KeyValue ):
 		KeyValue=Data['KeyName']
 
 	# Construct the SQL query
-	query = "SELECT UserId FROM UserSessions WHERE SessionId = %s"
-	values = (Data["SessionId"])
+	SessionId=Data['SessionId']
+	if SessionId=="ImportData":
+		UserId="1"
+	else:
+		query = f"SELECT UserId FROM UserSessions WHERE SessionId = '{SessionId}'"
+		
+		# print(query)
 
-
-	# Execute the query and get the results
-	Cursor.execute(query, values)
-	result = Cursor.fetchone()
-
-	if not result:
-		return False
-	UserId=result["UserId"]
+		# Execute the query and get the results
+		Cursor.execute(query)
+		result = Cursor.fetchone()
+		if not result:
+			return False
+		UserId=result["UserId"]
 
 	gmt_tz = pytz.timezone('GMT')
 	now = datetime.datetime.now(gmt_tz)
-	print(now)
+	# print(now)
 	now_str = now.strftime('%Y-%m-%d %H:%M:%S')
 	HistoryId="HIS"+str(uuid.uuid4())
 	query="INSERT INTO History (HistoryId, TableName, KeyName, KeyValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"

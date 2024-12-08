@@ -174,4 +174,3 @@ def import_Notary(data, Notary):
 			History.SaveHistory(data,"TransactionHumans", "TransactionId:HumanId", TransactionId+":"+TransactionHumanId)
 	return True
 
-

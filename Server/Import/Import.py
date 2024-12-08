@@ -1,11 +1,13 @@
 
 from Lib import Database
 from flask import Blueprint, request, jsonify
+import json
 from flask_cors import CORS, cross_origin
 from .ExtractShipManifest import Extract_ShipManifest
-from .ImportShipManifest import save_ship_manifest
 from .ExtractNotary import extract_Notary
-from .ImportNotary import import_Notary
+from .OLDImportNotary import import_Notary
+from .ImportNOLA import import_NOLA, Get_LastNOLA, ProcessNOLA, Fix_Locations, GPTNotes, GPTBatch, GPTSave, SaveParsedNotes,replace_string_in_json
+from .ImportShipManifest import import_Manifest, Get_LastManifest, ProcessManifest
 
 blueprint = Blueprint('Import', __name__)
 
@@ -14,47 +16,91 @@ blueprint = Blueprint('Import', __name__)
 def ImportData():
 	sessionData={}
 	import_data = request.get_json()
-	
-	sessionData['SessionId']=import_data['SessionId']
-	sessionData['SpreadsheetName']=import_data['SpreadsheetName']
 	spreadsheet_name = import_data['SpreadsheetName']
-	spreadsheet_data = import_data['SpreadsheetData']
-	
-	rows = spreadsheet_data.split("\n")
-	spreadsheet_array = []
-	headers = rows[0].split("\t")  # Get column names from the first row
-	print(headers)
-	for row in rows[1:]:  # Skip the first row because it contains column names
-		cells = row.split("\t")
-		row_dict = dict(zip(headers, cells))  # Combine headers and cells into a dictionary
-		spreadsheet_array.append(row_dict)
-	if len(spreadsheet_array[0]) == 14:
-		print("notary")
-
-		Notary=extract_Notary(spreadsheet_name,spreadsheet_array)
-		import_Notary(sessionData,Notary)
-	elif len(spreadsheet_array[0]) == 24:
-		voyage = spreadsheet_name.split(" ")
-		VoyageId = voyage[0]
-		VoyageDate = voyage[len(voyage)-1]
-		ShipType = voyage[2:3]
-		ShipType = " ".join(ShipType)
-
-
-		# this removes the voyage number and date from the spreadsheet_name. 
-		# There are spaces in the name. so the split messes things up.
-		ShipName = voyage[3:-1]
-		ShipName = " ".join(ShipName)
-
-		
-		ShipInfo,ShipManifest=Extract_ShipManifest(ShipName,ShipType, VoyageId, VoyageDate,spreadsheet_array)
-		
-		# save_ship_manifest(sessionData, ShipInfo,ShipManifest)
-	else:
-		print("NOT IMPORTED",len(spreadsheet_array[0]))
+	spreadsheet_data = json.loads(import_data['SpreadsheetData'])
+	SessionId="ImportData"
+	if spreadsheet_name=="NOLA":
+		import_NOLA(spreadsheet_data,SessionId)
+	elif spreadsheet_name=="Manifest":
+		import_Manifest(spreadsheet_data,SessionId)
 
 	print("IMPORT COMPLETED")
 	result = {"message": "Data imported successfully"}
 	return result
 	
+	
+@blueprint.route("/Import/GetLastNOLA", methods=['GET'])
+@cross_origin()
+def GetLastNOLA():
+	LastNola=Get_LastNOLA()
+	
+	return LastNola
+	
+
+	
+@blueprint.route("/Import/GetLastManifest", methods=['GET'])
+@cross_origin()
+def GetLastManifest():
+	LastNola=Get_LastManifest()
+	
+	return LastNola
+
+@blueprint.route("/Import/ProcessNola", methods=['GET'])
+@cross_origin()
+def Process_Nola():
+	ProcessResults=ProcessNOLA()
+	return ProcessResults
+
+@blueprint.route("/Import/ProcessManifest", methods=['GET'])
+@cross_origin()
+def Process_Manifest():
+	ProcessResults=ProcessManifest()
+	return ProcessResults
+	
+@blueprint.route("/Import/", methods=['GET'])
+@cross_origin()
+def importroot():
+	return "it works!"
+
+@blueprint.route("/Import/GPTNotes", methods=['GET'])
+@cross_origin()
+def GPT_Notes():
+	JSONNotes=GPTNotes()
+	return JSONNotes
+
+@blueprint.route("/Import/GPTBatch", methods=['GET'])
+@cross_origin()
+def GPT_Batch():
+	JSONNotes=GPTBatch()
+
+	# print(create_request_json("request-1", "John sold 3 slaves to Mary, a free woman of color, for $500 at the New Orleans market."))
+	# print(create_request_json("request-2", "Sarah, a slave, was sold for 400 dollars in Virginia."))
+	return JSONNotes
+@blueprint.route("/Import/GPTSave", methods=['GET'])
+@cross_origin()
+def GPT_Save():
+	JSONNotes=GPTSave()
+
+	# print(create_request_json("request-1", "John sold 3 slaves to Mary, a free woman of color, for $500 at the New Orleans market."))
+	# print(create_request_json("request-2", "Sarah, a slave, was sold for 400 dollars in Virginia."))
+	return JSONNotes
+
+@blueprint.route("/Import/SaveParsedNotes", methods=['GET'])
+@cross_origin()
+def Save_ParsedNotes():
+	res=SaveParsedNotes()
+
+	return res
+@blueprint.route("/Import/replace_string_in_json", methods=['GET'])
+@cross_origin()
+def Save_replace_string_in_json():
+	res=replace_string_in_json()
+
+	return res
+
+@blueprint.route("/Import/FixLocations", methods=['GET'])
+@cross_origin()
+def FixLocations():
+	response=Fix_Locations()
+	return response
 	
