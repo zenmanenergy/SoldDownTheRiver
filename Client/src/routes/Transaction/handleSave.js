@@ -1,7 +1,7 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleSave(SessionId,transactionId, transactionDate, fromBusinessId, toBusinessId, transactionType, notes, act, page, notaryBusinessId, volume, url,	formValid) {
+export async function handleSave(SessionId,transactionId, transactionDate, fromBusinessId, toBusinessId, transactionType, notes, act, page, notaryBusinessId, volume, formValid) {
 
 
 	const Data = {
@@ -15,14 +15,13 @@ export async function handleSave(SessionId,transactionId, transactionDate, fromB
 		Page: page,
 		NotaryBusinessId: notaryBusinessId,
 		Volume: volume,
-		URL: url,
 		SessionId: SessionId
 	};
 
 	
-	const url = baseURL + '/Transaction/SaveTransaction?'; 
+	const _url = baseURL + '/Transaction/SaveTransaction?'; 
 	FormValid=true 
-	let data = await SuperFetch(url, Data, FormValid)
+	let data = await SuperFetch(_url, Data, FormValid)
 
 	window.location.href = '/Transactions';
 }

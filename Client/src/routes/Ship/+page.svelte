@@ -180,7 +180,15 @@
 						
 
 						<div id="svelecteLocation">
-							<Svelecte bind:value={Ship.HomePortLocationId} on:input={handleLocationSelection} options={Locations.map(location => ({value: location.LocationId, label: location.City+" "+location.State}))} />
+							<svelte:component 
+								this={Svelecte} 
+								bind:value={Ship.HomePortLocationId} 
+								on:input={handleLocationSelection} 
+								options={Locations.map(location => ({
+									value: location.LocationId, 
+									label: `${location.City} ${location.State}`
+								}))} 
+							/>
 						</div>
 						
 					</div>

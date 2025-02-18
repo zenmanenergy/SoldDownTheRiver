@@ -1,22 +1,22 @@
 import uuid
-from Lib import Database
-from icecream import ic
+from _Lib import Database
 
-def save_role(RoleId,Role):
+def save_role(RoleId, Role):
+	# Remove spaces from Role if RoleId is empty
+	if not RoleId.strip():
+		RoleId = Role.replace(" ", "")
+
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
+	# SQL statement for insert or update
+	sql = f"""
+		INSERT INTO Roles (RoleId, Role)
+		VALUES ('{RoleId}', '{Role}')
+		ON DUPLICATE KEY UPDATE Role=VALUES(Role)
+	"""
 	
-	ic(RoleId,Role)
-	sql=""
-	
-	# If the role doesn't exist, create a new row with a new role ID
-	sql = f"INSERT INTO Roles (RoleId, Role) VALUES ('{RoleId}','{Role}')"
-	sql +=" ON DUPLICATE KEY UPDATE RoleId=values(RoleId),Role=values(Role) "
-
-
-	ic(sql)
-	# Execute the sql and commit the changes
+	# Execute the SQL and commit the changes
 	cursor.execute(sql)
 	connection.commit()
 

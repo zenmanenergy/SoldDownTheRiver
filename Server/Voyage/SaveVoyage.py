@@ -1,5 +1,5 @@
 import uuid
-from Lib import Database
+from _Lib import Database
 
 def save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId, StartDate, EndDate, Notes):
 	# Connect to the database

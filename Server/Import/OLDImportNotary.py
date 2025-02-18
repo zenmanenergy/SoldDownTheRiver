@@ -1,6 +1,6 @@
 import uuid
-from Lib import Database
-from Lib import History
+from _Lib import Database
+from _Lib import History
 from datetime import datetime, timedelta
 from dateutil import parser
 

@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def get_possible_Families(HumanId):
 	# Connect to the database

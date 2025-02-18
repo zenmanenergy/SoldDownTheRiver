@@ -17,7 +17,8 @@ sys.path.insert(0, os.path.join(venv_path, 'lib', 'python3.8', 'site-packages'))
 
 
 # Import your Flask application object
-from app import app as application
+sys.path.insert(0, "/var/www/python/")
+from flask_app import app as application
 
 # Logging
 logging.basicConfig(stream=sys.stderr)

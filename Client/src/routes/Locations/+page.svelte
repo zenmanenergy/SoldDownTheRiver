@@ -25,9 +25,15 @@ onMount(async () => {
 	isLoading = false;
 });
 $: filteredLocations = Locations.filter(location => {
-	const fullLocation = `${location.City} ${location.State} ${location.Country}`.toLowerCase();
+	const cityCounty = location.City && location.County 
+		? `${location.City} ${location.County}` 
+		: location.City || location.County || ''; // Prefer City, fallback to County
+	
+	const fullLocation = `${cityCounty} ${location.State} ${location.Country}`.toLowerCase();
 	return fullLocation.includes(searchQuery.toLowerCase());
 });
+
+
 function addLocation() {
 	window.location.href = '/Location?LocationId=';
 }
@@ -59,23 +65,24 @@ function go(LocationId) {
 			<table width=100%>
 				<thead>
 					<tr>
-						<th>City</th>
+						<th>Address</th>
+						<th>City/County</th> <!-- Updated header -->
 						<th>State</th>
 						<th>Country</th>
-						<th>Last Modified</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each filteredLocations as location}
 						<tr style="cursor: pointer;" on:click={() => go(location.LocationId)}>
-							<td>{location.City}</td>
+							<td>{location.Address}</td>
+							<td>{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : location.County}</td> <!-- Updated display logic -->
 							<td>{location.State}</td>
 							<td>{location.Country}</td>
-							<td>{moment.utc(location.LastModified).local().fromNow()}</td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
+			
 		</div>
 	</div>
 {/if}

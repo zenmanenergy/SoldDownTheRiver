@@ -1,10 +1,11 @@
 
-from Lib import Database
-from Lib.Debugger import Debugger
+from _Lib import Database
+from _Lib.Debugger import Debugger
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .GetLogin import get_login
 from .VerifySession import verify_session
+from flask_app import app
 
 blueprint = Blueprint('Login', __name__)
 

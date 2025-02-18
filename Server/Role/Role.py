@@ -1,6 +1,6 @@
-from Lib import Database
-from Lib.Debugger import Debugger
-from Lib import History
+from _Lib import Database
+from _Lib.Debugger import Debugger
+from _Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveRole import save_role
@@ -11,7 +11,7 @@ from .GetHumans import get_Humans
 from .SaveHumanRole import save_HumanRole
 from .DeleteHumanRole import delete_HumanRole
 
-from Lib import History
+from _Lib import History
 
 blueprint = Blueprint('Role', __name__)
 

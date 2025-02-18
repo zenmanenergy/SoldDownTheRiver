@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def get_transaction(transaction_id):
 	if not transaction_id:

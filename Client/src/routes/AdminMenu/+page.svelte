@@ -1,6 +1,17 @@
 <style>
 	@import '/static/FormPages.css';
-  </style>
+	.logout-button {
+		background: none;
+		border: none;
+		color: blue;
+		text-decoration: underline;
+		cursor: pointer;
+		font-size: inherit;
+	}
+	.logout-button:hover {
+		text-decoration: none;
+	}
+</style>
 <script>
 	import { onMount } from "svelte";
 	import {Session} from "../Session.js";
@@ -22,8 +33,8 @@
 	</div>
 {:else}
 <div class="section">
-    <div class="ActionBox">
-      <h3 class="title is-2">Admin Menu</h3>
+	<div class="ActionBox">
+	<h3 class="title is-2">Admin Menu</h3>
 		<ul>
 			<li><a href={`/Businesses`}>Businesses</a></li>
 			<li><a href={`/Humans`}>Humans</a></li>
@@ -32,13 +43,15 @@
 			<li><a href={`/Transactions`}>Transactions</a></li>
 			<li><a href={`/Ships`}>Ships</a></li>
 			<li><a href={`/Voyages`}>Voyages</a></li>
-			<li><a href={`/Users`}>Users</a></li>
+			<!-- <li><a href={`/Users`}>Users</a></li> -->
 				
-			<li><a href={`/Search`}>Search</a></li>
-			<li><a on:click={handleLogout}>Logout</a></li>
+			
+			<li>
+				<button on:click={handleLogout} class="logout-button">Logout</button>
+			</li>
 			<br>
 			
-			<li><a href={`/Import`}>Import Data</a></li>
+			<!-- <li><a href={`/Import`}>Import Data</a></li> -->
 		</ul>
 	</div>
 </div>

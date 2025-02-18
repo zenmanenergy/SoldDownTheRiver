@@ -3,9 +3,9 @@ from flask_cors import CORS, cross_origin
 from .SaveVoyage import save_Voyage
 from .DeleteVoyage import delete_Voyage
 from .GetVoyage import get_Voyage
-from Lib import Database
-from Lib.Debugger import Debugger
-from Lib import History
+from _Lib import Database
+from _Lib.Debugger import Debugger
+from _Lib import History
 from .GetShips import get_Ships
 from .GetHumans import get_Humans
 from .SaveVoyageHuman import save_VoyageHuman

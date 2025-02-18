@@ -1,5 +1,5 @@
 import uuid
-from Lib import Database
+from _Lib import Database
 
 def save_human(HumanId, FirstName, MiddleName, LastName, Notes):
 	# Connect to the database

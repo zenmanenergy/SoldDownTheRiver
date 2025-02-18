@@ -1,11 +1,12 @@
 
-# save this as app.py
+
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-import json
+app.debug = True
+
 
 from Businesses import Businesses
 from Business import Business
@@ -61,4 +62,4 @@ app.register_blueprint(EnslavedPerson.blueprint)
 @app.route("/")
 @cross_origin()
 def index():
-    return "it works"
+	return "it works"

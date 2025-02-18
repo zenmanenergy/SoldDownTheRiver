@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def get_locations():
 	
@@ -6,7 +6,7 @@ def get_locations():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Locations.LocationId  and History.TableName='Locations' and History.KeyName='LocationId') LastModified"
+	query = "SELECT *"
 	query +="   FROM Locations order by City"
 	# query +=" limit 50"
 	values = ()

@@ -1,5 +1,5 @@
 
-from Lib import Database
+from _Lib import Database
 
 def get_Humans(VoyageId):
 	# Connect to the database

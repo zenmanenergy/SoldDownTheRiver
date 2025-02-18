@@ -111,7 +111,14 @@
 
 					<div class="control">
 						<div class="field" id="svelecteBusiness">
-							<Svelecte bind:value={Business.LocationId} options={Locations.map(Location => ({value: Location.LocationId, label: Location.Address+" "+Location.City}))} />
+							<svelte:component 
+								this={Svelecte} 
+								bind:value={Business.LocationId} 
+								options={Locations.map(Location => ({
+									value: Location.LocationId, 
+									label: `${Location.Address} ${Location.City}`
+								}))} 
+							/>
 						</div>
 						<br/>
 					</div>
@@ -124,7 +131,14 @@
 
 						<div class="control">
 							<div class="field" id="svelecteHumanId">
-								<Svelecte bind:value={HumanId} options={Humans.map(Human => ({value: Human.HumanId, label: Human.FirstName+" "+Human.LastName}))} />
+								<svelte:component 
+									this={Svelecte} 
+									bind:value={HumanId} 
+									options={Humans.map(Human => ({
+										value: Human.HumanId, 
+										label: `${Human.FirstName} ${Human.LastName}`
+									}))} 
+								/>
 							</div>
 							<br/>
 						</div>
@@ -135,7 +149,14 @@
 					<div class="control">
 						<div class="control">
 							<div class="field" id="svelecteRoleId">
-								<Svelecte bind:value={RoleId} options={Roles.map(Role => ({value: Role.RoleId, label: Role.Role}))} />
+								<svelte:component 
+									this={Svelecte} 
+									bind:value={RoleId} 
+									options={Roles.map(Role => ({
+										value: Role.RoleId, 
+										label: Role.Role
+									}))} 
+								/>
 							</div>
 							<br/>
 						</div>

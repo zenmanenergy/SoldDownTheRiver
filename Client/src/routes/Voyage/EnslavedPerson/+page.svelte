@@ -87,9 +87,16 @@
 			<label class="label" for="Size">Selling Slave Trader <a class="AddLink" href="/Human/SlaveTrader">Add Slave Trader</a></label>
 						
 			<div class="control">
-				<div id="svelecteEndLocation">
-					<Svelecte bind:value={VoyageHuman.SellingSlaveTraderHumanId} options={SlaveTraders.map(SlaveTrader => ({value: SlaveTrader.HumanId, label: SlaveTrader.FirstName+" "+SlaveTrader.LastName}))} />
-					
+				<div id="svelecteSellingTrader">
+					<svelte:component 
+						this={Svelecte} 
+						bind:value={VoyageHuman.SellingSlaveTraderHumanId} 
+						options={SlaveTraders.map(SlaveTrader => ({
+							value: SlaveTrader.HumanId, 
+							label: `${SlaveTrader.FirstName} ${SlaveTrader.LastName}`
+						}))} 
+					/>
+
 				</div>
 			</div>
 		</div>
@@ -97,7 +104,14 @@
 			<label class="label" for="Size">Buying Slave Trader <a class="AddLink" href="/Human/SlaveTrader">Add Slave Trader</a></label>
 			<div class="control">
 				<div id="svelecteEndLocation">
-					<Svelecte bind:value={VoyageHuman.BuyingSlaveTraderHumanId} options={SlaveTraders.map(SlaveTrader => ({value: SlaveTrader.HumanId, label: SlaveTrader.FirstName+" "+SlaveTrader.LastName}))} />
+					<svelte:component 
+						this={Svelecte} 
+						bind:value={VoyageHuman.BuyingSlaveTraderHumanId} 
+						options={SlaveTraders.map(SlaveTrader => ({
+							value: SlaveTrader.HumanId, 
+							label: `${SlaveTrader.FirstName} ${SlaveTrader.LastName}`
+						}))} 
+					/>
 				</div>
 			</div>
 		</div>
@@ -105,8 +119,16 @@
 		<div class="field">
 			<label class="label" for="Size">Shipping Agent <a class="AddLink" href="/Human/SlaveShippingAgent">Add Shipping Agent</a></label>
 			<div class="control">
-				<div id="svelecteEndLocation">
-					<Svelecte bind:value={VoyageHuman.ShippingAgentHumanId} options={SlaveShippingAgents.map(SlaveShippingAgent => ({value: SlaveShippingAgent.HumanId, label: SlaveShippingAgent.FirstName+" "+SlaveShippingAgent.LastName}))} />
+				
+				<div id="svelecteShippingAgent">
+					<svelte:component 
+						this={Svelecte} 
+						bind:value={VoyageHuman.ShippingAgentHumanId} 
+						options={SlaveShippingAgents.map(SlaveShippingAgent => ({
+							value: SlaveShippingAgent.HumanId, 
+							label: `${SlaveShippingAgent.FirstName} ${SlaveShippingAgent.LastName}`
+						}))} 
+					/>
 				</div>
 			</div>
 		</div>
@@ -114,8 +136,14 @@
 			<label class="label" for="Size">Collecting Agent <a class="AddLink" href="/Human/SlaveCollectingAgent">Add Collecting Agent</a></label>
 			<div class="control">
 				<div id="svelecteEndLocation">
-					<Svelecte bind:value={VoyageHuman.CollectingAgentHumanId} options={SlaveCollectingAgents.map(SlaveCollectingAgent => ({value: SlaveCollectingAgent.HumanId, label: SlaveCollectingAgent.FirstName+" "+SlaveCollectingAgent.LastName}))} />
-					
+					<svelte:component 
+						this={Svelecte} 
+						bind:value={VoyageHuman.CollectingAgentHumanId} 
+						options={SlaveCollectingAgents.map(SlaveCollectingAgent => ({
+							value: SlaveCollectingAgent.HumanId, 
+							label: SlaveCollectingAgent.FirstName + " " + SlaveCollectingAgent.LastName
+						}))} 
+					/>
 				</div>
 			</div>
 		</div>

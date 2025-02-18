@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def delete_ship(ship_id):
 	# Delete the specified row from the Ships table

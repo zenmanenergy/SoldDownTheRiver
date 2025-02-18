@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def delete_VoyageHuman(VoyageId, HumanId):
 	# Delete the specified row from the Voyages table

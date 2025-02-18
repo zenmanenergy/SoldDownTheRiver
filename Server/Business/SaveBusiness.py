@@ -1,5 +1,5 @@
 import uuid
-from Lib import Database
+from _Lib import Database
 
 def save_business(BusinessId, BusinessName, LocationId):
 	# Connect to the database

@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def delete_Family(HumanId, FamilyHumanId):
 	# Delete the specified row from the Humans table

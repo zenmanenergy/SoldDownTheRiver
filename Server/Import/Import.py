@@ -1,12 +1,12 @@
 
-from Lib import Database
+from _Lib import Database
 from flask import Blueprint, request, jsonify
 import json
 from flask_cors import CORS, cross_origin
 from .ExtractShipManifest import Extract_ShipManifest
 from .ExtractNotary import extract_Notary
 from .OLDImportNotary import import_Notary
-from .ImportNOLA import import_NOLA, Get_LastNOLA, ProcessNOLA, Fix_Locations, GPTNotes, GPTBatch, GPTSave, SaveParsedNotes,replace_string_in_json
+from .ImportNOLA import import_NOLA, Get_LastNOLA, ProcessNOLA, Fix_Locations, GPTNotes, GPTBatch, GPTSave, SaveParsedNotes,replace_string_in_json,GetParsedErrors,UpdateParsedErrors,extractKeys
 from .ImportShipManifest import import_Manifest, Get_LastManifest, ProcessManifest
 
 blueprint = Blueprint('Import', __name__)
@@ -85,11 +85,6 @@ def GPT_Save():
 	# print(create_request_json("request-2", "Sarah, a slave, was sold for 400 dollars in Virginia."))
 	return JSONNotes
 
-@blueprint.route("/Import/SaveParsedNotes", methods=['GET'])
-@cross_origin()
-def Save_ParsedNotes():
-	res=SaveParsedNotes()
-
 	return res
 @blueprint.route("/Import/replace_string_in_json", methods=['GET'])
 @cross_origin()
@@ -104,3 +99,27 @@ def FixLocations():
 	response=Fix_Locations()
 	return response
 	
+
+@blueprint.route("/Import/SaveParsedNotes", methods=['GET'])
+@cross_origin()
+def Save_ParsedNotes():
+	res=SaveParsedNotes()
+	return res
+
+@blueprint.route("/Import/GetParsedErrors", methods=['GET'])
+@cross_origin()
+def Get_ParsedErrors():
+	res=GetParsedErrors()
+	return res
+
+
+@blueprint.route("/Import/UpdateParsedErrors", methods=['GET'])
+@cross_origin()
+def Update_ParsedErrors():
+	res=UpdateParsedErrors()
+	return res
+@blueprint.route("/Import/extractKeys", methods=['GET'])
+@cross_origin()
+def get_extractKeys():
+	res=extractKeys()
+	return res

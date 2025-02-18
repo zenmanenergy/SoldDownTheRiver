@@ -1,4 +1,4 @@
-from Lib.Debugger import Debugger
+from _Lib.Debugger import Debugger
 from flask import Blueprint, jsonify
 from flask_cors import CORS, cross_origin
 from .GetLocations import get_locations

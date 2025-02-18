@@ -1,5 +1,5 @@
 import uuid
-from Lib import Database
+from _Lib import Database
 
 def save_user(UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear,UserType):
 	# Connect to the database

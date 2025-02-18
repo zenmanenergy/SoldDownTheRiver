@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def delete_transactionhuman(TransactionId, HumanId):
 	# Delete the specified row from the Transactions table

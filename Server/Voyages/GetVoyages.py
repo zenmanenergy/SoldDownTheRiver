@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def get_voyages():
 	# Connect to the database

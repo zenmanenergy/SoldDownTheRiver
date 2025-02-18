@@ -31,7 +31,14 @@
 <div class="section">
 	<a href="/AdminMenu">Back to Menu</a>
 	<div class="ActionBox">
-	<Svelecte bind:value={HumanId} options={Humans.map(human => ({value: human.HumanId, label: human.FirstName+" "+human.LastName}))} />
+		<svelte:component 
+			this={Svelecte} 
+			bind:value={HumanId} 
+			options={Humans.map(human => ({
+				value: human.HumanId, 
+				label: `${human.FirstName} ${human.LastName}`
+			}))} 
+		/>
 	</div>
 </div>
 {/if}

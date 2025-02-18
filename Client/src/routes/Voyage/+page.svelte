@@ -127,7 +127,14 @@
 						<label class="label" for="Size">Ship</label>
 						<div class="control">
 							<div id="svelecteStartLocation">
-								<Svelecte bind:value={Voyage.ShipId} options={Ships.map(Ship => ({value: Ship.ShipId, label: Ship.ShipName}))} />
+								<svelte:component 
+									this={Svelecte} 
+									bind:value={Voyage.ShipId} 
+									options={Ships.map(Ship => ({
+										value: Ship.ShipId, 
+										label: Ship.ShipName
+									}))} 
+								/>
 							</div>
 						</div>
 					</div>
@@ -135,8 +142,14 @@
 						<label class="label" for="Size">Ship Captain <a class="AddLink" href="/Human/ShipCaptain">Add Captain</a></label>
 						<div class="control">
 							<div id="svelecteEndLocation">
-								<Svelecte bind:value={Voyage.CaptainHumanId} options={Captains.map(Captain => ({value: Captain.HumanId, label: Captain.FirstName+" "+Captain.LastName}))} />
-								
+								<svelte:component 
+									this={Svelecte} 
+									bind:value={Voyage.CaptainHumanId} 
+									options={Captains.map(Captain => ({
+										value: Captain.HumanId, 
+										label: `${Captain.FirstName} ${Captain.LastName}`
+									}))} 
+								/>
 							</div>
 	
 						</div>
@@ -145,7 +158,14 @@
 						<label class="label" for="Size">Start Location <a class="AddLink" href="/Location?LocationId=">Add Location</a></label>
 						<div class="control">
 							<div id="svelecteStartLocation">
-								<Svelecte bind:value={Voyage.StartLocationId} options={Locations.map(location => ({value: location.LocationId, label: location.City+" "+location.State}))} />
+								<svelte:component 
+									this={Svelecte} 
+									bind:value={Voyage.StartLocationId} 
+									options={Locations.map(location => ({
+										value: location.LocationId, 
+										label: `${location.City} ${location.State}`
+									}))} 
+								/>
 							</div>
 						</div>
 					</div>
@@ -161,8 +181,14 @@
 						<label class="label" for="Size">End Location <a class="AddLink" href="/Location?LocationId=">Add Location</a></label>
 						<div class="control">
 							<div id="svelecteEndLocation">
-								<Svelecte bind:value={Voyage.EndLocationId} options={Locations.map(location => ({value: location.LocationId, label: location.City+" "+location.State}))} />
-								
+								<svelte:component 
+									this={Svelecte} 
+									bind:value={Voyage.EndLocationId} 
+									options={Locations.map(location => ({
+										value: location.LocationId, 
+										label: `${location.City} ${location.State}`
+									}))} 
+								/>
 							</div>
 	
 						</div>

@@ -1,4 +1,4 @@
-from Lib import Database
+from _Lib import Database
 
 def get_Ships():
 	# Connect to the database

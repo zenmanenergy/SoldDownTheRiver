@@ -1,5 +1,5 @@
 
-from Lib import Database
+from _Lib import Database
 
 def get_SlaveShippingAgents():
 	# Connect to the database

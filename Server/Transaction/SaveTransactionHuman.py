@@ -1,5 +1,5 @@
 import uuid
-from Lib import Database
+from _Lib import Database
 import datetime
 
 def save_transactionhuman(TransactionId, HumanId, Price, Notes):

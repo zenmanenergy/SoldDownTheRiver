@@ -1,28 +1,28 @@
 <!-- src/routes/Businesses/+page.svelte -->
 <style>
 	@import '/static/FormPages.css';
-  </style>
+</style>
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { handleLogin } from './handleLogin.js';
-  
+
 	
 	let formValid = false;
 	let isLoading = true;
-    
-    let Email="";
-    let Password="";
+	
+	let Email="";
+	let Password="";
 
 	let validPassword=true
-  
+
 	$: {
-	  formValid = Email && Password;
+	formValid = Email && Password;
 	}
-  
+
 	onMount(async () => {
-	  
-	  isLoading = false;
+	
+	isLoading = false;
 	});
 
 	function loggedIn(formValid){
@@ -36,56 +36,61 @@
 		handleLogin(Email, Password,formValid, loggedIn)
 		
 	}
+	function handleKeydown(event) {
+		if (event.key === "Enter") {
+			event.preventDefault(); // Prevent form submission from refreshing the page
+			doLogin();
+		}
+	}
+
+
+</script>
 
 
 
-  </script>
-  
-  
-  
-  {#if isLoading}
+{#if isLoading}
 	<div class="loading-screen">
-	  <div class="spinner"></div>
+	<div class="spinner"></div>
 	</div>
-  {:else}
-  
+{:else}
+
 	<div class="section">
 		<div class="ActionBox">
-	  <form>
+	<form on:keydown={handleKeydown}>
 		<h3 class="title is-2">Login</h3>
-  
-  
+
+
 		<div class="field">
-		  <label class="label" for="Email">Email</label>
-		  <div class="control">
+		<label class="label" for="Email">Email</label>
+		<div class="control">
 			<input
-			  class="input"
-			  type="email"
-			  id="Email"
-			  placeholder="Enter your Email"
-			  bind:value={Email}
-			  on:click={()=>validPassword = true}
-			  required
+			class="input"
+			type="email"
+			id="Email"
+			placeholder="Enter your Email"
+			bind:value={Email}
+			on:click={()=>validPassword = true}
+			required
 			/>
-		  </div>
 		</div>
-        <br>
+		</div>
+		<br>
 		<div class="field">
-            <label class="label" for="Password">Password</label>
-            <div class="control">
-              <input
-                class="input"
-                type="password"
-                id="Password"
-                placeholder="Enter your Password"
-                bind:value={Password}
+			<label class="label" for="Password">Password</label>
+			<div class="control">
+			<input
+				class="input"
+				type="password"
+				id="Password"
+				placeholder="Enter your Password"
+				bind:value={Password}
 				on:click={()=> validPassword = true}
-                required
-              />
-            </div>
-          </div>
+				required
+			/>
+			</div>
+		</div>
 		<div class="field">
-		  <div class="control">
+		<div class="control">
 			<button class="button is-primary" type="button" on:click={doLogin}>Login</button>
 			
 			{#if validPassword}
@@ -97,10 +102,9 @@
 
 			{/if}
 
-		  </div>
 		</div>
-	  </form>
+		</div>
+	</form>
 	</div>
 	</div>
-  {/if}
-  
+{/if}

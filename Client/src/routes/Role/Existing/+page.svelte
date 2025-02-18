@@ -89,7 +89,15 @@
 				
 				
 				<div class="field" id="svelecteHuman">
-					<Svelecte bind:value={HumanId} on:input={handleHumanInput} options={Humans.map(human => ({value: human.HumanId, label: human.FirstName+" "+human.LastName}))} />
+					<svelte:component 
+						this={Svelecte} 
+						bind:value={HumanId} 
+						on:input={handleHumanInput} 
+						options={Humans.map(human => ({
+							value: human.HumanId, 
+							label: `${human.FirstName} ${human.LastName}`
+						}))} 
+					/>
 				
 				</div>
 				<br/>
