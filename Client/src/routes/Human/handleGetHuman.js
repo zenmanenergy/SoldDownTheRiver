@@ -1,16 +1,24 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleGetHuman(SessionId,HumanId, callback) {
-	
+/**
+ * Fetch a single human's details by ID.
+ * @param {string} sessionId - The session ID for authentication.
+ * @param {string} HumanId - The ID of the human to fetch.
+ * @returns {Promise<Object|null>} - Returns the human data or null if an error occurs.
+ */
+export async function handleGetHuman(sessionId, HumanId) {
+	const Data = { sessionId, HumanId };
+	const url = baseURL + '/Human/GetHuman?';
+	const FormValid = true;
 
-	const Data = {
-		SessionId:SessionId,
-		HumanId:HumanId
-	};
-	const url = baseURL + '/Human/GetHuman?'; 
-	const FormValid=true
-	let data = await SuperFetch(url, Data, FormValid)
+	let data = await SuperFetch(url, Data, FormValid);
 
-	callback(data);
+	// Ensure the response is valid
+	if (!data || typeof data !== 'object') {
+		console.error("Invalid data received from API:", data);
+		return null;
+	}
+
+	return data;
 }

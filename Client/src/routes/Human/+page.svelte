@@ -1,7 +1,22 @@
+<style>
+	.buttons-container {
+	display: flex;
+	justify-content: space-between; /* Pushes Save left, Delete right */
+	align-items: center;
+	width: 100%; /* Ensures full width */
+}
+
+.delete-button {
+	margin-left: auto; /* Pushes Delete to the right */
+}
+
+</style>
 <script>
 	import { onMount } from 'svelte';
 	import { Session } from '../Session.js';
-	import { handleGetHumanById, handleSaveHuman } from './handleHumans.js';
+	import { handleGetHuman } from './handleGetHuman.js';
+	import { saveHuman } from './handleSaveHuman.js';
+	import { handleDelete } from './handleDelete.js'; // Import delete function
 
 	let Human = {
 		FirstName: '',
@@ -11,7 +26,7 @@
 		BirthDateAccuracy: 'd',
 		RacialDescriptor: '',
 		Sex: '',
-		Height_in: '',
+		Height_cm: '',
 		Roles: ''
 	};
 
@@ -29,26 +44,35 @@
 		HumanId = getHumanIdFromURL();
 
 		if (HumanId) {
-			const data = await handleGetHumanById(Session.SessionId, HumanId);
+			const data = await handleGetHuman(Session.SessionId, HumanId);
 			if (data) {
 				Human = { ...data };
 				Human.Roles = data.Roles ? data.Roles.join(', ') : '';
 			}
 		}
 
+		// Convert stored cm to inches for display
+		if (Human.Height_cm) {
+			Human.Height_in = (Human.Height_cm / 2.54).toFixed(2); // Rounded to 2 decimal places
+		} else {
+			Human.Height_in = '';
+		}
+
 		isLoading = false;
 	});
 
-	async function saveHuman() {
-		// Convert Roles to an array
-		Human.Roles = Human.Roles.split(',').map(role => role.trim());
-
-		const success = await handleSaveHuman(Session.SessionId, HumanId, Human);
-
+	async function submitHuman() {
+		const success = await saveHuman(Session.SessionId, HumanId, Human);
 		if (success) {
-			window.location.href = '/HumansList'; // Redirect after saving
+			window.location.href = '/Humans'; // Redirect after saving
 		} else {
 			alert("Failed to save human.");
+		}
+	}
+
+	async function deleteHuman() {
+		if (confirm("Are you sure you want to delete this human? This action cannot be undone.")) {
+			await handleDelete(Session.SessionId, HumanId);
 		}
 	}
 </script>
@@ -59,33 +83,33 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/HumansList">Back to List</a>
+		<a href="/Humans">Back to List</a>
 		<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
 		
-		<form on:submit|preventDefault={saveHuman}>
+		<form on:submit|preventDefault={submitHuman}>
 			<div class="field">
-				<label>First Name:</label>
-				<input class="input" type="text" bind:value={Human.FirstName} required />
+				<label for="first-name">First Name:</label>
+				<input id="first-name" class="input" type="text" bind:value={Human.FirstName} />
 			</div>
 
 			<div class="field">
-				<label>Middle Name:</label>
-				<input class="input" type="text" bind:value={Human.MiddleName} />
+				<label for="middle-name">Middle Name:</label>
+				<input id="middle-name" class="input" type="text" bind:value={Human.MiddleName} />
 			</div>
 
 			<div class="field">
-				<label>Last Name:</label>
-				<input class="input" type="text" bind:value={Human.LastName} required />
+				<label for="last-name">Last Name:</label>
+				<input id="last-name" class="input" type="text" bind:value={Human.LastName} />
 			</div>
 
 			<div class="field">
-				<label>Birth Date:</label>
-				<input class="input" type="date" bind:value={Human.BirthDate} />
+				<label for="birth-date">Birth Date:</label>
+				<input id="birth-date" class="input" type="date" bind:value={Human.BirthDate} />
 			</div>
 
 			<div class="field">
-				<label>Birth Date Accuracy:</label>
-				<select class="input" bind:value={Human.BirthDateAccuracy}>
+				<label for="birth-accuracy">Birth Date Accuracy:</label>
+				<select id="birth-accuracy" class="input" bind:value={Human.BirthDateAccuracy}>
 					<option value="d">Day</option>
 					<option value="m">Month</option>
 					<option value="y">Year</option>
@@ -93,27 +117,30 @@
 			</div>
 
 			<div class="field">
-				<label>Racial Descriptor:</label>
-				<input class="input" type="text" bind:value={Human.RacialDescriptor} />
+				<label for="racial-descriptor">Racial Descriptor:</label>
+				<input id="racial-descriptor" class="input" type="text" bind:value={Human.RacialDescriptor} />
 			</div>
 
 			<div class="field">
-				<label>Sex:</label>
-				<input class="input" type="text" bind:value={Human.Sex} />
+				<label for="sex">Sex:</label>
+				<input id="sex" class="input" type="text" bind:value={Human.Sex} />
 			</div>
 
 			<div class="field">
-				<label>Height (inches):</label>
-				<input class="input" type="number" bind:value={Human.Height_in} min="0" />
+				<label for="height-inches">Height (inches):</label>
+				<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
 			</div>
 
 			<div class="field">
-				<label>Roles (comma-separated):</label>
-				<input class="input" type="text" bind:value={Human.Roles} placeholder="Role1, Role2, ..." />
+				<label for="roles">Roles (comma-separated):</label>
+				<input id="roles" class="input" type="text" bind:value={Human.Roles} placeholder="Role1, Role2, ..." />
 			</div>
 
-			<div class="buttons">
+			<div class="buttons-container">
 				<button class="button is-primary" type="submit">Save</button>
+				{#if HumanId} 
+					<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
+				{/if}
 			</div>
 		</form>
 	</div>

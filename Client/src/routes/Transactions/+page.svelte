@@ -119,6 +119,7 @@
 				<tbody>
 					{#each filteredTransactions as transaction}
 						<tr style="cursor: pointer;" on:click={() => location.href=`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`}>
+
 							<td>{formatTransactionDate(transaction.date_circa, transaction.date_accuracy)}</td>
 							<td>{transaction.TransactionType || 'N/A'}</td>
 							<td title={`${transaction.NotaryFirstName} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName}`}>

@@ -1,7 +1,7 @@
 // src/routes/Transactions/handleDelete.js
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
-export async function handleDelete(SessionId,TransactionId) {
+export async function handleDeleteTransaction(SessionId,TransactionId) {
 
 	const Data = {
 		SessionId:SessionId,
