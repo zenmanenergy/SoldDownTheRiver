@@ -34,14 +34,14 @@
 {:else}
 <div class="section">
 	<div class="ActionBox">
-	<h3 class="title is-2">Admin Menu</h3>
+	<h3 class="title is-2">Reviewer Menu</h3>
 		<ul>
 			NOLA data
-			<li><a href={`/RawNOLA`}>Raw NOLA data</a></li>
 			<li><a href={`/Transactions`}>Transactions</a></li>
 			<li><a href={`/Humans`}>Humans</a></li>
 			<li><a href={`/Locations`}>Locations</a></li>
 			<li><a href={`/Roles`}>Roles</a></li>
+			<li><a href={`/RawNOLA`}>Raw NOLA data</a></li>
 
 			Manifest data (slightly outdated)
 			<li><a href={`/Ships`}>Ships</a></li>

@@ -17,6 +17,7 @@
 	import { handleSaveTransaction } from './handleSaveTransaction.js';
 	import { handleDeleteTransaction } from './handleDeleteTransaction.js';
 	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
+	import { handleSaveTransactionHuman } from './handleSaveTransactionHuman.js';
 	import Select from 'svelte-select';
 	import moment from 'moment';
 
@@ -171,6 +172,136 @@
 			window.location.href = "/Transactions";
 		}
 	}
+
+	let newHuman = {
+		FirstName: '',
+		LastName: '',
+		RacialDescriptor: '',
+		Sex: '',
+		Height_cm: '',
+		physical_features: '',
+		profession: '',
+		BirthPlace: '',
+		AgeYears: '',
+		AgeMonths: '',
+		BirthDateAccuracy: 'D',
+		BirthDate: '',
+		Price: '', // NEW FIELD FOR PRICE
+	};
+
+	
+
+	
+
+	// Function to calculate Birthdate based on Age (years + months)
+	function calculateBirthDate(human) {
+		if (!transaction.date_circa || (!human.AgeYears && !human.AgeMonths)) {
+			return 'N/A';
+		}
+
+		let baseDate = moment(transaction.date_circa, "YYYY-M-D", true);
+		if (!baseDate.isValid()) {
+			return 'N/A';
+		}
+
+		// Subtract Age (years + months) from transaction.date_circa
+		let birthDate = baseDate.subtract(human.AgeYears || 0, 'years').subtract(human.AgeMonths || 0, 'months');
+
+		// Format based on accuracy
+		switch (human.BirthDateAccuracy) {
+			case 'D': return birthDate.format('YYYY-MM-DD');
+			case 'M': return birthDate.format('YYYY-MM');
+			case 'Y': return birthDate.format('YYYY');
+			default: return 'N/A';
+		}
+	}
+
+	async function addHumanToTransaction() {
+		
+
+		// Set HumanId to blank so the server can generate one
+		newHuman.HumanId = "";
+
+		// Calculate Birthdate before saving
+		newHuman.BirthDate = calculateBirthDate(newHuman);
+
+		try {
+			// Save the human to the database and get the response
+			const savedHuman = await handleSaveTransactionHuman(Session.SessionId, transactionId, newHuman);
+
+			// Append the server response to transactionHumans
+			transactionHumans = [...transactionHumans, savedHuman];
+
+			// Reset input fields
+			newHuman = {
+				FirstName: '',
+				LastName: '',
+				RacialDescriptor: '',
+				Sex: '',
+				Height_cm: '',
+				physical_features: '',
+				profession: '',
+				BirthPlace: '',
+				AgeYears: '',
+				AgeMonths: '',
+				BirthDateAccuracy: 'D',
+				BirthDate: '',
+				Price: '',
+				Notes: '',
+			};
+		} catch (error) {
+			console.error("Error saving human:", error);
+			alert("Failed to save human.");
+		}
+	}
+
+
+
+
+	// Function to remove a human from the list
+	function removeHumanFromTransaction(index, event) {
+		event.stopPropagation(); // Prevent row click redirect
+		transactionHumans = transactionHumans.filter((_, i) => i !== index);
+	}
+	
+
+	// Reactive `$:` statement to update BirthDate immediately when Age changes
+	$: {
+		if (newHuman.AgeYears !== '' || newHuman.AgeMonths !== '' || transaction.date_circa) {
+			updateNewHumanBirthDate();
+		}
+	}
+
+	// Function to calculate Birthdate based on Age (years + months)
+	function updateNewHumanBirthDate() {
+		if (!transaction.date_circa || (!newHuman.AgeYears && !newHuman.AgeMonths)) {
+			newHuman.BirthDate = 'N/A';
+			return;
+		}
+
+		let baseDate = moment(transaction.date_circa, "YYYY-M-D", true);
+		if (!baseDate.isValid()) {
+			newHuman.BirthDate = 'N/A';
+			return;
+		}
+
+		// Subtract Age (years + months) from transaction.date_circa
+		let birthDate = baseDate.subtract(newHuman.AgeYears || 0, 'years').subtract(newHuman.AgeMonths || 0, 'months');
+
+		// Format based on accuracy
+		switch (newHuman.BirthDateAccuracy) {
+			case 'D': newHuman.BirthDate = birthDate.format('YYYY-MM-DD'); break;
+			case 'M': newHuman.BirthDate = birthDate.format('YYYY-MM'); break;
+			case 'Y': newHuman.BirthDate = birthDate.format('YYYY'); break;
+			default: newHuman.BirthDate = 'N/A';
+		}
+	}
+
+
+	// Ensure Birthdate updates when Age or Date changes
+	$: updateNewHumanBirthDate();
+
+
 </script>
 
 {#if isLoading}
@@ -316,42 +447,78 @@
 		</form>
 		
 
-		<!-- Humans Associated with This Transaction -->
 		<h4 class="title is-4">Enslaved People Associated with This Transaction</h4>
-		{#if transactionHumans.length > 0}
-			<table>
-				<thead>
-					<tr>
-						<th>First Name</th>
-						<th>Last Name</th>
-						<th>Racial Descriptor</th>
-						<th>Sex</th>
-						<th>Height (in)</th>
-						<th>Physical Features</th>
-						<th>Profession</th>
-						<th>Birthplace</th>
-						<th>Birthdate</th>
+
+		<table>
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Racial Descriptor</th>
+					<th>Sex</th>
+					<th>Height (in)</th>
+					<th>Physical Features</th>
+					<th>Profession</th>
+					<th>Birthplace</th>
+					<th>Age (Years)</th>
+					<th>Age (Months)</th>
+					<th>Birthdate</th>
+					<th>BirthDateAccuracy</th>
+					<th>Price</th> <!-- NEW COLUMN -->
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Existing Humans -->
+				{#each transactionHumans as human, index}
+					<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
+						<td>{human.FirstName}</td>
+						<td>{human.LastName}</td>
+						<td>{human.RacialDescriptor || ''}</td>
+						<td>{human.Sex || ''}</td>
+						<td>{cmToInches(human.Height_cm)}</td>
+						<td>{human.physical_features || ''}</td>
+						<td>{human.profession || ''}</td>
+						<td>{human.BirthPlace || ''}</td>
+						<td>{human.AgeYears || ''}</td>
+						<td>{human.AgeMonths || ''}</td>
+						<td>{calculateBirthDate(human)}</td>
+						<td>{human.BirthDateAccuracy || ''}</td>
+						<td>${human.Price || ''}</td> <!-- NEW PRICE COLUMN -->
+						<td>
+							<button class="button is-danger is-small" type="button" on:click={e => removeHumanFromTransaction(index, e)}>Remove</button>
+						</td>
 					</tr>
-				</thead>
-				<tbody>
-					{#each transactionHumans as human}
-						<tr on:click={() => window.location.href = `/Humans/ViewHuman.html?HumanId=${human.HumanId}`} class="clickable-row">
-							<td>{human.FirstName}</td>
-							<td>{human.LastName}</td>
-							<td>{human.RacialDescriptor || 'N/A'}</td>
-							<td>{human.Sex || 'N/A'}</td>
-							<td>{cmToInches(human.Height_cm)}</td>
-							<td>{human.physical_features || 'N/A'}</td>
-							<td>{human.profession || 'N/A'}</td>
-							<td>{human.BirthPlace || 'N/A'}</td>
-							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{:else}
-			<p>No associated enslaved people found for this transaction.</p>
-		{/if}
+				{/each}
+
+				<!-- Row for Adding a New Human -->
+				<tr>
+					<td><input type="text" class="input" bind:value={newHuman.FirstName} placeholder="First Name" /></td>
+					<td><input type="text" class="input" bind:value={newHuman.LastName} placeholder="Last Name" /></td>
+					<td><input type="text" class="input" bind:value={newHuman.RacialDescriptor} placeholder="Racial Descriptor" /></td>
+					<td><input type="text" class="input" bind:value={newHuman.Sex} placeholder="Sex" /></td>
+					<td><input type="number" class="input" bind:value={newHuman.Height_cm} placeholder="Height (cm)" /></td>
+					<td><input type="text" class="input" bind:value={newHuman.physical_features} placeholder="Physical Features" /></td>
+					<td><input type="text" class="input" bind:value={newHuman.profession} placeholder="Profession" /></td>
+					<td><input type="text" class="input" bind:value={newHuman.BirthPlace} placeholder="Birthplace" /></td>
+					<td><input type="number" class="input" bind:value={newHuman.AgeYears} placeholder="Age (Years)" /></td>
+					<td><input type="number" class="input" bind:value={newHuman.AgeMonths} placeholder="Age (Months)" /></td>
+					<td><input type="text" class="input" readonly bind:value={newHuman.BirthDate} /></td>
+					<td>
+						<select class="input" bind:value={newHuman.BirthDateAccuracy}>
+							<option value="D">Day</option>
+							<option value="M">Month</option>
+							<option value="Y">Year</option>
+						</select>
+					</td>
+					<td><input type="number" class="input" bind:value={newHuman.Price} placeholder="Price (USD)" step="0.01" /></td> <!-- NEW PRICE FIELD -->
+					<td>
+						<button class="button is-primary is-small" type="button" on:click={addHumanToTransaction}>Add</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
 
 
 		<!-- Notary Link -->

@@ -1,3 +1,4 @@
+import uuid
 from _Lib import Database
 from _Lib.Debugger import Debugger
 from _Lib import History
@@ -172,18 +173,42 @@ def SaveTransactionHuman():
 		print(transaction_data)
 
 		# Extract the transaction data from the request
-		HumanId = transaction_data.get('HumanId', None)
+		HumanId = transaction_data.get('HumanId', None) or ""  # If missing, generate it
 		TransactionId = transaction_data.get('TransactionId', None)
 		Price = transaction_data.get('Price', None)
 		Notes = transaction_data.get('Notes', None)
-
-		# Call the save_transaction function from SaveTransaction.py with the extracted data
-		saveresult = save_transactionhuman(TransactionId, HumanId, Price, Notes)
 		
-		History.SaveHistory(transaction_data,"transactionhumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
+		# Human Data (to be inserted if missing)
+		FirstName = transaction_data.get('FirstName', None)
+		LastName = transaction_data.get('LastName', None)
+		MiddleName = transaction_data.get('MiddleName', None)
+		BirthDate = transaction_data.get('BirthDate', None)
+		BirthDateAccuracy = transaction_data.get('BirthDateAccuracy', None)
+		BirthPlace = transaction_data.get('BirthPlace', None)
+		RacialDescriptor = transaction_data.get('RacialDescriptor', None)
+		Sex = transaction_data.get('Sex', None)
+		Height_cm = transaction_data.get('Height_cm', None)
+		physical_features = transaction_data.get('physical_features', None)
+		profession = transaction_data.get('profession', None)
+		
+		# If HumanId is empty, generate a new one
+		if not HumanId:
+			HumanId = "HUM" + str(uuid.uuid4())
+
+		# Save the human and transaction relationship
+		saveresult = save_transactionhuman(
+			TransactionId, HumanId, Price, Notes, FirstName, MiddleName, LastName, BirthDate,
+			BirthDateAccuracy, BirthPlace, RacialDescriptor, Sex, Height_cm, physical_features, profession
+		)
+
+		# Save history for auditing
+		History.SaveHistory(transaction_data, "transactionhumans", "TransactionId:HumanId", TransactionId + ":" + HumanId)
+
+		# Fetch and return the updated human data
 		result = get_transactionHumans(TransactionId)
 
 		return result
+
 	except Exception as e:
 		return Debugger(e)
 
