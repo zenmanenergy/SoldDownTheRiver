@@ -23,14 +23,13 @@ def SaveTransaction():
 		transaction_data = request.args.to_dict()
 		print(transaction_data)  # Debugging output
 
-		# Extract variables, keeping their original names
+		# Extract variables, ensuring correct handling of null values
 		TransactionId = transaction_data.get('transactionId', None)
 		if TransactionId == "null" or not TransactionId:
 			TransactionId = None  # Ensure NULL value is handled correctly
 
 		# Handle date_circa safely
 		date_circa = transaction_data.get('date_circa', None)
-
 		if isinstance(date_circa, str) and date_circa.lower() != "null" and date_circa.strip():
 			try:
 				date_circa = datetime.datetime.strptime(date_circa, '%Y-%m-%d').date()
@@ -39,8 +38,7 @@ def SaveTransaction():
 		else:
 			date_circa = None  # Ensures None is assigned instead of passing an invalid value
 
-
-		# Extract other variables while keeping their original names
+		# Extract additional fields
 		date_accuracy = transaction_data.get('date_accuracy', None)
 		TransactionType = transaction_data.get('TransactionType', None)
 		NotaryHumanId = transaction_data.get('NotaryHumanId', None)
@@ -48,6 +46,15 @@ def SaveTransaction():
 		TotalPrice = transaction_data.get('TotalPrice', None)
 		URL = transaction_data.get('URL', None)
 		Notes = transaction_data.get('Notes', None)
+		Act = transaction_data.get('Act', None)
+		Page = transaction_data.get('Page', None)
+		Volume = transaction_data.get('Volume', None)
+		Transcriber = transaction_data.get('Transcriber', None)
+		isApproved = transaction_data.get('isApproved', '0')
+		DataQuestions = transaction_data.get('DataQuestions', None)
+
+		# Convert isApproved to boolean (ensure it's either 0 or 1)
+		isApproved = 1 if str(isApproved).lower() in ["true", "1", "yes"] else 0
 
 		# Handle FirstParties and SecondParties safely
 		FirstParties = transaction_data.get('FirstParties', '[]')
@@ -64,7 +71,8 @@ def SaveTransaction():
 		# Call the save_transaction function with the extracted data
 		result = save_transaction(
 			TransactionId, date_circa, date_accuracy, TransactionType,
-			NotaryHumanId, FirstParties, SecondParties, LocationId, TotalPrice, URL, Notes
+			NotaryHumanId, FirstParties, SecondParties, LocationId, TotalPrice,
+			URL, Notes, Act, Page, Volume, Transcriber, isApproved, DataQuestions
 		)
 
 		# Save history for transactions
@@ -74,6 +82,7 @@ def SaveTransaction():
 
 	except Exception as e:
 		return Debugger(e)
+
 
 	
 	

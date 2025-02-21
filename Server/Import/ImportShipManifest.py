@@ -1,6 +1,6 @@
 import uuid
-from Lib import Database
-from Lib import History
+from _Lib import Database
+from _Lib import History
 from datetime import datetime, date, timedelta,timezone
 import traceback
 
@@ -218,7 +218,7 @@ def GetVoyageHuman(connection, cursor, data, VoyageId):
 	# Base SQL query
 	sql = f"""
 	SELECT h.HumanId
-	FROM humans h
+	from humans h
 	INNER JOIN voyagehumans vh ON h.HumanId = vh.HumanId
 	WHERE h.FirstName = '{data['FirstName']}' 
 	  AND h.LastName = '{data['LastName']}'
@@ -303,7 +303,7 @@ def SaveHumans(connection, cursor, data):
 				HumanId=human['HumanId']
 				# If a row exists, update it
 				update_query = f"""
-					UPDATE humans
+					update humans
 					SET FirstName = '{human['FirstName']}', 
 						MiddleName = '{human['MiddleName']}', 
 						LastName = '{human['LastName']}',
@@ -324,7 +324,7 @@ def SaveHumans(connection, cursor, data):
 				# If no row exists, insert a new row with a unique HumanId
 				HumanId = "HUM"+str(uuid.uuid4()).replace("-", "")
 				insert_query = f"""
-					INSERT INTO humans (HumanId, FirstName, MiddleName, LastName, Notes, BirthDate, BirthDateAccuracy, BirthPlace, Color, Sex, Height_cm, DateUpdated)
+					INSERT into humans (HumanId, FirstName, MiddleName, LastName, Notes, BirthDate, BirthDateAccuracy, BirthPlace, Color, Sex, Height_cm, DateUpdated)
 					VALUES (
 						'{HumanId}', 
 						'{human.get('FirstName')}', 
@@ -344,7 +344,7 @@ def SaveHumans(connection, cursor, data):
 				cursor.execute(insert_query)
 
 			insert_role = f"""
-				INSERT INTO humanroles (HumanId, RoleId, date_circa, date_accuracy)
+				INSERT into humanroles (HumanId, RoleId, date_circa, date_accuracy)
 				VALUES ('{HumanId}', '{role}', 
 						{f"'{data['Voyage']['Start']['Date']['parsed_date']}'" if data['Voyage']['Start']['Date']['parsed_date'] is not None else 'NULL'}, 
 						{f"'{data['Voyage']['Start']['Date']['DateAccuracy']}'" if data['Voyage']['Start']['Date']['DateAccuracy'] is not None else 'NULL'})
@@ -357,7 +357,7 @@ def SaveHumans(connection, cursor, data):
 			cursor.execute(insert_role)
 
 			insert_role = f"""
-				INSERT INTO voyagehumans (VoyageId,HumanId, RoleId)
+				INSERT into voyagehumans (VoyageId,HumanId, RoleId)
 				VALUES ('{data['VoyageId']}','{HumanId}', '{role}')
 				ON DUPLICATE KEY UPDATE 
 					RoleId=VALUES(RoleId)
@@ -382,7 +382,7 @@ def SaveVoyage(connection, cursor, data):
 
 	# SQL query to insert or update the voyage record
 	sql = f"""
-	INSERT INTO voyages (VoyageId, ShipId, CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
+	INSERT into voyages (VoyageId, ShipId, CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
 	VALUES ('{voyage_id}', '{ship_id}', '{captain_human_id}', '{start_location_id}', '{end_location_id}', {f"'{end_date}'" if end_date else 'NULL'}, {f"'{end_date}'" if end_date else 'NULL'}, '{Notes}')
 	ON DUPLICATE KEY UPDATE
 	ShipId = VALUES(ShipId),
@@ -414,7 +414,7 @@ def SaveShip(connection, cursor, data):
 
 	# SQL query to insert or update the ship record
 	sql = f"""
-	INSERT INTO ships (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
+	INSERT into ships (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
 	VALUES ('{ship_id}', '{ship_name}', NULL, NULL, '{ship_type}', '{ship_size}', '{home_port_location_id}')
 	ON DUPLICATE KEY UPDATE
 	ShipName = VALUES(ShipName),
@@ -432,7 +432,7 @@ def SaveShip(connection, cursor, data):
 
 def GetShipId(connection, cursor, ShipName):
 	# SQL query to find the ShipId based on ShipName
-	sql = f"SELECT ShipId FROM ships WHERE ShipName = '{ShipName}'"
+	sql = f"SELECT ShipId from ships WHERE ShipName = '{ShipName}'"
 	
 	# Execute the query
 	cursor.execute(sql)
@@ -638,7 +638,7 @@ def getLocation(connection, cursor, location_str):
 
 	if not len(location_str):
 		return "None"
-	query = f"SELECT LocationId FROM locationaddresses WHERE Address='{location_str}'"
+	query = f"SELECT LocationId from locationaddresses WHERE Address='{location_str}'"
 	
 	cursor.execute(query)
 	result = cursor.fetchone()
@@ -699,7 +699,7 @@ def geocode_location(connection, cursor, address):
 		print(location_data)
 
 		# Step 1: Check if the formatted_address already exists in the locations table
-		check_query = "SELECT LocationId FROM locations WHERE Address = %s"
+		check_query = "SELECT LocationId from locations WHERE Address = %s"
 		cursor.execute(check_query, (formatted_address,))
 		result = cursor.fetchone()
 
@@ -711,7 +711,7 @@ def geocode_location(connection, cursor, address):
 		# Step 2: Insert new location
 		location_id = "LOC" + str(uuid.uuid4()).replace("-", "")
 		insert_query = """
-		INSERT INTO locations (LocationId, Address, City, County, State, State_abbr, Country, Latitude, Longitude, DateUpdated)
+		INSERT into locations (LocationId, Address, City, County, State, State_abbr, Country, Latitude, Longitude, DateUpdated)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		"""
 		cursor.execute(insert_query, (

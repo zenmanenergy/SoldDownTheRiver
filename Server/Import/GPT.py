@@ -1,11 +1,11 @@
 
 
 # Set your OpenAI API key
-import openai
+# import openai
 import json
 
 # Set your OpenAI API key
-openai.api_key = ''
+# openai.api_key = ''
 
 # Define the prompt (input text)
 prompt = (
@@ -16,24 +16,24 @@ prompt = (
     "Please extract and format the data as JSON with the following keys: seller, buyer, price, currency, location (venue, address), individual (name, age, status, origin (city, state)), previous_owner."
 )
 
-# Function to generate text from OpenAI using the new API format
-def generate_text_with_openai(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Use the appropriate model
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=200,
-        temperature=0.7
-    )
-    return response['choices'][0]['message']['content'].strip()
+# # Function to generate text from OpenAI using the new API format
+# def generate_text_with_openai(prompt):
+#     response = openai.ChatCompletion.create(
+#         model="gpt-3.5-turbo",  # Use the appropriate model
+#         messages=[
+#             {"role": "system", "content": "You are a helpful assistant."},
+#             {"role": "user", "content": prompt}
+#         ],
+#         max_tokens=200,
+#         temperature=0.7
+#     )
+#     return response['choices'][0]['message']['content'].strip()
 
-# Generate the text using OpenAI's API
-generated_text = generate_text_with_openai(prompt)
+# # Generate the text using OpenAI's API
+# generated_text = generate_text_with_openai(prompt)
 
-# Print the generated text (for debugging)
-print("Generated Text:", generated_text)
+# # Print the generated text (for debugging)
+# print("Generated Text:", generated_text)
 
 # # Parse the generated text into a JSON object
 # try:

@@ -3,8 +3,8 @@ import datetime
 import json
 from _Lib import Database
 
-def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, NotaryHumanId, FirstParties, SecondParties, LocationId, TotalPrice, URL, Notes):
-	print("date_circa", date_circa)
+def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, NotaryHumanId, FirstParties, SecondParties,  LocationId, TotalPrice, URL, Notes, Act, Page, Volume, Transcriber, isApproved, DataQuestions):
+
 
 	
 
@@ -25,17 +25,22 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 
 	# Check if the TransactionId is present
 	if TransactionId:
-		# If TransactionId is present, update the existing transaction
 		query = f"""
 			UPDATE transactions 
 			SET date_circa = '{date_circa}', 
 				date_accuracy = '{date_accuracy}', 
 				TransactionType = '{TransactionType}', 
-				Notes = '{Notes}', 
+				Notes = '{Notes.replace("'", "''")}', 
 				NotaryHumanId = '{NotaryHumanId}', 
-				URL = '{URL}', 
+				URL = '{URL.replace("'", "''")}', 
 				TotalPrice = {TotalPrice if TotalPrice is not None else 'NULL'}, 
-				LocationId = '{LocationId}' 
+				LocationId = '{LocationId}', 
+				Act = '{Act}', 
+				Page = {Page if Page is not None else 'NULL'}, 
+				Volume = {Volume if Volume is not None else 'NULL'}, 
+				Transcriber = '{Transcriber.replace("'", "''")}', 
+				isApproved = {1 if isApproved else 0}, 
+				DataQuestions = '{DataQuestions.replace("'", "''")}'
 			WHERE TransactionId = '{TransactionId}'
 		"""
 	else:
@@ -44,7 +49,8 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 		TotalPrice = 'NULL' if not TotalPrice or str(TotalPrice).lower() == 'null' else float(TotalPrice)
 		query = f"""
 			INSERT INTO transactions 
-			(TransactionId, date_circa, date_accuracy, TransactionType, Notes, NotaryHumanId, URL, TotalPrice, LocationId)
+			(TransactionId, date_circa, date_accuracy, TransactionType, Notes, NotaryHumanId, URL, 
+			TotalPrice, LocationId, Act, Page, Volume, Transcriber, isApproved, DataQuestions)
 			VALUES (
 				'{TransactionId}', 
 				'{date_circa}', 
@@ -54,9 +60,16 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 				'{NotaryHumanId}', 
 				'{URL.replace("'", "''")}', 
 				{TotalPrice}, 
-				'{LocationId}'
+				'{LocationId}', 
+				'{Act}', 
+				{Page if Page is not None else 'NULL'}, 
+				{Volume if Volume is not None else 'NULL'}, 
+				'{Transcriber.replace("'", "''")}', 
+				{1 if isApproved else 0}, 
+				'{DataQuestions.replace("'", "''")}'
 			)
 		"""
+
 
 
 

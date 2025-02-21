@@ -1,3 +1,14 @@
+<style>
+	.clickable-row {
+		cursor: pointer;
+		transition: background-color 0.2s ease-in-out;
+	}
+
+	.clickable-row:hover {
+		background-color: #f0f0f0;
+	}
+
+</style>
 <script>
 	import { onMount } from 'svelte';
 	import { Session } from '../Session.js';
@@ -61,7 +72,10 @@
 						transaction.date_circa = parsedDate.format("YYYY-M-D");
 					}
 				}
+				console.log(transaction.FirstParties)
+				console.log(transaction.SecondParties)
 			}
+
 		}
 
 		// Fetch humans and format correctly for `svelte-select`
@@ -185,6 +199,12 @@
 				</select>
 			</div>
 		
+			<!-- Transaction Type -->
+			<div class="field">
+				<label for="transaction-type">Transaction Type:</label>
+				<input id="transaction-type" class="input" type="text" bind:value={transaction.TransactionType} placeholder="Enter transaction type" />
+			</div>
+		
 			<!-- Notary -->
 			<div class="field">
 				<label for="notary">Notary:</label>
@@ -194,7 +214,7 @@
 					<p>Loading humans...</p>
 				{/if}
 			</div>
-			
+		
 			<!-- First Parties -->
 			<div class="field">
 				<label for="first-party">First Parties:</label>
@@ -204,7 +224,7 @@
 					<p>Loading humans...</p>
 				{/if}
 			</div>
-
+		
 			<!-- Second Parties -->
 			<div class="field">
 				<label for="second-party">Second Parties:</label>
@@ -214,11 +234,76 @@
 					<p>Loading humans...</p>
 				{/if}
 			</div>
+		
+			<!-- Total Price -->
+			<div class="field">
+				<label for="total-price">Total Price:</label>
+				<input id="total-price" class="input" type="number" step="0.01" bind:value={transaction.TotalPrice} placeholder="Enter total price" />
+			</div>
+		
+			<!-- Act -->
+			<div class="field">
+				<label for="act">Act:</label>
+				<input id="act" class="input" type="text" bind:value={transaction.Act} placeholder="Enter act number or description" />
+			</div>
+		
+			<!-- Page -->
+			<div class="field">
+				<label for="page">Page:</label>
+				<input id="page" class="input" type="number" bind:value={transaction.Page} placeholder="Enter page number" />
+			</div>
+		
+			<!-- Volume -->
+			<div class="field">
+				<label for="volume">Volume:</label>
+				<input id="volume" class="input" type="number" bind:value={transaction.Volume} placeholder="Enter volume number" />
+			</div>
+		
+			<!-- URL -->
+			<!-- URL Input Field -->
+			<div class="field">
+				<label for="url">URL:</label>
+				<input id="url" class="input" type="text" bind:value={transaction.URL} placeholder="Enter URL" />
+			</div>
+
+			<!-- Read-Only Clickable Link (updates dynamically) -->
+			{#if transaction.URL}
+				<div class="field">
+					<p>
+						<a href="{transaction.URL}" target="_blank" rel="noopener noreferrer">
+							{transaction.URL}
+						</a>
+					</p>
+				</div>
+			{/if}
+
+		
+			<!-- Transcriber -->
+			<div class="field">
+				<label for="transcriber">Transcriber:</label>
+				<input id="transcriber" class="input" type="text" bind:value={transaction.Transcriber} placeholder="Enter transcriber's name" />
+			</div>
+		
 			
+		
 			<!-- Notes Field -->
 			<div class="field">
 				<label for="notes">Notes:</label>
 				<textarea id="notes" class="textarea" bind:value={transaction.Notes} placeholder="Enter additional notes"></textarea>
+			</div>
+
+			<h4 class="title is-4">Reviewer ONLY:</h4>
+			<!-- isApproved Checkbox -->
+			<div class="field">
+				<label class="checkbox">
+					<input type="checkbox" bind:checked={transaction.isApproved} />
+					Approved
+				</label>
+			</div>
+			<!-- Notes Field -->
+			<div class="field">
+				<label for="DataQuestions">Questions about the Data:</label>
+				<textarea id="DataQuestions" class="textarea" bind:value={transaction.DataQuestions} placeholder="Enter your concerns about this data. This won't be visable to the public"></textarea>
 			</div>
 
 			<!-- Buttons -->
@@ -229,38 +314,94 @@
 				{/if}
 			</div>
 		</form>
+		
 
 		<!-- Humans Associated with This Transaction -->
-		<h4 class="title is-4">Humans Associated with This Transaction</h4>
-		<table>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Racial Descriptor</th>
-					<th>Sex</th>
-					<th>Height (in)</th>
-					<th>Physical Features</th>
-					<th>Profession</th>
-					<th>Birthplace</th>
-					<th>Birthdate</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each transactionHumans as human}
+		<h4 class="title is-4">Enslaved People Associated with This Transaction</h4>
+		{#if transactionHumans.length > 0}
+			<table>
+				<thead>
 					<tr>
-						<td>{human.FirstName}</td>
-						<td>{human.LastName}</td>
-						<td>{human.RacialDescriptor || 'N/A'}</td>
-						<td>{human.Sex || 'N/A'}</td>
-						<td>{cmToInches(human.Height_cm)}</td>
-						<td>{human.physical_features || 'N/A'}</td>
-						<td>{human.profession || 'N/A'}</td>
-						<td>{human.BirthPlace || 'N/A'}</td>
-						<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Racial Descriptor</th>
+						<th>Sex</th>
+						<th>Height (in)</th>
+						<th>Physical Features</th>
+						<th>Profession</th>
+						<th>Birthplace</th>
+						<th>Birthdate</th>
 					</tr>
+				</thead>
+				<tbody>
+					{#each transactionHumans as human}
+						<tr on:click={() => window.location.href = `/Humans/ViewHuman.html?HumanId=${human.HumanId}`} class="clickable-row">
+							<td>{human.FirstName}</td>
+							<td>{human.LastName}</td>
+							<td>{human.RacialDescriptor || 'N/A'}</td>
+							<td>{human.Sex || 'N/A'}</td>
+							<td>{cmToInches(human.Height_cm)}</td>
+							<td>{human.physical_features || 'N/A'}</td>
+							<td>{human.profession || 'N/A'}</td>
+							<td>{human.BirthPlace || 'N/A'}</td>
+							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{:else}
+			<p>No associated enslaved people found for this transaction.</p>
+		{/if}
+
+
+		<!-- Notary Link -->
+		<div class="field">
+			<h4 class="title is-4">Notary</h4>
+			{#if transaction.NotaryHumanId}
+				<p>
+					<a href="/Human?HumanId={transaction.NotaryHumanId}">
+						{transaction.NotaryFirstName} {transaction.NotaryLastName}
+					</a>
+				</p>
+			{:else}
+				<p>No Notary Assigned</p>
+			{/if}
+		</div>
+
+		<!-- First Parties Links -->
+		<div class="field">
+			<h4 class="title is-4">First Parties</h4>
+			<ul>
+				{#each transaction.FirstParties as firstParty}
+					{#if firstParty.FirstPartyId}
+						<li>
+							<a href="/Human?HumanId={firstParty.FirstPartyId}">
+								{firstParty.FirstPartyFirstName} {firstParty.FirstPartyLastName}
+							</a>
+						</li>
+					{/if}
 				{/each}
-			</tbody>
-		</table>
+			</ul>
+		</div>
+
+		<!-- Second Parties Links -->
+		<div class="field">
+			<h4 class="title is-4">Second Parties</h4>
+			<ul>
+				{#each transaction.SecondParties as secondParty}
+					{#if secondParty.SecondPartyId}
+						<li>
+							<a href="/Human?HumanId={secondParty.SecondPartyId}">
+								{secondParty.SecondPartyFirstName} {secondParty.SecondPartyLastName}
+							</a>
+						</li>
+					{/if}
+				{/each}
+			</ul>
+		</div>
 	</div>
+
+	
+
+
 {/if}

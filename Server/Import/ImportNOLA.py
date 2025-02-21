@@ -1,8 +1,10 @@
 import uuid
-from Lib import Database
-from Lib import History
+from _Lib import Database
+from _Lib import History
 from datetime import datetime, date, timedelta, timezone
+import calendar
 import traceback
+import re
 
 
 import time
@@ -11,10 +13,10 @@ from dateutil import parser
 import googlemaps
 from collections import Counter
 from collections import defaultdict
-import openai
-import pandas as pd
+# import openai
+# import pandas as pd
 import json
-openai.api_key = ''
+# openai.api_key = ''
 
 gmaps = googlemaps.Client(key='AIzaSyB_a1_JJZBF0g43m9KeKVrSlr7ik6_AN_Y')
 
@@ -141,7 +143,7 @@ def SaveTransaction(connection, cursor,Transaction):
 	TransactionType=Transaction['TypeOfTransaction']
 	transcriber_info=Transaction['NameOfTranscriber']
 
-	sql_query = f"SELECT TransactionId FROM transactions WHERE FirstPartyId='{FirstPartyId}' and SecondPartyId='{SecondPartyId}' and NotaryHumanId='{NotaryHumanId}'"
+	sql_query = f"SELECT TransactionId from transactions WHERE FirstPartyId='{FirstPartyId}' and SecondPartyId='{SecondPartyId}' and NotaryHumanId='{NotaryHumanId}'"
 	# print(sql_query)
 	cursor.execute(sql_query)
 	result = cursor.fetchone()
@@ -149,7 +151,7 @@ def SaveTransaction(connection, cursor,Transaction):
 	if not result:
 		TransactionId="TRN"+str(uuid.uuid4()).replace("-", "")
 		insert_query = f"""
-			INSERT INTO transactions (
+			INSERT into transactions (
 				TransactionId, NOLA_ID, date_circa, date_accuracy, FirstPartyId, SecondPartyId, 
 				TransactionType, Notes, Parsed_Notes, Act, Page, NotaryHumanId, Volume, URL, Transcriber
 			)
@@ -222,7 +224,7 @@ def SaveHuman(connection, cursor, humans):
 		human=human['Human']
 		if len(human['FirstName']) or len(human['LastName']):
 			# Using parameterized query to handle special characters
-			sql = f"SELECT HumanId FROM Humans WHERE FirstName = '{human['FirstName']}' AND LastName = '{human['LastName']}'"
+			sql = f"SELECT HumanId from humans WHERE FirstName = '{human['FirstName']}' AND LastName = '{human['LastName']}'"
 			cursor.execute(sql)
 			result = cursor.fetchone()
 			
@@ -230,7 +232,7 @@ def SaveHuman(connection, cursor, humans):
 				HumanId=result['HumanId']
 				# If a row exists, update it
 				update_query = f"""
-				UPDATE Humans
+				update humans
 				SET FirstName = '{human['FirstName']}', MiddleName = '{human['MiddleName']}', LastName = '{human['LastName']}'
 				WHERE HumanId = '{HumanId}'
 				"""
@@ -240,7 +242,7 @@ def SaveHuman(connection, cursor, humans):
 				# If no row exists, insert a new row with a unique HumanId
 				HumanId = "HUM"+str(uuid.uuid4()).replace("-", "")
 				insert_query = f"""
-				INSERT INTO Humans (HumanId, FirstName, MiddleName, LastName)
+				INSERT into humans (HumanId, FirstName, MiddleName, LastName)
 				VALUES ('{HumanId}', '{human['FirstName']}', '{human['MiddleName']}', '{human['LastName']}')
 				"""
 				cursor.execute(insert_query)
@@ -248,7 +250,7 @@ def SaveHuman(connection, cursor, humans):
 			HumanIds.append(HumanId)
 
 			insert_role = f"""
-				INSERT INTO humanroles (HumanId, RoleId, date_circa, date_accuracy)
+				INSERT into humanroles (HumanId, RoleId, date_circa, date_accuracy)
 				VALUES ('{HumanId}', '{human['Role']}', 
 						{f"'{human['date_circa']}'" if human['date_circa'] is not None else 'NULL'}, 
 						{f"'{human['date_accuracy']}'" if human['date_accuracy'] is not None else 'NULL'})
@@ -263,7 +265,7 @@ def SaveHuman(connection, cursor, humans):
 
 			if "ResidenceLocationId" in human:
 				insert_role = f"""
-					INSERT INTO HumanLocations (HumanId, LocationId, date_circa, date_accuracy, LocationType)
+					INSERT into humanlocations (HumanId, LocationId, date_circa, date_accuracy, LocationType)
 					VALUES (
 						'{HumanId}', 
 						{f"'{human['ResidenceLocationId']}'" if human.get('ResidenceLocationId') is not None else 'NULL'}, 
@@ -283,7 +285,7 @@ def SaveHuman(connection, cursor, humans):
 
 			if "OfficeLocationId" in human:
 				insert_role = f"""
-					INSERT INTO HumanLocations (HumanId, LocationId, date_circa, date_accuracy, LocationType)
+					INSERT into humanlocations (HumanId, LocationId, date_circa, date_accuracy, LocationType)
 					VALUES (
 						'{HumanId}', 
 						{f"'{human['OfficeLocationId']}'" if human.get('OfficeLocationId') is not None else 'NULL'}, 
@@ -375,7 +377,7 @@ def getLocation(connection, cursor, location_str):
 
 	if not len(location_str):
 		return "None"
-	query = f"SELECT LocationId FROM locationaddresses WHERE Address='{location_str}'"
+	query = f"SELECT LocationId from locationaddresses WHERE Address='{location_str}'"
 	
 	cursor.execute(query)
 	result = cursor.fetchone()
@@ -406,7 +408,7 @@ def getLocation(connection, cursor, location_str):
 	city, state, full_address = parse_location(location_str)
 	# Attempt to find the location in the database
 	print(location_str)
-	query = f"SELECT State_abbr FROM locations WHERE (State = '{state}' or  State_abbr = '{state}')"
+	query = f"SELECT State_abbr from locations WHERE (State = '{state}' or  State_abbr = '{state}')"
 	print(query)
 	cursor.execute(query)
 	result = cursor.fetchone()
@@ -420,7 +422,7 @@ def getLocation(connection, cursor, location_str):
 		parsed_location_str=location_str.replace(state, state_abbr)
 		print("parsed_location_strparsed_location_str",parsed_location_str)
 		parsed_location_str+= ", USA"
-		query = f"SELECT LocationId FROM locations WHERE Address='{parsed_location_str}'"
+		query = f"SELECT LocationId from locations WHERE Address='{parsed_location_str}'"
 		
 		cursor.execute(query)
 		result = cursor.fetchone()
@@ -495,7 +497,7 @@ def geocode_location(connection, cursor, address):
 		print(location_data)
 
 		# Step 1: Check if the formatted_address already exists in the locations table
-		check_query = "SELECT LocationId FROM locations WHERE Address = %s"
+		check_query = "SELECT LocationId from locations WHERE Address = %s"
 		cursor.execute(check_query, (formatted_address,))
 		result = cursor.fetchone()
 
@@ -507,7 +509,7 @@ def geocode_location(connection, cursor, address):
 		# Step 2: Insert new location
 		location_id = "LOC" + str(uuid.uuid4()).replace("-", "")
 		insert_query = """
-		INSERT INTO locations (LocationId, Address, City, County, State, State_abbr, Country, Latitude, Longitude, DateUpdated)
+		INSERT into locations (LocationId, Address, City, County, State, State_abbr, Country, Latitude, Longitude, DateUpdated)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		"""
 		cursor.execute(insert_query, (
@@ -744,9 +746,9 @@ def SaveTimeLine(HumanId, LocationId, DateThere):
 	cursor, connection = Database.ConnectToDatabase()
 	dateThere_dt = parse_date(DateThere)
 	insert_TimeLine = """
-	INSERT INTO humantimeline (HumanId, LocationId, dateThere_s, dateThere_dt)
+	INSERT into humantimeline (HumanId, LocationId, dateThere_s, dateThere_dt)
 	VALUES (%s, %s, %s, %s)
-	ON DUPLICATE KEY UPDATE HumanId=VALUES(HumanId), LocationId=VALUES(LocationId), dateThere_s=VALUES(dateThere_s), dateThere_dt=VALUES(dateThere_dt)
+	ON DUPLICATE KEY update humanId=VALUES(HumanId), LocationId=VALUES(LocationId), dateThere_s=VALUES(dateThere_s), dateThere_dt=VALUES(dateThere_dt)
 	"""
 	cursor.execute(insert_TimeLine, (HumanId, LocationId, DateThere, dateThere_dt))
 	connection.commit()
@@ -758,7 +760,7 @@ def Fix_Locations():
 
 	query = """
 	SELECT Address, MIN(LocationId) as MinLocationId
-	FROM locations
+	from locations
 	GROUP BY Address
 	HAVING COUNT(*) > 1
 	"""
@@ -766,10 +768,10 @@ def Fix_Locations():
 	cursor.execute(query)
 	duplicates = cursor.fetchall()
 
-	# Step 2: Update LocationIds in locationaddresses table
+	# Step 2: update locationIds in locationaddresses table
 	for row in duplicates:
 		# Get all LocationIds associated with this Address
-		query = f"SELECT LocationId FROM locations WHERE Address = '{row['Address']}'"
+		query = f"SELECT LocationId from locations WHERE Address = '{row['Address']}'"
 		print(query)
 		cursor.execute(query)
 		location_ids = cursor.fetchall()
@@ -777,7 +779,7 @@ def Fix_Locations():
 		for (location_id,) in location_ids:
 			if location_id != row['MinLocationId']:
 				update_query = f"""
-				UPDATE locationaddresses
+				update locationaddresses
 				SET LocationId = '{row['MinLocationId']}'
 				WHERE LocationId = '{location_id}' AND Address = '{row['Address']}'
 				"""
@@ -788,7 +790,7 @@ def Fix_Locations():
 	# Step 3: Optionally, remove duplicate rows in the locations table (except the one to keep)
 	for row in duplicates:
 		delete_query = f"""
-		DELETE FROM locations WHERE Address = '{row['Address']}' AND LocationId != '{row['MinLocationId']}'
+		DELETE from locations WHERE Address = '{row['Address']}' AND LocationId != '{row['MinLocationId']}'
 		"""
 		print(delete_query)
 		cursor.execute(delete_query)
@@ -948,43 +950,43 @@ def GPTNotes():
 	response="<meta http-equiv='refresh' content='60 '>"
 	return response
 
-def StripWhitespaceFromParsedNotes():
-	cursor, connection = Database.ConnectToDatabase()
+# def StripWhitespaceFromParsedNotes():
+# 	cursor, connection = Database.ConnectToDatabase()
 
-	# Query to fetch the relevant rows
-	sql_query = "SELECT NOLA_ID, Parsed_Notes FROM raw_nola WHERE Parsed_Notes IS NOT NULL"
-	cursor.execute(sql_query)
-	result = cursor.fetchall()
+# 	# Query to fetch the relevant rows
+# 	sql_query = "SELECT NOLA_ID, Parsed_Notes FROM raw_nola WHERE Parsed_Notes IS NOT NULL"
+# 	cursor.execute(sql_query)
+# 	result = cursor.fetchall()
 
-	# Convert result to a pandas DataFrame
-	df = pd.DataFrame(result)
+# 	# Convert result to a pandas DataFrame
+# 	df = pd.DataFrame(result)
 
-	# Function to clean JSON
-	def clean_json(json_string):
-		try:
-			# Parse the JSON and dump it back without whitespace
-			parsed = json.loads(json_string)
-			return json.dumps(parsed, separators=(',', ':'))
-		except json.JSONDecodeError:
-			return json_string  # Return as is if it's not valid JSON
+# 	# Function to clean JSON
+# 	def clean_json(json_string):
+# 		try:
+# 			# Parse the JSON and dump it back without whitespace
+# 			parsed = json.loads(json_string)
+# 			return json.dumps(parsed, separators=(',', ':'))
+# 		except json.JSONDecodeError:
+# 			return json_string  # Return as is if it's not valid JSON
 
-	# Apply the cleaning function if the DataFrame is not empty
-	if not df.empty:
-		df['Parsed_Notes'] = df['Parsed_Notes'].apply(clean_json)
+# 	# Apply the cleaning function if the DataFrame is not empty
+# 	if not df.empty:
+# 		df['Parsed_Notes'] = df['Parsed_Notes'].apply(clean_json)
 
-		# Update the cleaned data back into the database
-		for index, row in df.iterrows():
-			update_query = "UPDATE raw_nola SET Parsed_Notes = %s WHERE NOLA_ID = %s"
+# 		# Update the cleaned data back into the database
+# 		for index, row in df.iterrows():
+# 			update_query = "UPDATE raw_nola SET Parsed_Notes = %s WHERE NOLA_ID = %s"
 			
-			cursor.execute(update_query, (row['Parsed_Notes'], row['NOLA_ID']))
+# 			cursor.execute(update_query, (row['Parsed_Notes'], row['NOLA_ID']))
 
-		# Commit the changes
-		connection.commit()
+# 		# Commit the changes
+# 		connection.commit()
 
-	# Close the cursor and connection
-	cursor.close()
-	connection.close()
-	return result
+# 	# Close the cursor and connection
+# 	cursor.close()
+# 	connection.close()
+# 	return result
 
 
 
@@ -998,41 +1000,41 @@ def generate_text_with_openai(prompt, initial_max_tokens=400, max_retries=5):
 		# Ensure max_tokens doesn't exceed 4096
 		if max_tokens > 4096:
 			max_tokens = 4096
-		
-		try:
-			response = openai.ChatCompletion.create(
-				model="gpt-4o",
-				messages=[
-					{"role": "system", "content": "You are a helpful assistant."},
-					{"role": "user", "content": prompt}
-				],
-				max_tokens=max_tokens,
-				temperature=0.7
-			)
+		print("OPEN AI turned off")
+		# try:
+		# 	response = openai.ChatCompletion.create(
+		# 		model="gpt-4o",
+		# 		messages=[
+		# 			{"role": "system", "content": "You are a helpful assistant."},
+		# 			{"role": "user", "content": prompt}
+		# 		],
+		# 		max_tokens=max_tokens,
+		# 		temperature=0.7
+		# 	)
 			
-			generated_text = response['choices'][0]['message']['content'].strip()
-			print(generated_text)
-			generated_text = generated_text.replace("```json", "")
-			generated_text = generated_text.replace("```", "")
+		# 	generated_text = response['choices'][0]['message']['content'].strip()
+		# 	print(generated_text)
+		# 	generated_text = generated_text.replace("```json", "")
+		# 	generated_text = generated_text.replace("```", "")
 			
-			try:
-				data = json.loads(generated_text)
-				# If parsing is successful, return the data
-				return data
-			except json.JSONDecodeError as e:
-				print(f"Attempt {attempt + 1} with max_tokens={max_tokens}")
-				print(f"JSON Decode Error: {e}. Retrying with larger max_tokens.")
+		# 	try:
+		# 		data = json.loads(generated_text)
+		# 		# If parsing is successful, return the data
+		# 		return data
+		# 	except json.JSONDecodeError as e:
+		# 		print(f"Attempt {attempt + 1} with max_tokens={max_tokens}")
+		# 		print(f"JSON Decode Error: {e}. Retrying with larger max_tokens.")
 		
-		except openai.error.RateLimitError as e:
-			print(f"Rate limit error: {e}")
-			print(f"Rate limit reached. Waiting before retrying... (Attempt {attempt + 1})")
-			time.sleep(20)  # Wait for 20 seconds before retrying
+		# except openai.error.RateLimitError as e:
+		# 	print(f"Rate limit error: {e}")
+		# 	print(f"Rate limit reached. Waiting before retrying... (Attempt {attempt + 1})")
+		# 	time.sleep(20)  # Wait for 20 seconds before retrying
 
-		# Double the max_tokens for the next attempt
-		max_tokens *= 2
-		if max_tokens >= 4096:
-			print("Max tokens reached the limit of 4096, stopping further attempts.")
-			break
+		# # Double the max_tokens for the next attempt
+		# max_tokens *= 2
+		# if max_tokens >= 4096:
+		# 	print("Max tokens reached the limit of 4096, stopping further attempts.")
+		# 	break
 	
 	# If no valid JSON is returned after all retries
 	return "Failed to generate a valid JSON response after multiple attempts."
@@ -1054,7 +1056,7 @@ def replace_string_in_json():
 	# Query to select rows containing 'skin color' in Parsed_Notes
 	select_query = f"""
 	SELECT transactionId, Parsed_Notes
-	FROM solddowntheriver.transactions
+	FROM transactions
 	WHERE Parsed_Notes LIKE '%{replaceThis}%'
 	"""
 	cursor.execute(select_query)
@@ -1073,7 +1075,7 @@ def replace_string_in_json():
 
 			
 			update_query = f"""
-			UPDATE solddowntheriver.transactions
+			UPDATE transactions
 			SET Parsed_Notes = '{modified_notes}'
 			WHERE transactionId = '{transaction_id}'
 			"""
@@ -1094,112 +1096,112 @@ def replace_string_in_json():
 
 
 
-def process_row(parsed_data, row, cursor, key_count):
-	print(parsed_data)
-	transaction_id = row['TransactionId']
-	date_circa = row['date_circa']
+# def process_row(parsed_data, row, cursor, key_count):
+# 	print(parsed_data)
+# 	transaction_id = row['TransactionId']
+# 	date_circa = row['date_circa']
 	
-	# Convert date_circa to a datetime object if it’s a string
-	if isinstance(date_circa, str):
-		try:
-			transaction_date = datetime.strptime(date_circa, "%Y-%m-%d")
-		except ValueError:
-			print(f"Invalid date format for TransactionId {transaction_id}")
-			transaction_date = None
-	else:
-		transaction_date = date_circa
+# 	# Convert date_circa to a datetime object if it’s a string
+# 	if isinstance(date_circa, str):
+# 		try:
+# 			transaction_date = datetime.strptime(date_circa, "%Y-%m-%d")
+# 		except ValueError:
+# 			print(f"Invalid date format for TransactionId {transaction_id}")
+# 			transaction_date = None
+# 	else:
+# 		transaction_date = date_circa
 
-	# Hardcoded keys for processed status
-	processed_keys = {
-		"price": False,
-		"individuals.name": False,
-		"individuals.age": False,
-		"individuals.skin_color": False,
-		"individuals.price": False,
-		"individuals.origin.city": False,
-	}
+# 	# Hardcoded keys for processed status
+# 	processed_keys = {
+# 		"price": False,
+# 		"individuals.name": False,
+# 		"individuals.age": False,
+# 		"individuals.skin_color": False,
+# 		"individuals.price": False,
+# 		"individuals.origin.city": False,
+# 	}
 
-	# Helper function to process individual records
-	def process_individual(individual, transaction_id):
-		name = individual.get('name')
-		age = individual.get('age')
-		skin_color = individual.get('skin_color')
-		physical_features = individual.get('physical_features')
-		price = individual.get('price')
-		originCity = individual.get('origin', {}).get('city') if 'origin' in individual else None
+# 	# Helper function to process individual records
+# 	def process_individual(transaction_id,individual, transaction_id):
+# 		name = individual.get('name')
+# 		age = individual.get('age')
+# 		skin_color = individual.get('skin_color')
+# 		physical_features = individual.get('physical_features')
+# 		price = individual.get('price')
+# 		originCity = individual.get('origin', {}).get('city') if 'origin' in individual else None
 
-		if name:
-			# Step 1: Check if the human record exists using a JOIN with transactionhumans
-			query = (
-				f"SELECT h.HumanId "
-				f"FROM humans h "
-				f"JOIN transactionhumans th ON h.HumanId = th.HumanId "
-				f"WHERE h.FirstName = '{name}' AND th.TransactionId = '{transaction_id}'"
-			)
-			cursor.execute(query)
-			human_record = cursor.fetchone()
+# 		if name:
+# 			# Step 1: Check if the human record exists using a JOIN with transactionhumans
+# 			query = (
+# 				f"SELECT h.HumanId "
+# 				f"from humans h "
+# 				f"JOIN transactionhumans th ON h.HumanId = th.HumanId "
+# 				f"WHERE h.FirstName = '{name}' AND th.TransactionId = '{transaction_id}'"
+# 			)
+# 			cursor.execute(query)
+# 			human_record = cursor.fetchone()
 			
-			if human_record:
-				HumanId = human_record['HumanId']
-				query = (
-					f"UPDATE humans SET FirstName = '{name}',physical_features='{physical_features}', Color = '{skin_color}', originCity='{originCity}', DateUpdated = '{datetime.now()}' "
-					f"WHERE HumanId = '{HumanId}'"
-				)
-				cursor.execute(query)
-			else:
-				# Step 2: Insert new human record
-				HumanId = "HUM" + str(uuid.uuid4()).replace("-", "")
-				if age is not None and transaction_date:
-					birth_date = transaction_date.replace(year=transaction_date.year - age)
-				else:
-					birth_date = None
-				query = (
-					f"INSERT INTO humans (HumanId, FirstName, Color, physical_features, BirthDate, BirthDateAccuracy, originCity, DateUpdated) "
-					f"VALUES ('{HumanId}', '{name}', '{skin_color}', '{physical_features}','{birth_date}', 'Y', '{originCity}', '{datetime.now()}')"
-				)
-				cursor.execute(query)
-				print(f"New human record created for {name} (HumanId: {HumanId}).")
+# 			if human_record:
+# 				HumanId = human_record['HumanId']
+# 				query = (
+# 					f"update humans SET FirstName = '{name}',physical_features='{physical_features}', Color = '{skin_color}', originCity='{originCity}', DateUpdated = '{datetime.now()}' "
+# 					f"WHERE HumanId = '{HumanId}'"
+# 				)
+# 				cursor.execute(query)
+# 			else:
+# 				# Step 2: Insert new human record
+# 				HumanId = "HUM" + str(uuid.uuid4()).replace("-", "")
+# 				if age is not None and transaction_date:
+# 					birth_date = transaction_date.replace(year=transaction_date.year - age)
+# 				else:
+# 					birth_date = None
+# 				query = (
+# 					f"INSERT into humans (HumanId, FirstName, Color, physical_features, BirthDate, BirthDateAccuracy, originCity, DateUpdated) "
+# 					f"VALUES ('{HumanId}', '{name}', '{skin_color}', '{physical_features}','{birth_date}', 'Y', '{originCity}', '{datetime.now()}')"
+# 				)
+# 				cursor.execute(query)
+# 				print(f"New human record created for {name} (HumanId: {HumanId}).")
 			
-			# Update processed status for individual fields
-			processed_keys["individuals.name"] = True
-			processed_keys["individuals.age"] = age is not None
-			processed_keys["individuals.skin_color"] = skin_color is not None
-			processed_keys["individuals.physical_features"] = physical_features is not None
-			processed_keys["individuals.origin.city"] = originCity is not None
+# 			# Update processed status for individual fields
+# 			processed_keys["individuals.name"] = True
+# 			processed_keys["individuals.age"] = age is not None
+# 			processed_keys["individuals.skin_color"] = skin_color is not None
+# 			processed_keys["individuals.physical_features"] = physical_features is not None
+# 			processed_keys["individuals.origin.city"] = originCity is not None
 
-			# Step 3: Insert into transactionhumans table
-			price_value = 'NULL' if price is None else price
-			query = (
-				f"INSERT INTO transactionhumans (TransactionId, HumanId, Notes, Price) "
-				f"VALUES ('{transaction_id}', '{HumanId}', '{json.dumps(individual)}', {price_value}) "
-				f"ON DUPLICATE KEY UPDATE TransactionId = TransactionId"
-			)
-			cursor.execute(query)
-			processed_keys["individuals.price"] = price is not None
+# 			# Step 3: Insert into transactionhumans table
+# 			price_value = 'NULL' if price is None else price
+# 			query = (
+# 				f"INSERT into transactionhumans (TransactionId, HumanId, Notes, Price) "
+# 				f"VALUES ('{transaction_id}', '{HumanId}', '{json.dumps(individual)}', {price_value}) "
+# 				f"ON DUPLICATE KEY update transactionId = TransactionId"
+# 			)
+# 			cursor.execute(query)
+# 			processed_keys["individuals.price"] = price is not None
 
-	# Process the main JSON data
-	if 'price' in parsed_data:
-		price = parsed_data['price']
-		if isinstance(price, (int, float)) and price > 0:
-			query = f"UPDATE transactions SET TotalPrice = {price} WHERE TransactionId = '{transaction_id}'"
-			cursor.execute(query)
-			processed_keys["price"] = True
-			print("price: Processed")
-
-
+# 	# Process the main JSON data
+# 	if 'price' in parsed_data:
+# 		price = parsed_data['price']
+# 		if isinstance(price, (int, float)) and price > 0:
+# 			query = f"update transactions SET TotalPrice = {price} WHERE TransactionId = '{transaction_id}'"
+# 			cursor.execute(query)
+# 			processed_keys["price"] = True
+# 			print("price: Processed")
 
 
-	# Process 'individuals' (list) or 'individual' (single entry)
-	if 'individuals' in parsed_data and isinstance(parsed_data['individuals'], list):
-		for individual in parsed_data['individuals']:
-			process_individual(individual, transaction_id)
-	elif 'individual' in parsed_data and isinstance(parsed_data['individual'], dict):
-		process_individual(parsed_data['individual'], transaction_id)
 
-	# Output the final processed status of each hardcoded key
-	print("Processed Keys Status:")
-	for key, status in processed_keys.items():
-		print(f"{key}: {'Processed' if status else 'Not Processed'}")
+
+# 	# Process 'individuals' (list) or 'individual' (single entry)
+# 	if 'individuals' in parsed_data and isinstance(parsed_data['individuals'], list):
+# 		for individual in parsed_data['individuals']:
+# 			process_individual(individual, transaction_id)
+# 	elif 'individual' in parsed_data and isinstance(parsed_data['individual'], dict):
+# 		process_individual(parsed_data['individual'], transaction_id)
+
+# 	# Output the final processed status of each hardcoded key
+# 	print("Processed Keys Status:")
+# 	for key, status in processed_keys.items():
+# 		print(f"{key}: {'Processed' if status else 'Not Processed'}")
 
 
 
@@ -1211,7 +1213,7 @@ def transform_json_packet(packet):
 	if 'individual' in packet and isinstance(packet['individual'], dict):
 		packet['individuals'] = [packet.pop('individual')]
 
-	print("packet",packet)
+	# print("packet",packet)
 	# Iterate over the items in the packet
 	for key, value in packet.items():
 		# Handle lists and transform each dictionary within them
@@ -1244,7 +1246,7 @@ def display_json_paths(packet, prefix=''):
 		
 		if isinstance(value, dict) and 'data' in value and 'status' in value:
 			# Display the full path along with data and status
-			print(f"Path: {full_path}, Data: {value['data']}, Status: {value['status']}")
+			# print(f"Path: {full_path}, Data: {value['data']}, Status: {value['status']}")
 			if value['status']==0:
 				issues.append(full_path)
 		elif isinstance(value, dict):
@@ -1294,20 +1296,116 @@ def update_status(packet, full_path, status):
 	else:
 		print(f"Cannot set status for non-dictionary at path '{full_path}'")
 
-def process_individual(packet, individual, index, individualNAME):
+def replace_none_to_null(query):
+	# Replace occurrences of 'None' with 'NULL' in the query string
+	query = query.replace("'None'", "NULL")
+	query = query.replace("=NULL", " IS NULL")
+	query = query.replace("= NULL", " IS NULL")
+	return query
+
+def splitName(fullName):
+	# Split the full name by spaces
+	nameParts = fullName.split()
+
+	# Assign parts to FirstName, MiddleName, and LastName
+	if len(nameParts) == 1:
+		firstName = nameParts[0]
+		middleName = None
+		lastName = None
+	elif len(nameParts) == 2:
+		firstName = nameParts[0]
+		middleName = None
+		lastName = nameParts[1]
+	elif len(nameParts) >= 3:
+		firstName = nameParts[0]
+		middleName = " ".join(nameParts[1:-1])  # Join middle parts if there are more than one
+		lastName = nameParts[-1]
+	else:
+		firstName=None
+		middleName=None
+		lastName=None
+
+	return firstName, middleName, lastName
+def calculateBirthDate(currentDate, age):
+	if not age or not currentDate:
+		return None
+	
+	# Extract the year, month, and day from the current date object
+	currentYear = currentDate.year
+	currentMonth = currentDate.month
+	currentDay = currentDate.day
+	
+	# Calculate the birth year by subtracting the age from the current year
+	birthYear = currentYear - age
+	
+	# Ensure the day is valid for the month and year
+	last_day_of_month = calendar.monthrange(birthYear, currentMonth)[1]
+	validDay = min(currentDay, last_day_of_month)
+	
+	# Create the birth date using the calculated birth year and adjusted day
+	birthDate = datetime(birthYear, currentMonth, validDay).date()
+	
+	return birthDate
+
+def process_individual(transaction,packet, individual, index, individualNAME):
+	# print(individual)
+	cursor, connection = Database.ConnectToDatabase()
 	# Set variables for each field, handling synonyms and existence checks
 	name = individual.get('name', {}).get('data') if 'name' in individual else None
-	skin_color = individual.get('skin_color', {}).get('data') if 'skin_color' in individual else None
-	age = individual.get('age', {}).get('data') if 'age' in individual else None
+	# aliases = individual.get('aliases', {}).get('data') if 'aliases' in individual else None
+	aliases = ', '.join(individual.get('aliases', [])) if isinstance(individual.get('aliases'), list) else None
+	RacialDescriptor = individual.get('skin_color', {}).get('data') if 'skin_color' in individual else None
+	age_string = individual.get('age', {}).get('data') if 'age' in individual else None
 	seller = individual.get('seller', {}).get('data') if 'seller' in individual else None
 	relationship = individual.get('relationship', {}).get('data') if 'relationship' in individual else None
 	physical_features = individual.get('physical_features', {}).get('data') if 'physical_features' in individual else None
 	previous_owner = individual.get('previous_owner', {}).get('data') if 'previous_owner' in individual else None
 	profession = individual.get('profession', {}).get('data') if 'profession' in individual else None
 	year_acquired = individual.get('year_acquired', {}).get('data') if 'year_acquired' in individual else None
-	age_at_acquisition = individual.get('age_at_acquisition', {}).get('data') if 'age_at_acquisition' in individual else None
+	age = individual.get('age', {}).get('data') if 'age' in individual else None
 	physical_features = individual.get('physical_features', {}).get('data') if 'physical_features' in individual else None
-	
+	origindata = individual.get('origin')
+
+
+	if isinstance(origindata, dict):  # If 'origindata' is a dictionary
+		city = origindata.get('city',{}).get('data', None)
+		state = origindata.get('state',{}).get('data', None)
+		if city and state:
+			origin = f"{city}, {state}"  # Combine city and state
+		elif city:  # Only city exists
+			origin = city
+		else:
+			origin = None
+	elif isinstance(origindata, str):  # If 'origindata' is a string
+		origin = origindata  # Use the string as-is
+	else:  # Handle cases where 'origindata' is None or unexpected
+		origin = None
+	destinationdata = individual.get('destination')
+	print("destinationdata",destinationdata)
+	if isinstance(destinationdata, dict):  # If 'destinationdata' is a dictionary
+		city = destinationdata.get('city',{}).get('data', None)
+		state = destinationdata.get('state',{}).get('data', None)
+		if city and state:
+			destination = f"{city}, {state}"  # Combine city and state
+		elif city:  # Only city exists
+			destination = city
+		else:
+			destination = None
+	elif isinstance(destinationdata, str):  # If 'destinationdata' is a string
+		destination = destinationdata  # Use the string as-is
+	else:  # Handle cases where 'destinationdata' is None or unexpected
+		destination = None
+	# arrival_date
+	BirthDate=None
+	BirthDateAccuracy=None
+	originLocationId=None
+	destinationLocationId=None
+	sex=None
+
+	FirstName=None
+	MiddleName=None
+	LastName=None
+	# print("origin",origin)
 
 	# Handle `status` as either an integer or a dictionary
 	if isinstance(individual.get('status'), dict):
@@ -1323,16 +1421,42 @@ def process_individual(packet, individual, index, individualNAME):
 	if name is not None:
 		# print(f"Processing individual: {name}")
 		update_status(packet, f"{individualNAME}[{index}].name",0.5)
-		
-	if skin_color is not None:
-		# print(f" - Skin Color: {skin_color}")
-		update_status(packet, f"{individualNAME}[{index}].skin_color",0.5)
+		FirstName, MiddleName, LastName = splitName(name)
+	if origin is not None:
+		update_status(packet, f"{individualNAME}[{index}].origin",0.5)
+		originLocationId=getLocation(connection, cursor, origin)
+	if destination is not None:
+		update_status(packet, f"{individualNAME}[{index}].destination",0.5)
+		destinationLocationId=getLocation(connection, cursor, destination)
+	if RacialDescriptor is not None:
+		# print(f" - RacialDescriptor: {RacialDescriptor}")
+		update_status(packet, f"{individualNAME}[{index}].RacialDescriptor",0.5)
+		if RacialDescriptor=="negro":
+			sex="male"
+		elif  RacialDescriptor=="negress":
+			sex="female"
+		elif RacialDescriptor=='mulatress':
+			sex="female"
+		elif RacialDescriptor=='mulatress':
+			sex="female"
+	if aliases is not None:
+		# print(f" - aliases: {aliases}")
+		update_status(packet, f"{individualNAME}[{index}].aliases",0.5)
 	if year_acquired is not None:
 		# print(f" - year_acquired: {year_acquired}")
 		update_status(packet, f"{individualNAME}[{index}].year_acquired",0.5)
-	if age_at_acquisition is not None:
-		# print(f" - age_at_acquisition: {age_at_acquisition}")
-		update_status(packet, f"{individualNAME}[{index}].age_at_acquisition",0.5)
+	if age_string is not None:
+		# print(f" - age_string: {age_string}")
+		update_status(packet, f"{individualNAME}[{index}].age_string",0.5)
+		agematch = re.match(r'(\d+)', str(age_string))
+		if agematch:
+			age=int(agematch.group(1))
+		else:
+			age=None
+		if transaction['date_circa']:
+			BirthDate=calculateBirthDate(transaction['date_circa'], age)
+			BirthDateAccuracy="Y"
+		print("BirthDate",BirthDate)
 	if physical_features is not None:
 		# print(f" - physical_features: {physical_features}")
 		update_status(packet, f"{individualNAME}[{index}].physical_features",0.5)
@@ -1379,7 +1503,71 @@ def process_individual(packet, individual, index, individualNAME):
 			update_status(packet, f"{individualNAME}[{index}].price",0.5)
 		if 'value' in individual:
 			update_status(packet, f"{individualNAME}[{index}].value",0.5)
+
+		price = str(price)
+		price=re.sub(r'[^0-9.]', '', price)
 	individual['status'] = 0.4
+
+
+
+
+	sql=f"select transactionhumans.HumanId from transactionhumans join humans on transactionhumans.HumanId=humans.HumanId where TransactionId='{transaction['TransactionId']}' and FirstName='{FirstName}' and LastName='{LastName}'"
+	sql=replace_none_to_null(sql)
+	# print(sql)
+	cursor.execute(sql)
+	result = cursor.fetchall()
+	if not result:
+		print("new!")
+		HumanId = "HUM"+str(uuid.uuid4()).replace("-", "")
+	else:
+		print("old")
+		HumanId=result[0]['HumanId']
+
+	
+	
+	sql = f"""
+		INSERT into humans (HumanId, FirstName, MiddleName, LastName, RacialDescriptor, age_string, BirthDate, BirthDateAccuracy, physical_features, profession,sex)
+		VALUES ('{HumanId}', '{FirstName}', '{MiddleName}', '{LastName}', '{RacialDescriptor}', '{age_string}', '{BirthDate}', '{BirthDateAccuracy}', '{physical_features}', '{profession}','{sex}')
+		ON DUPLICATE KEY UPDATE 
+			FirstName = VALUES(FirstName),
+			MiddleName = VALUES(MiddleName),
+			LastName = VALUES(LastName),
+			RacialDescriptor = VALUES(RacialDescriptor),
+			age_string = VALUES(age_string),
+			BirthDate = VALUES(BirthDate),
+			BirthDateAccuracy = VALUES(BirthDateAccuracy),
+			physical_features = VALUES(physical_features),
+			profession = VALUES(profession);
+	"""
+
+	sql=replace_none_to_null(sql)
+	# print(sql)
+	cursor.execute(sql)
+	connection.commit()
+	sql = f"""
+		INSERT into transactionhumans (TransactionId, HumanId, Notes, parsedNotes, originLocationId, destinationLocationId, price)
+		VALUES ('{transaction['TransactionId']}', '{HumanId}', '{transaction['Notes'].replace("'", "''")}','{transaction['Parsed_Notes'].replace("'", "''")}','{originLocationId}','{destinationLocationId}','{price}')
+		ON DUPLICATE KEY UPDATE 
+			price = VALUES(price),
+			originLocationId=values(originLocationId),
+			destinationLocationId=values(destinationLocationId);
+	"""
+
+	sql=replace_none_to_null(sql)
+	# print(sql)
+	cursor.execute(sql)
+	connection.commit()
+
+	sql = f"""
+		update transactions set processedNotes=1 where TransactionId='{transaction['TransactionId']}'
+	"""
+
+	sql=replace_none_to_null(sql)
+	# print(sql)
+	cursor.execute(sql)
+	connection.commit()
+	
+	
 
 def process_quantity_of_slaves(packet):
 	# print(f"Processing quantity of slaves: {packet['quantity_of_slaves']['data']}")
@@ -1426,33 +1614,46 @@ def process_percentage_accuracy(packet):
 	update_status(packet, 'percentage_accuracy',0.5)
 
 	
-def process_location(packet):
+def process_location(transaction, packet):
 	# Check if 'location' exists and is a dictionary
 	if 'location' in packet and isinstance(packet['location'], dict):
 		location = packet['location']
-		
 		# If 'location' has a 'data' key, treat it as a simple entry
 		if 'data' in location:
 			# print(f"Processing location: {location['data']}")
 			update_status(packet, 'location', 0.5)
-		
+			
 		# Otherwise, handle each subfield in the nested 'location' dictionary
 		else:
 			if 'venue' in location:
-				# print(f"Processing venue: {location['venue']['data']}")
+				print(f"Processing venue: {location['venue']['data']}")
 				update_status(packet, 'location.venue', 0.5)
 			
-			if 'address' in location:
-				# print(f"Processing address: {location['address']['data']}")
+			if 'address' in location and 'data' in location['address']:
+				print(f"Processing address: {location['address']['data']}")
 				update_status(packet, 'location.address', 0.5)
 			if 'state' in location:
-				# print(f"Processing state: {location['state']['data']}")
+				print(f"Processing state: {location['state']['data']}")
 				update_status(packet, 'location.state', 0.5)
 			if 'city' in location:
-				# print(f"Processing city: {location['city']['data']}")
+				print(f"Processing city: {location['city']['data']}")
 				update_status(packet, 'location.city', 0.5)
 	else:
 		print("Location data is missing or not in expected format")
+
+	# print("location.venue",location['venue']['data'])
+	# print("location.address",location['address']['data'])
+	# print("location.state",location['state']['data'])
+	# print("location.city",location['city']['data'])
+	# cursor, connection = Database.ConnectToDatabase()
+	# location=getLocation(connection, cursor, row['LocationFirstParty'])
+	# sql = f"""
+	# 	select * from locationaddresses where transactionId='{transaction['TransactionId']}'
+	# 	VALUES ('{transaction['TransactionId']}', '{HumanId}', '{price}')
+	# 	ON DUPLICATE KEY UPDATE 
+	# 		price = VALUES(price);
+	# """
+
 def process_origin(packet, origin_data_path):
 	# Split the path by separating list indices and dictionary keys
 	path_segments = []
@@ -1494,8 +1695,7 @@ def process_origin(packet, origin_data_path):
 
 
 
-def process_packet(packet):
-
+def process_packet(transaction,packet):
 	for key, value in packet.items():
 		# Process each individual in the individuals array and pass index
 		if key =='transactions' and isinstance(value, list):
@@ -1503,15 +1703,15 @@ def process_packet(packet):
 			break
 		if key == 'individuals' and isinstance(value, list):
 			for index, individual in enumerate(value):
-				process_individual(packet, individual, index, "individuals")
+				process_individual(transaction,packet, individual, index, "individuals")
 		elif key == 'individual':
 			# Handle both list and dictionary cases for 'individual'
 			if isinstance(value, list):
 				for index, individual in enumerate(value):
-					process_individual(packet, individual, index, "individual")
+					process_individual(transaction,packet, individual, index, "individual")
 			elif isinstance(value, dict):
 				# Process single individual as if it's the first element in a list
-				process_individual(packet, value, 0, "individual")
+				process_individual(transaction,packet, value, 0, "individual")
 		elif key == 'quantity_of_slaves':
 			process_quantity_of_slaves(packet)
 		elif key == 'quantity':
@@ -1537,15 +1737,148 @@ def process_packet(packet):
 		elif key=='date_of_purchase':
 			process_date_of_purchase(packet)
 		elif key=='location':
-			process_location(packet)
+			process_location(transaction,packet)
 		elif key=='percentage_accuracy':
 			process_percentage_accuracy(packet)
 			
 		elif key=='date':
 			process_date(packet)
 		else:
-			print(f"No specific function to handle key: {key}")
+			# print(f"No specific function to handle key: {key}")
+			pass
 			
+def extractKeys():
+	"""
+	Connect to the database, fetch rows with JSON data, and extract all unique keys 
+	from the `parsed_notes` column recursively.
+	"""
+	# Connect to the database
+	cursor, connection = Database.ConnectToDatabase()
+	sql = "SELECT transactionId, parsed_notes from transactions WHERE parsed_notes IS NOT NULL LIMIT 5000"
+	cursor.execute(sql)
+	result = cursor.fetchall()  # Fetch all rows as dictionaries
+	all_keys = set()
+	
+	for record in result:
+		try:
+			# Access parsed_notes as a dictionary key
+			parsed_notes = record['parsed_notes']
+			parsed = json.loads(parsed_notes)  # Parse JSON
+			extracted = extract_keys(parsed)
+			all_keys.update(extracted)  # Add extracted keys to the set
+		except json.JSONDecodeError:
+			print(f"Skipping invalid JSON: {record['parsed_notes']}")
+			print(record['transactionId'])
+		except KeyError:
+			print(f"Missing 'parsed_notes' in record: {record}")
+		except Exception as e:
+			print(f"Unexpected error while processing record: {e}")
+		
+	print(f"Extracted Keys: {sorted(all_keys)}")
+	return "done"
+
+def extract_keys(data):
+	"""
+	Recursively extract only keys from nested JSON, ignoring all values.
+	"""
+	keys = set()
+	if isinstance(data, dict):
+		for key, value in data.items():
+			keys.add(key)  # Add the key
+			# Debug print to verify values are skipped
+			print(f"Processing key: {key}, value type: {type(value)}")
+			keys.update(extract_keys(value))  # Recurse into value
+	elif isinstance(data, list):
+		for item in data:
+			keys.update(extract_keys(item))  # Recurse into list items
+	# If `data` is not a dict or list, do nothing (ignore values)
+	return keys
+
+
+# def extract_keys(obj, keys=None):
+# 	if keys is None:
+# 		keys = set()
+# 	if isinstance(obj, dict):
+# 		for key, value in obj.items():
+# 			keys.add(key)
+# 			extract_keys(value, keys)
+# 	elif isinstance(obj, list):
+# 		for item in obj:
+# 			extract_keys(item, keys)
+# 	return keys
+
+
+
+
+
+def GetParsedErrors():
+	"""
+	Fetches the top two transactions from the 'transactions' table
+	where 'Issues' and 'dataIssue' are null, ordered by 'parsed_notes' in descending order.
+	"""
+	# Establish a database connection and get a cursor
+	cursor, connection = Database.ConnectToDatabase()
+	
+	# SQL query to select data
+	sql_query = """
+		select DISTINCT transactionId, Notes  from transactions where transactionid='TRN012cc6945d6a4ab6a9857434bd34a048'
+		limit 4
+		
+		"""
+
+	
+	# Debug: Print the SQL query for verification
+	print(sql_query)
+	
+	# Execute the query and fetch results
+	cursor.execute(sql_query)
+	result = cursor.fetchall()
+	
+	# Close the cursor and connection
+	cursor.close()
+	connection.close()
+	
+	# Debug: Print the fetched results
+	print(result)
+	return result
+
+
+def UpdateParsedErrors():
+
+
+
+	parsed=[{"transactionId":"TRN012cc6945d6a4ab6a9857434bd34a048","parsed_notes":{"buyer":"Doyle","price":"$675","individuals":[{"name":"Betsey","skin_color":"negress","age":19,"price":"$675"}]}}]
+
+	# print(len(parsed))
+
+	cursor, connection = Database.ConnectToDatabase()
+
+	try:
+		# Loop through each record in the parsed list
+		for record in parsed:
+			transaction_id = record["transactionId"]
+			parsed_notes = record["parsed_notes"]
+
+			# SQL query to update the database
+			sql_query = """
+				update transactions
+				SET parsed_notes = %s
+				WHERE TransactionId = %s
+			"""
+			# print(sql_query)
+			# Execute the query with parameters to prevent SQL injection
+			cursor.execute(sql_query, (json.dumps(parsed_notes), transaction_id))
+
+		# Commit the changes to the database
+		connection.commit()
+
+		print(f"Updated {cursor.rowcount} rows.")
+	finally:
+		# Ensure the cursor and connection are closed
+		cursor.close()
+		connection.close()
+
+	return "Saved"
 
 
 def SaveParsedNotes():
@@ -1558,50 +1891,53 @@ def SaveParsedNotes():
 	key_count = defaultdict(int)
 
 	# Query to fetch JSON data
-	sql_query = "SELECT TransactionId, Notes, date_circa, date_accuracy, Parsed_Notes FROM transactions WHERE Parsed_Notes IS NOT NULL and Issues is null and parsed_notes not like '%Failed to generate%'"
-	if debug:
-		sql_query +=f" LIMIT 100 OFFSET {DebugRowNumber}"
-		print(sql_query)
+	sql_query ="SELECT TransactionId, Parsed_Notes, Notes, date_circa, date_accuracy,transactions.* from transactions where "
+	sql_query+=" (processedNotes is null or processedNotes<>1) and Issues like '%[%' and Parsed_Notes <>'{}' "
+	
+	# sql_query+=" transactionId='TRN02cc9756d79b40cdbc8d2a37bc758025' "
+	sql_query += " ORDER BY parsed_notes DESC LIMIT 500"
+	# where Issues is null and dataIssue is null and parsed_notes is not null "
+	# if debug:
+	# 	sql_query +="  order by parsed_notes desc"
+	# 	sql_query +=f" LIMIT 400 OFFSET {DebugRowNumber}"
+	# print(sql_query)
 	cursor.execute(sql_query)
 	result = cursor.fetchall()
-
-
+	
+	
 	
 
 	# Process each row
 	count = 0
-	for row in result:
+	for transaction in result:
 		if skip:
-			updatequery=f"update transactions set dataIssue='double check' where TransactionId='{row['TransactionId']}'"
+			updatequery=f"update transactions set dataIssue='double check' where TransactionId='{transaction['TransactionId']}'"
 			
 			cursor.execute(updatequery)
 			connection.commit()
-			print(updatequery)
+			# print(updatequery)
 			break
-		if row['Parsed_Notes'] and row['Parsed_Notes'] != 'error':
+		if transaction['Parsed_Notes'] and transaction['Parsed_Notes'] != 'error':
 			try:
-				transaction_id = row['TransactionId']
-				print("transaction_id",transaction_id)
-				print(row['Notes'])
-				print(row['Parsed_Notes'])
-				parsed_data = json.loads(row['Parsed_Notes'])
-				print("**********************")
-				print(parsed_data)
+				transaction_id = transaction['TransactionId']
+				# print("**********************")
+				# print("transaction_id",transaction_id)
+				# print(transaction['Notes'])
+				parsed_data = json.loads(transaction['Parsed_Notes'])
+				# print(parsed_data)
 				parsed_data=transform_json_packet(parsed_data)
-				process_packet(parsed_data)
-				# update_status(parsed_data, "individuals[1].skin_color", 0.5)
+				transaction['parsed_data']=parsed_data
+				process_packet(transaction,parsed_data)
+				# update_status(parsed_data,"individuals[1].skin_color", 0.5)
 				
-				print("----------------------")
 				display_json_paths(parsed_data)
-				# process_row(parsed_data, row, cursor, key_count)  # Process each JSON packet
-				print("+++++++++++++++++++")
-				print("issues",issues)
+				# process_row(parsed_data, transaction, cursor, key_count)  # Process each JSON packet
+				
 				escaped_issues = str(issues).replace("'", "''")
-				updatequery=f"update transactions set Issues='{escaped_issues}' where TransactionId='{row['TransactionId']}'"
-			
+				updatequery=f"update transactions set Issues='{escaped_issues}' where TransactionId='{transaction['TransactionId']}'"
+				# print(updatequery)
 				cursor.execute(updatequery)
 				connection.commit()
-				print(updatequery)
 			except json.JSONDecodeError as e:
 				print(f"Error decoding JSON for TransactionId {transaction_id}: {e}")
 				pass
@@ -1611,8 +1947,8 @@ def SaveParsedNotes():
 	cursor.close()
 	connection.close()
 
-	print("Key counts across all records (sorted by key name):")
-	for key, count in sorted(key_count.items()):
-		print(f"{key}: {count}")
-	return "done"
+	# print("Key counts across all records (sorted by key name):")
+	# for key, count in sorted(key_count.items()):
+	# 	print(f"{key}: {count}")
+	return "finished"
 

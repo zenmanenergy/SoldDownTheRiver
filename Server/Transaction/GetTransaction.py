@@ -18,6 +18,14 @@ def get_transaction(transaction_id):
 	t.URL,
 	t.LocationId,
 	t.Notes,
+	t.Transcriber,
+	t.Act,
+	t.Volume,
+	t.Page,
+	t.Act,
+	t.isApproved,
+	t.DataQuestions,
+
 
 	COALESCE(
 		JSON_ARRAYAGG(
