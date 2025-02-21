@@ -41,7 +41,7 @@
 			<li><a href={`/Humans`}>Humans</a></li>
 			<li><a href={`/Locations`}>Locations</a></li>
 			<li><a href={`/Roles`}>Roles</a></li>
-			<li><a href={`/RawNOLA`}>Raw NOLA data</a></li>
+			<li><a href={`/RawNOLAs`}>Raw NOLA data</a></li>
 
 			Manifest data (slightly outdated)
 			<li><a href={`/Ships`}>Ships</a></li>

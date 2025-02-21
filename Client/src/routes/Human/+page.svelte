@@ -1,14 +1,5 @@
 <style>
-	.buttons-container {
-	display: flex;
-	justify-content: space-between; /* Pushes Save left, Delete right */
-	align-items: center;
-	width: 100%; /* Ensures full width */
-}
-
-.delete-button {
-	margin-left: auto; /* Pushes Delete to the right */
-}
+	
 
 </style>
 <script>

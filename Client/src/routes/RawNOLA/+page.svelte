@@ -1,120 +1,70 @@
 <style>
 	@import '/static/FormPages.css';
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-	}
-
-	th, td {
-		padding: 8px;
-		text-align: left;
-		border-bottom: 1px solid #ddd;
-	}
-
-	th {
-		background-color: #f2f2f2;
-		white-space: nowrap;
-		cursor: pointer;
-	}
-
-	th:hover {
-		background-color: #e0e0e0;
-	}
-
-	td {
-		white-space: nowrap;
-	}
-
 </style>
 
 <script>
-	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { handleGetRawNola } from './handleGetRawNola.js';
+	import { handleSaveNOLA } from './handleSaveNOLA.js';
+	import { handleDeleteNOLA } from './handleDeleteNOLA.js';
 	import { Session } from "../Session.js";
+	import { handleGetNOLA } from './handleGetNOLA.js';
 
-	let rawRecords = [];
-	let filteredRecords = [];
+	let formValid = false;
 	let isLoading = true;
-	let searchQuery = '';
+	let NOLA = {
+		NOLA_ID: "",
+		FirstParty: "",
+		LocationFirstParty: "",
+		SecondParty: "",
+		LocationSecondParty: "",
+		TypeOfTransaction: "",
+		DateOfTransaction: "",
+		Act: "",
+		Page: "",
+		NotaryPublic: "",
+		Volume: "",
+		NameOfTranscriber: "",
+		ReferenceURL: ""
+	};
 
-	// Default sort by DateOfTransaction
-	let sortColumn = 'DateOfTransaction';
-	let sortAscending = true;
-
-	async function setRecords(data) {
-		rawRecords = [...data]; // Ensure reactivity
+	async function setNOLA(data) {
+		NOLA = {  // Reassign the entire object to trigger reactivity
+			NOLA_ID: data.NOLA_ID || "",
+			FirstParty: data.FirstParty || "",
+			LocationFirstParty: data.LocationFirstParty || "",
+			SecondParty: data.SecondParty || "",
+			LocationSecondParty: data.LocationSecondParty || "",
+			TypeOfTransaction: data.TypeOfTransaction || "",
+			DateOfTransaction: data.DateOfTransaction || "",
+			Act: data.Act || "",
+			Page: data.Page || "",
+			NotaryPublic: data.NotaryPublic || "",
+			Volume: data.Volume || "",
+			NameOfTranscriber: data.NameOfTranscriber || "",
+			ReferenceURL: data.ReferenceURL || ""
+		};
 	}
+
+
 
 	onMount(async () => {
 		await Session.handleSession();
-		if (Session.SessionId) {
-			await handleGetRawNola(Session.SessionId, setRecords);
+		const urlParams = new URLSearchParams(window.location.search);
+		NOLA.NOLA_ID = urlParams.get("NOLA_ID") || "";
+
+		if (NOLA.NOLA_ID.trim() !== "") {
+			await handleGetNOLA(Session.SessionId, NOLA.NOLA_ID, setNOLA);
 		}
+		
 		isLoading = false;
 	});
 
-	function toggleSort(column) {
-		if (sortColumn === column) {
-			sortAscending = !sortAscending;
-		} else {
-			sortColumn = column;
-			sortAscending = true;
+
+	async function confirmDelete() {
+		const userConfirmed = confirm('Are you sure you want to delete this NOLA record?\n\nThis action cannot be undone.');
+		if (userConfirmed) {
+			await handleDeleteNOLA(Session.SessionId, NOLA.NOLA_ID);
 		}
-	}
-
-	// Format DateOfTransaction to display only the date component
-	function formatDateOfTransaction(date) {
-		if (!date) return 'N/A';
-		const parsed = moment(date);
-		return parsed.isValid() ? parsed.format('YYYY-MM-DD') : 'Invalid Date';
-	}
-
-	// Filter rawRecords using several fields including NOLA_ID (hidden)
-	$: filteredRecords = rawRecords
-		.filter(record => {
-			const fullRecord = `
-				${record.FirstParty}
-				${record.LocationFirstParty}
-				${record.SecondParty}
-				${record.LocationSecondParty}
-				${record.TypeOfTransaction}
-				${record.DateOfTransaction}
-				${record.Act}
-				${record.Page}
-				${record.NotaryPublic}
-				${record.Volume}
-				${record.NameOfTranscriber}
-				${record.Notes}
-				${record.Parsed_Notes}
-				${record.Error_Notes}
-				${record.NOLA_ID}
-			`.toLowerCase();
-			return fullRecord.includes(searchQuery.toLowerCase());
-		})
-		.sort((a, b) => {
-			let valueA = a[sortColumn] ?? '';
-			let valueB = b[sortColumn] ?? '';
-
-			// For DateOfTransaction, treat values as dates
-			if (sortColumn === 'DateOfTransaction') {
-				valueA = a.DateOfTransaction ? new Date(a.DateOfTransaction) : new Date(0);
-				valueB = b.DateOfTransaction ? new Date(b.DateOfTransaction) : new Date(0);
-			}
-
-			// Convert strings to lowercase for case-insensitive sorting
-			if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-			if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-
-			if (valueA < valueB) return sortAscending ? -1 : 1;
-			if (valueA > valueB) return sortAscending ? 1 : -1;
-			return 0;
-		});
-	
-	function addRawRecord() {
-		// Navigate to a page to add a new raw_nola record.
-		window.location.href = '/RawNola?NOLA_ID=';
 	}
 </script>
 
@@ -124,61 +74,129 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/AdminMenu">Back to Menu</a>
+		<a href="/RawNOLAs">Back to NOLA Records</a>
 		<div class="ActionBox">
-			<div class="title-container">
-				<h3 class="title is-2">List of Raw NOLA Records</h3>
-				<button class="button is-primary" on:click={addRawRecord}>Add Record</button>
-			</div>
-			
 			<form>
+				<div class="title-container">
+					<h3 class="title is-2">Edit NOLA Record</h3>
+					{#if NOLA.NOLA_ID.length}
+						<button class="button is-danger" type="button" on:click={confirmDelete}>Delete</button>
+					{/if}
+				</div>
+
+				<!-- Read-Only NOLA_ID -->
+				<div class="control">
+					<div class="field">
+						<label class="label" for="NOLA_ID">NOLA ID</label>
+						<input class="input" type="text" id="NOLA_ID" bind:value={NOLA.NOLA_ID} readonly />
+					</div>
+				</div>
+
+				<br />
+
+				<!-- First Party -->
+				<div class="control">
+					<label class="label" for="FirstParty">First Party</label>
+					<div class="field">
+						<input class="input" type="text" id="FirstParty" bind:value={NOLA.FirstParty}  />
+					</div>
+				</div>
+
+				<!-- Location First Party -->
+				<div class="control">
+					<label class="label" for="LocationFirstParty">Location First Party</label>
+					<div class="field">
+						<input class="input" type="text" id="LocationFirstParty" bind:value={NOLA.LocationFirstParty} />
+					</div>
+				</div>
+
+				<!-- Second Party -->
+				<div class="control">
+					<label class="label" for="SecondParty">Second Party</label>
+					<div class="field">
+						<input class="input" type="text" id="SecondParty" bind:value={NOLA.SecondParty}  />
+					</div>
+				</div>
+
+				<!-- Location Second Party -->
+				<div class="control">
+					<label class="label" for="LocationSecondParty">Location Second Party</label>
+					<div class="field">
+						<input class="input" type="text" id="LocationSecondParty" bind:value={NOLA.LocationSecondParty} />
+					</div>
+				</div>
+
+				<!-- Type of Transaction -->
+				<div class="control">
+					<label class="label" for="TypeOfTransaction">Type of Transaction</label>
+					<div class="field">
+						<input class="input" type="text" id="TypeOfTransaction" bind:value={NOLA.TypeOfTransaction}  />
+					</div>
+				</div>
+
+				<!-- Date of Transaction -->
+				<div class="control">
+					<label class="label" for="DateOfTransaction">Date of Transaction</label>
+					<div class="field">
+						<input class="input" type="date" id="DateOfTransaction" bind:value={NOLA.DateOfTransaction} />
+					</div>
+				</div>
+
+				<!-- Act -->
+				<div class="control">
+					<label class="label" for="Act">Act</label>
+					<div class="field">
+						<input class="input" type="text" id="Act" bind:value={NOLA.Act} />
+					</div>
+				</div>
+
+				<!-- Page -->
+				<div class="control">
+					<label class="label" for="Page">Page</label>
+					<div class="field">
+						<input class="input" type="text" id="Page" bind:value={NOLA.Page} />
+					</div>
+				</div>
+
+				<!-- Notary Public -->
+				<div class="control">
+					<label class="label" for="NotaryPublic">Notary Public</label>
+					<div class="field">
+						<input class="input" type="text" id="NotaryPublic" bind:value={NOLA.NotaryPublic} />
+					</div>
+				</div>
+
+				<!-- Volume -->
+				<div class="control">
+					<label class="label" for="Volume">Volume</label>
+					<div class="field">
+						<input class="input" type="text" id="Volume" bind:value={NOLA.Volume} />
+					</div>
+				</div>
+
+				<!-- Name of Transcriber -->
+				<div class="control">
+					<label class="label" for="NameOfTranscriber">Name of Transcriber</label>
+					<div class="field">
+						<input class="input" type="text" id="NameOfTranscriber" bind:value={NOLA.NameOfTranscriber} />
+					</div>
+				</div>
+
+				<!-- Reference URL -->
+				<div class="control">
+					<label class="label" for="ReferenceURL">Reference URL</label>
+					<div class="field">
+						<input class="input" type="url" id="ReferenceURL" bind:value={NOLA.ReferenceURL} />
+					</div>
+				</div>
+
 				<div class="field">
 					<div class="control">
-						<input class="input" type="text" bind:value={searchQuery} placeholder="Search raw records..." />
+						<button class="button is-primary" type="button" on:click={() => handleSaveNOLA(Session.SessionId, NOLA, true)}>Save</button>
+
 					</div>
 				</div>
 			</form>
-			
-			<table>
-				<thead>
-					<tr>
-						<th on:click={() => toggleSort('FirstParty')}>First Party</th>
-						<th on:click={() => toggleSort('LocationFirstParty')}>Location (First Party)</th>
-						<th on:click={() => toggleSort('SecondParty')}>Second Party</th>
-						<th on:click={() => toggleSort('LocationSecondParty')}>Location (Second Party)</th>
-						<th on:click={() => toggleSort('TypeOfTransaction')}>Type</th>
-						<th on:click={() => toggleSort('DateOfTransaction')}>Date of Transaction</th>
-						<th on:click={() => toggleSort('Act')}>Act</th>
-						<th on:click={() => toggleSort('Page')}>Page</th>
-						<th on:click={() => toggleSort('NotaryPublic')}>Notary Public</th>
-						<th on:click={() => toggleSort('Volume')}>Volume</th>
-						<th on:click={() => toggleSort('NameOfTranscriber')}>Transcriber</th>
-						<th on:click={() => toggleSort('ReferenceURL')}>Reference URL</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredRecords as record}
-						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNola?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`}>
-							<td>{record.FirstParty || 'N/A'}</td>
-							<td>{record.LocationFirstParty || 'N/A'}</td>
-							<td>{record.SecondParty || 'N/A'}</td>
-							<td>{record.LocationSecondParty || 'N/A'}</td>
-							<td>{record.TypeOfTransaction || 'N/A'}</td>
-							<td>{formatDateOfTransaction(record.DateOfTransaction)}</td>
-							<td>{record.Act || 'N/A'}</td>
-							<td>{record.Page || 'N/A'}</td>
-							<td>{record.NotaryPublic || 'N/A'}</td>
-							<td>{record.Volume || 'N/A'}</td>
-							<td>{record.NameOfTranscriber || 'N/A'}</td>
-							<td>
-								{#if record.ReferenceURL}
-									<a href={record.ReferenceURL} target="_blank">View</a>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
 		</div>
 	</div>
 {/if}

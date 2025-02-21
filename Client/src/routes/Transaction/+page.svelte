@@ -18,9 +18,12 @@
 	import { handleDeleteTransaction } from './handleDeleteTransaction.js';
 	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
 	import { handleSaveTransactionHuman } from './handleSaveTransactionHuman.js';
+	import { handleDeleteTransactionHuman } from './handleDeleteTransactionHuman.js';
+	import { handleGetRawNolas } from './handleGetRawNolas.js';
+
 	import Select from 'svelte-select';
 	import moment from 'moment';
-
+	let rawNolaRecords = [];
 	let transaction = {
 		date_circa: '',
 		date_accuracy: 'D',
@@ -52,19 +55,14 @@
 		transactionId = getTransactionIdFromURL();
 
 		if (transactionId) {
+			// Fetch transaction data
 			const data = await handleGetTransaction(Session.SessionId, transactionId);
 			if (data) {
 				transaction = { ...data };
 
-				// Ensure FirstParties and SecondParties are parsed correctly
-				try {
-					transaction.FirstParties = JSON.parse(transaction.FirstParties || "[]");
-					transaction.SecondParties = JSON.parse(transaction.SecondParties || "[]");
-				} catch (error) {
-					console.error("Error parsing parties:", error);
-					transaction.FirstParties = [];
-					transaction.SecondParties = [];
-				}
+				// Ensure FirstParties and SecondParties are valid arrays
+				transaction.FirstParties = transaction.FirstParties || [];
+				transaction.SecondParties = transaction.SecondParties || [];
 
 				// Convert date format
 				if (transaction.date_circa) {
@@ -73,10 +71,14 @@
 						transaction.date_circa = parsedDate.format("YYYY-M-D");
 					}
 				}
-				console.log(transaction.FirstParties)
-				console.log(transaction.SecondParties)
-			}
 
+				// Ensure transaction has NOLA_ID
+				if (transaction.NOLA_ID) {
+					await handleGetRawNolas(Session.SessionId, [transaction.NOLA_ID], (records) => {
+						rawNolaRecords = records;
+					});
+				}
+			}
 		}
 
 		// Fetch humans and format correctly for `svelte-select`
@@ -118,6 +120,35 @@
 		isLoading = false;
 	});
 
+	function toggleSort(column) {
+		if (sortColumn === column) {
+			sortDirection *= -1; // Reverse direction if already sorting by this column
+		} else {
+			sortColumn = column;
+			sortDirection = 1;
+		}
+
+		filteredRecords = [...rawNolaRecords].sort((a, b) => {
+			let valA = a[column] || '';
+			let valB = b[column] || '';
+
+			// Convert dates to timestamps for sorting
+			if (column === 'DateOfTransaction') {
+				valA = new Date(valA).getTime();
+				valB = new Date(valB).getTime();
+			}
+
+			// Handle string and numeric sorting
+			if (typeof valA === 'string') valA = valA.toLowerCase();
+			if (typeof valB === 'string') valB = valB.toLowerCase();
+
+			return valA > valB ? sortDirection : valA < valB ? -sortDirection : 0;
+		});
+	}
+
+	function formatDateOfTransaction(date) {
+		return date ? new Date(date).toLocaleDateString() : 'N/A';
+	}
 	// Format displayed date based on accuracy
 	function getFormattedDate() {
 		if (!transaction.date_circa) return "";
@@ -137,11 +168,12 @@
 
 	// Helper function to convert centimeters to inches
 	function cmToInches(cm) {
-		return cm ? (cm / 2.54).toFixed(2) : 'N/A';
+		return cm ? (cm / 2.54).toFixed(2) : '';
 	}
 
 	// Helper function to format birthdate based on accuracy
 	function formatBirthDate(date, accuracy) {
+		console.log("date",date)
 		if (!date) return 'N/A';
 		const mDate = moment(date);
 		switch(accuracy) {
@@ -193,8 +225,25 @@
 
 	
 
-	// Function to calculate Birthdate based on Age (years + months)
+	// Function to get the formatted BirthDate based on accuracy
 	function calculateBirthDate(human) {
+		// If BirthDate exists from the server, use it and format it based on BirthDateAccuracy
+		if (human.BirthDate) {
+			let birthDate = moment(human.BirthDate);
+			if (!birthDate.isValid()) return 'N/A';
+
+			// Format based on accuracy
+			switch (human.BirthDateAccuracy) {
+				case 'D': return birthDate.format('YYYY-MM-DD'); // Full date
+				case 'M': return birthDate.format('YYYY-MM');    // Year & month only
+				case 'Y': return birthDate.format('YYYY');       // Year only
+				default: return 'N/A';
+			}
+		}
+
+		console.log("Calculating BirthDate for:", human);
+
+		// If BirthDate is missing, calculate based on transaction date and age
 		if (!transaction.date_circa || (!human.AgeYears && !human.AgeMonths)) {
 			return 'N/A';
 		}
@@ -215,6 +264,7 @@
 			default: return 'N/A';
 		}
 	}
+
 
 	async function addHumanToTransaction() {
 		
@@ -444,6 +494,7 @@
 					<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
 				{/if}
 			</div>
+			
 		</form>
 		
 
@@ -483,11 +534,29 @@
 						<td>{human.AgeYears || ''}</td>
 						<td>{human.AgeMonths || ''}</td>
 						<td>{calculateBirthDate(human)}</td>
-						<td>{human.BirthDateAccuracy || ''}</td>
+						<td>
+							{#if human.BirthDateAccuracy === 'D'}
+								Day
+							{:else if human.BirthDateAccuracy === 'M'}
+								Month
+							{:else if human.BirthDateAccuracy === 'Y'}
+								Year
+							{:else}
+								Unknown
+							{/if}
+						</td>
 						<td>${human.Price || ''}</td> <!-- NEW PRICE COLUMN -->
 						<td>
-							<button class="button is-danger is-small" type="button" on:click={e => removeHumanFromTransaction(index, e)}>Remove</button>
+							<button class="button is-danger is-small" 
+								type="button" 
+								on:click={e => {
+									e.stopPropagation(); // Prevent row click redirect
+									handleDeleteTransactionHuman(Session.SessionId, transactionId, human.HumanId);
+								}}>
+								Remove
+							</button>
 						</td>
+						
 					</tr>
 				{/each}
 
@@ -566,6 +635,43 @@
 				{/each}
 			</ul>
 		</div>
+
+		<h4 class="title is-4">NOLA Records</h4>
+
+		{#if rawNolaRecords.length > 0}
+			<table>
+				<thead>
+					<tr>
+						
+						<th>First Party</th>
+						<th>Second Party</th>
+						<th>Type</th>
+						<th>Date of Transaction</th>
+						<th>Reference URL</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each rawNolaRecords as record}
+						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNola?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
+							<td>{record.DateOfTransaction ? new Date(record.DateOfTransaction).toLocaleDateString() : 'N/A'}</td>
+							<td>{record.TypeOfTransaction || 'N/A'}</td>
+							
+							<td>{record.FirstParty || 'N/A'}</td>
+							<td>{record.SecondParty || 'N/A'}</td>
+							<td>
+								{#if record.ReferenceURL}
+									<a href={record.ReferenceURL} target="_blank">View</a>
+								{/if}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{:else}
+			<p>No associated NOLA records found.</p>
+		{/if}
+
+
 	</div>
 
 	
