@@ -8,7 +8,7 @@ def get_roles(Role):
 
 	# Construct the SQL query
 	query = "SELECT *"
-	query += " FROM Roles WHERE Role like %s"
+	query += " from roles WHERE Role like %s"
 	values = (Role + '%')
 
 

@@ -1,14 +1,13 @@
-
 from _Lib import Database
 from _Lib.Debugger import Debugger
-from _Lib import History
+# from _Lib import History
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .SaveBusiness import save_business
 from .DeleteBusiness import delete_business
 from .GetBusiness import get_business
 from .GetBusinessHumans import get_BusinessHumans
-from .GetHumans import get_Humans
+from .GetHumans import get_humans
 from .SaveBusinessHuman import save_BusinessHuman
 from .DeleteBusinessHuman import Delete_BusinessHuman
 from .GetRoles import get_roles
@@ -29,7 +28,7 @@ def SaveBusiness():
 
 		# Call the save_business function from SaveBusiness.py with the extracted data
 		result = save_business(BusinessId, BusinessName, LocationId)
-		History.SaveHistory(business_data,"Business", "BusinessId", result["BusinessId"])
+		# History.SaveHistory(business_data,"business", "BusinessId", result["BusinessId"])
 
 		return result
 	except Exception as e:
@@ -49,7 +48,7 @@ def DeleteBusiness():
 		BusinessId = business_data.get('BusinessId')
 		# Call the delete_business function from DeleteBusiness.py
 		result = delete_business(BusinessId)
-		History.SaveHistory(business_data,"Business", "BusinessId",BusinessId)
+		# History.SaveHistory(business_data,"business", "BusinessId",BusinessId)
 		return result
 	except Exception as e:
 		
@@ -93,7 +92,7 @@ def GetHumans():
 		business_data = request.args.to_dict()
 
 		# Call the get_business function from GetBusiness.py
-		result = get_Humans()
+		result = get_humans()
 		return result
 	except Exception as e:
 		
@@ -112,7 +111,7 @@ def SaveBusinessHuman():
 
 		# Call the save_business function from SaveBusiness.py with the extracted data
 		result = save_BusinessHuman(BusinessId, HumanId, RoleId)
-		History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId:RoleId", BusinessId+":"+HumanId+":"+RoleId)
+		# History.SaveHistory(business_data,"businesshumans", "BusinessId:HumanId:RoleId", BusinessId+":"+HumanId+":"+RoleId)
 
 		return result
 	except Exception as e:
@@ -131,7 +130,7 @@ def DeleteBusinessHuman():
 		HumanId = business_data.get('HumanId')
 		# Call the delete_business function from DeleteBusiness.py
 		result = Delete_BusinessHuman(BusinessId,HumanId)
-		History.SaveHistory(business_data,"BusinessHumans", "BusinessId:HumanId",BusinessId+":"+HumanId)
+		# History.SaveHistory(business_data,"businesshumans", "BusinessId:HumanId",BusinessId+":"+HumanId)
 		return result
 	except Exception as e:
 		
@@ -156,9 +155,9 @@ def LastModified():
 	try:
 		# Get the business data from the request
 		business_data = request.args.to_dict()
-
+		result="unknown"
 		# Get the business ID from the request
-		result = History.LastModified("Business", "BusinessId", business_data.get('BusinessId'))
+		# result = History.LastModified("business", "BusinessId", business_data.get('BusinessId'))
 		return result
 	except Exception as e:
 		return Debugger(e)

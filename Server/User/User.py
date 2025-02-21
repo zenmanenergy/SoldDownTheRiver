@@ -29,7 +29,7 @@ def SaveUser():
 
 		# Call the save_user function from SaveUser.py with the extracted data
 		result = save_user(UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear,UserType)
-		History.SaveHistory(user_data,"Users", "UserId", result["UserId"])
+		History.SaveHistory(user_data,"users", "UserId", result["UserId"])
 
 		return result
 	except Exception as e:
@@ -48,7 +48,7 @@ def DeleteUser():
 		UserId = user_data.get('UserId')
 		# Call the delete_user function from DeleteUser.py
 		result = delete_user(UserId)
-		History.SaveHistory(user_data,"Users", "UserId", UserId)
+		History.SaveHistory(user_data,"users", "UserId", UserId)
 		return result
 	except Exception as e:
 		return Debugger(e)

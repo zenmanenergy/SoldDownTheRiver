@@ -5,7 +5,7 @@ def get_possible_Families(HumanId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * FROM Humans where HumanId<>%s and HumanId not in (select FamilyHumanId from Families where Families.HumanId=%s) order by LastName, FirstName"
+	query = "SELECT * from humans where HumanId<>%s and HumanId not in (select FamilyHumanId from families where families.HumanId=%s) order by LastName, FirstName"
 	values = (HumanId,HumanId)
 
 	# Execute the query and get the results

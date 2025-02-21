@@ -5,8 +5,8 @@ def get_ships():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Ships.ShipId  and History.TableName='Ships' and History.KeyName='ShipId') LastModified"
-	query += "  FROM Ships ORDER BY ShipType, Size"
+	query = "SELECT *, (select max(dateAdded) from history where history.KeyValue=ships.ShipId  and history.TableName='ships' and history.KeyName='ShipId') LastModified"
+	query += "  from ships ORDER BY ShipType, Size"
 	values = ()
 
 	# Execute the query and get the results

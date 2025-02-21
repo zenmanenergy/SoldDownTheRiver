@@ -74,10 +74,12 @@ function go(LocationId) {
 				<tbody>
 					{#each filteredLocations as location}
 						<tr style="cursor: pointer;" on:click={() => go(location.LocationId)}>
-							<td>{location.Address}</td>
-							<td>{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : location.County}</td> <!-- Updated display logic -->
-							<td>{location.State}</td>
-							<td>{location.Country}</td>
+							<td>{location.Address || ''}</td>
+							<td>
+								{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : (location.County || '')}
+							</td>
+							<td>{location.State || ''}</td>
+							<td>{location.Country || ''}</td>
 						</tr>
 					{/each}
 				</tbody>

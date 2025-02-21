@@ -17,10 +17,10 @@ def LastModified(Table, KeyName,KeyValue ):
 	if KeyValue:
 	
 		# Construct the SQL query
-		query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and KeyName = %s and KeyValue = %s"
+		query = "SELECT TableName,max(DateAdded) LastModified,users.UserId,users.FirstName, users.LastName from history join users on users.UserId=history.UserId WHERE TableName = %s and KeyName = %s and KeyValue = %s"
 		values = (Table, KeyName, KeyValue)
 	else:
-		query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and KeyName = %s group by %s"
+		query = "SELECT TableName,max(DateAdded) LastModified,users.UserId,users.FirstName, users.LastName from history join users on users.UserId=history.UserId WHERE TableName = %s and KeyName = %s group by %s"
 		values = (Table, KeyName , KeyName)
 
 	# Execute the query and get the results
@@ -42,7 +42,7 @@ def LastModifiedArray(Data):
 	Response=[]
 	for key in Data:
 		# Construct the SQL query
-		query = "SELECT TableName,max(DateAdded) LastModified,Users.UserId,Users.FirstName, Users.LastName FROM History join Users on Users.UserId=History.UserId WHERE TableName = %s and KeyName = %s and KeyValue = %s"
+		query = "SELECT TableName,max(DateAdded) LastModified,users.UserId,users.FirstName, users.LastName from history join users on users.UserId=history.UserId WHERE TableName = %s and KeyName = %s and KeyValue = %s"
 		values = (key.get("Table"),key.get("KeyName"),key.get("KeyValue"))
 
 		print(query % tuple(map(repr, values)))
@@ -73,7 +73,7 @@ def SaveHistory(Data, Table, KeyName,KeyValue ):
 	if SessionId=="ImportData":
 		UserId="1"
 	else:
-		query = f"SELECT UserId FROM UserSessions WHERE SessionId = '{SessionId}'"
+		query = f"SELECT UserId from usersessions WHERE SessionId = '{SessionId}'"
 		
 		# print(query)
 
@@ -88,9 +88,9 @@ def SaveHistory(Data, Table, KeyName,KeyValue ):
 	now = datetime.datetime.now(gmt_tz)
 	# print(now)
 	now_str = now.strftime('%Y-%m-%d %H:%M:%S')
-	HistoryId="HIS"+str(uuid.uuid4())
-	query="INSERT INTO History (HistoryId, TableName, KeyName, KeyValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-	values=(HistoryId, Table, KeyName, KeyValue, UserId, json.dumps(Data),now_str)
+	historyId="HIS"+str(uuid.uuid4())
+	query="INSERT into history (historyId, TableName, KeyName, KeyValue,UserId,  Data,DateAdded) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+	values=(historyId, Table, KeyName, KeyValue, UserId, json.dumps(Data),now_str)
 	
 	# print(query % tuple(map(repr, values)))
 	# Add a comment

@@ -28,7 +28,7 @@ ALTER TABLE `SoldDownTheRiver`.`users`
 RENAME TO  `SoldDownTheRiver`.`Users_` ;
 
 ALTER TABLE `SoldDownTheRiver`.`usersessions` 
-RENAME TO  `SoldDownTheRiver`.`UserSessions_` ;
+RENAME TO  `SoldDownTheRiver`.`usersessions_` ;
 
 ALTER TABLE `SoldDownTheRiver`.`voyagecargo` 
 RENAME TO  `SoldDownTheRiver`.`VoyageCargo_` ;
@@ -71,8 +71,8 @@ RENAME TO  `SoldDownTheRiver`.`Transactions` ;
 ALTER TABLE `SoldDownTheRiver`.`Users_` 
 RENAME TO  `SoldDownTheRiver`.`Users` ;
 
-ALTER TABLE `SoldDownTheRiver`.`UserSessions_` 
-RENAME TO  `SoldDownTheRiver`.`UserSessions` ;
+ALTER TABLE `SoldDownTheRiver`.`usersessions_` 
+RENAME TO  `SoldDownTheRiver`.`usersessions` ;
 
 ALTER TABLE `SoldDownTheRiver`.`VoyageCargo_` 
 RENAME TO  `SoldDownTheRiver`.`VoyageCargo` ;

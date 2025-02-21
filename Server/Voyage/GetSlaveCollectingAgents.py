@@ -7,7 +7,7 @@ def get_SlaveCollectingAgents():
 
 	# Construct the SQL sql
 	sql = f"SELECT * "
-	sql += f"  FROM Humans join HumanRoles on Humans.HumanId=HumanRoles.HumanId where HumanRoles.RoleId='SlaveCollectingAgent'"
+	sql += f"  from humans join humanroles on humans.HumanId=humanroles.HumanId where humanroles.RoleId='SlaveCollectingAgent'"
 	sql += f" ORDER BY FirstName, LastName"
 	print(sql)
 	# Execute the sql and get the results

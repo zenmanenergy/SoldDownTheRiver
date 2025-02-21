@@ -6,7 +6,7 @@ def get_humanRoles(HumanId):
 
 	# Construct the SQL query
 	query = "SELECT roles.RoleId,roles.Role"
-	query += f" FROM HumanRoles join roles on roles.RoleId=HumanRoles.RoleId"
+	query += f" from humanRoles join roles on roles.RoleId=HumanRoles.RoleId"
 	query += f" where HumanRoles.HumanId = '{HumanId}'"
 	print(query)
 	# Execute the query and get the results

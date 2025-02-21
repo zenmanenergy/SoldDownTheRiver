@@ -1,5 +1,3 @@
-
-
 from _Lib import Database
 from _Lib.Debugger import Debugger
 from flask import Blueprint, request
@@ -28,7 +26,7 @@ def LastModified():
 	try:
 
 		# Get the business ID from the request
-		# result = History.LastModified("Business", "BusinessId")
+		# result = History.LastModified("business", "BusinessId")
 		# return result
 		return "unknown"
 	except Exception as e:

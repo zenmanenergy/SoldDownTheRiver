@@ -8,7 +8,7 @@ def get_businesses(BusinessName):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * FROM Businesses WHERE BusinessName like %s"
+	query = "SELECT * from businesses WHERE BusinessName like %s"
 	values = (BusinessName + '%',)
 
 

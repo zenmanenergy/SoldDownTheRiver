@@ -4,23 +4,23 @@ def delete_human(HumanId):
 	
 	cursor, connection = Database.ConnectToDatabase()
 
-	query = f"DELETE FROM BusinessHumans WHERE HumanId = '{HumanId}'"
+	query = f"DELETE from businesshumans WHERE HumanId = '{HumanId}'"
 	cursor.execute(query)
 	connection.commit()
 	
-	query = f"DELETE FROM Families WHERE HumanId = '{HumanId}' or FamilyHumanId = '{HumanId}'"
+	query = f"DELETE from families WHERE HumanId = '{HumanId}' or FamilyHumanId = '{HumanId}'"
 	cursor.execute(query)
 	connection.commit()
 
-	query = f"DELETE FROM HumansAKA WHERE HumanId = '{HumanId}'"
+	query = f"DELETE from humansaka WHERE HumanId = '{HumanId}'"
 	cursor.execute(query)
 	connection.commit()
 
-	query = f"DELETE FROM TransactionHumans WHERE HumanId = '{HumanId}'"
+	query = f"DELETE FROM transactionhumans WHERE HumanId = '{HumanId}'"
 	cursor.execute(query)
 	connection.commit()
 
-	query = f"DELETE FROM Humans WHERE HumanId = '{HumanId}'"
+	query = f"DELETE from humans WHERE HumanId = '{HumanId}'"
 	cursor.execute(query)
 	connection.commit()
 	

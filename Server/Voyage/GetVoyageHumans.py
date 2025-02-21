@@ -7,10 +7,10 @@ def get_VoyageHumans(VoyageId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL sql
-	sql = "SELECT Humans.*, VoyageHumans.*,VoyageHumans.notes as VoyageNotes, Roles.RoleId,Roles.Role  "
-	sql +=" FROM Humans join VoyageHumans on Humans.HumanId=VoyageHumans.HumanId "
-	sql +=" left join Roles on VoyageHumans.RoleId=Roles.RoleId "
-	sql +=f" where VoyageHumans.VoyageId='{VoyageId}' order by Firstname, Lastname"
+	sql = "SELECT humans.*, voyagehumans.*,voyagehumans.notes as VoyageNotes, Roles.RoleId,Roles.Role  "
+	sql +=" from humans join voyagehumans on humans.HumanId=voyagehumans.HumanId "
+	sql +=" left join Roles on voyagehumans.RoleId=Roles.RoleId "
+	sql +=f" where voyagehumans.VoyageId='{VoyageId}' order by Firstname, Lastname"
 
 	print(sql)
 	cursor.execute(sql)

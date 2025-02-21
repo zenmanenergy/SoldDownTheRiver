@@ -2,7 +2,7 @@ from _Lib import Database
 
 def delete_business(business_id):
 	# Delete the specified row from the Businesses table
-	query = f"DELETE FROM Businesses WHERE BusinessId = '{business_id}'"
+	query = f"DELETE from businesses WHERE BusinessId = '{business_id}'"
 	cursor, connection = Database.ConnectToDatabase()
 	cursor.execute(query)
 	connection.commit()

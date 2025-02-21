@@ -7,7 +7,7 @@ def get_locations():
 
 	# Construct the SQL query
 	query = "SELECT *"
-	query +="   FROM Locations order by City"
+	query +="   from locations order by City"
 	# query +=" limit 50"
 	values = ()
 

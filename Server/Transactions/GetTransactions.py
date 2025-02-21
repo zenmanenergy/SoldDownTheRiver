@@ -37,7 +37,7 @@ def get_transactions():
 		l.County AS LocationCounty,
 		l.State_abbr AS LocationStateAbbr
 
-	FROM transactions t
+	from transactions t
 	LEFT JOIN parties p1 ON t.FirstPartyId = p1.PartyId
 	LEFT JOIN partyhumans ph1 ON p1.PartyId = ph1.PartyId
 	LEFT JOIN humans h1 ON ph1.HumanId = h1.HumanId

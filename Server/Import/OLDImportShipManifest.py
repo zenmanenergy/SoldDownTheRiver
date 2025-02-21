@@ -11,14 +11,14 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 	# ['ShipName', 'ShipSize', 'ShipType', 'ShipHomePort', 'ShipHomePortCity', 'ShipHomePortState', 'CaptainLastName', 'CaptainFirstName', 'VoyageStartDate', 'VoyageEndDate']
 	
 	try:
-		query = "select LocationId from Locations where City = %s and State=%s and Address is null"
+		query = "select LocationId from locations where City = %s and State=%s and Address is null"
 		values=(ShipInfo['ShipHomePortCity'],ShipInfo['ShipHomePortState'],)
 		cursor.execute(query, values)
 		result = cursor.fetchone()
 
 		if result is None:
 			ShipHomePortLocationId = "LOC" + str(uuid.uuid4())
-			query = "INSERT INTO Locations (LocationId, City, State) VALUES (%s, %s, %s)"
+			query = "INSERT into locations (LocationId, City, State) VALUES (%s, %s, %s)"
 			values = (ShipHomePortLocationId, ShipInfo['ShipHomePortCity'],ShipInfo['ShipHomePortState'],)
 			cursor.execute(query, values)
 			
@@ -27,13 +27,13 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 		print("ShipHomePortLocationId",ShipHomePortLocationId)
 
-		query = "select ShipId from Ships where ShipName = %s and ShipType=%s"
+		query = "select ShipId from ships where ShipName = %s and ShipType=%s"
 		values=(ShipInfo['ShipName'], ShipInfo['ShipType'])
 		cursor.execute(query, values,)
 		result = cursor.fetchone()
 		if result is None:
 			ShipId = "SHP" + str(uuid.uuid4())
-			query = "INSERT INTO Ships (ShipId, ShipName,ShipType,Size,HomePortLocationId) VALUES (%s, %s, %s, %s, %s)"
+			query = "INSERT into ships (ShipId, ShipName,ShipType,Size,HomePortLocationId) VALUES (%s, %s, %s, %s, %s)"
 			values = (ShipId, ShipInfo['ShipName'], ShipInfo['ShipType'],ShipInfo['ShipSize'],ShipHomePortLocationId,)
 			cursor.execute(query, values)
 		else:
@@ -41,7 +41,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 		print("ShipId",ShipId)
 
-		query = "select Humans.HumanId from Humans "
+		query = "select Humans.HumanId from humans "
 		query += " where Humans.FirstName = %s and Humans.LastName=%s "
 		values=(ShipInfo['CaptainFirstName'], ShipInfo['CaptainLastName'],)
 		
@@ -50,7 +50,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 		if result is None:
 			CaptainHumanId = "HUM" + str(uuid.uuid4())
-			query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+			query = "INSERT into humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
 		
 			values = (CaptainHumanId, ShipInfo['CaptainFirstName'], ShipInfo['CaptainLastName'],)
 			cursor.execute(query, values)
@@ -58,14 +58,14 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 			CaptainHumanId = result['HumanId']
 
 
-		query = "select LocationId from Locations where City = %s and State=%s and Address is null"
+		query = "select LocationId from locations where City = %s and State=%s and Address is null"
 		values=("Norfolk","Virginia",)
 		
 		cursor.execute(query, values)
 		result = cursor.fetchone()
 		if result is None:
 			StartLocationId = "LOC" + str(uuid.uuid4())
-			query = "INSERT INTO Locations(LocationId, City, State) VALUES (%s, %s, %s) "
+			query = "INSERT into locations(LocationId, City, State) VALUES (%s, %s, %s) "
 		
 			values = (StartLocationId, OwnerCity, OwnerState,)
 			cursor.execute(query, values)
@@ -73,14 +73,14 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 			StartLocationId = result['LocationId']
 
 
-		query = "select LocationId from Locations where City = %s and State=%s and Address is null"
+		query = "select LocationId from locations where City = %s and State=%s and Address is null"
 		values=("New Orleans","Louisiana",) 
 		
 		cursor.execute(query, values)
 		result = cursor.fetchone()
 		if result is None:
 			EndLocationId = "LOC" + str(uuid.uuid4())
-			query = "INSERT INTO Locations(LocationId, City, State) VALUES (%s, %s, %s) "
+			query = "INSERT into locations(LocationId, City, State) VALUES (%s, %s, %s) "
 		
 			values = (EndLocationId, OwnerCity, OwnerState,)
 			cursor.execute(query, values)
@@ -93,7 +93,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 
-		query = "select VoyageId from Voyages where ShipId = %s and StartDate=%s and EndDate=%s"
+		query = "select VoyageId from voyages where ShipId = %s and StartDate=%s and EndDate=%s"
 		values=(ShipId,ShipInfo['VoyageStartDate'], ShipInfo['VoyageEndDate'],) 
 		
 		cursor.execute(query, values)
@@ -102,7 +102,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 			VoyageId = ShipInfo['VoyageId'] + "-"+ str(uuid.uuid4())
 			
-			query = "INSERT INTO Voyages(VoyageId, ShipId, CaptainHumanId,StartLocationId,EndLocationId,StartDate,EndDate) VALUES (%s, %s, %s,%s, %s, %s,%s) "
+			query = "INSERT into voyages(VoyageId, ShipId, CaptainHumanId,StartLocationId,EndLocationId,StartDate,EndDate) VALUES (%s, %s, %s,%s, %s, %s,%s) "
 		
 			values = (VoyageId[:39], ShipId, CaptainHumanId,StartLocationId,EndLocationId,ShipInfo['VoyageStartDate'], ShipInfo['VoyageEndDate'],)
 			cursor.execute(query, values)
@@ -115,14 +115,14 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 		# ['EnslavedLastName', 'EnslavedFirstName', 'EnslavedGender', 'EnslavedHeightInInches', 'EnslavedColor', 'EnslavedBirthDateAccuracy', 'EnslavedBirthDate', 'OwnerStartFirstName', 'OwnerStartLastName', 'OwnerStartCity', 'OwnerStartState', 'ShippingAgentFirstName', 'ShippingAgentLastName', 'OwnerEndFirstName', 'OwnerEndLastName', 'Notes', 'Transcriber']
 		for row in ShipManifest:
-			query = "select LocationId from Locations where City = %s and State=%s and Address is null"
+			query = "select LocationId from locations where City = %s and State=%s and Address is null"
 			values=(row['OwnerStartCity'],row['OwnerStartState'],)
 			
 			cursor.execute(query, values)
 			result = cursor.fetchone()
 			if result is None:
 				OwnerStartLocationId = "LOC" + str(uuid.uuid4())
-				query = "INSERT INTO Locations(LocationId, City, State) VALUES (%s, %s, %s) "
+				query = "INSERT into locations(LocationId, City, State) VALUES (%s, %s, %s) "
 			
 				values = (OwnerStartLocationId, row['OwnerStartCity'],row['OwnerStartState'],)
 				cursor.execute(query, values)
@@ -131,7 +131,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 
-			query = "select HumanId from Humans where Humans.FirstName = %s and Humans.LastName=%s"
+			query = "select HumanId from humans where Humans.FirstName = %s and Humans.LastName=%s"
 			values=(row['OwnerStartFirstName'],row['OwnerStartLastName'],)
 			
 			cursor.execute(query, values)
@@ -139,7 +139,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 			if result is None:
 				OwnerStartHumanId = "HUM" + str(uuid.uuid4())
-				query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+				query = "INSERT into humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
 				
 				values = (OwnerStartHumanId, row['OwnerStartFirstName'],row['OwnerStartLastName'],)
 				cursor.execute(query, values)
@@ -147,12 +147,12 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 				OwnerStartHumanId=result['HumanId']
 			
 			OwnerStartBusinessId = "BUS" + str(uuid.uuid4())
-			query = "INSERT INTO Businesses(BusinessId, BusinessName, LocationId) VALUES (%s, %s, %s) "
+			query = "INSERT into businesses(BusinessId, BusinessName, LocationId) VALUES (%s, %s, %s) "
 		
 			values = (OwnerStartBusinessId, row['OwnerStartFirstName']+" "+row['OwnerStartLastName'],OwnerStartLocationId,)
 			cursor.execute(query, values)
 
-			query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+			query = "INSERT into businessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
 		
 			values = (OwnerStartBusinessId, OwnerStartHumanId,"ROL-SLV-OWN-8f-82-49b-8aee-1b5b6e696ca9")
 			cursor.execute(query, values)
@@ -161,14 +161,14 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 
-			query = "select LocationId from Locations where City = %s and State=%s and Address is null"
+			query = "select LocationId from locations where City = %s and State=%s and Address is null"
 			values=(row['OwnerEndCity'],row['OwnerEndState'],)
 			
 			cursor.execute(query, values)
 			result = cursor.fetchone()
 			if result is None:
 				OwnerEndLocationId = "LOC" + str(uuid.uuid4())
-				query = "INSERT INTO Locations(LocationId, City, State) VALUES (%s, %s, %s) "
+				query = "INSERT into locations(LocationId, City, State) VALUES (%s, %s, %s) "
 			
 				values = (OwnerEndLocationId, row['OwnerEndCity'],row['OwnerEndState'],)
 				cursor.execute(query, values)
@@ -177,7 +177,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 
-			query = "select HumanId from Humans  where Humans.FirstName = %s and Humans.LastName=%s"
+			query = "select HumanId from humans  where Humans.FirstName = %s and Humans.LastName=%s"
 			values=(row['OwnerEndFirstName'],row['OwnerEndLastName'],)
 			
 			cursor.execute(query, values)
@@ -185,19 +185,19 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 			if result is None:
 				OwnerEndHumanId = "HUM" + str(uuid.uuid4())
-				query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+				query = "INSERT into humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
 				
 				values = (OwnerEndHumanId, row['OwnerEndFirstName'],row['OwnerEndLastName'],)
 				cursor.execute(query, values)
 			else:
 				OwnerEndHumanId=result['HumanId']
 			OwnerEndBusinessId = "BUS" + str(uuid.uuid4())
-			query = "INSERT INTO Businesses(BusinessId, BusinessName, LocationId) VALUES (%s, %s, %s) "
+			query = "INSERT into businesses(BusinessId, BusinessName, LocationId) VALUES (%s, %s, %s) "
 		
 			values = (OwnerEndBusinessId, row['OwnerEndFirstName']+" "+row['OwnerEndLastName'],OwnerEndLocationId,)
 			cursor.execute(query, values)
 
-			query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+			query = "INSERT into businessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
 		
 			values = (OwnerEndBusinessId, OwnerEndHumanId,"ROL-SLV-OWN-8f-82-49b-8aee-1b5b6e696ca9")
 			cursor.execute(query, values)
@@ -205,7 +205,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 			ShippingAgentLocationId=None
-			query = "select HumanId from Humans  where Humans.FirstName = %s and Humans.LastName=%s"
+			query = "select HumanId from humans  where Humans.FirstName = %s and Humans.LastName=%s"
 			values=(row['ShippingAgentFirstName'],row['ShippingAgentLastName'],)
 			
 			cursor.execute(query, values)
@@ -213,19 +213,19 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 			if result is None:
 				ShippingAgentLastNameHumanId = "HUM" + str(uuid.uuid4())
-				query = "INSERT INTO Humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
+				query = "INSERT into humans(HumanId,FirstName,LastName) VALUES (%s, %s, %s) "
 				
 				values = (ShippingAgentLastNameHumanId, row['ShippingAgentFirstName'],row['ShippingAgentLastName'],)
 				cursor.execute(query, values)
 			else:
 				ShippingAgentLastNameHumanId=result['HumanId']
 			ShippingAgentBusinessId = "BUS" + str(uuid.uuid4())
-			query = "INSERT INTO Businesses(BusinessId, BusinessName, LocationId) VALUES (%s, %s, %s) "
+			query = "INSERT into businesses(BusinessId, BusinessName, LocationId) VALUES (%s, %s, %s) "
 		
 			values = (ShippingAgentBusinessId, row['ShippingAgentFirstName']+" "+row['ShippingAgentLastName'],ShippingAgentLocationId,)
 			cursor.execute(query, values)
 
-			query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+			query = "INSERT into businessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
 		
 			values = (ShippingAgentBusinessId, ShippingAgentLastNameHumanId,"ROL-SLV-OWN-8f-82-49b-8aee-1b5b6e696ca9")
 			cursor.execute(query, values)
@@ -235,7 +235,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 
-			query = "select HumanId from Humans  where Humans.FirstName = %s and Humans.LastName=%s and BirthDate=%s"
+			query = "select HumanId from humans  where Humans.FirstName = %s and Humans.LastName=%s and BirthDate=%s"
 			values=(row['EnslavedFirstName'],row['EnslavedLastName'],row['EnslavedBirthDate'])
 			
 			cursor.execute(query, values)
@@ -243,7 +243,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 			if result is None:
 				HumanId = "HUM" + str(uuid.uuid4())
-				query = "INSERT INTO Humans(HumanId,FirstName,LastName, BirthDate, Gender, HeightInInches, RaceId) VALUES (%s, %s, %s, %s, %s, %s, %s) "
+				query = "INSERT into humans(HumanId,FirstName,LastName, BirthDate, Gender, HeightInInches, RaceId) VALUES (%s, %s, %s, %s, %s, %s, %s) "
 				
 				values = (HumanId, row['EnslavedFirstName'], row['EnslavedLastName'], row['EnslavedBirthDate'], row['EnslavedGender'], float(row['EnslavedHeightInInches']), row['EnslavedColor'],)
 				cursor.execute(query,values)
@@ -251,19 +251,19 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 				HumanId = result['HumanId']
 
 
-			query = "INSERT INTO HumanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
+			query = "INSERT into humanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
 
 			values = (HumanId, OwnerStartBusinessId,ShipInfo['VoyageStartDate'])
 			cursor.execute(query, values)
 			connection.commit()
 
-			query = "INSERT INTO HumanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
+			query = "INSERT into humanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
 
 			values = (HumanId, OwnerEndBusinessId,ShipInfo['VoyageEndDate'])
 			cursor.execute(query, values)
 			connection.commit()
 			
-			query = "INSERT INTO VoyageHumans(VoyageId, HumanId, RoleId, OwnerStartBusinessId, OwnerEndBusinessId, ShippingAgentBusinessId, Notes) VALUES (%s, %s, %s,%s, %s, %s, %s) "
+			query = "INSERT into voyageHumans(VoyageId, HumanId, RoleId, OwnerStartBusinessId, OwnerEndBusinessId, ShippingAgentBusinessId, Notes) VALUES (%s, %s, %s,%s, %s, %s, %s) "
 
 			query += "ON DUPLICATE KEY UPDATE OwnerStartBusinessId=values(OwnerStartBusinessId),OwnerEndBusinessId=values(OwnerEndBusinessId),ShippingAgentBusinessId=values(ShippingAgentBusinessId),Notes=values(Notes)"
 			values = (VoyageId, HumanId, "ROL-EN-SLV-ba45f-4ed4-aa44-63cf5114b0c1",OwnerStartBusinessId, OwnerEndBusinessId,ShippingAgentBusinessId, row['Notes'])
@@ -320,13 +320,13 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 
 	# BusinessId = "BUS" + str(uuid.uuid4())
-	# query = "INSERT INTO Businesses(BusinessId, BusinessName) VALUES (%s, %s) "
+	# query = "INSERT into businesses(BusinessId, BusinessName) VALUES (%s, %s) "
 
 	# values = (BusinessId, ShipName,)
 	# cursor.execute(query, values)
 	# connection.commit()
 
-	# query = "INSERT INTO BusinessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
+	# query = "INSERT into businessHumans(BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) "
 
 	# values = (BusinessId, CaptainHumanId,"ROL-CAP-2da-c1cc-4100-abbb-3da1508fc827")
 	# cursor.execute(query, values)
@@ -380,7 +380,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 	#		 OwnerAgentFirstName=OwnerAgentName.split(",")[1].strip()
 	#		 OwnerAgentLastName=OwnerAgentName.split(",")[0].strip()
 
-	#	 query = "select Humans.HumanId from Humans join HumanOwners on Humans.HumanId=HumanOwners.HumanId "
+	#	 query = "select Humans.HumanId from humans join HumanOwners on Humans.HumanId=HumanOwners.HumanId "
 	#	 query += " join Businesses on Businesses.BusinessId=HumanOwners.OwnerBusinessId "
 	#	 query += " join BusinessHumans on BusinessHumans.BusinessId=Businesses.BusinessId "
 	#	 query += " join Humans Owners on Owners.HumanId = BusinessHumans.HumanId "
@@ -392,7 +392,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 	
 
-	#	 query = "select Humans.HumanId from Humans "
+	#	 query = "select Humans.HumanId from humans "
 	#	 query += " join BusinessHumans on BusinessHumans.HumanId=Humans.HumanId "
 	#	 query += " join HumanOwners on HumanOwners.OwnerBusinessId=BusinessHumans.BusinessId "
 
@@ -403,7 +403,7 @@ def save_ship_manifest(ShipInfo,ShipManifest):
 
 	
 
-	#		 query = "INSERT INTO HumanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
+	#		 query = "INSERT into humanOwners(HumanId, OwnerBusinessId, OwnDate) VALUES (%s, %s, %s) "
 		
 	#		 values = (HumanId, BusinessId,VoyageStartDate)
 	#		 cursor.execute(query, values)

@@ -8,7 +8,7 @@ def get_transactions(TransactionId, TransactionDate):
 
 	# Construct the SQL query
 	query = "SELECT *"
-	query += " FROM Transactions WHERE TransactionId like %s and TransactionDate like %s"
+	query += " from transactions WHERE TransactionId like %s and TransactionDate like %s"
 	values = (TransactionId + '%', TransactionDate + '%')
 
 

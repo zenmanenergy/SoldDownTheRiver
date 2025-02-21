@@ -8,8 +8,8 @@ def get_user(UserId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Users.UserId  and History.TableName='Users' and History.KeyName='UserId') LastModified"
-	query +=" FROM Users WHERE UserId = %s"
+	query = "SELECT *, (select max(dateAdded) from history where history.KeyValue=users.UserId  and history.TableName='users' and history.KeyName='UserId') LastModified"
+	query +=" from users WHERE UserId = %s"
 	values = (UserId,)
 
 	# Execute the query and get the results

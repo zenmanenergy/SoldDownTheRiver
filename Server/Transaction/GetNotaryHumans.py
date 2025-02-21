@@ -7,7 +7,7 @@ def get_notary_humans():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT Humans.* FROM Humans join HumanRoles on Humans.HumanId=HumanRoles.HumanId join Roles on HumanRoles.RoleId=Roles.RoleId where Roles.Role='Notary' order by Firstname, lastname"
+	query = "SELECT humans.* from humans join humanroles on humans.HumanId=humanroles.HumanId join Roles on humanroles.RoleId=Roles.RoleId where Roles.Role='Notary' order by Firstname, lastname"
 
 	# Execute the query and get the results
 	cursor.execute(query)

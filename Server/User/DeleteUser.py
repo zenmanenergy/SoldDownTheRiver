@@ -2,7 +2,7 @@ from _Lib import Database
 
 def delete_user(user_id):
 	# Delete the specified row from the Users table
-	query = f"DELETE FROM Users WHERE UserId = '{user_id}'"
+	query = f"DELETE from users WHERE UserId = '{user_id}'"
 	cursor, connection = Database.ConnectToDatabase()
 	cursor.execute(query)
 	connection.commit()

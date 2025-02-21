@@ -21,30 +21,60 @@ blueprint = Blueprint('Transaction', __name__)
 def SaveTransaction():
 	try:
 		transaction_data = request.args.to_dict()
-		print(transaction_data)
+		print(transaction_data)  # Debugging output
 
-		# Extract the transaction data from the request
-		TransactionId = transaction_data.get('TransactionId', None)
-		TransactionDate = transaction_data.get('TransactionDate', None)
-		TransactionDate = datetime.datetime.strptime(TransactionDate, '%Y-%m-%d')
-		
-		FromBusinessId = transaction_data.get('FromBusinessId', None)
-		ToBusinessId = transaction_data.get('ToBusinessId', None)
+		# Extract variables, keeping their original names
+		TransactionId = transaction_data.get('transactionId', None)
+		if TransactionId == "null" or not TransactionId:
+			TransactionId = None  # Ensure NULL value is handled correctly
+
+		# Handle date_circa safely
+		date_circa = transaction_data.get('date_circa', None)
+
+		if isinstance(date_circa, str) and date_circa.lower() != "null" and date_circa.strip():
+			try:
+				date_circa = datetime.datetime.strptime(date_circa, '%Y-%m-%d').date()
+			except ValueError:
+				raise ValueError(f"Invalid date format for date_circa: {date_circa}")
+		else:
+			date_circa = None  # Ensures None is assigned instead of passing an invalid value
+
+
+		# Extract other variables while keeping their original names
+		date_accuracy = transaction_data.get('date_accuracy', None)
 		TransactionType = transaction_data.get('TransactionType', None)
-		Notes = transaction_data.get('Notes', None)
-		Act = transaction_data.get('Act', None)
-		Page = transaction_data.get('Page', None)
-		NotaryBusinessId = transaction_data.get('NotaryBusinessId', None)
-		Volume = transaction_data.get('Volume', None)
+		NotaryHumanId = transaction_data.get('NotaryHumanId', None)
+		LocationId = transaction_data.get('LocationId', None)
+		TotalPrice = transaction_data.get('TotalPrice', None)
 		URL = transaction_data.get('URL', None)
+		Notes = transaction_data.get('Notes', None)
 
-		# Call the save_transaction function from SaveTransaction.py with the extracted data
-		result = save_transaction(TransactionId, TransactionDate, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL)
-		History.SaveHistory(transaction_data,"Transactions", "TransactionId", result["TransactionId"])
+		# Handle FirstParties and SecondParties safely
+		FirstParties = transaction_data.get('FirstParties', '[]')
+		SecondParties = transaction_data.get('SecondParties', '[]')
+
+		# Convert from JSON-encoded string to actual list
+		import json
+		try:
+			FirstParties = json.loads(FirstParties) if FirstParties else []
+			SecondParties = json.loads(SecondParties) if SecondParties else []
+		except json.JSONDecodeError:
+			raise ValueError("Invalid JSON format in FirstParties or SecondParties")
+
+		# Call the save_transaction function with the extracted data
+		result = save_transaction(
+			TransactionId, date_circa, date_accuracy, TransactionType,
+			NotaryHumanId, FirstParties, SecondParties, LocationId, TotalPrice, URL, Notes
+		)
+
+		# Save history for transactions
+		History.SaveHistory(transaction_data, "Transactions", "TransactionId", result["TransactionId"])
 
 		return result
+
 	except Exception as e:
 		return Debugger(e)
+
 	
 	
 
@@ -141,7 +171,7 @@ def SaveTransactionHuman():
 		# Call the save_transaction function from SaveTransaction.py with the extracted data
 		saveresult = save_transactionhuman(TransactionId, HumanId, Price, Notes)
 		
-		History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
+		History.SaveHistory(transaction_data,"transactionhumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
 		result = get_transactionHumans(TransactionId)
 
 		return result
@@ -163,7 +193,7 @@ def DeleteTransactionHuman():
 		# Call the save_transaction function from SaveTransaction.py with the extracted data
 		deleteresult = delete_transactionhuman(TransactionId, HumanId)
 		
-		History.SaveHistory(transaction_data,"TransactionHumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
+		History.SaveHistory(transaction_data,"transactionhumans", "TransactionId:HumanId", TransactionId+":"+HumanId)
 		result = get_transactionHumans(TransactionId)
 
 		return result

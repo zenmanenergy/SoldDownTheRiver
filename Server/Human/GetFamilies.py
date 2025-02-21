@@ -8,7 +8,7 @@ def get_Families(HumanId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * FROM Families join Humans on Humans.HumanId=Families.FamilyHumanId WHERE Families.HumanId = %s"
+	query = "SELECT * from families join humans on humans.HumanId=families.FamilyHumanId WHERE families.HumanId = %s"
 	values = (HumanId,)
 	print(query, values)
 	# Execute the query and get the results

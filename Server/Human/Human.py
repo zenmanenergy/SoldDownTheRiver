@@ -39,7 +39,7 @@ def SaveHuman():
 		# Call the save_human function from SaveHuman.py with the extracted data
 		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes )
 		HumanId=result['HumanId']
-		History.SaveHistory(human_data,"Humans", "HumanId", result["HumanId"])
+		History.SaveHistory(human_data,"humans", "HumanId", result["HumanId"])
 
 		print("RoleId",RoleId)
 		if RoleId:
@@ -60,7 +60,7 @@ def DeleteHuman():
 		HumanId = human_data.get('HumanId')
 		# Call the delete_human function from DeleteHuman.py
 		result = delete_human(HumanId)
-		History.SaveHistory(human_data,"Humans", "HumanId", HumanId)
+		History.SaveHistory(human_data,"humans", "HumanId", HumanId)
 
 		return result
 	except Exception as e:
@@ -155,8 +155,8 @@ def SaveFamily():
 		
 		# Call the get_human function from GetHuman.py
 		result = save_Family(HumanId, FamilyHumanId, Relationship)
-		History.SaveHistory(human_data,"Families", "FamilyHumanId", FamilyHumanId)
-		History.SaveHistory(human_data,"Families", "HumanId", HumanId)
+		History.SaveHistory(human_data,"families", "FamilyHumanId", FamilyHumanId)
+		History.SaveHistory(human_data,"families", "HumanId", HumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)
@@ -207,7 +207,7 @@ def DeleteFamily():
 		
 		# Call the get_human function from GetHuman.py
 		result = delete_Family(HumanId, FamilyHumanId)
-		History.SaveHistory(human_data,"Families", "FamilyHumanId", FamilyHumanId)
+		History.SaveHistory(human_data,"families", "FamilyHumanId", FamilyHumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)
@@ -234,7 +234,7 @@ def LastModified():
 		business_data = request.args.to_dict()
 
 
-		HistoryArray=[{"Table":"Humans","KeyName":"HumanId", "KeyValue" : business_data.get('HumanId')},{"Table":"Families", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table":"HumansAKA", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
+		HistoryArray=[{"Table":"humans","KeyName":"HumanId", "KeyValue" : business_data.get('HumanId')},{"Table":"families", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table":"humansaka", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
 		result=History.LastModifiedArray(HistoryArray)
 		return result
 	except Exception as e:

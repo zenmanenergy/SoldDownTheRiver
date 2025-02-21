@@ -9,11 +9,11 @@ def get_ShipVoyages(ShipId):
 
 	# Construct the SQL sql
 	sql = f"SELECT voyages.VoyageId, voyages.StartDate, voyages.EndDate, ships.ShipName,"
-	sql += f" startLocation.City StartCity, startLocation.State StartState, EndLocation.City EndCity, EndLocation.State EndState,"
-	sql += f" (select max(dateAdded) from History where History.KeyValue=voyages.VoyageId and History.TableName='Voyages' and History.KeyName='VoyageId') LastModified "
-	sql += f" FROM voyages join ships on Voyages.shipId=ships.ShipId "
-	sql += f" left join locations startLocation on startLocation.LocationId=voyages.StartLocationId"
-	sql += f" left join locations endLocation on endLocation.LocationId=voyages.EndLocationId"
+	sql += f" startlocation.City StartCity, startlocation.State StartState, endlocation.City EndCity, endlocation.State EndState,"
+	sql += f" (select max(dateAdded) from history where history.KeyValue=voyages.VoyageId and history.TableName='voyages' and history.KeyName='VoyageId') LastModified "
+	sql += f" from voyages join ships on voyages.shipId=ships.ShipId "
+	sql += f" left join locations startlocation on startlocation.LocationId=voyages.StartlocationId"
+	sql += f" left join locations endlocation on endlocation.LocationId=voyages.EndlocationId"
 	sql += f" WHERE ships.ShipId = '{ShipId}'"
 
 

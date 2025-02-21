@@ -49,6 +49,15 @@ input:required:invalid {
 		text-align: left;
 		white-space: nowrap; /* Prevents text wrapping in table cells */
 	}
+	th {
+		text-align: left; /* Ensures alignment is preserved */
+		padding: 10px; /* Ensures spacing remains */
+		cursor: pointer; /* Indicates the column is sortable */
+	}
+	
+	th:hover {
+		background-color: #f5f5f5; /* Light highlight effect on hover */
+	}
 	
 	.ClickableTable tbody tr:hover {
 		background-color: #f5f5f5;

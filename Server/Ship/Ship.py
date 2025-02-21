@@ -31,7 +31,7 @@ def SaveShip():
 
 		# Call the save_ship function from SaveShip.py with the extracted data
 		result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
-		History.SaveHistory(ship_data, "Ships", "ShipId", result["ShipId"])
+		History.SaveHistory(ship_data, "ships", "ShipId", result["ShipId"])
 
 		return result
 	except Exception as e:
@@ -49,7 +49,7 @@ def DeleteShip():
 		ShipId = ship_data.get('ShipId')
 		# Call the delete_ship function from DeleteShip.py
 		result = delete_ship(ShipId)
-		History.SaveHistory(ship_data, "Ships", "ShipId", ShipId)
+		History.SaveHistory(ship_data, "ships", "ShipId", ShipId)
 		return result
 	except Exception as e:
 		return Debugger(e)

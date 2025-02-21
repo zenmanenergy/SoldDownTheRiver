@@ -7,7 +7,7 @@ def get_Humans(RoleId,Query):
 
 	# Construct the SQL sql
 	sql = f"SELECT humans.HumanId , humans.FirstName, humans.LastName "
-	# , (select max(dateAdded) from History where History.KeyValue=Businesses.BusinessId and History.TableName='Businesses' and History.KeyName='BusinessId') LastModified"
+	# , (select max(dateAdded) from history where history.KeyValue=Businesses.BusinessId and history.TableName='Businesses' and history.KeyName='BusinessId') LastModified"
 	sql +=f" FROM  humans where humanId not in( "
 	sql +=f" select HumanId from humanroles where roleId='{RoleId}'"
 	sql +=" )"

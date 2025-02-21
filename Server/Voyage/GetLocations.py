@@ -6,8 +6,8 @@ def get_locations():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Locations.LocationId  and History.TableName='Locations' and History.KeyName='LocationId') LastModified"
-	query +="   FROM Locations order by City"
+	query = "SELECT *, (select max(dateAdded) from history where history.KeyValue=locations.LocationId  and history.TableName='locations' and history.KeyName='LocationId') LastModified"
+	query +="   from locations order by City"
 	values = ()
 
 

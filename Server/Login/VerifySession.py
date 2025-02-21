@@ -10,7 +10,7 @@ def verify_session(SessionId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * FROM UserSessions WHERE SessionId = %s"
+	query = "SELECT * from usersessions WHERE SessionId = %s"
 	values = (SessionId,)
 
 

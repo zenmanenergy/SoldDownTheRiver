@@ -9,7 +9,7 @@ def get_humans(Search):
 	query = f"SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.BirthDate, h.BirthDateAccuracy, "
 	query += f" h.RacialDescriptor, h.Sex, h.Height_cm,  "
 	query += f" GROUP_CONCAT(r.Role ORDER BY r.Role SEPARATOR ', ') AS Roles "
-	query += f" FROM humans h "
+	query += f" from humans h "
 	query += f" LEFT JOIN humanroles hr ON h.HumanId = hr.HumanId "
 	query += f" LEFT JOIN roles r ON hr.RoleId = r.RoleId "
 	

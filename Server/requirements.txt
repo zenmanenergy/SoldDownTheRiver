@@ -4,7 +4,6 @@ pytz==2022.7
 PyMySQL==1.0.2
 urlquote
 Werkzeug==2.2.2
-icecream
 googlemaps
 openai
 pandas

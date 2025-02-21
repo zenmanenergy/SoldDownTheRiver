@@ -8,7 +8,7 @@ def get_aka(HumanId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * FROM HumansAKA WHERE HumanId = %s"
+	query = "SELECT * from humansaka WHERE HumanId = %s"
 	values = (HumanId,)
 	print(query, values)
 	# Execute the query and get the results

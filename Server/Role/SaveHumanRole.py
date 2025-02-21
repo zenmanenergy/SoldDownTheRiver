@@ -7,7 +7,7 @@ def save_HumanRole(HumanId,RoleId):
 
 	
 
-	sql = f"INSERT INTO humanroles (HumanId,RoleId) VALUES ('{HumanId}','{RoleId}')"
+	sql = f"INSERT into humanroles (HumanId,RoleId) VALUES ('{HumanId}','{RoleId}')"
 	print(sql)
 	# Execute the sql and commit the changes
 	cursor.execute(sql)

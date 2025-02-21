@@ -3,11 +3,14 @@
 export async function SuperFetch(url, Data, FormValid){
 	console.log(Data)
 	if (!FormValid) {
-		console.log("Form not valid")
-		const invalidFields = document.querySelectorAll("input:invalid");
-		if (invalidFields.length > 0) {
-			invalidFields[0].focus();
-		}
+		console.log("Form not valid");
+		// const invalidFields = document.querySelectorAll("input:invalid");
+		// if (invalidFields.length > 0) {
+		// 	const firstInvalidField = invalidFields[0];
+		// 	if (firstInvalidField) {
+		// 		firstInvalidField.focus();
+		// 	}
+		// }
 		return true;
 	}
 	

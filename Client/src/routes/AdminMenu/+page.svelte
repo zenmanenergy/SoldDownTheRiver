@@ -36,6 +36,7 @@
 	<div class="ActionBox">
 	<h3 class="title is-2">Admin Menu</h3>
 		<ul>
+			<li><a href={`/RawNOLA`}>Raw NOLA data</a></li>
 			<li><a href={`/Businesses`}>Businesses</a></li>
 			<li><a href={`/Humans`}>Humans</a></li>
 			<li><a href={`/Locations`}>Locations</a></li>

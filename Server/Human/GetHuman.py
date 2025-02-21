@@ -8,7 +8,8 @@ def get_human(HumanId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	sql = f"SELECT * FROM Humans WHERE HumanId = '{HumanId}'"
+	
+	sql = f"SELECT * from humans WHERE HumanId = '{HumanId}'"
 
 	# Print the full SQL query for debugging
 	print(f"Executing SQL: {sql}")

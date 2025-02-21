@@ -10,7 +10,7 @@ def get_login(Email, Password):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * FROM Users WHERE Email = %s and Password = %s"
+	query = "SELECT * from users WHERE Email = %s and Password = %s"
 	values = (Email, Password,)
 
 
@@ -26,13 +26,13 @@ def get_login(Email, Password):
 		result=""
 	else:
 		print(result)
-		query = "delete from UserSessions where userId= %s "
+		query = "delete from usersessions where userId= %s "
 		values = (result['UserId'],)
 		cursor.execute(query, values)
 		connection.commit()
 
 		SessionId = "SES" + str(uuid.uuid4())
-		query = "INSERT INTO UserSessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
+		query = "INSERT into usersessions(sessionId,userId,dateAdded) VALUES (%s, %s, %s)"
 		values = (SessionId, result['UserId'], datetime.datetime.now(),)
 		cursor.execute(query, values)
 		

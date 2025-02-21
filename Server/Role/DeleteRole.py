@@ -2,7 +2,7 @@ from _Lib import Database
 
 def delete_role(RoleId):
 	# Delete the specified row from the Roles table
-	query = f"DELETE FROM Roles WHERE RoleId = '{RoleId}'"
+	query = f"DELETE from roles WHERE RoleId = '{RoleId}'"
 	cursor, connection = Database.ConnectToDatabase()
 	cursor.execute(query)
 	connection.commit()

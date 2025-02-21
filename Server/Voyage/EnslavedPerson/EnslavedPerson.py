@@ -50,7 +50,7 @@ def SaveEnslavedPerson():
 		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes)
 		HumanId=result['HumanId']
 		result = save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)
-		History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
+		History.SaveHistory(Voyage_data, "voyagehumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)

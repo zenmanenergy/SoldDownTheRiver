@@ -9,7 +9,7 @@ def get_humanlocations(HumanId):
 
 	# Construct the SQL query
 	query = "SELECT * "
-	query +=f" FROM humanlocations join locations on locations.LocationId=humanlocations.LocationId WHERE humanlocations.HumanId = '{HumanId}' order by DateCirca"
+	query +=f" from humanlocations join locations on locations.LocationId=humanlocations.LocationId WHERE humanlocations.HumanId = '{HumanId}' order by DateCirca"
 	print(query)
 	# Execute the query and get the results
 	cursor.execute(query)

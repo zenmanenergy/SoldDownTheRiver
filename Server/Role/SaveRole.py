@@ -11,9 +11,9 @@ def save_role(RoleId, Role):
 
 	# SQL statement for insert or update
 	sql = f"""
-		INSERT INTO Roles (RoleId, Role)
+		INSERT into roles (RoleId, Role)
 		VALUES ('{RoleId}', '{Role}')
-		ON DUPLICATE KEY UPDATE Role=VALUES(Role)
+		ON DUPLICATE KEY update role=VALUES(Role)
 	"""
 	
 	# Execute the SQL and commit the changes

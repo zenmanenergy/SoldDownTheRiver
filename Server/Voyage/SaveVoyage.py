@@ -12,12 +12,12 @@ def save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId,
 	# Check if the VoyageId is present
 	if VoyageId:
 		# If the VoyageId is present, update the existing Voyage
-		query = "UPDATE Voyages SET ShipId = %s, CaptainHumanId=%s, StartLocationId = %s, EndLocationId = %s, StartDate = %s, EndDate = %s, Notes = %s WHERE VoyageId = %s"
+		query = "update voyages SET ShipId = %s, CaptainHumanId=%s, StartLocationId = %s, EndLocationId = %s, StartDate = %s, EndDate = %s, Notes = %s WHERE VoyageId = %s"
 		values = (ShipId,CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes, VoyageId)
 	else:
 		# If the VoyageId is not present, create a new Voyage
 		VoyageId = "VYG" + str(uuid.uuid4())
-		query = "INSERT INTO Voyages (VoyageId, ShipId,CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes) VALUES (%s,%s, %s, %s, %s, %s, %s, %s)"
+		query = "INSERT into voyages (VoyageId, ShipId,CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes) VALUES (%s,%s, %s, %s, %s, %s, %s, %s)"
 		values = (VoyageId, ShipId,CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
 
 	# Execute the query and commit the changes

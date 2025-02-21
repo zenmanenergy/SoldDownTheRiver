@@ -7,7 +7,7 @@ def get_SlaveTraders():
 
 	# Construct the SQL sql
 	sql = f"SELECT * "
-	sql += f"  FROM Humans join HumanRoles on Humans.HumanId=HumanRoles.HumanId where HumanRoles.RoleId='SlaveTrader'"
+	sql += f"  from humans join humanroles on humans.HumanId=humanroles.HumanId where humanroles.RoleId='SlaveTrader'"
 	sql += f" ORDER BY FirstName, LastName"
 	print(sql)
 	# Execute the sql and get the results

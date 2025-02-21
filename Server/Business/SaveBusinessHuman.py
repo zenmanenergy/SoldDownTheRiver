@@ -6,7 +6,7 @@ def save_BusinessHuman(BusinessId, HumanId, RoleId):
 	cursor, connection = Database.ConnectToDatabase()
 
 
-	query = "INSERT INTO BusinessHumans (BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE RoleId = VALUES(RoleId)"
+	query = "INSERT into businesshumans (BusinessId, HumanId, RoleId) VALUES (%s, %s, %s) ON DUPLICATE KEY update roleId = VALUES(RoleId)"
 	values = (BusinessId, HumanId, RoleId)
 
 	# Execute the query and commit the changes

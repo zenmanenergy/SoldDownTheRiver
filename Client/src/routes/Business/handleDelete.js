@@ -7,7 +7,7 @@ export async function handleDelete(SessionId, BusinessId) {
 		SessionId:SessionId,
 		BusinessId:BusinessId
 	};
-	const url = baseURL + '/Businesses/GetBusinesses?'; 
+	const url = baseURL + '/Business/DeleteBusiness?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

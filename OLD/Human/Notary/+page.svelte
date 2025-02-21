@@ -5,7 +5,7 @@
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { handleSave } from '../handleSave.js';
+	import { handleSave } from '../handleSaveHuman.js';
 	import { handleDelete } from '../handleDelete.js';
 	import { handleGetHuman } from '../handleGetHuman.js';
 	import { handleGetRoles } from '../handleGetRoles.js';
@@ -17,7 +17,7 @@
 	import {Session} from "../../Session.js";
 
 
-	let RoleId="SlaveCollectingAgent"
+	let RoleId="Notary"
 	let FormValid=true
 	let isLoading = true;
 	let HumanId="";
@@ -40,6 +40,9 @@
 	}
 	async function setLocations(data){
 		Locations = data;
+	}
+	async function setShips(data){
+		Ships = data;
 	}
 	async function setHumanRoles(data){
 		HumanRoles = data;
@@ -69,12 +72,10 @@
 		<div class="spinner"></div>
 	</div>
 {:else}
-
-
 <div class="section">
-	<a href="/Role?RoleId=SlaveCollectingAgent">Back to Slave Collecting Agents</a>
+	<a href="/Role?RoleId=Notary">Back to Notaries</a>
 	<div class="ActionBox">
-		<h3 class="title is-2">Edit Slave Collecting Agent</h3>
+		<h3 class="title is-2">Edit Notary</h3>
 	<form>
 		<div class="field">
 			<label class="label" for="FirstName">First Name:</label>

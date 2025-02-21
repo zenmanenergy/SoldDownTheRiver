@@ -8,7 +8,7 @@ def get_humans(FirstName, MiddleName, LastName):
 
 	# Construct the SQL query
 	query = "SELECT *"
-	query += " FROM Humans WHERE FirstName like %s and MiddleName like %s and LastName like %s"
+	query += " from humans WHERE FirstName like %s and MiddleName like %s and LastName like %s"
 	values = (FirstName + '%', MiddleName + '%', LastName + '%')
 
 

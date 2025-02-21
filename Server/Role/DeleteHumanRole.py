@@ -3,7 +3,7 @@ from _Lib import Database
 def delete_HumanRole(HumanId,RoleId):
 	# Delet
 	# e the specified row from the Roles table
-	sql = f"DELETE FROM HumanRoles WHERE RoleId = '{RoleId}' and HumanId='{HumanId}'"
+	sql = f"DELETE from humanroles WHERE RoleId = '{RoleId}' and HumanId='{HumanId}'"
 	cursor, connection = Database.ConnectToDatabase()
 	print(sql)
 	cursor.execute(sql)

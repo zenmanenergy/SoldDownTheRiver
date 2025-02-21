@@ -1,8 +1,7 @@
 <style>
 	@import '/static/FormPages.css';
 </style>
-
-<script>
+	<script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { Session } from "../Session.js";
@@ -17,43 +16,39 @@
 	let itemsPerPage = 50;
 	let totalPages = 1;
 
-	// Extract search parameter from the URL
+	let sortColumn = 'LastName';
+	let sortAscending = true;
+
 	function getSearchQueryFromURL() {
 		const params = new URLSearchParams(window.location.search);
 		return params.get("search") || ''; // Default to empty string if missing
 	}
 
-
 	onMount(async () => {
-		// Get search query from URL on page load
 		searchQuery = getSearchQueryFromURL();
-
 		await Session.handleSession();
 		await handleGetHumans(Session.SessionId, setHumans);
-
 		isLoading = false;
 	});
-
 
 	function setHumans(data) {
 		Humans = data;
 	}
 
+	function formatBirthDate(date, accuracy) {
+		if (!date) return '';
+		const formattedDate = moment.utc(date);
+		switch (accuracy?.toLowerCase()) {
+			case 'd': return formattedDate.format('YYYY-MM-DD');
+			case 'm': return formattedDate.format('YYYY-MM');
+			case 'y': return formattedDate.format('YYYY');
+			default: return formattedDate.format('YYYY-MM-DD');
+		}
+	}
+
 	$: {
 		filteredHumans = Humans.filter(human => {
 			const search = searchQuery.toLowerCase();
-
-			function formatBirthDate(date, accuracy) {
-				if (!date) return '';
-				const formattedDate = moment.utc(date);
-				switch (accuracy?.toLowerCase()) {
-					case 'd': return formattedDate.format('YYYY-MM-DD');
-					case 'm': return formattedDate.format('YYYY-MM');
-					case 'y': return formattedDate.format('YYYY');
-					default: return formattedDate.format('YYYY-MM-DD');
-				}
-			}
-
 			const values = [
 				human.FirstName,
 				human.MiddleName,
@@ -64,30 +59,49 @@
 				human.Height_in ? human.Height_in.toString() : '',
 				human.Roles ? human.Roles.join(', ') : ''
 			];
-
 			return values.some(value => value && value.toLowerCase().includes(search));
 		});
 
-		currentPage = 1; // Reset to first page when filtering
+		// Sort the filtered humans
+		filteredHumans.sort((a, b) => {
+			let valueA = a[sortColumn] ?? '';
+			let valueB = b[sortColumn] ?? '';
+
+			// Handle birth date sorting separately
+			if (sortColumn === 'BirthDate') {
+				valueA = a.BirthDate ? new Date(a.BirthDate) : new Date(0);
+				valueB = b.BirthDate ? new Date(b.BirthDate) : new Date(0);
+			}
+
+			// Convert numeric values
+			if (sortColumn === 'Height_in') {
+				valueA = parseFloat(a.Height_in) || 0;
+				valueB = parseFloat(b.Height_in) || 0;
+			}
+
+			// Convert to lowercase for case-insensitive sorting
+			if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+			if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+			if (valueA < valueB) return sortAscending ? -1 : 1;
+			if (valueA > valueB) return sortAscending ? 1 : -1;
+			return 0;
+		});
+
+		currentPage = 1; 
 		totalPages = Math.max(1, Math.ceil(filteredHumans.length / itemsPerPage));
 	}
 
 	$: displayedHumans = filteredHumans.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-	function formatBirthDate(date, accuracy) {
-		if (!date) return '';
-		const formattedDate = moment.utc(date);
-		switch (accuracy?.toLowerCase()) {
-			case 'd': return formattedDate.format('YYYY-MM-DD'); // Full date
-			case 'm': return formattedDate.format('YYYY-MM');    // Year & Month
-			case 'y': return formattedDate.format('YYYY');       // Only Year
-			default: return formattedDate.format('YYYY-MM-DD');  // Default to full date
+	function toggleSort(column) {
+		if (sortColumn === column) {
+			sortAscending = !sortAscending;
+		} else {
+			sortColumn = column;
+			sortAscending = true;
 		}
 	}
-
-
-
-	$: totalPages = Math.ceil(filteredHumans.length / itemsPerPage);
 
 	function addHuman() {
 		window.location.href = '/Human?HumanId=';
@@ -116,28 +130,27 @@
 			<table class="ClickableTable">
 				<thead>
 					<tr>
-						<th>First Name</th>
-						<th>Middle Name</th>
-						<th>Last Name</th>
-						<th>Birth Date</th>
-						<th>Racial Descriptor</th>
-						<th>Sex</th>
-						<th>Height (inches)</th>
-						<th>Roles</th> <!-- New Column -->
+						<th on:click={() => toggleSort('FirstName')} style="cursor: pointer;">First Name</th>
+						<th on:click={() => toggleSort('MiddleName')} style="cursor: pointer;">Middle Name</th>
+						<th on:click={() => toggleSort('LastName')} style="cursor: pointer;">Last Name</th>
+						<th on:click={() => toggleSort('BirthDate')} style="cursor: pointer;">Birth Date</th>
+						<th on:click={() => toggleSort('RacialDescriptor')} style="cursor: pointer;">Racial Descriptor</th>
+						<th on:click={() => toggleSort('Sex')} style="cursor: pointer;">Sex</th>
+						<th on:click={() => toggleSort('Height_in')} style="cursor: pointer;">Height (inches)</th>
+						<th on:click={() => toggleSort('Roles')} style="cursor: pointer;">Roles</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each displayedHumans as human}
 						<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} style="cursor: pointer;">
-
 							<td>{human.FirstName}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName}</td>
 							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
 							<td>{human.RacialDescriptor || ''}</td>
 							<td>{human.Sex || ''}</td>
-							<td>{human.Height_in ? `${human.Height_cm*2.54} in` : ''}</td>
-							<td>{human.Roles.length > 0 ? human.Roles.join(', ') : 'No Roles'}</td> <!-- New Column -->
+							<td>{human.Height_in ? `${human.Height_in} in` : ''}</td>
+							<td>{human.Roles.length > 0 ? human.Roles.join(', ') : 'No Roles'}</td>
 						</tr>
 					{/each}
 				</tbody>

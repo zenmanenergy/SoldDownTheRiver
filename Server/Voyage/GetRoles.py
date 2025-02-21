@@ -6,8 +6,8 @@ def get_roles(VoyageId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT RoleId,Role, (select max(dateAdded) from History where History.KeyValue=Roles.RoleId  and History.TableName='Roles' and History.KeyName='RoleId') LastModified"
-	query +=" FROM Roles ORDER BY Role"
+	query = "SELECT RoleId,Role, (select max(dateAdded) from history where history.KeyValue=roles.RoleId  and history.TableName='roles' and history.KeyName='RoleId') LastModified"
+	query +=" from roles ORDER BY Role"
 	values = ()
 
 

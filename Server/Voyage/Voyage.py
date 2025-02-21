@@ -38,7 +38,7 @@ def SaveVoyage():
 
 		# Call the save_Voyage function from SaveVoyage.py with the extracted data
 		result = save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId, StartDate, EndDate, Notes)
-		History.SaveHistory(Voyage_data, "Voyages", "VoyageId", result["VoyageId"])
+		History.SaveHistory(Voyage_data, "voyages", "VoyageId", result["VoyageId"])
 
 		return result
 	except Exception as e:
@@ -55,7 +55,7 @@ def DeleteVoyage():
 
 		# Call the delete_Voyage function from DeleteVoyage.py
 		result = delete_Voyage(VoyageId)
-		History.SaveHistory(Voyage_data, "Voyages", "VoyageId", VoyageId)
+		History.SaveHistory(Voyage_data, "voyages", "VoyageId", VoyageId)
 
 		return result
 	except Exception as e:
@@ -132,7 +132,7 @@ def SaveVoyageHuman():
 
 		# Call the save_Voyage function from SaveVoyage.py with the extracted data
 		result = save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)
-		History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
+		History.SaveHistory(Voyage_data, "voyagehumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
 
 		return result
 	except Exception as e:
@@ -167,7 +167,7 @@ def DeleteVoyageHumans():
 
 		# Call the get_Ships function from GetShips.py
 		result = delete_VoyageHuman(VoyageId, HumanId)
-		History.SaveHistory(Voyage_data, "VoyageHumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
+		History.SaveHistory(Voyage_data, "voyagehumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)

@@ -6,7 +6,7 @@ def get_roles():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT RoleId,Role FROM Roles ORDER BY Role"
+	query = "SELECT RoleId,Role from roles ORDER BY Role"
 	values = ()
 
 

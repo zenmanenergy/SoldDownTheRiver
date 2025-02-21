@@ -1,39 +1,104 @@
 import uuid
-from _Lib import Database
 import datetime
+import json
+from _Lib import Database
 
-def save_transaction(TransactionId, TransactionDate, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL):
+def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, NotaryHumanId, FirstParties, SecondParties, LocationId, TotalPrice, URL, Notes):
+	print("date_circa", date_circa)
+
 	
-	print("TransactionDate", TransactionDate)
-	print("TransactionDate1", datetime.datetime.strptime(str(TransactionDate), '%Y-%m-%d %H:%M:%S'))
-	# Convert the TransactionDate string into a datetime object
-	TransactionDate = str(TransactionDate)
-	TransactionDate = datetime.datetime.strptime(TransactionDate, '%Y-%m-%d %H:%M:%S')
-	TransactionDateTime = TransactionDate.strftime('%Y-%m-%d %H:%M:%S')
-	
+
+	# Convert JSON strings to lists (if needed)
+	def parse_json_list(value):
+		if isinstance(value, str):
+			try:
+				return json.loads(value) if value else []
+			except json.JSONDecodeError:
+				raise ValueError(f"Invalid JSON format in {value}")
+		return value if isinstance(value, list) else []
+
+	FirstParties = parse_json_list(FirstParties)
+	SecondParties = parse_json_list(SecondParties)
+
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
-	
-
 
 	# Check if the TransactionId is present
 	if TransactionId:
-		# If the TransactionId is present, update the existing transaction
-		query = "UPDATE Transactions SET TransactionDate = %s, FromBusinessId = %s, ToBusinessId = %s, TransactionType = %s, Notes = %s, Act = %s, Page = %s, NotaryBusinessId = %s, Volume = %s, URL = %s WHERE TransactionId = %s"
-		values = (TransactionDateTime, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL, TransactionId)
+		# If TransactionId is present, update the existing transaction
+		query = f"""
+			UPDATE transactions 
+			SET date_circa = '{date_circa}', 
+				date_accuracy = '{date_accuracy}', 
+				TransactionType = '{TransactionType}', 
+				Notes = '{Notes}', 
+				NotaryHumanId = '{NotaryHumanId}', 
+				URL = '{URL}', 
+				TotalPrice = {TotalPrice if TotalPrice is not None else 'NULL'}, 
+				LocationId = '{LocationId}' 
+			WHERE TransactionId = '{TransactionId}'
+		"""
 	else:
-		# If the TransactionId is not present, create a new transaction
-		TransactionId = "TRN"+str(uuid.uuid4())
-		query = "INSERT INTO Transactions (TransactionId, TransactionDate, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-		values = (TransactionId, TransactionDateTime, FromBusinessId, ToBusinessId, TransactionType, Notes, Act, Page, NotaryBusinessId, Volume, URL)
+		# If TransactionId is not present, create a new transaction
+		TransactionId = "TRN" + str(uuid.uuid4())
+		TotalPrice = 'NULL' if not TotalPrice or str(TotalPrice).lower() == 'null' else float(TotalPrice)
+		query = f"""
+			INSERT INTO transactions 
+			(TransactionId, date_circa, date_accuracy, TransactionType, Notes, NotaryHumanId, URL, TotalPrice, LocationId)
+			VALUES (
+				'{TransactionId}', 
+				'{date_circa}', 
+				'{date_accuracy}', 
+				'{TransactionType}', 
+				'{Notes.replace("'", "''")}', 
+				'{NotaryHumanId}', 
+				'{URL.replace("'", "''")}', 
+				{TotalPrice}, 
+				'{LocationId}'
+			)
+		"""
 
-	print(query.format(*values))
 
-	# Execute the query and commit the changes
-	cursor.execute(query, values)
+
+
+	# Print and execute the query
+	print(f"Executing SQL:\n{query}\n")
+	cursor.execute(query)
 	connection.commit()
 
-	# Close the database connection 
+	# Handle FirstParties and SecondParties insertion into `parties`
+	def insert_parties(party_list, which_party):
+		for party in party_list:
+			PartyId = "PTY" + str(uuid.uuid4())  # Generate a unique PartyId
+			party_query = f"""
+				INSERT INTO parties (PartyId, WhichParty) 
+				VALUES ('{PartyId}', '{which_party}')
+				ON DUPLICATE KEY UPDATE WhichParty = VALUES(WhichParty)
+			"""
+			print(f"Executing SQL:\n{party_query}\n")
+			cursor.execute(party_query)
+
+			# Link humans to this party
+			if isinstance(party, dict) and "Humans" in party:
+				for human in party["Humans"]:
+					HumanId = human.get("HumanId")
+					if HumanId:
+						party_human_query = f"""
+							INSERT INTO partyhumans (PartyId, HumanId) 
+							VALUES ('{PartyId}', '{HumanId}')
+							ON DUPLICATE KEY UPDATE HumanId = VALUES(HumanId)
+						"""
+						print(f"Executing SQL:\n{party_human_query}\n")
+						cursor.execute(party_human_query)
+
+	# Insert FirstParties and SecondParties
+	insert_parties(FirstParties, "FirstParty")
+	insert_parties(SecondParties, "SecondParty")
+
+	# Commit again if there are parties involved
+	connection.commit()
+
+	# Close the database connection
 	connection.close()
 
 	# Return the TransactionId as a JSON response

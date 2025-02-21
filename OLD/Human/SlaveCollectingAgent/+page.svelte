@@ -5,7 +5,7 @@
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { handleSave } from '../handleSave.js';
+	import { handleSave } from '../handleSaveHuman.js';
 	import { handleDelete } from '../handleDelete.js';
 	import { handleGetHuman } from '../handleGetHuman.js';
 	import { handleGetRoles } from '../handleGetRoles.js';
@@ -17,7 +17,7 @@
 	import {Session} from "../../Session.js";
 
 
-	let RoleId="SlaveShippingAgent"
+	let RoleId="SlaveCollectingAgent"
 	let FormValid=true
 	let isLoading = true;
 	let HumanId="";
@@ -26,7 +26,6 @@
 	let Roles=[];
 	let Locations=[];
 	let HumanRoles=[];
-	let Ships=[];
 	// let AkaNames = [];
 
 	async function setHuman(data) {
@@ -41,9 +40,6 @@
 	}
 	async function setLocations(data){
 		Locations = data;
-	}
-	async function setShips(data){
-		Ships = data;
 	}
 	async function setHumanRoles(data){
 		HumanRoles = data;
@@ -73,12 +69,13 @@
 		<div class="spinner"></div>
 	</div>
 {:else}
+
+
 <div class="section">
-	<a href="/Role?RoleId=SlaveShippingAgent">Back to Shipping Agents</a>
+	<a href="/Role?RoleId=SlaveCollectingAgent">Back to Slave Collecting Agents</a>
 	<div class="ActionBox">
-		<h3 class="title is-2">Edit Shipping Agent</h3>
+		<h3 class="title is-2">Edit Slave Collecting Agent</h3>
 	<form>
-		
 		<div class="field">
 			<label class="label" for="FirstName">First Name:</label>
 			<div class="control">
@@ -141,8 +138,6 @@
 			</table>
 			
 		</div>
-		<br/>
-	
 		<br/>
 	
 		<br/>

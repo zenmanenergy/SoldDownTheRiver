@@ -28,7 +28,7 @@ def SaveRole():
 		# Call the save_role function from SaveRole.py with the extracted data
 		result = save_role(RoleId,Role)
 		print(result)
-		History.SaveHistory(role_data,"Roles", "RoleId", result["RoleId"])
+		History.SaveHistory(role_data,"roles", "RoleId", result["RoleId"])
 
 		return result
 	except Exception as e:
@@ -47,7 +47,7 @@ def DeleteRole():
 		RoleId = role_data.get('RoleId')
 		# Call the delete_role function from DeleteRole.py
 		result = delete_role(RoleId)
-		History.SaveHistory(role_data,"Roles", "RoleId", RoleId)
+		History.SaveHistory(role_data,"roles", "RoleId", RoleId)
 		return result
 	except Exception as e:
 		return Debugger(e)

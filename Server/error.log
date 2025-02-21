@@ -2513,10 +2513,10 @@
 [Fri Jun 02 18:37:13.807347 2023] [ssl:info] [pid 2348] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59422] AH01964: Connection to child 1 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:37:13.811832 2023] [ssl:info] [pid 2369] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59421] AH01964: Connection to child 8 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:37:13.815604 2023] [ssl:info] [pid 2350] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59423] AH01964: Connection to child 5 established (server api.solddownriver.com:443)
-[Fri Jun 02 18:37:13.840980 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59421] SELECT * FROM UserSessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
-[Fri Jun 02 18:37:13.848344 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59423] SELECT * FROM UserSessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
-[Fri Jun 02 18:37:13.855144 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59422] SELECT * FROM UserSessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
-[Fri Jun 02 18:37:13.878701 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59421] SELECT * FROM UserSessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
+[Fri Jun 02 18:37:13.840980 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59421] SELECT * from usersessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
+[Fri Jun 02 18:37:13.848344 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59423] SELECT * from usersessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
+[Fri Jun 02 18:37:13.855144 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59422] SELECT * from usersessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
+[Fri Jun 02 18:37:13.878701 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59421] SELECT * from usersessions WHERE SessionId = 'SESef5f2e56-ea5b-492c-9f86-029dce2b2d64'
 [Fri Jun 02 18:37:13.901362 2023] [ssl:info] [pid 2366] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59424] AH01964: Connection to child 2 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:37:14.031927 2023] [ssl:info] [pid 2420] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59427] AH01964: Connection to child 9 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:37:14.035631 2023] [ssl:info] [pid 2390] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59425] AH01964: Connection to child 12 established (server api.solddownriver.com:443)
@@ -2527,7 +2527,7 @@
 [Fri Jun 02 18:37:36.268025 2023] [reqtimeout:info] [pid 2368] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59436] AH01382: Request header read timeout
 [Fri Jun 02 18:37:36.268364 2023] [reqtimeout:info] [pid 2351] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59437] AH01382: Request header read timeout
 [Fri Jun 02 18:38:16.466489 2023] [ssl:info] [pid 2491] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] AH01964: Connection to child 16 established (server api.solddownriver.com:443)
-[Fri Jun 02 18:38:16.496114 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] SELECT * FROM Users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
+[Fri Jun 02 18:38:16.496114 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] SELECT * from users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
 [Fri Jun 02 18:38:16.497590 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] {'UserId': '1', 'FirstName': 'Steve', 'LastName': 'Nelson', 'Email': 'steve@roadsteadhighschool.com', 'Password': 'password', 'School': 'Roadstead High School', 'SemesterYear': '2023', 'Phone': '7576796703', 'UserType': 'admin'}
 [Fri Jun 02 18:38:16.504039 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] ERROR:app:Exception on /Login/Login [GET]
 [Fri Jun 02 18:38:16.504076 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] Traceback (most recent call last):
@@ -2563,9 +2563,9 @@
 [Fri Jun 02 18:38:16.504177 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468]     err.raise_mysql_exception(self._data)
 [Fri Jun 02 18:38:16.504179 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468]   File "/var/www/python/myenv/lib/python3.7/site-packages/pymysql/err.py", line 143, in raise_mysql_exception
 [Fri Jun 02 18:38:16.504182 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468]     raise errorclass(errno, errval)
-[Fri Jun 02 18:38:16.504185 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] pymysql.err.ProgrammingError: (1146, "Table 'SoldDownTheRiver.userSessions' doesn't exist")
+[Fri Jun 02 18:38:16.504185 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59468] pymysql.err.ProgrammingError: (1146, "Table 'SoldDownTheRiver.usersessions' doesn't exist")
 [Fri Jun 02 18:38:23.911113 2023] [ssl:info] [pid 2369] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] AH01964: Connection to child 8 established (server api.solddownriver.com:443)
-[Fri Jun 02 18:38:23.936507 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] SELECT * FROM Users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
+[Fri Jun 02 18:38:23.936507 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] SELECT * from users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
 [Fri Jun 02 18:38:23.937431 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] {'UserId': '1', 'FirstName': 'Steve', 'LastName': 'Nelson', 'Email': 'steve@roadsteadhighschool.com', 'Password': 'password', 'School': 'Roadstead High School', 'SemesterYear': '2023', 'Phone': '7576796703', 'UserType': 'admin'}
 [Fri Jun 02 18:38:23.941965 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] ERROR:app:Exception on /Login/Login [GET]
 [Fri Jun 02 18:38:23.942001 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] Traceback (most recent call last):
@@ -2601,9 +2601,9 @@
 [Fri Jun 02 18:38:23.942103 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472]     err.raise_mysql_exception(self._data)
 [Fri Jun 02 18:38:23.942106 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472]   File "/var/www/python/myenv/lib/python3.7/site-packages/pymysql/err.py", line 143, in raise_mysql_exception
 [Fri Jun 02 18:38:23.942109 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472]     raise errorclass(errno, errval)
-[Fri Jun 02 18:38:23.942111 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] pymysql.err.ProgrammingError: (1146, "Table 'SoldDownTheRiver.userSessions' doesn't exist")
+[Fri Jun 02 18:38:23.942111 2023] [wsgi:error] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59472] pymysql.err.ProgrammingError: (1146, "Table 'SoldDownTheRiver.usersessions' doesn't exist")
 [Fri Jun 02 18:39:31.824194 2023] [ssl:info] [pid 2350] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] AH01964: Connection to child 5 established (server api.solddownriver.com:443)
-[Fri Jun 02 18:39:31.851951 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] SELECT * FROM Users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
+[Fri Jun 02 18:39:31.851951 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] SELECT * from users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
 [Fri Jun 02 18:39:31.852930 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] {'UserId': '1', 'FirstName': 'Steve', 'LastName': 'Nelson', 'Email': 'steve@roadsteadhighschool.com', 'Password': 'password', 'School': 'Roadstead High School', 'SemesterYear': '2023', 'Phone': '7576796703', 'UserType': 'admin'}
 [Fri Jun 02 18:39:31.854940 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] ERROR:app:Exception on /Login/Login [GET]
 [Fri Jun 02 18:39:31.854975 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] Traceback (most recent call last):
@@ -2639,7 +2639,7 @@
 [Fri Jun 02 18:39:31.855112 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523]     err.raise_mysql_exception(self._data)
 [Fri Jun 02 18:39:31.855114 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523]   File "/var/www/python/myenv/lib/python3.7/site-packages/pymysql/err.py", line 143, in raise_mysql_exception
 [Fri Jun 02 18:39:31.855117 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523]     raise errorclass(errno, errval)
-[Fri Jun 02 18:39:31.855120 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] pymysql.err.ProgrammingError: (1146, "Table 'SoldDownTheRiver.userSessions' doesn't exist")
+[Fri Jun 02 18:39:31.855120 2023] [wsgi:error] [pid 2346] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59523] pymysql.err.ProgrammingError: (1146, "Table 'SoldDownTheRiver.usersessions' doesn't exist")
 [Fri Jun 02 18:39:40.661300 2023] [ssl:info] [pid 2348] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59528] AH01964: Connection to child 1 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:39:40.687333 2023] [wsgi:info] [pid 2345] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59528] mod_wsgi (pid=2345): Force restart of process 'application'.
 [Fri Jun 02 18:39:40.687485 2023] [wsgi:info] [pid 2345] mod_wsgi (pid=2345): Shutdown requested 'application'.
@@ -2670,10 +2670,10 @@
 [Fri Jun 02 18:39:41.743443 2023] [wsgi:info] [pid 2572] mod_wsgi (pid=2572): Create interpreter 'api.solddownriver.com|'.
 [Fri Jun 02 18:39:41.766067 2023] [wsgi:info] [pid 2572] mod_wsgi (pid=2572): Adding '/var/www/python' to path.
 [Fri Jun 02 18:39:41.767089 2023] [wsgi:info] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59528] mod_wsgi (pid=2572, process='application', application='api.solddownriver.com|'): Loading Python script file '/var/www/python/app.wsgi'.
-[Fri Jun 02 18:39:42.457482 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59528] SELECT * FROM Users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
+[Fri Jun 02 18:39:42.457482 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59528] SELECT * from users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
 [Fri Jun 02 18:39:42.458689 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59528] {'UserId': '1', 'FirstName': 'Steve', 'LastName': 'Nelson', 'Email': 'steve@roadsteadhighschool.com', 'Password': 'password', 'School': 'Roadstead High School', 'SemesterYear': '2023', 'Phone': '7576796703', 'UserType': 'admin'}
 [Fri Jun 02 18:39:45.525195 2023] [ssl:info] [pid 2420] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] AH01964: Connection to child 9 established (server api.solddownriver.com:443)
-[Fri Jun 02 18:39:45.553159 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] SELECT * FROM Users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
+[Fri Jun 02 18:39:45.553159 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] SELECT * from users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
 [Fri Jun 02 18:39:45.554175 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] {'UserId': '1', 'FirstName': 'Steve', 'LastName': 'Nelson', 'Email': 'steve@roadsteadhighschool.com', 'Password': 'password', 'School': 'Roadstead High School', 'SemesterYear': '2023', 'Phone': '7576796703', 'UserType': 'admin'}
 [Fri Jun 02 18:39:45.651599 2023] [ssl:info] [pid 2347] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59533] AH01964: Connection to child 0 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:39:45.656231 2023] [ssl:info] [pid 2390] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:59534] AH01964: Connection to child 12 established (server api.solddownriver.com:443)
@@ -2683,8 +2683,8 @@
 [Fri Jun 02 18:39:47.339692 2023] [wsgi:info] [pid 2573] mod_wsgi (pid=2573): Create interpreter 'api.solddownriver.com|'.
 [Fri Jun 02 18:39:47.355713 2023] [wsgi:info] [pid 2573] mod_wsgi (pid=2573): Adding '/var/www/python' to path.
 [Fri Jun 02 18:39:47.356458 2023] [wsgi:info] [pid 2573] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] mod_wsgi (pid=2573, process='application', application='api.solddownriver.com|'): Loading Python script file '/var/www/python/app.wsgi'.
-[Fri Jun 02 18:39:47.962330 2023] [wsgi:error] [pid 2573] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] SELECT * FROM UserSessions WHERE SessionId = 'SES766eeae9-fe0f-4bd6-b996-bf155cb8511e'
-[Fri Jun 02 18:39:48.278778 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] SELECT * FROM UserSessions WHERE SessionId = 'SES766eeae9-fe0f-4bd6-b996-bf155cb8511e'
+[Fri Jun 02 18:39:47.962330 2023] [wsgi:error] [pid 2573] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] SELECT * from usersessions WHERE SessionId = 'SES766eeae9-fe0f-4bd6-b996-bf155cb8511e'
+[Fri Jun 02 18:39:48.278778 2023] [wsgi:error] [pid 2572] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:59531] SELECT * from usersessions WHERE SessionId = 'SES766eeae9-fe0f-4bd6-b996-bf155cb8511e'
 [Fri Jun 02 18:40:24.266339 2023] [ssl:info] [pid 2593] [client 66.249.66.7:58884] AH01964: Connection to child 4 established (server api.solddownriver.com:443)
 [Fri Jun 02 18:40:29.230008 2023] [ssl:info] [pid 2593] (70014)End of file found: [client 66.249.66.7:58884] AH01991: SSL input filter read failed.
 [Fri Jun 02 18:43:39.087262 2023] [ssl:info] [pid 2595] [client 89.175.184.250:47372] AH01964: Connection to child 10 established (server api.solddownriver.com:443)
@@ -2808,7 +2808,7 @@
 [Fri Jun 02 19:25:01.579129 2023] [wsgi:info] [pid 3099] mod_wsgi (pid=3099): Create interpreter 'api.solddownriver.com|'.
 [Fri Jun 02 19:25:01.599312 2023] [wsgi:info] [pid 3099] mod_wsgi (pid=3099): Adding '/var/www/python' to path.
 [Fri Jun 02 19:25:01.600392 2023] [wsgi:info] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] mod_wsgi (pid=3099, process='application', application='api.solddownriver.com|'): Loading Python script file '/var/www/python/app.wsgi'.
-[Fri Jun 02 19:25:02.309260 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] SELECT * FROM Users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
+[Fri Jun 02 19:25:02.309260 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] SELECT * from users WHERE Email = 'steve@roadsteadhighschool.com' and Password = 'password'
 [Fri Jun 02 19:25:02.312440 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] {'UserId': '1', 'FirstName': 'Steve', 'LastName': 'Nelson', 'Email': 'steve@roadsteadhighschool.com', 'Password': 'password', 'School': 'Roadstead High School', 'SemesterYear': '2023', 'Phone': '7576796703', 'UserType': 'admin'}
 [Fri Jun 02 19:25:02.403444 2023] [ssl:info] [pid 3262] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:55941] AH01964: Connection to child 13 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:25:03.478851 2023] [ssl:info] [pid 3264] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:55947] AH01964: Connection to child 15 established (server api.solddownriver.com:443)
@@ -2822,11 +2822,11 @@
 [Fri Jun 02 19:25:03.678435 2023] [wsgi:info] [pid 3098] mod_wsgi (pid=3098): Create interpreter 'api.solddownriver.com|'.
 [Fri Jun 02 19:25:03.692461 2023] [wsgi:info] [pid 3098] mod_wsgi (pid=3098): Adding '/var/www/python' to path.
 [Fri Jun 02 19:25:03.693272 2023] [wsgi:info] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] mod_wsgi (pid=3098, process='application', application='api.solddownriver.com|'): Loading Python script file '/var/www/python/app.wsgi'.
-[Fri Jun 02 19:25:04.283140 2023] [wsgi:error] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] SELECT * FROM UserSessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
+[Fri Jun 02 19:25:04.283140 2023] [wsgi:error] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:55921] SELECT * from usersessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
 [Fri Jun 02 19:26:13.185813 2023] [ssl:info] [pid 3264] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56100] AH01964: Connection to child 15 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:26:13.188324 2023] [ssl:info] [pid 3262] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56101] AH01964: Connection to child 13 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:26:13.306893 2023] [ssl:info] [pid 3201] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] AH01964: Connection to child 8 established (server api.solddownriver.com:443)
-[Fri Jun 02 19:26:13.342821 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * FROM UserSessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
+[Fri Jun 02 19:26:13.342821 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * from usersessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
 [Fri Jun 02 19:26:14.850543 2023] [ssl:info] [pid 3225] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56107] AH01964: Connection to child 7 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:26:14.851895 2023] [ssl:info] [pid 3203] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56108] AH01964: Connection to child 10 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:26:14.855188 2023] [ssl:info] [pid 3101] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56109] AH01964: Connection to child 1 established (server api.solddownriver.com:443)
@@ -2834,9 +2834,9 @@
 [Fri Jun 02 19:26:14.860961 2023] [ssl:info] [pid 3120] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56113] AH01964: Connection to child 6 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:26:14.862441 2023] [ssl:info] [pid 3119] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56111] AH01964: Connection to child 5 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:26:14.863499 2023] [ssl:info] [pid 3202] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56112] AH01964: Connection to child 9 established (server api.solddownriver.com:443)
-[Fri Jun 02 19:26:15.053346 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * FROM UserSessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
-[Fri Jun 02 19:26:15.126805 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * FROM HumansAKA WHERE HumanId = %s ('-1',)
-[Fri Jun 02 19:26:15.164879 2023] [wsgi:error] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * FROM Families join Humans on Humans.HumanId=Families.FamilyHumanId WHERE Families.HumanId = %s ('-1',)
+[Fri Jun 02 19:26:15.053346 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * from usersessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
+[Fri Jun 02 19:26:15.126805 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * from humansAKA WHERE HumanId = %s ('-1',)
+[Fri Jun 02 19:26:15.164879 2023] [wsgi:error] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] SELECT * from families join Humans on Humans.HumanId=Families.FamilyHumanId WHERE Families.HumanId = %s ('-1',)
 [Fri Jun 02 19:26:15.206228 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] ERROR:app:Exception on /Human/GetPossibleFamilies [GET]
 [Fri Jun 02 19:26:15.206262 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102] Traceback (most recent call last):
 [Fri Jun 02 19:26:15.206268 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56102]   File "/var/www/python/myenv/lib/python3.7/site-packages/flask/app.py", line 2529, in wsgi_app
@@ -2895,10 +2895,10 @@
 [Fri Jun 02 19:28:24.893960 2023] [ssl:info] [pid 3278] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56416] AH01964: Connection to child 12 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:28:25.535041 2023] [ssl:info] [pid 3319] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56415] AH01964: Connection to child 1 established (server api.solddownriver.com:443)
 [Fri Jun 02 19:28:26.553903 2023] [ssl:info] [pid 3321] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] AH01964: Connection to child 7 established (server api.solddownriver.com:443)
-[Fri Jun 02 19:28:26.593447 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] SELECT * FROM UserSessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
+[Fri Jun 02 19:28:26.593447 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] SELECT * from usersessions WHERE SessionId = 'SES5f35e5cf-c489-40cf-93b4-7ee42ccad85e'
 [Fri Jun 02 19:28:26.658228 2023] [ssl:info] [pid 3320] [client 2600:8805:1800:338:40c4:ed77:db60:f48d:56422] AH01964: Connection to child 4 established (server api.solddownriver.com:443)
-[Fri Jun 02 19:28:26.666442 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] SELECT * FROM HumansAKA WHERE HumanId = %s ('-1',)
-[Fri Jun 02 19:28:26.685087 2023] [wsgi:error] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56422] SELECT * FROM Families join Humans on Humans.HumanId=Families.FamilyHumanId WHERE Families.HumanId = %s ('-1',)
+[Fri Jun 02 19:28:26.666442 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] SELECT * from humansAKA WHERE HumanId = %s ('-1',)
+[Fri Jun 02 19:28:26.685087 2023] [wsgi:error] [pid 3098] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56422] SELECT * from families join Humans on Humans.HumanId=Families.FamilyHumanId WHERE Families.HumanId = %s ('-1',)
 [Fri Jun 02 19:28:26.698647 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] ERROR:app:Exception on /Human/GetPossibleFamilies [GET]
 [Fri Jun 02 19:28:26.698674 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417] Traceback (most recent call last):
 [Fri Jun 02 19:28:26.698677 2023] [wsgi:error] [pid 3099] [remote 2600:8805:1800:338:40c4:ed77:db60:f48d:56417]   File "/var/www/python/myenv/lib/python3.7/site-packages/flask/app.py", line 2529, in wsgi_app

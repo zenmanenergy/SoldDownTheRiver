@@ -7,7 +7,7 @@ def get_Humans(VoyageId):
 
 	# Construct the SQL query
 	query = "SELECT * "
-	query += "  FROM Humans where Humans.HumanId not in (select HumanId from VoyageHumans where VoyageHumans.VoyageId=%s ) "
+	query += "  from humans where humans.HumanId not in (select HumanId from voyagehumans where voyagehumans.VoyageId=%s ) "
 	query += " ORDER BY FirstName, LastName"
 	values = (VoyageId, )
 

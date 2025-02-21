@@ -17,6 +17,7 @@
 	"dependencies": {
 		"@sveltejs/adapter-static": "^2.0.2",
 		"moment": "^2.29.4",
-		"svelecte": "^3.17.2"
+		"svelecte": "^3.17.2",
+		"svelte-select": "^5.8.3"
 	}
 }

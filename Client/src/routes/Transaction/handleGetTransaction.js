@@ -1,15 +1,28 @@
-
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
-export async function handleGetTransaction(SessionId,TransactionId, callback) {
 
-	const Data = {
-		SessionId:SessionId,
-		TransactionId:TransactionId
-	};
-	const url = baseURL + '/Transaction/GetTransaction?'; 
-	const FormValid=true
-	let data = await SuperFetch(url, Data, FormValid)
+/**
+ * Fetch a single transaction.
+ * @param {string} SessionId - The session ID for authentication.
+ * @param {string} TransactionId - The ID of the transaction to retrieve.
+ * @returns {Promise<Object|null>} - The transaction data or null if an error occurs.
+ */
+export async function handleGetTransaction(SessionId, TransactionId) {
+	const Data = { SessionId, TransactionId };
+	const url = baseURL + '/Transaction/GetTransaction?';
+	const FormValid = true;
 
-	callback(data);
+	try {
+		let data = await SuperFetch(url, Data, FormValid);
+
+		if (!data || data.error) {
+			console.error("Error fetching transaction:", data?.error || "Unknown error");
+			return null;
+		}
+		console.log(data)
+		return data;
+	} catch (error) {
+		console.error("handleGetTransaction error:", error);
+		return null;
+	}
 }

@@ -5,7 +5,7 @@
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { handleSave } from '../handleSave.js';
+	import { handleSave } from '../handleSaveHuman.js';
 	import { handleDelete } from '../handleDelete.js';
 	import { handleGetHuman } from '../handleGetHuman.js';
 	import { handleGetRoles } from '../handleGetRoles.js';

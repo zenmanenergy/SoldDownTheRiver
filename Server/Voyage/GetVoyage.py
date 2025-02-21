@@ -8,8 +8,8 @@ def get_Voyage(VoyageId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (SELECT MAX(dateAdded) FROM History WHERE History.KeyValue = Voyages.VoyageId AND History.TableName = 'Voyages' AND History.KeyName = 'VoyageId') AS LastModified"
-	query += " FROM Voyages WHERE VoyageId = %s"
+	query = "SELECT *, (SELECT MAX(dateAdded) from history WHERE history.KeyValue = voyages.VoyageId AND history.TableName = 'voyages' AND history.KeyName = 'VoyageId') AS LastModified"
+	query += " from voyages WHERE VoyageId = %s"
 	values = (VoyageId,)
 
 	# Execute the query and get the results

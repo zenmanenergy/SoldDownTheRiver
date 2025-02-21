@@ -9,7 +9,7 @@ def get_ships(HumanId):
 
 	# Construct the SQL query
 	query = "SELECT * "
-	query +=f" FROM ships left join locations on locations.LocationId=ships.HomePortLocationId WHERE AgentHumanId = '{HumanId}'"
+	query +=f" from ships left join locations on locations.LocationId=ships.HomePortLocationId WHERE AgentHumanId = '{HumanId}'"
 	print(query)
 	# Execute the query and get the results
 	cursor.execute(query)

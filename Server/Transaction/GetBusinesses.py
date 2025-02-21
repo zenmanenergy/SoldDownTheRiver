@@ -6,8 +6,8 @@ def get_businesses():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Businesses.BusinessId and History.TableName='Businesses' and History.KeyName='BusinessId') LastModified"
-	query +=" FROM Businesses order by BusinessName"
+	query = "SELECT *, (select max(dateAdded) from history where history.KeyValue=businesses.BusinessId and history.TableName='businesses' and history.KeyName='BusinessId') LastModified"
+	query +=" from businesses order by BusinessName"
 	values = ()
 
 

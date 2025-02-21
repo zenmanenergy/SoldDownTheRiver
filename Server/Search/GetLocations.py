@@ -8,7 +8,7 @@ def get_locations(City, State, Country):
 
 	# Construct the SQL query
 	query = "SELECT *"
-	query += " FROM Locations WHERE City like %s and State like %s and Country like %s"
+	query += " from locations WHERE City like %s and State like %s and Country like %s"
 	values = (City + '%', State + '%', Country + '%')
 
 

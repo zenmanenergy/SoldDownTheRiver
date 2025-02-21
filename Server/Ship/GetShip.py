@@ -8,8 +8,8 @@ def get_ship(ShipId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Ships.ShipId and History.TableName='Ships' and History.KeyName='ShipId') LastModified"
-	query += f" FROM ships  WHERE ShipId = '{ShipId}'"
+	query = "SELECT *, (select max(dateAdded) from history where history.KeyValue=ships.ShipId and history.TableName='ships' and history.KeyName='ShipId') LastModified"
+	query += f" from ships  WHERE ShipId = '{ShipId}'"
 	
 	# Execute the query and get the results
 	cursor.execute(query)

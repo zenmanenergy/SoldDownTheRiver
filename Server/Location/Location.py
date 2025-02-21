@@ -25,7 +25,7 @@ def SaveLocation():
 
 		# Call the save_location function from SaveLocation.py with the extracted data
 		result = save_location(LocationId, City, State, Country, Latitude, Longitude)
-		History.SaveHistory(location_data,"Locations", "LocationId", result["LocationId"])
+		History.SaveHistory(location_data,"locations", "LocationId", result["LocationId"])
 
 		return result
 	except Exception as e:
@@ -44,7 +44,7 @@ def DeleteLocation():
 		LocationId = location_data.get('LocationId')
 		# Call the delete_location function from DeleteLocation.py
 		result = delete_location(LocationId)
-		History.SaveHistory(location_data,"Locations", "LocationId", LocationId)
+		History.SaveHistory(location_data,"locations", "LocationId", LocationId)
 		return result
 	except Exception as e:
 		return Debugger(e)

@@ -10,8 +10,8 @@ def save_transactionhuman(TransactionId, HumanId, Price, Notes):
 
 
 	
-	query = "INSERT INTO TransactionHumans (TransactionId, HumanId, Price, Notes) VALUES (%s, %s, %s, %s)"
-	query +=" ON DUPLICATE KEY UPDATE TransactionId=values(TransactionId),HumanId=values(HumanId),Price=values(Price),Notes=values(Notes)"
+	query = "INSERT into transactionhumans (TransactionId, HumanId, Price, Notes) VALUES (%s, %s, %s, %s)"
+	query +=" ON DUPLICATE KEY update transactionId=values(TransactionId),HumanId=values(HumanId),Price=values(Price),Notes=values(Notes)"
 		
 	values = (TransactionId, HumanId, Price, Notes)
 

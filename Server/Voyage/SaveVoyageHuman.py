@@ -10,9 +10,9 @@ def save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,Buying
 
 
 	
-	query = "INSERT INTO VoyageHumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)"
+	query = "INSERT into voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)"
 	query += f" VALUES ('{VoyageId}', '{HumanId}','{RoleId}','{SellingSlaveTraderHumanId}', '{BuyingSlaveTraderHumanId}','{ShippingAgentHumanId}', '{CollectingAgentHumanId}','{Notes}')"
-	query +=" ON DUPLICATE KEY UPDATE VoyageId=values(VoyageId),HumanId=values(HumanId) ,RoleId=values(RoleId), SellingSlaveTraderHumanId=values(SellingSlaveTraderHumanId),BuyingSlaveTraderHumanId=values(BuyingSlaveTraderHumanId),ShippingAgentHumanId=values(ShippingAgentHumanId),CollectingAgentHumanId=values(CollectingAgentHumanId),Notes=values(Notes)"
+	query +=" ON DUPLICATE KEY update voyageId=values(VoyageId),HumanId=values(HumanId) ,RoleId=values(RoleId), SellingSlaveTraderHumanId=values(SellingSlaveTraderHumanId),BuyingSlaveTraderHumanId=values(BuyingSlaveTraderHumanId),ShippingAgentHumanId=values(ShippingAgentHumanId),CollectingAgentHumanId=values(CollectingAgentHumanId),Notes=values(Notes)"
 		
 
 

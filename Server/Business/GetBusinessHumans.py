@@ -6,11 +6,11 @@ def get_BusinessHumans(BusinessId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *, (select max(dateAdded) from History where History.KeyValue=Humans.HumanId and History.TableName='Humans' and History.KeyName='HumanId') LastModified"
-	query +=" FROM Humans join BusinessHumans on Humans.HumanId=BusinessHumans.HumanId "
-	query +=" join Roles on BusinessHumans.RoleId=Roles.RoleId "
-	query +=" where BusinessHumans.BusinessId= %s "
-	query +=" order by Humans.LastName, Humans.FirstName"
+	query = "SELECT *, (select max(dateAdded) from history where history.KeyValue=humans.HumanId and history.TableName='humans' and history.KeyName='HumanId') LastModified"
+	query +=" from humans join businesshumans on humans.HumanId=businesshumans.HumanId "
+	query +=" join roles on businesshumans.RoleId=roles.RoleId "
+	query +=" where businesshumans.BusinessId= %s "
+	query +=" order by humans.LastName, humans.FirstName"
 	values = (BusinessId,)
 
 	print(query % values)

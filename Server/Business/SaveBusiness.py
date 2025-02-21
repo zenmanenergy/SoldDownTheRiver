@@ -8,12 +8,12 @@ def save_business(BusinessId, BusinessName, LocationId):
 	# Check if the BusinessId is present
 	if BusinessId:
 		# If the BusinessId is present, update the existing business
-		query = "UPDATE Businesses SET BusinessName = %s, LocationId=%s WHERE BusinessId = %s "
+		query = "update businesses SET BusinessName = %s, LocationId=%s WHERE BusinessId = %s "
 		values = (BusinessName, LocationId, BusinessId)
 	else:
 		# If the BusinessId is not present, create a new business
 		BusinessId = "BUS"+str(uuid.uuid4())
-		query = "INSERT INTO Businesses (BusinessId, LocationId, BusinessName) VALUES (%s, %s, %s)"
+		query = "INSERT into businesses (BusinessId, LocationId, BusinessName) VALUES (%s, %s, %s)"
 		values = (BusinessId, LocationId, BusinessName)
 
 	# Execute the query and commit the changes
