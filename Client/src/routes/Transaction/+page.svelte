@@ -523,8 +523,8 @@
 				<!-- Existing Humans -->
 				{#each transactionHumans as human, index}
 					<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
-						<td>{human.FirstName}</td>
-						<td>{human.LastName}</td>
+						<td>{human.FirstName || ''}</td>
+						<td>{human.LastName || ''}</td>
 						<td>{human.RacialDescriptor || ''}</td>
 						<td>{human.Sex || ''}</td>
 						<td>{cmToInches(human.Height_cm)}</td>

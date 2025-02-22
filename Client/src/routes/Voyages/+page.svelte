@@ -34,7 +34,7 @@
 				<div class="spinner"></div>
 			</div>
 		{:else}
-			<a href="/AdminMenu">Back to Menu</a>
+			<a href="/">Back to Menu</a>
 			<div class="ActionBox">
 				<div class="title-container">
 					<h3 class="title is-2">List of Voyages</h3>

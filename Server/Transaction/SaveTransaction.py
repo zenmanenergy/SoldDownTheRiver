@@ -47,28 +47,35 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 		# If TransactionId is not present, create a new transaction
 		TransactionId = "TRN" + str(uuid.uuid4())
 		TotalPrice = 'NULL' if not TotalPrice or str(TotalPrice).lower() == 'null' else float(TotalPrice)
+		Notes = Notes.replace("'", "''") if Notes is not None else None
+		Transcriber = Transcriber.replace("'", "''") if Transcriber is not None else None
+		URL = URL.replace("'", "''") if URL is not None else None
+		DataQuestions = DataQuestions.replace("'", "''") if DataQuestions is not None else None
+
 		query = f"""
 			INSERT INTO transactions 
 			(TransactionId, date_circa, date_accuracy, TransactionType, Notes, NotaryHumanId, URL, 
 			TotalPrice, LocationId, Act, Page, Volume, Transcriber, isApproved, DataQuestions)
 			VALUES (
 				'{TransactionId}', 
-				'{date_circa}', 
-				'{date_accuracy}', 
-				'{TransactionType}', 
-				'{Notes.replace("'", "''")}', 
-				'{NotaryHumanId}', 
-				'{URL.replace("'", "''")}', 
-				{TotalPrice}, 
-				'{LocationId}', 
-				'{Act}', 
+				{f"'{date_circa}'" if date_circa is not None else 'NULL'}, 
+				{f"'{date_accuracy}'" if date_accuracy is not None else 'NULL'}, 
+				{f"'{TransactionType}'" if TransactionType is not None else 'NULL'}, 
+				{f"'{Notes}'" if Notes is not None else 'NULL'}, 
+				{f"'{NotaryHumanId}'" if NotaryHumanId is not None else 'NULL'}, 
+				{f"'{URL}'" if URL is not None else 'NULL'}, 
+				{TotalPrice if TotalPrice is not None else 'NULL'}, 
+				{f"'{LocationId}'" if LocationId is not None else 'NULL'}, 
+				{f"'{Act}'" if Act is not None else 'NULL'}, 
 				{Page if Page is not None else 'NULL'}, 
 				{Volume if Volume is not None else 'NULL'}, 
-				'{Transcriber.replace("'", "''")}', 
+				{f"'{Transcriber}'" if Transcriber is not None else 'NULL'}, 
 				{1 if isApproved else 0}, 
-				'{DataQuestions.replace("'", "''")}'
+				{f"'{DataQuestions}'" if DataQuestions is not None else 'NULL'}
 			)
 		"""
+
+
 
 
 

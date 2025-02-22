@@ -38,7 +38,7 @@
 	
   	
 	<div class="section">
-		<a href="/AdminMenu">Back to Menu</a>
+		<a href="/">Back to Menu</a>
 		<div class="ActionBox">
 			
 	  <form>
