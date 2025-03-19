@@ -24,7 +24,7 @@
 	import { handleGetNotaryTransactions } from './handleGetNotaryTransactions.js';
 	import { handleGetEnslavedTransactions } from './handleGetEnslavedTransactions.js';
 	import { handleGetCaptains } from './handleGetCaptains.js';
-	import { handleMergeHumans } from '../HumanMerge/handleMergeHumans.js';
+	import { handleMergeHumans } from '../Merge/handleMergeHumans.js';
 	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
 
 	let Human = {

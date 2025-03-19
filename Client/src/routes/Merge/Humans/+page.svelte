@@ -8,7 +8,7 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { Session } from "../Session.js";
+	import { Session } from "../../Session.js";
 	import { handleGetHumans } from './handleGetHumans.js';
 
 	let Humans = [];
