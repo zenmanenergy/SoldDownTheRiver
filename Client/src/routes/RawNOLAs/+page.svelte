@@ -125,7 +125,7 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/">Back to Menu</a>
+		
 		<div class="ActionBox">
 			<div class="title-container">
 				<h3 class="title is-2">List of Raw NOLA Records</h3>

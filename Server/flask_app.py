@@ -12,6 +12,7 @@ from Businesses import Businesses
 from Business import Business
 from Humans import Humans
 from Human import Human
+from HumanMerge import HumanMerge
 from Locations import Locations
 from Location import Location
 from Notary import Notary
@@ -40,6 +41,7 @@ app.register_blueprint(Businesses.blueprint)
 app.register_blueprint(Business.blueprint)
 app.register_blueprint(Humans.blueprint)
 app.register_blueprint(Human.blueprint)
+app.register_blueprint(HumanMerge.blueprint)
 app.register_blueprint(Locations.blueprint)
 app.register_blueprint(Location.blueprint)
 app.register_blueprint(Users.blueprint)

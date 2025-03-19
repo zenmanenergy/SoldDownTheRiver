@@ -1,6 +1,16 @@
 <style>
-	
-
+	.table tbody tr:hover {
+		background-color: #f0f0f0;
+	}
+	.merge-box {
+		border: 2px solid #ffcc00;
+		padding: 10px;
+		background-color: #fff8e1;
+		margin-bottom: 20px;
+	}
+	.merge-box h3 {
+		margin-top: 0;
+	}
 </style>
 <script>
 	import { onMount } from 'svelte';
@@ -8,6 +18,13 @@
 	import { handleGetHuman } from './handleGetHuman.js';
 	import { saveHuman } from './handleSaveHuman.js';
 	import { handleDelete } from './handleDelete.js'; // Import delete function
+	import { handleGetHumanLocations } from './handleGetHumanLocations.js';
+	import { handleGetHumanFirstParty } from './handleGetHumanFirstParty.js';
+	import { handleGetHumanSecondParty } from './handleGetHumanSecondParty.js';
+	import { handleGetNotaryTransactions } from './handleGetNotaryTransactions.js';
+	import { handleGetEnslavedTransactions } from './handleGetEnslavedTransactions.js';
+	import { handleGetCaptains } from './handleGetCaptains.js';
+	import { handleMergeHumans } from '../HumanMerge/handleMergeHumans.js';
 
 	let Human = {
 		FirstName: '',
@@ -21,25 +38,49 @@
 		Roles: ''
 	};
 
+	let mergeHuman = null;
 	let isLoading = true;
 	let HumanId = null;
+	let mergeHumanId = null;
+	let locations = [];
+	let firstPartyTransactions = [];
+	let secondPartyTransactions = [];
+	let notaryTransactions = [];
+	let enslavedTransactions = [];
+	let captainVoyages = [];
 
-	// Get HumanId from URL
+	// Get HumanId and mergeHumanId from URL
 	function getHumanIdFromURL() {
 		const params = new URLSearchParams(window.location.search);
 		return params.get("HumanId") || null;
 	}
 
+	function getMergeHumanIdFromURL() {
+		const params = new URLSearchParams(window.location.search);
+		return params.get("mergeHumanId") || null;
+	}
+
 	onMount(async () => {
 		await Session.handleSession();
 		HumanId = getHumanIdFromURL();
+		mergeHumanId = getMergeHumanIdFromURL();
 
 		if (HumanId) {
 			const data = await handleGetHuman(Session.SessionId, HumanId);
 			if (data) {
 				Human = { ...data };
 				Human.Roles = data.Roles ? data.Roles.join(', ') : '';
+				locations = await handleGetHumanLocations(Session.SessionId, HumanId);
+				firstPartyTransactions = await handleGetHumanFirstParty(Session.SessionId, HumanId);
+				secondPartyTransactions = await handleGetHumanSecondParty(Session.SessionId, HumanId);
+				notaryTransactions = await handleGetNotaryTransactions(Session.SessionId, HumanId);
+				enslavedTransactions = await handleGetEnslavedTransactions(Session.SessionId, HumanId);
+				captainVoyages = await handleGetCaptains(Session.SessionId, HumanId);
 			}
+		}
+
+		if (mergeHumanId) {
+			mergeHuman = await handleGetHuman(Session.SessionId, mergeHumanId);
 		}
 
 		// Convert stored cm to inches for display
@@ -66,6 +107,57 @@
 			await handleDelete(Session.SessionId, HumanId);
 		}
 	}
+
+	function formatDate(date, accuracy) {
+		const options = { year: 'numeric', month: 'long', day: 'numeric' };
+		const dateObj = new Date(date);
+		switch (accuracy) {
+			case 'Y':
+				return dateObj.getFullYear();
+			case 'M':
+				return dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+			case 'D':
+				return dateObj.toLocaleDateString(undefined, options);
+			default:
+				return date;
+		}
+	}
+
+	function navigateToTransaction(TransactionId) {
+		window.location.href = `/Transaction?TransactionId=${TransactionId}`;
+	}
+
+	async function mergeHumans() {
+		if (HumanId && mergeHumanId) {
+			await handleMergeHumans(Session.SessionId, HumanId, mergeHumanId, (result) => {
+				if (result) {
+					alert("Humans merged successfully!");
+					// Redirect to the new human page
+					window.location.href = `/Human?HumanId=${result.HumanId}`;
+				} else {
+					alert("Failed to merge humans.");
+				}
+			});
+		} else {
+			alert("Both HumanId and mergeHumanId are required to merge humans.");
+		}
+	}
+
+	onMount(async () => {
+		getParamsFromURL();
+		await Session.handleSession();
+		if (HumanId && mergeHumanId) {
+			await handleMergeHumans(Session.SessionId, HumanId, mergeHumanId, (result) => {
+				if (result) {
+					alert("Humans merged successfully!");
+					// Redirect to the new human page
+					window.location.href = `/Human?HumanId=${result.HumanId}`;
+				} else {
+					alert("Failed to merge humans.");
+				}
+			});
+		}
+	});
 </script>
 
 {#if isLoading}
@@ -76,6 +168,27 @@
 	<div class="section">
 		<a href="/Humans">Back to List</a>
 		<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
+
+		{#if mergeHuman}
+			<div class="merge-box">
+				<h3 class="title is-3">Merge Human</h3>
+				<table class="table is-fullwidth is-striped">
+					<thead>
+						<tr>
+							<th>First Name</th>
+							<th>Last Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{mergeHuman.FirstName}</td>
+							<td>{mergeHuman.LastName}</td>
+						</tr>
+					</tbody>
+				</table>
+				<button class="button is-warning" on:click={mergeHumans}>Merge These Humans</button>
+			</div>
+		{/if}
 		
 		<form on:submit|preventDefault={submitHuman}>
 			<div class="field">
@@ -134,5 +247,161 @@
 				{/if}
 			</div>
 		</form>
+
+		{#if locations.length > 0}
+			<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Location Type</th>
+						<th>Address</th>
+						<th>Latitude</th>
+						<th>Longitude</th>
+						<th>Date Circa</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each locations as location}
+						<tr>
+							<td>{location.locationType}</td>
+							<td>{location.Address}</td>
+							<td>{location.Latitude}</td>
+							<td>{location.Longitude}</td>
+							<td>{formatDate(location.date_circa, location.date_accuracy)}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if firstPartyTransactions.length > 0}
+			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a First Party</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Transaction Type</th>
+						<th>Date Circa</th>
+						<th>First Party</th>
+						<th>Second Party</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each firstPartyTransactions as transaction}
+						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
+							<td>{transaction.TransactionType}</td>
+							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
+							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
+							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if secondPartyTransactions.length > 0}
+			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a Second Party</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Transaction Type</th>
+						<th>Date Circa</th>
+						<th>First Party</th>
+						<th>Second Party</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each secondPartyTransactions as transaction}
+						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
+							<td>{transaction.TransactionType}</td>
+							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
+							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
+							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if enslavedTransactions.length > 0}
+			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is an Enslaved Person</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Transaction Type</th>
+						<th>Date Circa</th>
+						<th>First Party</th>
+						<th>Second Party</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each enslavedTransactions as transaction}
+						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
+							<td>{transaction.TransactionType}</td>
+							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
+							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
+							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
+							<td>{transaction.TransactionHumanNotes}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if notaryTransactions.length > 0}
+			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a Notary</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Transaction Type</th>
+						<th>Date Circa</th>
+						<th>First Party</th>
+						<th>Second Party</th>
+						<th>Notary</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each notaryTransactions as transaction}
+						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
+							<td>{transaction.TransactionType}</td>
+							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
+							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
+							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
+							<td>{transaction.NotaryFirstName} {transaction.NotaryLastName}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if captainVoyages.length > 0}
+			<h3 class="title is-3">Voyages where {Human.FirstName} {Human.LastName} is a Captain</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Voyage ID</th>
+						<th>Ship ID</th>
+						<th>Start Location</th>
+						<th>End Location</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each captainVoyages as voyage}
+						<tr on:click={() => navigateToTransaction(voyage.VoyageId)} style="cursor: pointer;">
+							<td>{voyage.VoyageId}</td>
+							<td>{voyage.ShipId}</td>
+							<td>{voyage.StartAddress}</td>
+							<td>{voyage.EndAddress}</td>
+							<td>{formatDate(voyage.StartDate, 'D')}</td>
+							<td>{formatDate(voyage.EndDate, 'D')}</td>
+							<td>{voyage.Notes}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
 	</div>
 {/if}

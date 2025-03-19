@@ -1,5 +1,9 @@
 <style>
 	@import '/static/FormPages.css';
+	.table tbody tr:hover {
+		background-color: #f0f0f0;
+		cursor: pointer;
+	}
 </style>
 <script>
 	import moment from 'moment';
@@ -18,6 +22,8 @@
 
 	let sortColumn = 'LastName';
 	let sortAscending = true;
+
+	let selectedHumans = [];
 
 	function getSearchQueryFromURL() {
 		const params = new URLSearchParams(window.location.search);
@@ -106,6 +112,34 @@
 	function addHuman() {
 		window.location.href = '/Human?HumanId=';
 	}
+
+	function selectHuman(human) {
+		if (!selectedHumans.find(h => h.HumanId === human.HumanId)) {
+			selectedHumans = [...selectedHumans, human];
+		}
+	}
+
+	function removeSelectedHuman(humanId) {
+		selectedHumans = selectedHumans.filter(h => h.HumanId !== humanId);
+	}
+
+	function openHumanInNewTab(humanId) {
+		if (selectedHumans.length === 2) {
+			const [human1, human2] = selectedHumans;
+			const win1 = window.open(`/Human?HumanId=${human1.HumanId}&mergeHumanId=${human2.HumanId}`, '_blank1');
+			setTimeout(() => {
+				const win2 = window.open(`/Human?HumanId=${human2.HumanId}&mergeHumanId=${human1.HumanId}`, '_blank2');
+				if (!win2) {
+					alert("Please allow pop-ups for this website to compare humans.");
+				}
+			}, 500);
+			if (!win1) {
+				alert("Please allow pop-ups for this website to compare humans.");
+			}
+		} else {
+			alert("Please select exactly 2 humans to compare.");
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -116,6 +150,32 @@
 	<div class="section">
 		
 		<div class="ActionBox">
+
+			<h3 class="title is-3">Selected Humans for merging </h3>
+			{#if selectedHumans.length > 0}
+				<table class="table is-fullwidth is-striped">
+					<thead>
+						<tr>
+							<th>First Name</th>
+							<th>Last Name</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each selectedHumans as human}
+							<tr on:click={() => openHumanInNewTab(human.HumanId)} style="cursor: pointer;">
+								<td>{human.FirstName}</td>
+								<td>{human.LastName}</td>
+								<td>
+									<button class="button is-danger" on:click={() => removeSelectedHuman(human.HumanId)}>Remove</button>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{:else}
+				<div class="notification is-warning">Select 2 Humans below</div>
+			{/if}
 			<div class="title-container">
 				<h3 class="title is-2">List of Humans</h3>
 				<button class="button is-primary" on:click={addHuman}>Add Human</button>
@@ -127,6 +187,7 @@
 					</div>
 				</div>
 			</form>
+			
 			<table class="ClickableTable">
 				<thead>
 					<tr>
@@ -142,7 +203,7 @@
 				</thead>
 				<tbody>
 					{#each displayedHumans as human}
-						<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} style="cursor: pointer;">
+						<tr on:click={() => selectHuman(human)} style="cursor: pointer;">
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>

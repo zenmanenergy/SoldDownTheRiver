@@ -39,6 +39,7 @@
 			NOLA data
 			<li><a href={`/Transactions`}>Transactions</a></li>
 			<li><a href={`/Humans`}>Humans</a></li>
+			<li><a href={`/HumanMerge`}>Merge Humans</a></li>
 			<li><a href={`/Locations`}>Locations</a></li>
 			<li><a href={`/Roles`}>Roles</a></li>
 			<li><a href={`/RawNOLAs`}>Raw NOLA data</a></li>

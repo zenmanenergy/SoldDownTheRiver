@@ -38,7 +38,7 @@
 	
   	
 	<div class="section">
-		<a href="/">Back to Menu</a>
+		
 		<div class="ActionBox">
 			
 	  <form>

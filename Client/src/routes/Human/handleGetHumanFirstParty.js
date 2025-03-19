@@ -1,12 +1,12 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleGetHumanLocations(SessionId, HumanId) {
+export async function handleGetHumanFirstParty(SessionId, HumanId) {
 	const Data = {
 		SessionId: SessionId,
 		HumanId: HumanId
 	};
-	const url = `${baseURL}/Human/GetHumanLocations?`;
+	const url = `${baseURL}/Human/GetHumanFirstParty?`;
 	const FormValid = true;
 	
 	try {
@@ -15,10 +15,10 @@ export async function handleGetHumanLocations(SessionId, HumanId) {
 		if (response) {
 			return response; // Return the response directly
 		} else {
-			throw new Error('Failed to fetch human locations');
+			throw new Error('Failed to fetch human first party transactions');
 		}
 	} catch (error) {
-		console.error('Error fetching human locations:', error);
+		console.error('Error fetching human first party transactions:', error);
 		return [];
 	}
 }

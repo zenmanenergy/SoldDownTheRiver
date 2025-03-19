@@ -8,7 +8,7 @@
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<title>Sold Down The River</title>
 	<script src="/js/js.cookie.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+	<link rel="stylesheet" href="/css/bulma.min.css">
 
 
 	<!-- <link rel="stylesheet" href="static/FormPages.css"> -->
@@ -50,8 +50,7 @@
 		}
 
 		body {
-			display: grid;
-			grid-template-rows: 1fr auto;
+			display: block;
 		}
 		.content-wrapper {
 			width: 100%; /* Take full width of the container */
@@ -76,6 +75,14 @@ input:required:invalid {
 		max-width: 2000px;
 		margin: auto;
 	}
+
+	/* New container for shared alignment */
+	.container {
+		max-width: 2000px;
+		margin: 0 auto;
+		width: 100%;
+	}
+
 	input, button {
 		margin-top: 10px;
 	}
@@ -93,7 +100,6 @@ input:required:invalid {
 		display: flex;
 		flex-direction: column;
 		margin: auto;
-		padding: 20px;
 		border: 1px solid #ccc;
 		border-radius: 4px;
 		overflow-x: auto; /* Allows horizontal scrolling if necessary */
@@ -146,13 +152,73 @@ input:required:invalid {
 		margin-left: auto; /* Pushes Delete to the right */
 	}
 
+	/* Add new CSS rule for navbar alignment */
+	.navbar {
+		max-width: 2000px;
+		width: 100%;
+		padding: 0 2rem; /* optional: add horizontal padding for spacing */
+		margin: auto;
+		 /* added !important to enforce blue background */
+	}
+	.navmargin{
+		padding: 0em 20em;
+	}
 	</style>
 
 
 </head>
 
 <body>
-	<div style="display: contents">
+	<!-- Wrap navbar in a container -->
+	<div class="navmargin">
+		<nav class="navbar is-link" role="navigation" aria-label="main navigation">
+			<div class="navbar-brand">
+				
+				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+					<span aria-hidden="true"></span>
+				</a>
+			</div>
+
+			<div id="navbarBasicExample" class="navbar-menu">
+				<div class="navbar-start">
+					<a class="navbar-item" href="/">
+						Home
+					</a>
+					<a class="navbar-item" href="/Humans">
+						Humans
+					</a>
+					<a class="navbar-item" href="/HumanMerge">
+						Merge Humans
+					</a>
+					<a class="navbar-item" href="/Transactions">
+						Transactions
+					</a>
+					<a class="navbar-item" href="/Locations">
+						Locations
+					</a>
+					<a class="navbar-item" href="/Roles">
+						Roles
+					</a>
+					<a class="navbar-item" href="/Voyages">
+						Voyages
+					</a>
+					<a class="navbar-item" href="/Businesses">
+						Businesses
+					</a>
+					<a class="navbar-item" href="/Users">
+						Users
+					</a>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="bodycontents" style="display: block">
 	%sveltekit.body%
 	</div>
 	<footer class="footer">
@@ -162,5 +228,18 @@ input:required:invalid {
 			</p>
 		</div>
 	</footer>
+	<script>
+		// Dynamically set navbar width to match #bodycontents width
+		function adjustNavbarWidth() {
+			const bodyContents = document.getElementById('ActionBox');
+			const navbar = document.querySelector('.navbar');
+			if (bodyContents && navbar) {
+				// Use getBoundingClientRect to get the actual width since display: contents yields offsetWidth = 0
+				navbar.style.width = bodyContents.getBoundingClientRect().width + 'px';
+			}
+		}
+		window.addEventListener('load', adjustNavbarWidth);
+		window.addEventListener('resize', adjustNavbarWidth);
+	</script>
 </body>
 </html>

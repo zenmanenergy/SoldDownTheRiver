@@ -1,81 +1,89 @@
 input:required:invalid {
-		border-color: #f14668;
-	}
+	border-color: #f14668;
+}
 
-	input:required:valid {
-		border-color: #23d160;
-	}
+input:required:valid {
+	border-color: #23d160;
+}
 
-	.section {
-		max-width: 2000px;
-		margin: auto;
-	}
-	input, button {
-		margin-top: 10px;
-	}
-	
-	
-	.title-container {
-		display: flex;
-		justify-content: space-between;
-		align-items:first baseline; /* to align items vertically centered */
-	}
+.section {
+	max-width: 2000px;
+	margin: auto;
+}
 
-	.ActionBox {
-		min-width: 1000px; /* Increased min-width */
-		max-width: 2000px; /* Limits max expansion */
-		display: flex;
-		flex-direction: column;
-		margin: auto;
-		padding: 20px;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-		overflow-x: auto; /* Allows horizontal scrolling if necessary */
-	}
-	
-	.table-container {
-		width: 100%;
-		overflow-x: auto; /* Enables scrolling if needed */
-	}
-	
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		table-layout: auto; /* Allows flexible column sizes */
-	}
-	
-	th, td {
-		padding: 10px;
-		text-align: left;
-		white-space: nowrap; /* Prevents text wrapping in table cells */
-	}
-	th {
-		text-align: left; /* Ensures alignment is preserved */
-		padding: 10px; /* Ensures spacing remains */
-		cursor: pointer; /* Indicates the column is sortable */
-	}
-	
-	th:hover {
-		background-color: #f5f5f5; /* Light highlight effect on hover */
-	}
-	
-	.ClickableTable tbody tr:hover {
-		background-color: #f5f5f5;
-		cursor: pointer;
-	}
-	
-	.AddLink{
+input, button {
+	margin-top: 10px;
+}
 
-		font-weight: normal;
-		float:right;
-	}
-	.buttons-container {
-		display: flex;
-		justify-content: space-between; /* Pushes Save left, Delete right */
-		align-items: center;
-		width: 100%; /* Ensures full width */
-	}
+.title-container {
+	display: flex;
+	justify-content: space-between;
+	align-items:first baseline; /* to align items vertically centered */
+}
 
-	.delete-button {
-		margin-left: auto; /* Pushes Delete to the right */
-	}
+.ActionBox {
+	min-width: 1000px; /* Increased min-width */
+	max-width: 2000px; /* Limits max expansion */
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	overflow-x: auto; /* Allows horizontal scrolling if necessary */
+}
+
+.table-container {
+	width: 100%;
+	overflow-x: auto; /* Enables scrolling if needed */
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: auto; /* Allows flexible column sizes */
+}
+
+th, td {
+	padding: 10px;
+	text-align: left;
+	white-space: nowrap; /* Prevents text wrapping in table cells */
+}
+
+th {
+	text-align: left; /* Ensures alignment is preserved */
+	padding: 10px; /* Ensures spacing remains */
+	cursor: pointer; /* Indicates the column is sortable */
+}
+
+th:hover {
+	background-color: #f5f5f5; /* Light highlight effect on hover */
+}
+
+.ClickableTable tbody tr:hover {
+	background-color: #f5f5f5;
+	cursor: pointer;
+}
+
+.AddLink {
+	font-weight: normal;
+	float:right;
+}
+
+.buttons-container {
+	display: flex;
+	justify-content: space-between; /* Pushes Save left, Delete right */
+	align-items: center;
+	width: 100%; /* Ensures full width */
+}
+
+.delete-button {
+	margin-left: auto; /* Pushes Delete to the right */
+}
+
+/* Ensure the navbar is visible */
+.navbar {
+	position: relative;
+	z-index: 1000;
+	background-color: #fff; /* Ensure the background color is set */
+}
