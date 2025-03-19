@@ -23,6 +23,7 @@ from .GetHumanSecondParty import get_human_second_party
 from .GetNotaryTransactions import get_notary_transactions
 from .GetEnslavedTransactions import get_enslaved_transactions
 from .GetCaptains import get_captains
+from .GetHumanVoyages import get_human_voyages
 
 
 
@@ -379,6 +380,21 @@ def GetCaptains():
 		HumanId = human_data.get('HumanId', None)
 		# Call the get_captains function from GetCaptains.py
 		result = get_captains(HumanId)
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Human/GetVoyages", methods=['GET'])
+@cross_origin()
+def GetVoyages():
+	try:
+		# Get the human data from the request
+		human_data = request.args.to_dict()
+
+		# Get the human ID from the request
+		HumanId = human_data.get('HumanId', None)
+		# Call the get_human_voyages function
+		result = get_human_voyages(HumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)

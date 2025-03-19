@@ -6,8 +6,8 @@ def get_Captains():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL sql
-	sql = f"SELECT * "
-	sql += f"  from humans join humanroles on humans.HumanId=humanroles.HumanId where humanroles.RoleId='ShipCaptain'"
+	sql = f"SELECT distinct * "
+	sql += f" from humans join voyages on humans.HumanId=voyages.CaptainHumanId "
 	sql += f" ORDER BY FirstName, LastName"
 	print(sql)
 	# Execute the sql and get the results

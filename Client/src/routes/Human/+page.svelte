@@ -25,6 +25,7 @@
 	import { handleGetEnslavedTransactions } from './handleGetEnslavedTransactions.js';
 	import { handleGetCaptains } from './handleGetCaptains.js';
 	import { handleMergeHumans } from '../HumanMerge/handleMergeHumans.js';
+	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
 
 	let Human = {
 		FirstName: '',
@@ -48,22 +49,19 @@
 	let notaryTransactions = [];
 	let enslavedTransactions = [];
 	let captainVoyages = [];
+	let voyages = [];
+	let returnPath;
 
-	// Get HumanId and mergeHumanId from URL
-	function getHumanIdFromURL() {
-		const params = new URLSearchParams(window.location.search);
-		return params.get("HumanId") || null;
-	}
-
-	function getMergeHumanIdFromURL() {
-		const params = new URLSearchParams(window.location.search);
-		return params.get("mergeHumanId") || null;
+	// Utility function to get a URL parameter by name
+	function getURLVariable(name) {
+		return new URLSearchParams(window.location.search).get(name);
 	}
 
 	onMount(async () => {
 		await Session.handleSession();
-		HumanId = getHumanIdFromURL();
-		mergeHumanId = getMergeHumanIdFromURL();
+		HumanId = getURLVariable('HumanId') || null;
+		mergeHumanId = getURLVariable('mergeHumanId') || null;
+		returnPath = getURLVariable('returnPath');
 
 		if (HumanId) {
 			const data = await handleGetHuman(Session.SessionId, HumanId);
@@ -76,6 +74,7 @@
 				notaryTransactions = await handleGetNotaryTransactions(Session.SessionId, HumanId);
 				enslavedTransactions = await handleGetEnslavedTransactions(Session.SessionId, HumanId);
 				captainVoyages = await handleGetCaptains(Session.SessionId, HumanId);
+				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
 			}
 		}
 
@@ -96,7 +95,8 @@
 	async function submitHuman() {
 		const success = await saveHuman(Session.SessionId, HumanId, Human);
 		if (success) {
-			window.location.href = '/Humans'; // Redirect after saving
+			
+			window.location.href = returnPath || '/Humans'; // Redirect to returnPath if it exists, otherwise to /Humans
 		} else {
 			alert("Failed to save human.");
 		}
@@ -144,7 +144,9 @@
 	}
 
 	onMount(async () => {
-		getParamsFromURL();
+		const params = getParamsFromURL();
+		HumanId = params.HumanId || null;
+		mergeHumanId = params.mergeHumanId || null;
 		await Session.handleSession();
 		if (HumanId && mergeHumanId) {
 			await handleMergeHumans(Session.SessionId, HumanId, mergeHumanId, (result) => {
@@ -397,6 +399,28 @@
 							<td>{voyage.EndAddress}</td>
 							<td>{formatDate(voyage.StartDate, 'D')}</td>
 							<td>{formatDate(voyage.EndDate, 'D')}</td>
+							<td>{voyage.Notes}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if voyages.length > 0}
+			<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Voyage ID</th>
+						<th>Role ID</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each voyages as voyage}
+							<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
+							<td>{voyage.VoyageId}</td>
+							<td>{voyage.RoleId}</td>
 							<td>{voyage.Notes}</td>
 						</tr>
 					{/each}

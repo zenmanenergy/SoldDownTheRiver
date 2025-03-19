@@ -82,14 +82,17 @@
 			formValid = Voyage.ShipId;
 		}
 	
+		// Utility function to get a URL parameter by name
+		function getURLVariable(name) {
+			return new URLSearchParams(window.location.search).get(name);
+		}
+
 		onMount(async () => {
-			
 			await Session.handleSession();
-			const urlParams = new URLSearchParams(window.location.search);
-			VoyageId = urlParams.get('VoyageId') || '';
-			ShipId = urlParams.get('ShipId') || '';
-			Voyage.ShipId=ShipId
-			console.log(Voyage)
+			VoyageId = getURLVariable('VoyageId') || '';
+			ShipId = getURLVariable('ShipId') || '';
+			Voyage.ShipId = ShipId;
+			console.log(Voyage);
 			
 			await Promise.all([
 				handleGetVoyage(Session.SessionId, VoyageId, setVoyage),
@@ -121,7 +124,7 @@
 			<a href="/Voyages?">Back to Voyages</a>
 			<div class="ActionBox">
 				<form>
-					<h3 class="title is-2">Add a Voyage</h3>
+					<h3 class="title is-2">Voyage</h3>
 					<input type="hidden" bind:value={Voyage.VoyageId} />
 					<div class="field">
 						<label class="label" for="Size">Ship</label>
@@ -139,7 +142,7 @@
 						</div>
 					</div>
 					<div class="field">
-						<label class="label" for="Size">Ship Captain <a class="AddLink" href="/Human/ShipCaptain">Add Captain</a></label>
+						<label class="label" for="Size">Ship Captain <a class="AddLink" href="/Human?returnPath=/Voyage?VoyageId={Voyage.VoyageId}">Add Captain</a></label>
 						<div class="control">
 							<div id="svelecteEndLocation">
 								<svelte:component 
@@ -169,12 +172,6 @@
 							</div>
 						</div>
 					</div>
-					<div class="field">
-						<label class="label" for="StartDate">Start Date</label>
-						<div class="control">
-							<input class="input" type="date" id="StartDate" bind:value={Voyage.StartDate} />
-						</div>
-					</div>
 	
 					
 					<div class="field">
@@ -191,6 +188,12 @@
 								/>
 							</div>
 	
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="StartDate">Start Date</label>
+						<div class="control">
+							<input class="input" type="date" id="StartDate" bind:value={Voyage.StartDate} />
 						</div>
 					</div>
 	
@@ -234,7 +237,7 @@
 								</thead>
 								<tbody>
 								{#each VoyageHumans as Human}
-									<tr on:click={() => window.location.href = `/Voyage/${Human.RoleId}?VoyageId=${VoyageId}&HumanId=${Human.HumanId}`}>
+									<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
 										<td>{Human.FirstName}</td>
 										<td>{Human.LastName}</td>
 										<td>{Human.Role}</td>
@@ -248,4 +251,3 @@
 			</div>
 		</div>
 	{/if}
-	
