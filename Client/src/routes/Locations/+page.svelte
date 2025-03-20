@@ -12,6 +12,9 @@ let filteredLocations = [];
 let isLoading = true;
 let searchQuery = '';
 
+let sortColumn = 'City';
+let sortAscending = true;
+
 async function setLocations(data) {
 	Locations=data
 	
@@ -33,6 +36,27 @@ $: filteredLocations = Locations.filter(location => {
 	return fullLocation.includes(searchQuery.toLowerCase());
 });
 
+$: filteredLocations = [...filteredLocations].sort((a, b) => {
+	let valueA = a[sortColumn] ?? '';
+	let valueB = b[sortColumn] ?? '';
+
+	// Convert to lowercase for case-insensitive sorting
+	if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+	if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+	if (valueA < valueB) return sortAscending ? -1 : 1;
+	if (valueA > valueB) return sortAscending ? 1 : -1;
+	return 0;
+});
+
+function toggleSort(column) {
+	if (sortColumn === column) {
+		sortAscending = !sortAscending;
+	} else {
+		sortColumn = column;
+		sortAscending = true;
+	}
+}
 
 function addLocation() {
 	window.location.href = '/Location?LocationId=';
@@ -62,30 +86,29 @@ function go(LocationId) {
 			
 				</div>
 			</form>
-			<table width=100%>
-				<thead>
-					<tr>
-						<th>Address</th>
-						<th>City/County</th> <!-- Updated header -->
-						<th>State</th>
-						<th>Country</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredLocations as location}
-						<tr style="cursor: pointer;" on:click={() => go(location.LocationId)}>
-							<td>{location.Address || ''}</td>
-							<td>
-								{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : (location.County || '')}
-							</td>
-							<td>{location.State || ''}</td>
-							<td>{location.Country || ''}</td>
+				<table class="table is-striped is-hoverable is-fullwidth">
+					<thead>
+						<tr>
+							<th on:click={() => toggleSort('Address')} style="cursor: pointer;">Address</th>
+							<th on:click={() => toggleSort('City')} style="cursor: pointer;">City/County</th>
+							<th on:click={() => toggleSort('State')} style="cursor: pointer;">State</th>
+							<th on:click={() => toggleSort('Country')} style="cursor: pointer;">Country</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{#each filteredLocations as location}
+							<tr on:click={() => go(location.LocationId)} style="cursor: pointer;">
+								<td>{location.Address || ''}</td>
+								<td>
+									{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : (location.County || '')}
+								</td>
+								<td>{location.State || ''}</td>
+								<td>{location.Country || ''}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			
 		</div>
 	</div>
 {/if}
-	

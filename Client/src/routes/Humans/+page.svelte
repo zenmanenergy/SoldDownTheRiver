@@ -127,7 +127,7 @@
 					</div>
 				</div>
 			</form>
-			<table class="ClickableTable">
+			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
 						<th on:click={() => toggleSort('FirstName')} style="cursor: pointer;">First Name</th>
@@ -142,7 +142,7 @@
 				</thead>
 				<tbody>
 					{#each displayedHumans as human}
-						<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} style="cursor: pointer;">
+						<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`}>
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>

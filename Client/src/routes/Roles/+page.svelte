@@ -9,6 +9,8 @@
 
 	export let Roles = [];
 	let isLoading = true;
+	let sortColumn = 'Role';
+	let sortAscending = true;
 
 	async function setRoles(data) {
 		Roles = data;
@@ -23,6 +25,28 @@
 	function addRole() {
 		window.location.href = '/Role?RoleId=';
 	}
+
+	function toggleSort(column) {
+		if (sortColumn === column) {
+			sortAscending = !sortAscending;
+		} else {
+			sortColumn = column;
+			sortAscending = true;
+		}
+	}
+
+	$: Roles = [...Roles].sort((a, b) => {
+		let valueA = a[sortColumn] ?? '';
+		let valueB = b[sortColumn] ?? '';
+
+		// Convert to lowercase for case-insensitive sorting
+		if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+		if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+		if (valueA < valueB) return sortAscending ? -1 : 1;
+		if (valueA > valueB) return sortAscending ? 1 : -1;
+		return 0;
+	});
 </script>
 
 {#if isLoading}
@@ -38,10 +62,10 @@
 				<h3 class="title is-2">List of Roles</h3>
 				<button class="button is-primary" on:click={addRole}>Add Role</button>
 			</div>
-			<table class="ClickableTable" width="100%">
+			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
-						<th>Role</th>
+						 <th on:click={() => toggleSort('Role')} style="cursor: pointer;">Role</th>
 					</tr>
 				</thead>
 				<tbody>

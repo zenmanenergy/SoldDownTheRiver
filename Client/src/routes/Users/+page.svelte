@@ -1,11 +1,5 @@
 <style>
 	@import '/static/FormPages.css';
-	
-	/* Add styles for row hover effect */
-	tbody tr:hover {
-		background-color: #444444; /* or any other color you like */
-		cursor: pointer;
-	}
 </style>
 <script>
 	import moment from 'moment';
@@ -17,6 +11,8 @@
 	let filteredUsers = [];
 	let isLoading = true;
 	let searchQuery = '';
+	let sortColumn = 'FirstName';
+	let sortAscending = true;
 
 	async function setUsers(data) {
 		Users = data;
@@ -35,6 +31,28 @@
 		const fullName = `${user.FirstName} ${user.LastName}`.toLowerCase();
 		return fullName.includes(searchQuery.toLowerCase());
 	});
+
+	$: filteredUsers = [...filteredUsers].sort((a, b) => {
+		let valueA = a[sortColumn] ?? '';
+		let valueB = b[sortColumn] ?? '';
+
+		// Convert to lowercase for case-insensitive sorting
+		if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+		if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+		if (valueA < valueB) return sortAscending ? -1 : 1;
+		if (valueA > valueB) return sortAscending ? 1 : -1;
+		return 0;
+	});
+
+	function toggleSort(column) {
+		if (sortColumn === column) {
+			sortAscending = !sortAscending;
+		} else {
+			sortColumn = column;
+			sortAscending = true;
+		}
+	}
 
 	function addUser() {
 		window.location.href = '/User?UserId=';
@@ -59,12 +77,12 @@
 				</div>
 			</div>
 			<div class="table-container">
-				<table class="table is-striped is-fullwidth">
+				<table class="table is-striped is-hoverable is-fullwidth">
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Email</th>
-							<th>Phone Number</th>
+								<th on:click={() => toggleSort('FirstName')} style="cursor: pointer;">Name</th>
+								<th on:click={() => toggleSort('Email')} style="cursor: pointer;">Email</th>
+								<th on:click={() => toggleSort('Phone')} style="cursor: pointer;">Phone Number</th>
 						</tr>
 					</thead>
 					<tbody>
