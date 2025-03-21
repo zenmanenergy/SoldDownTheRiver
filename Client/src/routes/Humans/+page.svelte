@@ -130,14 +130,14 @@
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
-						<th on:click={() => toggleSort('FirstName')} style="cursor: pointer;">First Name</th>
-						<th on:click={() => toggleSort('MiddleName')} style="cursor: pointer;">Middle Name</th>
-						<th on:click={() => toggleSort('LastName')} style="cursor: pointer;">Last Name</th>
-						<th on:click={() => toggleSort('BirthDate')} style="cursor: pointer;">Birth Date</th>
-						<th on:click={() => toggleSort('RacialDescriptor')} style="cursor: pointer;">Racial Descriptor</th>
-						<th on:click={() => toggleSort('Sex')} style="cursor: pointer;">Sex</th>
-						<th on:click={() => toggleSort('Height_in')} style="cursor: pointer;">Height (inches)</th>
-						<th on:click={() => toggleSort('Roles')} style="cursor: pointer;">Roles</th>
+						<th on:click={() => toggleSort('FirstName')}>First Name</th>
+						<th on:click={() => toggleSort('MiddleName')}>Middle Name</th>
+						<th on:click={() => toggleSort('LastName')}>Last Name</th>
+						<th on:click={() => toggleSort('BirthDate')}>Birth Date</th>
+						<th on:click={() => toggleSort('RacialDescriptor')}>Racial Descriptor</th>
+						<th on:click={() => toggleSort('Sex')}>Sex</th>
+						<th on:click={() => toggleSort('Height_in')}>Height (inches)</th>
+						<th on:click={() => toggleSort('Roles')}>Roles</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -146,11 +146,11 @@
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>
-							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
+							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy) || ''}</td>
 							<td>{human.RacialDescriptor || ''}</td>
 							<td>{human.Sex || ''}</td>
 							<td>{human.Height_in ? `${human.Height_in} in` : ''}</td>
-							<td>{human.Roles.length > 0 ? human.Roles.join(', ') : 'No Roles'}</td>
+							<td>{human.Roles.length > 0 ? human.Roles.join(', ') : ''}</td>
 						</tr>
 					{/each}
 				</tbody>

@@ -96,8 +96,8 @@
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
-						<th on:click={() => toggleSort('ShipName')} style="cursor: pointer;">Ship Name</th>
-						<th on:click={() => toggleSort('ShipType')} style="cursor: pointer;">Ship Type</th>
+						<th on:click={() => toggleSort('ShipName')}>Ship Name</th>
+						<th on:click={() => toggleSort('ShipType')}>Ship Type</th>
 					</tr>
 				</thead>
 				<tbody>

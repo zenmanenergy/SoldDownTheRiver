@@ -17,7 +17,7 @@
 	import { Session } from '../Session.js';
 	import { handleGetHuman } from './handleGetHuman.js';
 	import { saveHuman } from './handleSaveHuman.js';
-	import { handleDelete } from './handleDelete.js'; // Import delete function
+	import { handleDelete } from './handleDelete.js';
 	import { handleGetHumanLocations } from './handleGetHumanLocations.js';
 	import { handleGetHumanFirstParty } from './handleGetHumanFirstParty.js';
 	import { handleGetHumanSecondParty } from './handleGetHumanSecondParty.js';
@@ -26,6 +26,8 @@
 	import { handleGetCaptains } from './handleGetCaptains.js';
 	import { handleMergeHumans } from '../Merge/Humans/handleMergeHumans.js';
 	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
+	import { handleGetFamilies } from './handleGetFamilies.js';
+	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 
 	let Human = {
 		FirstName: '',
@@ -50,9 +52,15 @@
 	let enslavedTransactions = [];
 	let captainVoyages = [];
 	let voyages = [];
+	let families = [];
 	let returnPath;
+	let Humans = [];
+	let filteredHumans = [];
+	let searchQuery = '';
+	let selectedHumanId = null;
+	let relationshipType = '';
+	let relationshipOptions = ['Husband', 'Wife', 'Son', 'Daughter', 'Father', 'Mother', 'Brother', 'Sister'];
 
-	// Utility function to get a URL parameter by name
 	function getURLVariable(name) {
 		return new URLSearchParams(window.location.search).get(name);
 	}
@@ -66,8 +74,12 @@
 		if (HumanId) {
 			const data = await handleGetHuman(Session.SessionId, HumanId);
 			if (data) {
-				Human = { ...data };
-				Human.Roles = data.Roles ? data.Roles.join(', ') : '';
+				Human = {
+					...data,
+					FirstName: data.FirstName || '',
+					LastName: data.LastName || '',
+					Roles: data.Roles ? data.Roles.join(', ') : ''
+				};
 				locations = await handleGetHumanLocations(Session.SessionId, HumanId);
 				firstPartyTransactions = await handleGetHumanFirstParty(Session.SessionId, HumanId);
 				secondPartyTransactions = await handleGetHumanSecondParty(Session.SessionId, HumanId);
@@ -80,11 +92,22 @@
 
 		if (mergeHumanId) {
 			mergeHuman = await handleGetHuman(Session.SessionId, mergeHumanId);
+			if (mergeHuman) {
+				mergeHuman.FirstName = mergeHuman.FirstName || '';
+				mergeHuman.LastName = mergeHuman.LastName || '';
+			}
 		}
 
-		// Convert stored cm to inches for display
+		await handleGetFamilies(Session.SessionId, HumanId, (data) => {
+			if (data) {
+				families = data;
+			}
+		});
+
+		await handleGetHumans(Session.SessionId, setHumans);
+
 		if (Human.Height_cm) {
-			Human.Height_in = (Human.Height_cm / 2.54).toFixed(2); // Rounded to 2 decimal places
+			Human.Height_in = (Human.Height_cm / 2.54).toFixed(2);
 		} else {
 			Human.Height_in = '';
 		}
@@ -92,11 +115,26 @@
 		isLoading = false;
 	});
 
+	function setHumans(data) {
+		Humans = data;
+	}
+
+	$: {
+		filteredHumans = Humans.filter(human => {
+			const search = searchQuery.toLowerCase();
+			const values = [
+				human.FirstName,
+				human.MiddleName,
+				human.LastName
+			];
+			return values.some(value => value && value.toLowerCase().includes(search));
+		});
+	}
+
 	async function submitHuman() {
 		const success = await saveHuman(Session.SessionId, HumanId, Human);
 		if (success) {
-			
-			window.location.href = returnPath || '/Humans'; // Redirect to returnPath if it exists, otherwise to /Humans
+			window.location.href = returnPath || '/Humans';
 		} else {
 			alert("Failed to save human.");
 		}
@@ -105,6 +143,30 @@
 	async function deleteHuman() {
 		if (confirm("Are you sure you want to delete this human? This action cannot be undone.")) {
 			await handleDelete(Session.SessionId, HumanId);
+		}
+	}
+
+	async function submitRelationship() {
+		if (!selectedHumanId || !relationshipType) {
+			alert('Please select a human and a relationship type.');
+			return;
+		}
+
+		const response = await fetch('/Family/AddRelationship', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				SessionId: Session.SessionId,
+				HumanId: selectedHumanId,
+				RelationshipType: relationshipType
+			})
+		});
+
+		if (response.ok) {
+			alert('Relationship added successfully!');
+			window.location.reload();
+		} else {
+			alert('Failed to add relationship.');
 		}
 	}
 
@@ -132,7 +194,6 @@
 			await handleMergeHumans(Session.SessionId, HumanId, mergeHumanId, (result) => {
 				if (result) {
 					alert("Humans merged successfully!");
-					// Redirect to the new human page
 					window.location.href = `/Human?HumanId=${result.HumanId}`;
 				} else {
 					alert("Failed to merge humans.");
@@ -143,23 +204,15 @@
 		}
 	}
 
-	onMount(async () => {
-		const params = getParamsFromURL();
-		HumanId = params.HumanId || null;
-		mergeHumanId = params.mergeHumanId || null;
-		await Session.handleSession();
-		if (HumanId && mergeHumanId) {
-			await handleMergeHumans(Session.SessionId, HumanId, mergeHumanId, (result) => {
-				if (result) {
-					alert("Humans merged successfully!");
-					// Redirect to the new human page
-					window.location.href = `/Human?HumanId=${result.HumanId}`;
-				} else {
-					alert("Failed to merge humans.");
-				}
-			});
-		}
-	});
+	function renderFamilyTree(tree) {
+		return tree.map(node => `
+			<li>
+				${node.FirstName} ${node.LastName}
+				${node.SpouseFirstName ? ` (Spouse: ${node.SpouseFirstName} ${node.SpouseLastName})` : ''}
+				${node.children && node.children.length > 0 ? `<ul>${renderFamilyTree(node.children)}</ul>` : ''}
+			</li>
+		`).join('');
+	}
 </script>
 
 {#if isLoading}
@@ -250,6 +303,14 @@
 			</div>
 		</form>
 
+		{#if families.length > 0}
+			<h3 class="title is-3">Family Tree</h3>
+			<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Manage Family Relationships</a>
+			<ul>
+				{@html renderFamilyTree(families)}
+			</ul>
+		{/if}
+
 		{#if locations.length > 0}
 			<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
 			<table class="table is-fullwidth is-striped">
@@ -324,32 +385,6 @@
 			</table>
 		{/if}
 
-		{#if enslavedTransactions.length > 0}
-			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is an Enslaved Person</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Transaction Type</th>
-						<th>Date Circa</th>
-						<th>First Party</th>
-						<th>Second Party</th>
-						<th>Notes</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each enslavedTransactions as transaction}
-						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
-							<td>{transaction.TransactionType}</td>
-							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
-							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
-							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
-							<td>{transaction.TransactionHumanNotes}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
 		{#if notaryTransactions.length > 0}
 			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a Notary</h3>
 			<table class="table is-fullwidth is-striped">
@@ -418,7 +453,7 @@
 				</thead>
 				<tbody>
 					{#each voyages as voyage}
-							<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
+						<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
 							<td>{voyage.VoyageId}</td>
 							<td>{voyage.RoleId}</td>
 							<td>{voyage.Notes}</td>
@@ -426,6 +461,16 @@
 					{/each}
 				</tbody>
 			</table>
+		{/if}
+
+		<h3 class="title is-3">Family Tree</h3>
+		<a href={`/Family?HumanId=${HumanId}`} class="button is-link">View Full Family Page</a>
+		{#if families.length > 0}
+			<ul>
+				{@html renderFamilyTree(families)}
+			</ul>
+		{:else}
+			No family relationships defined
 		{/if}
 	</div>
 {/if}

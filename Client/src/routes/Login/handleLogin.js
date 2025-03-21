@@ -34,30 +34,27 @@ export async function handleLogin(Email, Password, formValid, callback) {
 
 	try {
 		const response = await fetch(url, { method: 'GET' });
-		const SessionId = await response.json();
+		const data = await response.json();
 
 		// Handle successful login
-		if (SessionId) {
-			console.log("Login successful, SessionId:", SessionId);
-			Cookies.set("SessionId", SessionId, { expires: 365 });
+		if (data && data.SessionId && data.UserType) {
+			console.log("Login successful, SessionId:", data.SessionId, "UserType:", data.UserType);
+			Cookies.set("SessionId", data.SessionId, { expires: 365 });
+			Cookies.set("UserType", data.UserType, { expires: 365 });
 
 			// Redirect to previous location if available
 			const previousLocation = Cookies.get("previousLocation");
+			console.log(previousLocation)
 			if (previousLocation) {
 				window.location.href = previousLocation;
 			} else {
 				callback(true);
-				window.location.href = "/?s=0";
+				window.location.href = "/Humans?s=0";
 			}
 		} else {
-			console.error("Invalid login response, no SessionId received");
-			Cookies.remove("SessionId"); // Fix: Ensure correct cookie casing
-
-			// Focus on the first input field (Email)
-			// const formFields = document.querySelectorAll("input");
-			// if (formFields.length > 0) {
-			// 	formFields[0].focus();
-			// }
+			console.error("Invalid login response, no SessionId or UserType received");
+			Cookies.remove("SessionId");
+			Cookies.remove("UserType");
 
 			callback(false);
 		}

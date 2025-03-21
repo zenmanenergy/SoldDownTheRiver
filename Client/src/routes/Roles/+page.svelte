@@ -65,7 +65,7 @@
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
-						 <th on:click={() => toggleSort('Role')} style="cursor: pointer;">Role</th>
+						 <th on:click={() => toggleSort('Role')}>Role</th>
 					</tr>
 				</thead>
 				<tbody>

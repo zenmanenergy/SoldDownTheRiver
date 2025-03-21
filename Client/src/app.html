@@ -176,6 +176,11 @@ input:required:invalid {
 
 	/* Remove custom table row styles */
 	/* tbody tr:hover, tbody tr:nth-child(odd), tbody tr:nth-child(even) */
+
+	/* Add pointer cursor for clickable table rows */
+	.table.is-hoverable tbody tr:hover {
+		cursor: pointer;
+	}
 	</style>
 
 
@@ -198,6 +203,7 @@ input:required:invalid {
 				<div class="navbar-start">
 					<a class="navbar-item" href="/">Home</a>
 					<a class="navbar-item" href="/Humans">Humans</a>
+					<a class="navbar-item" href="/Families">Families</a>
 					
 					<a class="navbar-item" href="/Transactions">Transactions</a>
 					<a class="navbar-item" href="/Locations">Locations</a>
@@ -213,7 +219,15 @@ input:required:invalid {
 							<a class="navbar-item" href="/Merge/Ships">Ships</a>
 						</div>
 					</div>
-					<a class="navbar-item" href="/Users">Users</a>
+					<!-- Conditionally render the Users menu -->
+					<script>
+						if (Cookies.get("UserType") === "Administrator") {
+							document.write('<a class="navbar-item" href="/Users">Users</a>');
+						}
+					</script>
+				</div>
+				<div class="navbar-end">
+					<a class="navbar-item" href="#" onclick="handleLogout()">Logout</a>
 				</div>
 			</div>
 		</nav>
@@ -240,6 +254,17 @@ input:required:invalid {
 		}
 		window.addEventListener('load', adjustNavbarWidth);
 		window.addEventListener('resize', adjustNavbarWidth);
+
+		function handleLogout() {
+			Cookies.remove("SessionId");
+			Cookies.remove("UserType");
+			window.location.href = '/Login?s=1';
+		}
+
+		// Check if a specific cookie variable exists
+		function isUserMenuVisible() {
+			return Cookies.get("UserType") !== undefined; // Replace "UserType" with your cookie variable name
+		}
 	</script>
 </body>
 </html>

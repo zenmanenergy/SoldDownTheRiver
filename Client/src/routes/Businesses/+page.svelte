@@ -87,8 +87,8 @@ function addBusiness() {
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
-						<th on:click={() => toggleSort('BusinessName')} style="cursor: pointer;">Business Name</th>
-						<th on:click={() => toggleSort('LastModified')} style="cursor: pointer;">Last Modified</th>
+						<th on:click={() => toggleSort('BusinessName')}>Business Name</th>
+						<th on:click={() => toggleSort('LastModified')}>Last Modified</th>
 					</tr>
 				</thead>
 				<tbody>

@@ -80,9 +80,9 @@
 				<table class="table is-striped is-hoverable is-fullwidth">
 					<thead>
 						<tr>
-								<th on:click={() => toggleSort('FirstName')} style="cursor: pointer;">Name</th>
-								<th on:click={() => toggleSort('Email')} style="cursor: pointer;">Email</th>
-								<th on:click={() => toggleSort('Phone')} style="cursor: pointer;">Phone Number</th>
+							<th on:click={() => toggleSort('FirstName')}>Name</th>
+							<th on:click={() => toggleSort('Email')}>Email</th>
+							<th on:click={() => toggleSort('Phone')}>Phone Number</th>
 						</tr>
 					</thead>
 					<tbody>

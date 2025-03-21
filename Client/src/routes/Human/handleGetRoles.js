@@ -1,15 +1,13 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleGetRoles(SessionId,callback) {
-	
-
+export async function handleGetRoles(SessionId, callback) {
 	const Data = {
-		SessionId:SessionId
+		SessionId: SessionId
 	};
-	const url = baseURL + '/Human/GetRoles?'; 
-	const FormValid=true
-	let data = await SuperFetch(url, Data, FormValid)
+	const url = baseURL + '/Human/GetRoles?';
+	const FormValid = true;
+	let data = await SuperFetch(url, Data, FormValid);
 
 	callback(data);
 }

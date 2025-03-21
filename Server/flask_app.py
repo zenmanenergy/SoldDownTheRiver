@@ -10,6 +10,8 @@ app.debug = True
 
 from Businesses import Businesses
 from Business import Business
+from Families import Families
+from Family import Family
 from Humans import Humans
 from Human import Human
 from HumanMerge import HumanMerge
@@ -41,6 +43,8 @@ app.register_blueprint(Businesses.blueprint)
 app.register_blueprint(Business.blueprint)
 app.register_blueprint(Humans.blueprint)
 app.register_blueprint(Human.blueprint)
+app.register_blueprint(Families.blueprint)
+app.register_blueprint(Family.blueprint)
 app.register_blueprint(HumanMerge.blueprint)
 app.register_blueprint(Locations.blueprint)
 app.register_blueprint(Location.blueprint)

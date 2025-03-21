@@ -4,18 +4,21 @@ import datetime
 
 def verify_session(SessionId):
 	if not SessionId:
-		SessionId="-1"
+		SessionId = "-1"
 	
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT * from usersessions WHERE SessionId = %s"
+	query = """
+		SELECT usersessions.SessionId, users.UserType 
+		FROM usersessions 
+		INNER JOIN users ON usersessions.UserId = users.UserId 
+		WHERE usersessions.SessionId = %s
+	"""
 	values = (SessionId,)
 
-
 	print(query % tuple(map(repr, values)))
-
 
 	# Execute the query and get the results
 	cursor.execute(query, values)
@@ -23,10 +26,8 @@ def verify_session(SessionId):
 	# Close the database connection
 	connection.close()
 	
-	
 	if not result:
 		return '""'
 	else:
-		return '"'+result["SessionId"]+'"'
-	
-	
+		return '{"SessionId": "' + result["SessionId"] + '", "UserType": "' + result["UserType"] + '"}'
+

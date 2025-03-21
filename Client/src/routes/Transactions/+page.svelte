@@ -154,7 +154,7 @@
 					</div>
 				</div>
 			</form>
-			<table>
+			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
 						<th on:click={() => toggleSort('date_circa')}>Date</th>

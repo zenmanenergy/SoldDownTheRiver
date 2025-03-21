@@ -1,17 +1,29 @@
 import { baseURL } from './Settings';
+
 class session {
 	SessionId = "";
+	UserType = "";
+
 	async logout() {
 		console.log("Handling logout...");
-		
+		Cookies.remove("SessionId");
+		Cookies.remove("UserType");
+		window.location.href = '/Login?s=1';
 	}
+
 	async handleSession() {
-		// Add your session handling logic here
 		console.log("Handling session...");
 		this.GetSessionId();
 
-		await this.VerifySession(function(results) {
-			console.log("session verified!", results);
+		await this.VerifySession((results) => {
+			if (results && results.SessionId && results.UserType) {
+				console.log("Session verified!", results);
+				Cookies.set("SessionId", results.SessionId, { expires: 365 });
+				Cookies.set("UserType", results.UserType, { expires: 365 });
+				this.UserType = results.UserType;
+			} else {
+				this.logout();
+			}
 		});
 	}
 
@@ -27,20 +39,16 @@ class session {
 		const url = baseURL + '/Login/Verify?' + queryString;
 		console.log(url);
 		try {
-			const response = await fetch(url, {
-				method: 'GET'
-			});
-			const _SessionId = await response.json();
-			if (this.SessionId == _SessionId) {
-				Cookies.set("SessionId", this.SessionId, { expires: 365 });
+			const response = await fetch(url, { method: 'GET' });
+			const data = await response.json();
+			if (data && data.SessionId && data.UserType) {
+				callback(data);
 			} else {
-				Cookies.remove("SessionId");
-				window.location.href = '/Login?s=1';
+				callback(null);
 			}
-			callback(_SessionId);
 		} catch (error) {
-			console.error("save error", error);
-			// Handle the error as needed
+			console.error("Verify session error:", error);
+			callback(null);
 		}
 	}
 
@@ -53,7 +61,7 @@ class session {
 			this.SessionId = Cookies.get("SessionId");
 		} else {
 			this.SessionId = "";
-			Cookies.set("previousLocation", location.href)
+			Cookies.set("previousLocation", location.href);
 			location.href = "/Login?s=1";
 		}
 		return true;

@@ -89,15 +89,15 @@ function go(LocationId) {
 				<table class="table is-striped is-hoverable is-fullwidth">
 					<thead>
 						<tr>
-							<th on:click={() => toggleSort('Address')} style="cursor: pointer;">Address</th>
-							<th on:click={() => toggleSort('City')} style="cursor: pointer;">City/County</th>
-							<th on:click={() => toggleSort('State')} style="cursor: pointer;">State</th>
-							<th on:click={() => toggleSort('Country')} style="cursor: pointer;">Country</th>
+							<th on:click={() => toggleSort('Address')}>Address</th>
+							<th on:click={() => toggleSort('City')}>City/County</th>
+							<th on:click={() => toggleSort('State')}>State</th>
+							<th on:click={() => toggleSort('Country')}>Country</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#each filteredLocations as location}
-							<tr on:click={() => go(location.LocationId)} style="cursor: pointer;">
+							<tr on:click={() => go(location.LocationId)}>
 								<td>{location.Address || ''}</td>
 								<td>
 									{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : (location.County || '')}

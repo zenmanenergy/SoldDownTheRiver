@@ -2,7 +2,7 @@ import { baseURL } from '../Settings';
 
 export function handleLogout() {
   
-	Cookies.remove("sessionId");
+	Cookies.remove("SessionId");
 	
 	window.location.href = '/Login?s=1';
 }

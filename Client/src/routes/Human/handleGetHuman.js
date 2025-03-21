@@ -3,12 +3,12 @@ import { SuperFetch } from '../SuperFetch';
 
 /**
  * Fetch a single human's details by ID.
- * @param {string} sessionId - The session ID for authentication.
+ * @param {string} SessionId - The session ID for authentication.
  * @param {string} HumanId - The ID of the human to fetch.
  * @returns {Promise<Object|null>} - Returns the human data or null if an error occurs.
  */
-export async function handleGetHuman(sessionId, HumanId) {
-	const Data = { sessionId, HumanId };
+export async function handleGetHuman(SessionId, HumanId) {
+	const Data = { SessionId, HumanId };
 	const url = baseURL + '/Human/GetHuman?';
 	const FormValid = true;
 
