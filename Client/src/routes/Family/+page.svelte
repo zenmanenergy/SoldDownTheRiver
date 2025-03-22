@@ -1,33 +1,10 @@
-<style>
-	.table tbody tr:hover {
-		background-color: #f0f0f0;
-	}
-	.tree-container {
-		border: 2px solid #ddd;
-		padding: 10px;
-		background-color: #f9f9f9;
-		margin-bottom: 20px;
-	}
-	.tree-container h3 {
-		margin-top: 0;
-	}
-	.selected-human {
-		border: 2px solid #ddd;
-		padding: 10px;
-		background-color: #f9f9f9;
-		margin-bottom: 20px;
-	}
-</style>
-
 <script>
-	import { handleFamilyTree } from './handleFamilyTree.js';
 	import { onMount } from 'svelte';
 	import { Session } from '../Session.js';
-	import { handleGetFamilies } from '../Human/handleGetFamilies.js';
+	import { handleGetFamily } from './handleGetFamily.js';
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
-	import { handleAddFamilyMember } from './handleAddFamilyMember.js'; // Updated import
+	import { handleAddFamilyMember } from './handleAddFamilyMember.js';
 
-	let familyTree = null;
 	let humanId = ''; // Input for the HumanId to fetch the tree
 	let error = null;
 
@@ -45,45 +22,62 @@
 	let sortColumn = 'LastName';
 	let sortAscending = true;
 
-	async function fetchFamilyTree() {
-		try {
-			await handleFamilyTree(humanId, (data) => {
-				familyTree = data;
-				error = null;
-			});
-		} catch (err) {
-			error = err.message;
-			familyTree = null;
+	// Function to generate a family tree diagram with proper hierarchy
+	function generateFamilyTreeHTML(families) {
+		if (!families || families.length === 0) return '<p>No family relationships available.</p>';
+
+		// Sort families by left_value to ensure proper hierarchy
+		families.sort((a, b) => a.left_value - b.left_value);
+
+		// Recursive function to build the tree structure
+		function buildTree(families, parentLeftValue = null) {
+			return families
+				.filter(family => {
+					// A parent is identified by its left_value being less than the child's left_value
+					return parentLeftValue === null || (family.left_value > parentLeftValue && family.right_value < parentLeftValue + 2);
+				})
+				.map(family => `
+					<div class="tree-node">
+						<div class="tree-box">
+							${family.FirstName} ${family.LastName || ''}
+							${family.SpouseFirstName || family.SpouseLastName ? `<br>(Spouse: ${family.SpouseFirstName} ${family.SpouseLastName})` : ''}
+						</div>
+						<div class="tree-children">
+							${buildTree(families, family.left_value).join('')}
+						</div>
+					</div>
+				`);
 		}
+
+		return `<div class="tree-root">${buildTree(families).join('')}</div>`;
 	}
 
-	function renderTree(node) {
-		if (!node) return '';
-		return `
-			<li>
-				${node.FirstName} ${node.LastName}
-				${node.children && node.children.length > 0
-					? `<ul>${node.children.map(renderTree).join('')}</ul>`
-					: ''}
-			</li>
-		`;
-	}
+	$: familyTreeHTML = generateFamilyTreeHTML(families);
 
 	// Utility function to get a URL parameter by name
 	function getURLVariable(name) {
 		return new URLSearchParams(window.location.search).get(name);
 	}
 
+	function setFamilies(data) {
+		families = data;
+		console.log(families)
+	}
+
+	
+
+	function setHumans(data) {
+		Humans = data;
+
+		// Update selectedHumanData after fetching humans
+		selectedHumanData = Humans.find(human => human.HumanId === HumanId) || null;
+	}
 	onMount(async () => {
 		await Session.handleSession();
 		HumanId = getURLVariable('HumanId') || null;
 
 		if (HumanId) {
-			await handleGetFamilies(Session.SessionId, HumanId, (data) => {
-				if (data) {
-					families = data;
-				}
-			});
+			await handleGetFamily(Session.SessionId, HumanId, setFamilies);
 		}
 
 		await handleGetHumans(Session.SessionId, setHumans);
@@ -93,21 +87,19 @@
 
 		isLoading = false;
 	});
-
-	function setHumans(data) {
-		Humans = data;
-
-		// Update selectedHumanData after fetching humans
-		selectedHumanData = Humans.find(human => human.HumanId === HumanId) || null;
-	}
-
 	$: {
 		filteredHumans = Humans.filter(human => {
 			const search = searchQuery.toLowerCase();
 			const values = [
 				human.FirstName,
 				human.MiddleName,
-				human.LastName
+				human.LastName,
+				formatBirthDate(human.BirthDate, human.BirthDateAccuracy),
+				human.RacialDescriptor,
+				human.Sex,
+				human.Height_in ? human.Height_in.toString() : '',
+				human.Roles ? human.Roles.join(', ') : '',
+				human.HumanId // Include HumanId in the search
 			];
 			return values.some(value => value && value.toLowerCase().includes(search));
 		});
@@ -152,7 +144,7 @@
 			return;
 		}
 
-		const success = await handleAddFamilyMember(Session.SessionId, selectedHuman.HumanId, HumanId, relationshipType); // Updated function call
+		const success = await handleAddFamilyMember(Session.SessionId, HumanId, selectedHuman.HumanId, relationshipType); // Updated function call
 
 		if (success) {
 			alert('Relationship added successfully!');
@@ -183,6 +175,8 @@
 	}
 </script>
 
+
+
 {#if isLoading}
 	<div class="loading-screen">
 		<div class="spinner"></div>
@@ -201,21 +195,14 @@
 			</div>
 		{/if}
 
-		{#if familyTree}
-			<div class="tree-container">
-				<h3 class="title is-3">Family Tree</h3>
-				<ul>
-					{@html renderTree(familyTree)}
-				</ul>
-			</div>
-		{/if}
-
-		<!-- Add Family Relationship Form -->
-		
-			<h3 class="title is-3">Add Family Relationship</h3>
-
+		<!-- Family Relationships Tree -->
+		<div class="tree-container">
+			<h3 class="title is-3">Family Tree</h3>
+			{@html familyTreeHTML}
+			
 			<!-- Selected Human -->
 			{#if selectedHuman}
+			<hr>
 				<div class="selected-human">
 					<h4 class="title is-4">Selected Human</h4>
 					<p><strong>Name:</strong> {selectedHuman.FirstName} {selectedHuman.MiddleName} {selectedHuman.LastName}</p>
@@ -241,10 +228,11 @@
 					</div>
 				</div>
 			{/if}
-
+		</div>
+		<div class="box">
+			<h3 class="title is-3">Add a member to the Family</h3>
 			<!-- Search Box -->
 			<div class="field">
-				<label class="label">Search for a Human</label>
 				<div class="control">
 					<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" />
 				</div>
@@ -275,34 +263,7 @@
 					{/each}
 				</tbody>
 			</table>
-
-		<!-- Family Relationships List -->
-		<h3 class="title is-3">Family Relationships</h3>
-		<table class="table is-striped is-hoverable is-fullwidth">
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Relationship</th>
-					<th>Spouse</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each families as family}
-					<tr>
-						<td>{family.FirstName}</td>
-						<td>{family.LastName}</td>
-						<td>{family.RelationshipType || 'Unknown'}</td>
-						<td>
-							{#if family.SpouseFirstName}
-								{family.SpouseFirstName} {family.SpouseLastName}
-							{:else}
-								No Spouse
-							{/if}
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+		</div>
+	
 	</div>
 {/if}

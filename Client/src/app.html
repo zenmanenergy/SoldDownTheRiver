@@ -181,6 +181,75 @@ input:required:invalid {
 	.table.is-hoverable tbody tr:hover {
 		cursor: pointer;
 	}
+
+
+
+	/* Styles for the family tree diagram */
+	.tree-container {
+		overflow-x: auto;
+		padding: 20px;
+	}
+
+	.tree-root {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.tree-node {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin: 10px;
+		position: relative;
+	}
+
+	.tree-node::before {
+		content: '';
+		width: 2px;
+		height: 20px;
+		background-color: #ccc;
+		position: absolute;
+		top: -20px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	/* Remove vertical line only for the first .tree-node inside .tree-root */
+	.tree-root > .tree-node:first-child::before {
+		display: none;
+	}
+
+	.tree-children {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+		position: relative;
+	}
+
+	.tree-children::before {
+		content: '';
+		width: 100%;
+		height: 2px;
+		background-color: #ccc;
+		position: absolute;
+		top: 10px;
+		left: 0;
+	}
+
+	.tree-children .tree-node:first-child::before {
+		display: none; /* Remove vertical line for the first child */
+	}
+
+	.tree-box {
+		border: 1px solid #ccc;
+		padding: 5px 10px;
+		border-radius: 5px;
+		text-align: center;
+		background-color: #f9f9f9;
+		font-size: 0.9rem;
+		width: fit-content;
+	}
 	</style>
 
 

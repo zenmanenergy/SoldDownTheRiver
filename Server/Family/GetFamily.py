@@ -9,7 +9,7 @@ def get_family(HumanId):
 
 	# Construct the SQL query
 	sql = f"""
-		SELECT h2.*, fm2.left_value, fm2.right_value, h3.FirstName AS SpouseFirstName, h3.LastName AS SpouseLastName
+		SELECT h2.FirstName,h2.LastName, fm2.left_value, fm2.right_value, h3.FirstName AS SpouseFirstName, h3.LastName AS SpouseLastName
 		FROM familymembers AS fm1
 		JOIN familymembers AS fm2
 			ON fm1.FamilyId = fm2.FamilyId
