@@ -28,6 +28,7 @@
 	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
 	import { handleGetFamilies } from './handleGetFamilies.js';
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
+	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
 
 	let Human = {
 		FirstName: '',
@@ -204,15 +205,7 @@
 		}
 	}
 
-	function renderFamilyTree(tree) {
-		return tree.map(node => `
-			<li>
-				${node.FirstName} ${node.LastName}
-				${node.SpouseFirstName ? ` (Spouse: ${node.SpouseFirstName} ${node.SpouseLastName})` : ''}
-				${node.children && node.children.length > 0 ? `<ul>${renderFamilyTree(node.children)}</ul>` : ''}
-			</li>
-		`).join('');
-	}
+	
 </script>
 
 {#if isLoading}
@@ -305,10 +298,10 @@
 
 		{#if families.length > 0}
 			<h3 class="title is-3">Family Tree</h3>
-			<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Manage Family Relationships</a>
-			<ul>
-				{@html renderFamilyTree(families)}
-			</ul>
+			<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
+			<FamilyTreeCanvas {families} />
+		{:else}
+			No family relationships defined
 		{/if}
 
 		{#if locations.length > 0}
@@ -463,14 +456,6 @@
 			</table>
 		{/if}
 
-		<h3 class="title is-3">Family Tree</h3>
-		<a href={`/Family?HumanId=${HumanId}`} class="button is-link">View Full Family Page</a>
-		{#if families.length > 0}
-			<ul>
-				{@html renderFamilyTree(families)}
-			</ul>
-		{:else}
-			No family relationships defined
-		{/if}
+		
 	</div>
 {/if}

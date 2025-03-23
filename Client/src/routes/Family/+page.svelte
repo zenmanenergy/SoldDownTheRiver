@@ -1,9 +1,11 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { Session } from '../Session.js';
 	import { handleGetFamily } from './handleGetFamily.js';
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 	import { handleAddFamilyMember } from './handleAddFamilyMember.js';
+	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
+	import { handleRemoveFamilyMember } from './handleRemoveFamilyMember.js';
 
 	let humanId = ''; // Input for the HumanId to fetch the tree
 	let error = null;
@@ -15,44 +17,106 @@
 	let searchQuery = '';
 	let selectedHumanId = null;
 	let relationshipType = '';
-	let relationshipOptions = ['Husband', 'Wife', 'Son', 'Daughter', 'Father', 'Mother', 'Brother', 'Sister'];
+	let relationshipOptions = ['husband', 'wife', 'son', 'daughter', 'father', 'mother', 'brother', 'sister'];
 	let isLoading = true;
 	let selectedHuman = null;
 	let selectedHumanData = null;
 	let sortColumn = 'LastName';
 	let sortAscending = true;
 
-	// Function to generate a family tree diagram with proper hierarchy
-	function generateFamilyTreeHTML(families) {
-		if (!families || families.length === 0) return '<p>No family relationships available.</p>';
-
-		// Sort families by left_value to ensure proper hierarchy
-		families.sort((a, b) => a.left_value - b.left_value);
-
-		// Recursive function to build the tree structure
-		function buildTree(families, parentLeftValue = null) {
-			return families
-				.filter(family => {
-					// A parent is identified by its left_value being less than the child's left_value
-					return parentLeftValue === null || (family.left_value > parentLeftValue && family.right_value < parentLeftValue + 2);
-				})
-				.map(family => `
-					<div class="tree-node">
-						<div class="tree-box">
-							${family.FirstName} ${family.LastName || ''}
-							${family.SpouseFirstName || family.SpouseLastName ? `<br>(Spouse: ${family.SpouseFirstName} ${family.SpouseLastName})` : ''}
-						</div>
-						<div class="tree-children">
-							${buildTree(families, family.left_value).join('')}
-						</div>
-					</div>
-				`);
+	let canvas;
+	const nodeWidth = 120, nodeHeight = 40, verticalSpacing = 100, horizontalSpacing = 150;
+	let nodePositions = []; // new global array to store node positions
+	
+	// Updated drawFamilyTree: log data and show fallback message if empty
+	function drawFamilyTree() {
+		if (!canvas) return;
+		const ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		
+		if (!families || families.length === 0) {
+			ctx.font = '20px sans-serif';
+			ctx.fillStyle = 'red';
+			ctx.fillText("No family data", 20, 50);
+			return;
 		}
-
-		return `<div class="tree-root">${buildTree(families).join('')}</div>`;
+		
+		// Determine vertical center
+		const centerY = canvas.height / 2;
+		
+		// Group nodes by Depth (Depth can be negative for ancestors, 0 for self, positive for descendants)
+		const groups = {};
+		families.forEach(node => {
+			if (!groups[node.Depth]) groups[node.Depth] = [];
+			groups[node.Depth].push(node);
+		});
+		
+		const positions = []; // each item: { node, x, y }
+		for (const depth in groups) {
+			const group = groups[depth];
+			const d = parseInt(depth);
+			// Set y based on depth offset
+			const y = centerY + d * verticalSpacing;
+			// Calculate horizontal start: evenly space nodes in this group
+			const totalWidth = (group.length - 1) * horizontalSpacing;
+			const startX = (canvas.width - totalWidth - nodeWidth) / 2;
+			group.forEach((node, index) => {
+				const x = startX + index * horizontalSpacing;
+				positions.push({ node, x, y });
+			});
+			nodePositions = positions; // store for click detection
+		}
+		
+		// Draw connecting lines from the self node to other nodes using specific connection points.
+		const selfPos = positions.find(pos => pos.node.Relationship === 'self');
+		if (selfPos) {
+			positions.forEach(pos => {
+				if (pos.node.Relationship !== 'self') {
+					let startPoint = {}, endPoint = {};
+					if (pos.node.Depth > selfPos.node.Depth) {
+						// Descendant: connect from self's bottom center to child's top center.
+						startPoint = { x: selfPos.x + nodeWidth/2, y: selfPos.y + nodeHeight };
+						endPoint   = { x: pos.x + nodeWidth/2,    y: pos.y };
+					} else if (pos.node.Depth < selfPos.node.Depth) {
+						// Ancestor: connect from self's top center to parent's bottom center.
+						startPoint = { x: selfPos.x + nodeWidth/2, y: selfPos.y };
+						endPoint   = { x: pos.x + nodeWidth/2,    y: pos.y + nodeHeight };
+					} else {
+						// Sibling: connect horizontally.
+						if (pos.x > selfPos.x) {
+							// Sibling to the right: from self's right center to sibling's left center.
+							startPoint = { x: selfPos.x + nodeWidth, y: selfPos.y + nodeHeight/2 };
+							endPoint   = { x: pos.x,                y: pos.y + nodeHeight/2 };
+						} else {
+							// Sibling to the left: from self's left center to sibling's right center.
+							startPoint = { x: selfPos.x,          y: selfPos.y + nodeHeight/2 };
+							endPoint   = { x: pos.x + nodeWidth,    y: pos.y + nodeHeight/2 };
+						}
+					}
+					ctx.beginPath();
+					ctx.moveTo(startPoint.x, startPoint.y);
+					ctx.lineTo(endPoint.x, endPoint.y);
+					ctx.stroke();
+				}
+			});
+		}
+		
+		// Then draw each node as a rectangle with its text
+		positions.forEach(pos => {
+			const { node, x, y } = pos;
+			ctx.strokeStyle = 'black';
+			ctx.strokeRect(x, y, nodeWidth, nodeHeight);
+			ctx.font = '12px sans-serif';
+			ctx.fillStyle = 'black';
+			const text = `${node.FirstName} ${node.LastName || ''}\n(${node.Relationship})`;
+			const lines = text.split('\n');
+			lines.forEach((line, index) => {
+				ctx.fillText(line, x + 5, y + 15 + index * 15);
+			});
+		});
 	}
-
-	$: familyTreeHTML = generateFamilyTreeHTML(families);
+	
+	// Remove the reactive $: drawFamilyTree();
 
 	// Utility function to get a URL parameter by name
 	function getURLVariable(name) {
@@ -61,10 +125,12 @@
 
 	function setFamilies(data) {
 		families = data;
-		console.log(families)
+		console.log(families);
+		// wait for DOM to update so canvas is available, then draw
+		tick().then(() => {
+			drawFamilyTree();
+		});
 	}
-
-	
 
 	function setHumans(data) {
 		Humans = data;
@@ -86,7 +152,24 @@
 		selectedHumanData = Humans.find(human => human.HumanId === HumanId) || null;
 
 		isLoading = false;
+		// after onMount, ensure canvas drawing runs
+		await tick();
+		drawFamilyTree();
 	});
+
+	// NEW: Define a callback to remove a relationship.
+	async function removeRelationship(RelatedHumanId) {
+		if (confirm("Are you sure you want to remove this relationship?")) {
+			const success = await handleRemoveFamilyMember(Session.SessionId, HumanId, RelatedHumanId);
+			if (success) {
+				alert("Relationship removed successfully!");
+				window.location.reload();
+			} else {
+				alert("Failed to remove relationship.");
+			}
+		}
+	}
+
 	$: {
 		filteredHumans = Humans.filter(human => {
 			const search = searchQuery.toLowerCase();
@@ -173,6 +256,22 @@
 			return 'Unknown';
 		}
 	}
+
+	// New event handler for canvas click
+	function handleCanvasClick(event) {
+		if (!nodePositions.length) return;
+		const rect = canvas.getBoundingClientRect();
+		const clickX = event.clientX - rect.left;
+		const clickY = event.clientY - rect.top;
+		for (const pos of nodePositions) {
+			if (clickX >= pos.x && clickX <= pos.x + nodeWidth &&
+				clickY >= pos.y && clickY <= pos.y + nodeHeight) {
+					// Navigate to /Human?HumanId={node.HumanId}
+					window.location.href = `/Human?HumanId=${pos.node.HumanId}`;
+					return;
+			}
+		}
+	}
 </script>
 
 
@@ -196,11 +295,13 @@
 		{/if}
 
 		<!-- Family Relationships Tree -->
-		<div class="tree-container">
+		<!-- In case Bulma is causing canvas sizing issues, add inline style -->
+		<div class="tree-container" style="padding:1rem;">
 			<h3 class="title is-3">Family Tree</h3>
-			{@html familyTreeHTML}
-			
-			<!-- Selected Human -->
+			<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
+			<!-- Pass the onRemove callback -->
+			<FamilyTreeCanvas {families} onRemove={removeRelationship} />
+			<!-- Optionally keep selected human display if needed -->
 			{#if selectedHuman}
 			<hr>
 				<div class="selected-human">
@@ -211,9 +312,9 @@
 					<p><strong>Sex:</strong> {selectedHuman.Sex || 'Unknown'}</p>
 
 					<div class="field">
-						<label class="label">Select Relationship Type</label>
+						<label class="label" for="relationshipType">Select Relationship Type</label>
 						<div class="control">
-							<select class="input" bind:value={relationshipType}>
+							<select id="relationshipType" class="input" bind:value={relationshipType}>
 								<option value="" disabled selected>Select a relationship</option>
 								{#each relationshipOptions as option}
 									<option value={option}>{selectedHuman.FirstName} is the {option} of {selectedHumanData.FirstName} {selectedHumanData.LastName}</option>

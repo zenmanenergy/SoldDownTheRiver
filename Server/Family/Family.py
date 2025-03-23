@@ -5,6 +5,7 @@ from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .GetFamily import get_family
 from .AddFamilyMember import add_family_member
+from .RemoveFamilyMember import remove_family_member   # new import
 
 blueprint = Blueprint('Family', __name__)
 
@@ -36,6 +37,20 @@ def AddFamilyMember():  # Updated function name
 		RelationshipType = data.get('RelationshipType')
 
 		result = add_family_member(HumanId, RelatedHumanId, RelationshipType)
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+
+@blueprint.route("/Family/RemoveFamilyMember", methods=['GET'])
+@cross_origin()
+def RemoveFamilyMember():
+	try:
+		data = request.args.to_dict()
+		SessionId = data.get('SessionId')
+		HumanId = data.get('HumanId')
+		RelatedHumanId = data.get('RelatedHumanId')
+		result = remove_family_member(HumanId, RelatedHumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)

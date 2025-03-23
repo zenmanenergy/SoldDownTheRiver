@@ -1,188 +1,128 @@
 from _Lib import Database
-import uuid
 
 def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 	cursor, connection = Database.ConnectToDatabase()
 
-	# Check if HumanId is already in a family
-	cursor.execute(f"SELECT FamilyId FROM familymembers WHERE HumanId = '{HumanId}'")
-	family_row = cursor.fetchone()
+	def insert_parent_child(parent_id, child_id):
+		# Insert direct relationship
+		sql_insert_relationship = f"""
+			INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId)
+			VALUES ('{parent_id}', '{child_id}')
+		"""
+		print("Executing SQL:", sql_insert_relationship)
+		cursor.execute(sql_insert_relationship)
+		connection.commit()
 
-	if family_row:
-		FamilyId = family_row['FamilyId']
-	else:
-		# Check if the family already exists before inserting
-		cursor.execute(f"""
-			SELECT FamilyId
-			FROM families
-			WHERE FamilyId = 'FAM{str(uuid.uuid4())}'
-		""")
-		existing_family = cursor.fetchone()
+		# Insert direct humanclosure relationship (depth=1)
+		sql_insert_closure_depth_1 = f"""
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
+			VALUES ('{parent_id}', '{child_id}', 1)
+		"""
+		print("Executing SQL:", sql_insert_closure_depth_1)
+		cursor.execute(sql_insert_closure_depth_1)
+		connection.commit()
 
-		if not existing_family:
-			# Insert a new family record
-			FamilyId = "FAM"+str(uuid.uuid4())
-			cursor.execute(f"INSERT INTO families (FamilyId, FamilyName) VALUES ('{FamilyId}', 'New Family')")
+		# Insert all indirect ancestors (ancestors of parent → child)
+		sql_insert_indirect_ancestors = f"""
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
+			SELECT AncestorHumanId, '{child_id}', Depth + 1
+			FROM humanclosure
+			WHERE DescendantHumanId = '{parent_id}'
+		"""
+		print("Executing SQL:", sql_insert_indirect_ancestors)
+		cursor.execute(sql_insert_indirect_ancestors)
+		connection.commit()
 
-			# Add HumanId to the new family
-			cursor.execute(f"""
-				INSERT INTO familymembers (HumanId, FamilyId, left_value, right_value)
-				VALUES ('{HumanId}', '{FamilyId}', 1, 2)
-			""")
+		# Insert all indirect descendants (parent → descendants of child)
+		sql_insert_indirect_descendants = f"""
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
+			SELECT '{parent_id}', DescendantHumanId, Depth + 1
+			FROM humanclosure
+			WHERE AncestorHumanId = '{child_id}'
+		"""
+		print("Executing SQL:", sql_insert_indirect_descendants)
+		cursor.execute(sql_insert_indirect_descendants)
+		connection.commit()
 
-	# Handle specific relationships with left_value and right_value calculations
-	if RelationshipType.lower() in ['Son', 'Daughter']:
-		# Check for duplicate child entry
-		cursor.execute(f"""
-			SELECT 1
-			FROM familymembers
-			WHERE HumanId = '{HumanId}' AND FamilyId = '{FamilyId}'
-		""")
-		existing_member = cursor.fetchone()
+		# Insert transitive humanrelationships (ancestors of parent → descendants of child)
+		sql_insert_transitive_relationships = f"""
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
+			SELECT c1.AncestorHumanId, c2.DescendantHumanId, c1.Depth + c2.Depth + 1
+			FROM humanclosure c1
+			JOIN humanclosure c2 ON c1.DescendantHumanId = '{parent_id}' AND c2.AncestorHumanId = '{child_id}'
+		"""
+		print("Executing SQL:", sql_insert_transitive_relationships)
+		cursor.execute(sql_insert_transitive_relationships)
+		connection.commit()
 
-		if not existing_member:
-			# Assign left_value and right_value as children of RelatedHumanId
-			cursor.execute(f"""
-				SELECT right_value
-				FROM familymembers
-				WHERE HumanId = '{RelatedHumanId}'
-			""")
-			parent_right = cursor.fetchone()['right_value']
+	if RelationshipType.lower() in ['son', 'daughter']:
+		insert_parent_child(HumanId, RelatedHumanId)
 
-			# Shift existing values to make space for the new child
-			cursor.execute(f"""
-				UPDATE familymembers
-				SET right_value = right_value + 2
-				WHERE FamilyId = '{FamilyId}' AND right_value >= {parent_right}
-			""")
-			cursor.execute(f"""
-				UPDATE familymembers
-				SET left_value = left_value + 2
-				WHERE FamilyId = '{FamilyId}' AND left_value > {parent_right}
-			""")
+	elif RelationshipType.lower() in ['father', 'mother']:
+		insert_parent_child(RelatedHumanId, HumanId)
 
-			# Insert the new family member
-			cursor.execute(f"""
-				INSERT INTO familymembers (HumanId, FamilyId, left_value, right_value)
-				VALUES ('{HumanId}', '{FamilyId}', {parent_right}, {parent_right + 1})
-			""")
-	elif RelationshipType.lower() in ['Father', 'Mother']:
-		# Check for duplicate parent entry
-		cursor.execute(f"""
-			SELECT 1
-			FROM familymembers
-			WHERE HumanId = '{HumanId}' AND FamilyId = '{FamilyId}'
-		""")
-		existing_member = cursor.fetchone()
+	elif RelationshipType.lower() in ['sister', 'brother']:
+		# Retrieve all parents of HumanId
+		sql_get_parents = f"""
+			SELECT ParentHumanId FROM humanrelationships
+			WHERE ChildHumanId = '{HumanId}'
+		"""
+		print("Executing SQL:", sql_get_parents)
+		cursor.execute(sql_get_parents)
+		parents = cursor.fetchall()
+		for parent in parents:
+			parent_id = parent['ParentHumanId']  # Access dict by key
+			insert_parent_child(parent_id, RelatedHumanId)
 
-		if not existing_member:
-			# Assign left_value and right_value as parents of RelatedHumanId
-			cursor.execute(f"""
-				SELECT left_value
-				FROM familymembers
-				WHERE HumanId = '{RelatedHumanId}'
-			""")
-			child_left = cursor.fetchone()['left_value']
+		# Insert sibling relationship into humanrelationships
+		sql_insert_sibling_relationship = f"""
+			INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId)
+			SELECT ParentHumanId, '{RelatedHumanId}'
+			FROM humanrelationships
+			WHERE ChildHumanId = '{HumanId}'
+		"""
+		print("Executing SQL:", sql_insert_sibling_relationship)
+		cursor.execute(sql_insert_sibling_relationship)
+		connection.commit()
 
-			# Shift existing values to make space for the new parent
-			cursor.execute(f"""
-				UPDATE familymembers
-				SET right_value = right_value + 2
-				WHERE FamilyId = '{FamilyId}' AND right_value >= {child_left}
-			""")
-			cursor.execute(f"""
-				UPDATE familymembers
-				SET left_value = left_value + 2
-				WHERE FamilyId = '{FamilyId}' AND left_value >= {child_left}
-			""")
+	elif RelationshipType.lower() in ['husband', 'wife']:
+		# Spouse humanrelationships are not part of the humanclosure table
+		sql_update_spouse_1 = f"""
+			UPDATE humans
+			SET spouseHumanId = '{RelatedHumanId}'
+			WHERE HumanId = '{HumanId}'
+		"""
+		print("Executing SQL:", sql_update_spouse_1)
+		cursor.execute(sql_update_spouse_1)
 
-			# Insert the new family member
-			cursor.execute(f"""
-				INSERT INTO familymembers (HumanId, FamilyId, left_value, right_value)
-				VALUES ('{HumanId}', '{FamilyId}', {child_left - 2}, {child_left - 1})
-			""")
-	elif RelationshipType.lower() in ['Husband', 'Wife']:
-		# Check for duplicate spouse entry
-		cursor.execute(f"""
-			SELECT 1
-			FROM humans
-			WHERE HumanId = '{HumanId}' AND spouseHumanId = '{RelatedHumanId}'
-		""")
-		existing_spouse = cursor.fetchone()
+		sql_update_spouse_2 = f"""
+			UPDATE humans
+			SET spouseHumanId = '{HumanId}'
+			WHERE HumanId = '{RelatedHumanId}'
+		"""
+		print("Executing SQL:", sql_update_spouse_2)
+		cursor.execute(sql_update_spouse_2)
+		connection.commit()
 
-		if not existing_spouse:
-			cursor.execute(f"""
-				UPDATE humans
-				SET spouseHumanId = '{RelatedHumanId}'
-				WHERE HumanId = '{HumanId}'
-			""")
-	else:
-		# Default case for other relationships
-		cursor.execute(f"""
-			SELECT 1
-			FROM familymembers
-			WHERE HumanId = '{RelatedHumanId}' AND FamilyId = '{FamilyId}'
-		""")
-		existing_member = cursor.fetchone()
+	# Update Sex field if it is NULL
+	if RelationshipType.lower() in ['husband', 'son', 'brother', 'father']:
+		sql_update_sex_male = f"""
+			UPDATE humans
+			SET sex = 'Male'
+			WHERE HumanId = '{RelatedHumanId}' AND sex IS NULL
+		"""
+		print("Executing SQL:", sql_update_sex_male)
+		cursor.execute(sql_update_sex_male)
+		connection.commit()
+	elif RelationshipType.lower() in ['wife', 'daughter', 'sister', 'mother']:
+		sql_update_sex_female = f"""
+			UPDATE humans
+			SET sex = 'Female'
+			WHERE HumanId = '{RelatedHumanId}' AND sex IS NULL
+		"""
+		print("Executing SQL:", sql_update_sex_female)
+		cursor.execute(sql_update_sex_female)
+		connection.commit()
 
-		if not existing_member:
-			cursor.execute(f"""
-				SELECT MAX(right_value) AS max_right
-				FROM familymembers
-				WHERE FamilyId = '{FamilyId}'
-			""")
-			max_right = cursor.fetchone()['max_right'] or 0
-
-			# Insert the new family member
-			cursor.execute(f"""
-				INSERT INTO familymembers (HumanId, FamilyId, left_value, right_value)
-				VALUES ('{RelatedHumanId}', '{FamilyId}', {max_right + 1}, {max_right + 2})
-			""")
-
-	if RelationshipType.lower() in ['Son', 'Daughter', 'Father', 'Mother', 'Husband', 'Wife']:
-		# Determine the sex based on the relationship type
-		sex = None
-		if RelationshipType.lower() in ['Son', 'Father', 'Husband']:
-			sex = 'Male'
-		elif RelationshipType.lower() in ['Daughter', 'Mother', 'Wife']:
-			sex = 'Female'
-
-		# Update the sex if it is currently null
-		if sex:
-			cursor.execute(f"""
-				UPDATE humans
-				SET Sex = '{sex}'
-				WHERE HumanId = '{HumanId}' AND (Sex IS NULL OR Sex = '')
-			""")
-
-	# Update the family name based on the oldest member
-	cursor.execute(f"""
-		SELECT h.HumanId, h.FirstName, h.LastName, h.BirthDate
-		FROM familymembers fm
-		JOIN humans h ON fm.HumanId = h.HumanId
-		WHERE fm.FamilyId = '{FamilyId}'
-		ORDER BY h.BirthDate ASC
-		LIMIT 1
-	""")
-	oldest_member = cursor.fetchone()
-
-	if oldest_member:
-		first_name = oldest_member['FirstName'] or ""
-		last_name = oldest_member['LastName'] or ""
-		birth_date = oldest_member['BirthDate'].strftime('%Y-%m-%d') if oldest_member['BirthDate'] else ""
-		oldest_name = f"{first_name} {last_name} {birth_date}"
-		oldest_name = oldest_name.replace("  ", " ")
-		cursor.execute(f"""
-			UPDATE families
-			SET FamilyName = '{oldest_name}'
-			WHERE FamilyId = '{FamilyId}'
-		""")
-
-	# Commit the transaction
 	connection.commit()
 	return {"success": True, "message": "Relationship saved successfully."}
-# except Exception as e:
-# 	connection.rollback()
-# 	return {"success": False, "error": str(e)}
-# finally:
-# 	connection.close()
