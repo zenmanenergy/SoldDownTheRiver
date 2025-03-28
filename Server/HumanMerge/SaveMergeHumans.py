@@ -15,21 +15,21 @@ def save_mergehumans(HumanId, MergeHumanId):
 		insert_query = f"""
 		INSERT INTO humans (HumanId, FirstName, MiddleName, LastName, Notes, age_string, BirthDate, BirthDateAccuracy, BirthPlace, RacialDescriptor, Sex, Height_cm, DateUpdated, originCity, physical_features, profession) 
 		SELECT '{NewHumanId}', 
-		       COALESCE(h1.FirstName, h2.FirstName), 
-		       COALESCE(h1.MiddleName, h2.MiddleName), 
-		       COALESCE(h1.LastName, h2.LastName), 
-		       COALESCE(h1.Notes, h2.Notes), 
-		       COALESCE(h1.age_string, h2.age_string), 
-		       COALESCE(h1.BirthDate, h2.BirthDate), 
-		       COALESCE(h1.BirthDateAccuracy, h2.BirthDateAccuracy), 
-		       COALESCE(h1.BirthPlace, h2.BirthPlace), 
-		       COALESCE(h1.RacialDescriptor, h2.RacialDescriptor), 
-		       COALESCE(h1.Sex, h2.Sex), 
-		       COALESCE(h1.Height_cm, h2.Height_cm), 
-		       COALESCE(h1.DateUpdated, h2.DateUpdated), 
-		       COALESCE(h1.originCity, h2.originCity), 
-		       COALESCE(h1.physical_features, h2.physical_features), 
-		       COALESCE(h1.profession, h2.profession)
+			COALESCE(h1.FirstName, h2.FirstName), 
+			COALESCE(h1.MiddleName, h2.MiddleName), 
+			COALESCE(h1.LastName, h2.LastName), 
+			COALESCE(h1.Notes, h2.Notes), 
+			COALESCE(h1.age_string, h2.age_string), 
+			COALESCE(h1.BirthDate, h2.BirthDate), 
+			COALESCE(h1.BirthDateAccuracy, h2.BirthDateAccuracy), 
+			COALESCE(h1.BirthPlace, h2.BirthPlace), 
+			COALESCE(h1.RacialDescriptor, h2.RacialDescriptor), 
+			COALESCE(h1.Sex, h2.Sex), 
+			COALESCE(h1.Height_cm, h2.Height_cm), 
+			COALESCE(h1.DateUpdated, h2.DateUpdated), 
+			COALESCE(h1.originCity, h2.originCity), 
+			COALESCE(h1.physical_features, h2.physical_features), 
+			COALESCE(h1.profession, h2.profession)
 		FROM humans h1
 		LEFT JOIN humans h2 ON h2.HumanId = '{MergeHumanId}'
 		WHERE h1.HumanId = '{HumanId}'

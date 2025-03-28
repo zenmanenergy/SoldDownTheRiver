@@ -50,6 +50,12 @@
 		return params.get("TransactionId") || null;
 	}
 
+	function mapNullToEmpty(obj) {
+		return Object.fromEntries(
+			Object.entries(obj).map(([key, value]) => [key, value === null ? '' : value])
+		);
+	}
+
 	onMount(async () => {
 		await Session.handleSession();
 		transactionId = getTransactionIdFromURL();
@@ -58,7 +64,8 @@
 			// Fetch transaction data
 			const data = await handleGetTransaction(Session.SessionId, transactionId);
 			if (data) {
-				transaction = { ...data };
+				// Map null values to empty strings
+				transaction = mapNullToEmpty({ ...data });
 
 				// Ensure FirstParties and SecondParties are valid arrays
 				transaction.FirstParties = transaction.FirstParties || [];
@@ -68,7 +75,7 @@
 				if (transaction.date_circa) {
 					const parsedDate = moment.utc(transaction.date_circa, "ddd, DD MMM YYYY HH:mm:ss [GMT]", true);
 					if (parsedDate.isValid()) {
-						transaction.date_circa = parsedDate.format("YYYY-M-D");
+						transaction.date_circa = parsedDate.format("YYYY-MM-DD");
 					}
 				}
 
@@ -186,13 +193,14 @@
 	async function submitTransaction() {
 		const transactionData = {
 			...transaction,
-			FirstParties: JSON.stringify(transaction.FirstParties),
-			SecondParties: JSON.stringify(transaction.SecondParties)
+			NotaryHumanId: selectedNotary?.value || null, // Ensure NotaryHumanId is set
+			FirstParties: JSON.stringify(selectedFirstParty.map(fp => ({ FirstPartyId: fp.value }))), // Convert to JSON string
+			SecondParties: JSON.stringify(selectedSecondParty.map(sp => ({ SecondPartyId: sp.value }))), // Convert to JSON string
 		};
 
 		const success = await handleSaveTransaction(Session.SessionId, transactionId, transactionData);
 		if (success) {
-			window.location.href = '/Transactions';
+			window.location.href = `/Transaction?TransactionId=${transactionId}`;
 		} else {
 			alert("Failed to save transaction.");
 		}
@@ -360,14 +368,13 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/Transactions">Back to List</a>
 		<h3 class="title is-2">{transactionId ? 'Edit' : 'Add'} Transaction</h3>
 		
 		<form on:submit|preventDefault={submitTransaction}>
 			<!-- Transaction Date -->
 			<div class="field">
 				<label for="date">Date:</label>
-				<input id="date" class="input" type="text" bind:value={transaction.date_circa} on:input={updateDateFormat} placeholder="YYYY-M-D" />
+				<input id="date" class="input" type="date" bind:value={transaction.date_circa} on:input={updateDateFormat} />
 			</div>
 		
 			<!-- Date Accuracy -->
@@ -390,7 +397,12 @@
 			<div class="field">
 				<label for="notary">Notary:</label>
 				{#if allHumans.length > 0}
-					<Select id="notary" bind:value={selectedNotary} items={allHumans} />
+						<Select 
+							id="notary" 
+							bind:value={selectedNotary} 
+							items={allHumans} 
+							on:change={() => transaction.NotaryHumanId = selectedNotary?.value || null} 
+						/>
 				{:else}
 					<p>Loading humans...</p>
 				{/if}

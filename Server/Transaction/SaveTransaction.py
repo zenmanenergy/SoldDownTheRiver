@@ -31,7 +31,7 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 				date_accuracy = '{date_accuracy}', 
 				TransactionType = '{TransactionType}', 
 				Notes = '{Notes.replace("'", "''")}', 
-				NotaryHumanId = '{NotaryHumanId}', 
+				NotaryHumanId = {f"'{NotaryHumanId}'" if NotaryHumanId else 'NULL'}, 
 				URL = '{URL.replace("'", "''")}', 
 				TotalPrice = {TotalPrice if TotalPrice is not None else 'NULL'}, 
 				LocationId = '{LocationId}', 
@@ -62,7 +62,7 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 				{f"'{date_accuracy}'" if date_accuracy is not None else 'NULL'}, 
 				{f"'{TransactionType}'" if TransactionType is not None else 'NULL'}, 
 				{f"'{Notes}'" if Notes is not None else 'NULL'}, 
-				{f"'{NotaryHumanId}'" if NotaryHumanId is not None else 'NULL'}, 
+				{f"'{NotaryHumanId}'" if NotaryHumanId else 'NULL'}, 
 				{f"'{URL}'" if URL is not None else 'NULL'}, 
 				{TotalPrice if TotalPrice is not None else 'NULL'}, 
 				{f"'{LocationId}'" if LocationId is not None else 'NULL'}, 
@@ -85,31 +85,42 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 	print(f"Executing SQL:\n{query}\n")
 	cursor.execute(query)
 	connection.commit()
-
 	# Handle FirstParties and SecondParties insertion into `parties`
 	def insert_parties(party_list, which_party):
-		for party in party_list:
-			PartyId = "PTY" + str(uuid.uuid4())  # Generate a unique PartyId
-			party_query = f"""
-				INSERT INTO parties (PartyId, WhichParty) 
-				VALUES ('{PartyId}', '{which_party}')
-				ON DUPLICATE KEY UPDATE WhichParty = VALUES(WhichParty)
-			"""
-			print(f"Executing SQL:\n{party_query}\n")
-			cursor.execute(party_query)
+		if not party_list:
+			return
 
-			# Link humans to this party
-			if isinstance(party, dict) and "Humans" in party:
-				for human in party["Humans"]:
-					HumanId = human.get("HumanId")
-					if HumanId:
-						party_human_query = f"""
-							INSERT INTO partyhumans (PartyId, HumanId) 
-							VALUES ('{PartyId}', '{HumanId}')
-							ON DUPLICATE KEY UPDATE HumanId = VALUES(HumanId)
-						"""
-						print(f"Executing SQL:\n{party_human_query}\n")
-						cursor.execute(party_human_query)
+		# Generate a single PartyId for the entire party
+		PartyId = "PTY" + str(uuid.uuid4())
+		party_query = f"""
+			INSERT INTO parties (PartyId, WhichParty) 
+			VALUES ('{PartyId}', '{which_party}')
+			ON DUPLICATE KEY UPDATE WhichParty = VALUES(WhichParty)
+		"""
+		print(f"Executing SQL:\n{party_query}\n")
+		cursor.execute(party_query)
+
+		# Link all humans in the party to the single PartyId
+		for party in party_list:
+			HumanId = party.get("FirstPartyId") or party.get("SecondPartyId")
+			if HumanId:
+				party_human_query = f"""
+					INSERT INTO partyhumans (PartyId, HumanId) 
+					VALUES ('{PartyId}', '{HumanId}')
+					ON DUPLICATE KEY UPDATE HumanId = VALUES(HumanId)
+				"""
+				print(f"Executing SQL:\n{party_human_query}\n")
+				cursor.execute(party_human_query)
+
+		# Update the PartyId in the transactions table
+		party_column = "FirstPartyId" if which_party == "FirstParty" else "SecondPartyId"
+		update_transaction_query = f"""
+			UPDATE transactions
+			SET {party_column} = '{PartyId}'
+			WHERE TransactionId = '{TransactionId}'
+		"""
+		print(f"Executing SQL:\n{update_transaction_query}\n")
+		cursor.execute(update_transaction_query)
 
 	# Insert FirstParties and SecondParties
 	insert_parties(FirstParties, "FirstParty")

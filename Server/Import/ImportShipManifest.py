@@ -383,7 +383,7 @@ def SaveVoyage(connection, cursor, data):
 	# SQL query to insert or update the voyage record
 	sql = f"""
 	INSERT into voyages (VoyageId, ShipId, CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
-	VALUES ('{voyage_id}', '{ship_id}', '{captain_human_id}', '{start_location_id}', '{end_location_id}', {f"'{end_date}'" if end_date else 'NULL'}, {f"'{end_date}'" if end_date else 'NULL'}, '{Notes}')
+	VALUES ('{voyage_id}', '{ship_id}', '{captain_human_id}', '{start_location_id}', '{end_location_id}', {f"'{start_date}'" if start_date else 'NULL'}, {f"'{end_date}'" if end_date else 'NULL'}, '{Notes}')
 	ON DUPLICATE KEY UPDATE
 	ShipId = VALUES(ShipId),
 	CaptainHumanId = VALUES(CaptainHumanId),

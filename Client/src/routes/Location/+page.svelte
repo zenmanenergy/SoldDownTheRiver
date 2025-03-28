@@ -73,7 +73,6 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/Locations">Back to Locations</a>
 		<div class="ActionBox">
 			<form>
 				<h3 class="title is-2">Edit a Location</h3>

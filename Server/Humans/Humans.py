@@ -3,6 +3,7 @@ from _Lib.Debugger import Debugger
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .GetHumans import get_humans
+from .SetTimelines import set_timelines
 
 blueprint = Blueprint('Humans', __name__ )
 
@@ -19,3 +20,16 @@ def GetHumans():
 		return result
 	except Exception as e:
 		return Debugger(e)
+
+@blueprint.route("/Humans/SetTimelines", methods=['GET'])
+@cross_origin()
+def SetTimelines():
+	try:
+		
+
+		# Call the set_timelines function from SetTimelines.py
+		result = set_timelines()
+		return result
+	except Exception as e:
+		return Debugger(e)
+

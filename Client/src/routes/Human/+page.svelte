@@ -29,6 +29,7 @@
 	import { handleGetFamilies } from './handleGetFamilies.js';
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
+	import { handleGetTimelines } from './handleGetTimelines.js';
 
 	let Human = {
 		FirstName: '',
@@ -61,9 +62,16 @@
 	let selectedHumanId = null;
 	let relationshipType = '';
 	let relationshipOptions = ['Husband', 'Wife', 'Son', 'Daughter', 'Father', 'Mother', 'Brother', 'Sister'];
+	let timelines = [];
 
 	function getURLVariable(name) {
 		return new URLSearchParams(window.location.search).get(name);
+	}
+
+	function formatDateForInput(date) {
+		if (!date) return '';
+		const d = new Date(date);
+		return d.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 	}
 
 	onMount(async () => {
@@ -79,6 +87,7 @@
 					...data,
 					FirstName: data.FirstName || '',
 					LastName: data.LastName || '',
+					BirthDate: formatDateForInput(data.BirthDate), // Format BirthDate for input
 					Roles: data.Roles ? data.Roles.join(', ') : ''
 				};
 				locations = await handleGetHumanLocations(Session.SessionId, HumanId);
@@ -88,6 +97,10 @@
 				enslavedTransactions = await handleGetEnslavedTransactions(Session.SessionId, HumanId);
 				captainVoyages = await handleGetCaptains(Session.SessionId, HumanId);
 				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
+				timelines = await handleGetTimelines(Session.SessionId, HumanId);
+				if (timelines && timelines.data) {
+					locations = timelines.data;
+				}
 			}
 		}
 
@@ -309,8 +322,8 @@
 			<table class="table is-fullwidth is-striped">
 				<thead>
 					<tr>
-						<th>Location Type</th>
 						<th>Address</th>
+						
 						<th>Latitude</th>
 						<th>Longitude</th>
 						<th>Date Circa</th>
@@ -319,11 +332,11 @@
 				<tbody>
 					{#each locations as location}
 						<tr>
-							<td>{location.locationType}</td>
 							<td>{location.Address}</td>
+							
 							<td>{location.Latitude}</td>
 							<td>{location.Longitude}</td>
-							<td>{formatDate(location.date_circa, location.date_accuracy)}</td>
+							<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
 						</tr>
 					{/each}
 				</tbody>

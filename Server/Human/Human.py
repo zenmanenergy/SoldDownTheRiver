@@ -24,8 +24,7 @@ from .GetNotaryTransactions import get_notary_transactions
 from .GetEnslavedTransactions import get_enslaved_transactions
 from .GetCaptains import get_captains
 from .GetHumanVoyages import get_human_voyages
-
-
+from .GetTimelines import get_timelines
 
 blueprint = Blueprint('Human', __name__)
 
@@ -35,22 +34,33 @@ def SaveHuman():
 	try:
 		human_data = request.args.to_dict()
 
-		# Extract the HumanId and HumanName from the human_data
+		# Extract the fields from the request
 		HumanId = human_data.get('HumanId', None)
 		FirstName = human_data.get('FirstName', None)
 		MiddleName = human_data.get('MiddleName', None)
 		LastName = human_data.get('LastName', None)
+		BirthDate = human_data.get('BirthDate', None)
+		BirthDateAccuracy = human_data.get('BirthDateAccuracy', None)
+		RacialDescriptor = human_data.get('RacialDescriptor', None)
+		Sex = human_data.get('Sex', None)
+		Height_cm = human_data.get('Height_cm', None)
 		Notes = human_data.get('Notes', None)
-		RoleId = human_data.get('RoleId', None)
+		age_string = human_data.get('age_string', None)
+		BirthPlace = human_data.get('BirthPlace', None)
+		originCity = human_data.get('originCity', None)
+		physical_features = human_data.get('physical_features', None)
+		profession = human_data.get('profession', None)
+		mergedHumanId = human_data.get('mergedHumanId', None)
+		spouseHumanId = human_data.get('spouseHumanId', None)
 
-		# Call the save_human function from SaveHuman.py with the extracted data
-		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes )
-		HumanId=result['HumanId']
-		History.SaveHistory(human_data,"humans", "HumanId", result["HumanId"])
-
-		print("RoleId",RoleId)
-		if RoleId:
-			save_HumanRole(HumanId,RoleId)
+		# Call the save_human function with the extracted data
+		result = save_human(
+			HumanId, FirstName, MiddleName, LastName, BirthDate, BirthDateAccuracy,
+			RacialDescriptor, Sex, Height_cm, Notes, age_string, BirthPlace,
+			originCity, physical_features, profession, mergedHumanId, spouseHumanId
+		)
+		HumanId = result['HumanId']
+		History.SaveHistory(human_data, "humans", "HumanId", result["HumanId"])
 
 		return result
 	except Exception as e:
@@ -67,7 +77,7 @@ def DeleteHuman():
 		HumanId = human_data.get('HumanId')
 		# Call the delete_human function from DeleteHuman.py
 		result = delete_human(HumanId)
-		History.SaveHistory(human_data,"humans", "HumanId", HumanId)
+		History.SaveHistory(human_data, "humans", "HumanId", HumanId)
 
 		return result
 	except Exception as e:
@@ -88,7 +98,6 @@ def GetHuman():
 	except Exception as e:
 		return Debugger(e)
 
-
 @blueprint.route("/Human/GetAkaNames", methods=['GET'])
 @cross_origin()
 def GetAkaNames():
@@ -103,7 +112,6 @@ def GetAkaNames():
 		return result
 	except Exception as e:
 		return Debugger(e)
-
 
 @blueprint.route("/Human/SaveHumanAKA", methods=['GET'])
 @cross_origin()
@@ -121,11 +129,10 @@ def SaveHumanAKA():
 		
 		# Call the get_human function from GetHuman.py
 		result = save_aka(AKAHumanId, HumanId, AKAFirstName, AKAMiddleName, AKALastName)
-		History.SaveHistory(human_data,"humansaka", "AKAHumanId", result["AKAHumanId"])
+		History.SaveHistory(human_data, "humansaka", "AKAHumanId", result["AKAHumanId"])
 		return result
 	except Exception as e:
 		return Debugger(e)
-
 
 @blueprint.route("/Human/DeleteAKAName", methods=['GET'])
 @cross_origin()
@@ -140,12 +147,10 @@ def DeleteAKAName():
 		# Call the get_human function from GetHuman.py
 		result = delete_aka(AKAHumanId)
 		print(result)
-		History.SaveHistory(human_data,"humansaka", "AKAHumanId", result["AKAHumanId"])
+		History.SaveHistory(human_data, "humansaka", "AKAHumanId", result["AKAHumanId"])
 		return result
 	except Exception as e:
 		return Debugger(e)
-
-
 
 @blueprint.route("/Human/SaveFamily", methods=['GET'])
 @cross_origin()
@@ -162,12 +167,11 @@ def SaveFamily():
 		
 		# Call the get_human function from GetHuman.py
 		result = save_Family(HumanId, FamilyHumanId, Relationship)
-		History.SaveHistory(human_data,"families", "FamilyHumanId", FamilyHumanId)
-		History.SaveHistory(human_data,"families", "HumanId", HumanId)
+		History.SaveHistory(human_data, "families", "FamilyHumanId", FamilyHumanId)
+		History.SaveHistory(human_data, "families", "HumanId", HumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)
-
 
 @blueprint.route("/Human/GetFamilies", methods=['GET'])
 @cross_origin()
@@ -214,7 +218,7 @@ def DeleteFamily():
 		
 		# Call the get_human function from GetHuman.py
 		result = delete_Family(HumanId, FamilyHumanId)
-		History.SaveHistory(human_data,"families", "FamilyHumanId", FamilyHumanId)
+		History.SaveHistory(human_data, "families", "FamilyHumanId", FamilyHumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)
@@ -240,13 +244,11 @@ def LastModified():
 		# Get the business data from the request
 		business_data = request.args.to_dict()
 
-
-		HistoryArray=[{"Table":"humans","KeyName":"HumanId", "KeyValue" : business_data.get('HumanId')},{"Table":"families", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')},{"Table":"humansaka", "KeyName":"HumanId", "KeyValue": business_data.get('HumanId')}]
-		result=History.LastModifiedArray(HistoryArray)
+		HistoryArray = [{"Table": "humans", "KeyName": "HumanId", "KeyValue": business_data.get('HumanId')}, {"Table": "families", "KeyName": "HumanId", "KeyValue": business_data.get('HumanId')}, {"Table": "humansaka", "KeyName": "HumanId", "KeyValue": business_data.get('HumanId')}]
+		result = History.LastModifiedArray(HistoryArray)
 		return result
 	except Exception as e:
 		return Debugger(e)
-	
 
 @blueprint.route("/Human/GetBusinesses", methods=['GET'])
 @cross_origin()
@@ -261,8 +263,6 @@ def GetBusinesses():
 		return result
 	except Exception as e:
 		return Debugger(e)
-
-		
 
 @blueprint.route("/Human/GetHumanLocations", methods=['GET'])
 @cross_origin()
@@ -398,3 +398,19 @@ def GetVoyages():
 		return result
 	except Exception as e:
 		return Debugger(e)
+
+@blueprint.route("/Human/GetTimelines", methods=['GET'])
+@cross_origin()
+def GetTimelines():
+	try:
+		# Get the human data from the request
+		human_data = request.args.to_dict()
+
+		# Get the human ID from the request
+		HumanId = human_data.get('HumanId', None)
+		# Call the get_timelines function from GetTimelines.py
+		result = get_timelines(HumanId)
+		return result
+	except Exception as e:
+		return Debugger(e)
+

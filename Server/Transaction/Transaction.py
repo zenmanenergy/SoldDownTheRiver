@@ -61,13 +61,19 @@ def SaveTransaction():
 		FirstParties = transaction_data.get('FirstParties', '[]')
 		SecondParties = transaction_data.get('SecondParties', '[]')
 
+		 # Treat empty strings as empty lists
+		if not FirstParties.strip():
+			FirstParties = '[]'
+		if not SecondParties.strip():
+			SecondParties = '[]'
+
 		# Convert from JSON-encoded string to actual list
 		import json
 		try:
-			FirstParties = json.loads(FirstParties) if FirstParties else []
-			SecondParties = json.loads(SecondParties) if SecondParties else []
-		except json.JSONDecodeError:
-			raise ValueError("Invalid JSON format in FirstParties or SecondParties")
+			FirstParties = json.loads(FirstParties) if isinstance(FirstParties, str) else FirstParties
+			SecondParties = json.loads(SecondParties) if isinstance(SecondParties, str) else SecondParties
+		except json.JSONDecodeError as e:
+			raise ValueError(f"Invalid JSON format in FirstParties or SecondParties: {e}")
 
 		# Call the save_transaction function with the extracted data
 		result = save_transaction(
