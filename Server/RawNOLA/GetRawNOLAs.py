@@ -20,6 +20,7 @@ def get_RawNOLAs(NOLA_ID_list=None):
 				Page, 
 				NotaryPublic, 
 				Volume, 
+				Notes,
 				NameOfTranscriber, 
 				ReferenceURL
 			FROM raw_nola

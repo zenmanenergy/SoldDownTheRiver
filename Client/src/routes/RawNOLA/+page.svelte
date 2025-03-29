@@ -23,6 +23,7 @@
 		Page: "",
 		NotaryPublic: "",
 		Volume: "",
+		Notes: "",
 		NameOfTranscriber: "",
 		ReferenceURL: ""
 	};
@@ -40,6 +41,7 @@
 			Page: data.Page || "",
 			NotaryPublic: data.NotaryPublic || "",
 			Volume: data.Volume || "",
+			Notes: data.Notes || "",
 			NameOfTranscriber: data.NameOfTranscriber || "",
 			ReferenceURL: data.ReferenceURL || ""
 		};
@@ -138,7 +140,7 @@
 				<div class="control">
 					<label class="label" for="DateOfTransaction">Date of Transaction</label>
 					<div class="field">
-						<input class="input" type="date" id="DateOfTransaction" bind:value={NOLA.DateOfTransaction} />
+						<input class="input" type="text" id="DateOfTransaction" bind:value={NOLA.DateOfTransaction} />
 					</div>
 				</div>
 
@@ -171,6 +173,14 @@
 					<label class="label" for="Volume">Volume</label>
 					<div class="field">
 						<input class="input" type="text" id="Volume" bind:value={NOLA.Volume} />
+					</div>
+				</div>
+
+				<!-- Notes -->
+				<div class="control">
+					<label class="label" for="Notes">Notes</label>
+					<div class="field">
+						<input class="input" type="text" id="Notes" bind:value={NOLA.Notes} />
 					</div>
 				</div>
 

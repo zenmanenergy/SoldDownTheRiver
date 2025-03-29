@@ -20,6 +20,7 @@
 	import { handleSaveTransactionHuman } from './handleSaveTransactionHuman.js';
 	import { handleDeleteTransactionHuman } from './handleDeleteTransactionHuman.js';
 	import { handleGetRawNolas } from './handleGetRawNolas.js';
+	import { handleGetLocations } from '../Locations/handleGetLocations.js';
 
 	import Select from 'svelte-select';
 	import moment from 'moment';
@@ -28,9 +29,6 @@
 		date_circa: '',
 		date_accuracy: 'D',
 		TransactionType: '',
-		NotaryHumanId: '',
-		FirstParties: [],
-		SecondParties: [],
 		LocationId: '',
 		TotalPrice: '',
 		URL: '',
@@ -41,9 +39,7 @@
 	let transactionId = null;
 	let allHumans = [];
 	let transactionHumans = [];
-	let selectedFirstParty = null;
-	let selectedSecondParty = null;
-	let selectedNotary = null;
+	let allLocations = [];
 
 	function getTransactionIdFromURL() {
 		const params = new URLSearchParams(window.location.search);
@@ -67,9 +63,7 @@
 				// Map null values to empty strings
 				transaction = mapNullToEmpty({ ...data });
 
-				// Ensure FirstParties and SecondParties are valid arrays
-				transaction.FirstParties = transaction.FirstParties || [];
-				transaction.SecondParties = transaction.SecondParties || [];
+				
 
 				// Convert date format
 				if (transaction.date_circa) {
@@ -94,23 +88,20 @@
 				allHumans = data.map(h => ({
 					value: h.HumanId,
 					label: `${h.FirstName} ${h.LastName}`
-				}));
-
-				// Set selected Notary
-				selectedNotary = allHumans.find(h => h.value === transaction.NotaryHumanId) || null;
-
-				// Set selected First Parties as an array
-				selectedFirstParty = transaction.FirstParties.map(fp => 
-					allHumans.find(h => h.value === fp.FirstPartyId) || null
-				).filter(h => h !== null);
-
-				// Set selected Second Parties as an array
-				selectedSecondParty = transaction.SecondParties.map(sp => 
-					allHumans.find(h => h.value === sp.SecondPartyId) || null
-				).filter(h => h !== null);
+					}));
 			} else {
 				console.error("Error: handleGetHumans did not return an array", data);
 				allHumans = [];
+			}
+		});
+
+		// Fetch locations
+		await handleGetLocations(Session.SessionId, (data) => {
+			if (Array.isArray(data)) {
+				allLocations = data;
+			} else {
+				console.error("Error: handleGetLocations did not return an array", data);
+				allLocations = [];
 			}
 		});
 
@@ -193,9 +184,6 @@
 	async function submitTransaction() {
 		const transactionData = {
 			...transaction,
-			NotaryHumanId: selectedNotary?.value || null, // Ensure NotaryHumanId is set
-			FirstParties: JSON.stringify(selectedFirstParty.map(fp => ({ FirstPartyId: fp.value }))), // Convert to JSON string
-			SecondParties: JSON.stringify(selectedSecondParty.map(sp => ({ SecondPartyId: sp.value }))), // Convert to JSON string
 		};
 
 		const success = await handleSaveTransaction(Session.SessionId, transactionId, transactionData);
@@ -420,6 +408,16 @@
 				<input id="transaction-type" class="input" type="text" bind:value={transaction.TransactionType} placeholder="Enter transaction type" />
 			</div>
 		
+			<!-- New Location select box -->
+			<div class="field">
+				<label for="location">Location:</label>
+				<select id="location" class="input" bind:value={transaction.LocationId}>
+					<option value="">Select a Location</option>
+					{#each allLocations as loc}
+						<option value={loc.LocationId}>{loc.Address}</option>
+					{/each}
+				</select>
+			</div>
 		
 			<!-- Total Price -->
 			<div class="field">
@@ -513,17 +511,18 @@
 							<tr>
 								<th>First Name</th>
 								<th>Last Name</th>
-								<th>Racial Descriptor</th>
-								<th>Sex</th>
-								<th>Height (in)</th>
-								<th>Physical Features</th>
-								<th>Profession</th>
-								<th>Birthplace</th>
-								<th>Age (Years)</th>
-								<th>Age (Months)</th>
-								<th>Birthdate</th>
-								<th>BirthDateAccuracy</th>
-								<th>Price</th> <!-- NEW COLUMN -->
+								{#if roleId == "Enslaved"}
+									<th>Racial Descriptor</th>
+									<th>Sex</th>
+									<th>Height (in)</th>
+									<th>Physical Features</th>
+									<th>Profession</th>
+									<th>Birthplace</th>
+									<th>Age (Years)</th>
+									<th>Age (Months)</th>
+									<th>Birthdate</th>
+									<th>Price</th>
+								{/if}
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -532,27 +531,19 @@
 								<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
 									<td>{human.FirstName || ''}</td>
 									<td>{human.LastName || ''}</td>
-									<td>{human.RacialDescriptor || ''}</td>
-									<td>{human.Sex || ''}</td>
-									<td>{cmToInches(human.Height_cm)}</td>
-									<td>{human.physical_features || ''}</td>
-									<td>{human.profession || ''}</td>
-									<td>{human.BirthPlace || ''}</td>
-									<td>{human.AgeYears || ''}</td>
-									<td>{human.AgeMonths || ''}</td>
-									<td>{calculateBirthDate(human)}</td>
-									<td>
-										{#if human.BirthDateAccuracy === 'D'}
-											Day
-										{:else if human.BirthDateAccuracy === 'M'}
-											Month
-										{:else if human.BirthDateAccuracy === 'Y'}
-											Year
-										{:else}
-											Unknown
-										{/if}
-									</td>
-									<td>${human.Price || ''}</td> <!-- NEW PRICE COLUMN -->
+									{#if roleId == "Enslaved"}
+										<td>{human.RacialDescriptor || ''}</td>
+										<td>{human.Sex || ''}</td>
+										<td>{cmToInches(human.Height_cm)}</td>
+										<td>{human.physical_features || ''}</td>
+										<td>{human.profession || ''}</td>
+										<td>{human.BirthPlace || ''}</td>
+										<td>{human.AgeYears || ''}</td>
+										<td>{human.AgeMonths || ''}</td>
+										<td>{calculateBirthDate(human)}</td>
+										
+										<td>{#if human.Price}${human.Price || ''}{/if}</td> <!-- NEW PRICE COLUMN -->
+									{/if}
 									<td>
 										<button class="button is-danger is-small" 
 											type="button" 
@@ -628,7 +619,7 @@
 				</thead>
 				<tbody>
 					{#each rawNolaRecords as record}
-						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNola?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
+						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
 							<td>{record.DateOfTransaction ? new Date(record.DateOfTransaction).toLocaleDateString() : ''}</td>
 							<td>{record.TypeOfTransaction || ''}</td>
 							
