@@ -11,6 +11,12 @@
 	.merge-box h3 {
 		margin-top: 0;
 	}
+	.transaction-summary {
+		border: 1px solid #ccc;
+		padding: 15px;
+		margin-bottom: 20px;
+		background-color: #f9f9f9;
+	}
 </style>
 <script>
 	import { onMount } from 'svelte';
@@ -30,6 +36,11 @@
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
 	import { handleGetTimelines } from './handleGetTimelines.js';
+	import { handleGetAKA } from './handleGetAKA.js';
+	import { handleSaveAkaName } from './handleSaveAkaName.js';
+	import { handleDeleteAkaName } from './handleDeleteAkaName.js';
+	import { handleGetTransaction } from '../Transaction/handleGetTransaction.js';
+	import { handleGetRoles } from './handleGetRoles.js';
 
 	let Human = {
 		FirstName: '',
@@ -43,6 +54,7 @@
 		Roles: ''
 	};
 
+	let originalBirthDate = ''; // new variable to store fetched birth date
 	let mergeHuman = null;
 	let isLoading = true;
 	let HumanId = null;
@@ -63,6 +75,14 @@
 	let relationshipType = '';
 	let relationshipOptions = ['Husband', 'Wife', 'Son', 'Daughter', 'Father', 'Mother', 'Brother', 'Sister'];
 	let timelines = [];
+	let akaNames = [];
+	let newAKA = { AKAFirstName: '', AKAMiddleName: '', AKALastName: '' };
+	let transactionSummary = null;
+	let rolesOptions = [];
+
+	let transactionDate = null;
+	let ageYears = '';
+	let ageMonths = '';
 
 	function getURLVariable(name) {
 		return new URLSearchParams(window.location.search).get(name);
@@ -74,20 +94,41 @@
 		return d.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 	}
 
+	function calculateBirthDate() {
+		if (!transactionSummary?.date_circa || (ageYears === '' && ageMonths === '')) {
+			return originalBirthDate;
+		}
+		// Create a date using the transaction date string without appending extra text
+		let baseDate = new Date(transactionSummary.date_circa);
+		if (isNaN(baseDate)) {
+			return originalBirthDate;
+		}
+		let years = parseInt(ageYears) || 0;
+		let months = parseInt(ageMonths) || 0;
+		baseDate.setUTCFullYear(baseDate.getUTCFullYear() - years);
+		baseDate.setUTCMonth(baseDate.getUTCMonth() - months);
+		return baseDate.toISOString().split('T')[0];
+	}
+
+	$: Human.BirthDate = (ageYears === '' && ageMonths === '') ? originalBirthDate : calculateBirthDate();
+	// $: console.log("Updated Human BirthDate:", Human.BirthDate, "ageYears:", ageYears, "ageMonths:", ageMonths, "transaction date:", transactionSummary ? transactionSummary.date_circa : 'N/A');
+
 	onMount(async () => {
 		await Session.handleSession();
 		HumanId = getURLVariable('HumanId') || null;
 		mergeHumanId = getURLVariable('mergeHumanId') || null;
 		returnPath = getURLVariable('returnPath');
+		transactionDate = getURLVariable('TransactionDate') || null;
 
 		if (HumanId) {
 			const data = await handleGetHuman(Session.SessionId, HumanId);
 			if (data) {
+				originalBirthDate = formatDateForInput(data.BirthDate); // store the original date
 				Human = {
 					...data,
 					FirstName: data.FirstName || '',
 					LastName: data.LastName || '',
-					BirthDate: formatDateForInput(data.BirthDate), // Format BirthDate for input
+					BirthDate: originalBirthDate, // use originalBirthDate
 					Roles: data.Roles ? data.Roles.join(', ') : ''
 				};
 				locations = await handleGetHumanLocations(Session.SessionId, HumanId);
@@ -126,11 +167,27 @@
 			Human.Height_in = '';
 		}
 
+		await fetchAKA();
+
+		const TransactionId = getURLVariable('TransactionId');
+		if (TransactionId) {
+			transactionSummary = await handleGetTransaction(Session.SessionId, TransactionId);
+			rolesOptions = await handleGetRoles(Session.SessionId);
+		}
+
 		isLoading = false;
 	});
 
 	function setHumans(data) {
 		Humans = data;
+	}
+
+	async function fetchAKA() {
+		if (HumanId) {
+			await handleGetAKA(Session.SessionId, HumanId, (data) => {
+				akaNames = data || [];
+			});
+		}
 	}
 
 	$: {
@@ -146,9 +203,20 @@
 	}
 
 	async function submitHuman() {
-		const success = await saveHuman(Session.SessionId, HumanId, Human);
-		if (success) {
-			window.location.href = returnPath || '/Humans';
+		// Set TransactionId and RoleId on the Human object from the URL and UI input
+		const transactionId = getURLVariable('TransactionId') || "";
+		if (transactionId) {
+			Human.TransactionId = transactionId;
+			Human.RoleId = Human.Role;  // assign the selected role as RoleId
+		}
+		const result = await saveHuman(Session.SessionId, HumanId, Human);
+		if (result) {
+			const TransactionId = getURLVariable('TransactionId');
+			// if (TransactionId) {
+			// 	window.location.href = `/Transaction?TransactionId=${TransactionId}`;
+			// } else {
+			// 	window.location.href = returnPath || '/Humans';
+			// }
 		} else {
 			alert("Failed to save human.");
 		}
@@ -230,6 +298,16 @@
 		<a href="/Humans">Back to List</a>
 		<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
 
+		{#if transactionSummary}
+			<div class="transaction-summary">
+				<h3 class="title is-3">Transaction Summary</h3>
+				<p><strong>Type:</strong> {transactionSummary.TransactionType}</p>
+				<p><strong>Date:</strong> {formatDate(transactionSummary.date_circa, transactionSummary.date_accuracy)}</p>
+				<p><strong>Buyer:</strong> {transactionSummary.Buyers[0].BuyerFirstName} {transactionSummary.Buyers[0].BuyerLastName}</p>
+				<p><strong>Seller:</strong> {transactionSummary.Sellers[0].SellerFirstName} {transactionSummary.Sellers[0].SellerLastName}</p>
+			</div>
+		{/if}
+
 		{#if mergeHuman}
 			<div class="merge-box">
 				<h3 class="title is-3">Merge Human</h3>
@@ -267,6 +345,26 @@
 				<input id="last-name" class="input" type="text" bind:value={Human.LastName} />
 			</div>
 
+			{#if transactionSummary}
+				<div class="field">
+					<label for="role-select">Role:</label>
+					<select id="role-select" class="input" bind:value={Human.Role}>
+						<option value=""></option>
+						{#each rolesOptions as role}
+							<option value={role.RoleId}>{role.Role}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="field">
+					<label for="age-years">Age (years):</label>
+					<input id="age-years" class="input" type="number" bind:value={ageYears} min="0" />
+				</div>
+				<div class="field">
+					<label for="age-months">Age (months):</label>
+					<input id="age-months" class="input" type="number" bind:value={ageMonths} min="0" max="11" />
+				</div>
+			{/if}
+
 			<div class="field">
 				<label for="birth-date">Birth Date:</label>
 				<input id="birth-date" class="input" type="date" bind:value={Human.BirthDate} />
@@ -288,8 +386,14 @@
 
 			<div class="field">
 				<label for="sex">Sex:</label>
-				<input id="sex" class="input" type="text" bind:value={Human.Sex} />
+				<select id="sex" class="input" bind:value={Human.Sex}>
+					<option value="">Select</option>
+					<option value="Male">Male</option>
+					<option value="Female">Female</option>
+				</select>
 			</div>
+
+			
 
 			<div class="field">
 				<label for="height-inches">Height (inches):</label>
@@ -307,6 +411,49 @@
 					<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
 				{/if}
 			</div>
+		</form>
+
+		{#if akaNames.length > 0}
+			<h3 class="title is-3">Also Known As (AKA)</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>First Name</th>
+						<th>Middle Name</th>
+						<th>Last Name</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each akaNames as aka}
+						<tr>
+							<td>{aka.AKAFirstName}</td>
+							<td>{aka.AKAMiddleName}</td>
+							<td>{aka.AKALastName}</td>
+							<td>
+								<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		<h3 class="title is-3">Add New AKA</h3>
+		<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
+			<div class="field">
+				<label for="aka-first-name">First Name:</label>
+				<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
+			</div>
+			<div class="field">
+				<label for="aka-middle-name">Middle Name:</label>
+				<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
+			</div>
+			<div class="field">
+				<label for="aka-last-name">Last Name:</label>
+				<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
+			</div>
+			<button class="button is-primary" type="submit">Add AKA</button>
 		</form>
 
 		{#if families.length > 0}
@@ -411,6 +558,30 @@
 							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
 							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
 							<td>{transaction.NotaryFirstName} {transaction.NotaryLastName}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+
+		{#if enslavedTransactions.length > 0}
+			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is Enslaved</h3>
+			<table class="table is-fullwidth is-striped">
+				<thead>
+					<tr>
+						<th>Transaction Type</th>
+						<th>Date Circa</th>
+						<th>First Party</th>
+						<th>Second Party</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each enslavedTransactions as transaction}
+						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
+							<td>{transaction.TransactionType}</td>
+							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
+							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
+							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
 						</tr>
 					{/each}
 				</tbody>

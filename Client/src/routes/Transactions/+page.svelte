@@ -58,7 +58,7 @@
 	});
 
 	function formatTransactionDate(date, accuracy) {
-		if (!date) return 'N/A';
+		if (!date) return '';
 
 		const parsedDate = moment.utc(date, "ddd, DD MMM YYYY HH:mm:ss [GMT]", true);
 
@@ -124,8 +124,16 @@
 			if (typeof valueA === 'string') valueA = valueA.toLowerCase();
 			if (typeof valueB === 'string') valueB = valueB.toLowerCase();
 
+			// Primary sort by the selected column
 			if (valueA < valueB) return sortAscending ? -1 : 1;
 			if (valueA > valueB) return sortAscending ? 1 : -1;
+
+			// Secondary sort by date_circa
+			const dateA = a.date_circa ? new Date(a.date_circa) : new Date(0);
+			const dateB = b.date_circa ? new Date(b.date_circa) : new Date(0);
+			if (dateA < dateB) return sortAscending ? -1 : 1;
+			if (dateA > dateB) return sortAscending ? 1 : -1;
+
 			return 0;
 		});
 	
@@ -171,18 +179,18 @@
 					{#each filteredTransactions as transaction}
 						<tr style="cursor: pointer;" on:click={() => location.href=`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`}>
 							<td>{formatTransactionDate(transaction.date_circa, transaction.date_accuracy)}</td>
-							<td>{transaction.TransactionType || 'N/A'}</td>
-							<td title={`${transaction.NotaryFirstName} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName}`} >
-								{truncateText(`${transaction.NotaryFirstName} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName}`)}
+							<td>{transaction.TransactionType || ''}</td>
+							<td title={`${transaction.NotaryFirstName || ''} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName || ''}`} >
+								{truncateText(`${transaction.NotaryFirstName || ''} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName || ''}`)}
 							</td>
-							<td title={`${transaction.FirstPartyFirstName} ${transaction.FirstPartyMiddleName || ''} ${transaction.FirstPartyLastName}`} >
-								{truncateText(`${transaction.FirstPartyFirstName} ${transaction.FirstPartyMiddleName || ''} ${transaction.FirstPartyLastName}`)}
+							<td title={`${transaction.FirstPartyFirstName || ''} ${transaction.FirstPartyMiddleName || ''} ${transaction.FirstPartyLastName || ''}`} >
+								{truncateText(`${transaction.FirstPartyFirstName || ''} ${transaction.FirstPartyMiddleName || ''} ${transaction.FirstPartyLastName || ''}`)}
 							</td>
-							<td title={`${transaction.SecondPartyFirstName} ${transaction.SecondPartyMiddleName || ''} ${transaction.SecondPartyLastName}`} >
-								{truncateText(`${transaction.SecondPartyFirstName} ${transaction.SecondPartyMiddleName || ''} ${transaction.SecondPartyLastName}`)}
+							<td title={`${transaction.SecondPartyFirstName || ''} ${transaction.SecondPartyMiddleName || ''} ${transaction.SecondPartyLastName || ''}`} >
+								{truncateText(`${transaction.SecondPartyFirstName || ''} ${transaction.SecondPartyMiddleName || ''} ${transaction.SecondPartyLastName || ''}`)}
 							</td>
 							<td class="location">
-								{transaction.LocationAddress ? `${transaction.LocationAddress}, ` : ''}{transaction.LocationCity || ''}, {transaction.LocationCounty || ''}, {transaction.LocationStateAbbr || ''}
+								{transaction.LocationAddress || ''}
 							</td>
 							<td>{transaction.TotalPrice ? `$${transaction.TotalPrice.toFixed(2)}` : ''}</td>
 							<td>

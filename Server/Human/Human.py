@@ -61,6 +61,22 @@ def SaveHuman():
 		)
 		HumanId = result['HumanId']
 		History.SaveHistory(human_data, "humans", "HumanId", result["HumanId"])
+		
+		# New update: if TransactionId and RoleId are provided, then insert into transactionhumans.
+		# If RoleId is missing, use the "Role" parameter instead.
+		TransactionId = human_data.get('TransactionId', None)
+		RoleId = human_data.get('RoleId', None)
+		if not RoleId:
+			RoleId = human_data.get('Role', None)
+		if TransactionId and RoleId:
+			cursor2, connection2 = Database.ConnectToDatabase()
+			query2 = """
+				INSERT INTO transactionhumans (TransactionId, HumanId, RoleId)
+				VALUES (%s, %s, %s)
+				ON DUPLICATE KEY UPDATE RoleId = VALUES(RoleId)
+			"""
+			cursor2.execute(query2, (TransactionId, HumanId, RoleId))
+			connection2.commit()
 
 		return result
 	except Exception as e:

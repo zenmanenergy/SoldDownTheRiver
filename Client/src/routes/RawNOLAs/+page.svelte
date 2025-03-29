@@ -66,7 +66,7 @@
 
 	// Format DateOfTransaction to display only the date component
 	function formatDateOfTransaction(date) {
-		if (!date) return 'N/A';
+		if (!date) return '';
 		const parsed = moment(date);
 		return parsed.isValid() ? parsed.format('YYYY-MM-DD') : 'Invalid Date';
 	}
@@ -160,17 +160,17 @@
 				<tbody>
 					{#each filteredRecords as record}
 						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`}>
-							<td>{record.FirstParty || 'N/A'}</td>
-							<td>{record.LocationFirstParty || 'N/A'}</td>
-							<td>{record.SecondParty || 'N/A'}</td>
-							<td>{record.LocationSecondParty || 'N/A'}</td>
-							<td>{record.TypeOfTransaction || 'N/A'}</td>
+							<td>{record.FirstParty || ''}</td>
+							<td>{record.LocationFirstParty || ''}</td>
+							<td>{record.SecondParty || ''}</td>
+							<td>{record.LocationSecondParty || ''}</td>
+							<td>{record.TypeOfTransaction || ''}</td>
 							<td>{formatDateOfTransaction(record.DateOfTransaction)}</td>
-							<td>{record.Act || 'N/A'}</td>
-							<td>{record.Page || 'N/A'}</td>
-							<td>{record.NotaryPublic || 'N/A'}</td>
-							<td>{record.Volume || 'N/A'}</td>
-							<td>{record.NameOfTranscriber || 'N/A'}</td>
+							<td>{record.Act || ''}</td>
+							<td>{record.Page || ''}</td>
+							<td>{record.NotaryPublic || ''}</td>
+							<td>{record.Volume || ''}</td>
+							<td>{record.NameOfTranscriber || ''}</td>
 							<td>
 								{#if record.ReferenceURL}
 									<a href={record.ReferenceURL} target="_blank">View</a>

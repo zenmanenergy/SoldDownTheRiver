@@ -15,7 +15,7 @@ def get_aka(HumanId):
 	cursor.execute(query, values)
 	result = cursor.fetchall()
 	if not result:
-		result={}
+		result=[]
 		
 	# Close the database connection
 	connection.close()

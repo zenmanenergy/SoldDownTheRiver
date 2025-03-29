@@ -154,7 +154,7 @@
 	}
 
 	function formatDateOfTransaction(date) {
-		return date ? new Date(date).toLocaleDateString() : 'N/A';
+		return date ? new Date(date).toLocaleDateString() : '';
 	}
 	// Format displayed date based on accuracy
 	function getFormattedDate() {
@@ -181,7 +181,7 @@
 	// Helper function to format birthdate based on accuracy
 	function formatBirthDate(date, accuracy) {
 		console.log("date",date)
-		if (!date) return 'N/A';
+		if (!date) return '';
 		const mDate = moment(date);
 		switch(accuracy) {
 			case 'Y': return mDate.format('YYYY');
@@ -229,23 +229,50 @@
 		Price: '', // NEW FIELD FOR PRICE
 	};
 
-	
+	// Predefined order for roles
+	const roleOrder = ['Enslaved', 'Notary', 'Buyer', 'Seller'];
 
-	
+	// Function to group and sort humans by roleId
+	function groupHumansByRole(humans) {
+		const grouped = humans.reduce((groups, human) => {
+			const roleId = human.RoleId || 'Unassigned'; // Default to 'Unassigned' if RoleId is missing
+			if (!groups[roleId]) {
+				groups[roleId] = [];
+			}
+			groups[roleId].push(human);
+			return groups;
+		}, {});
+
+		// Sort the groups based on the predefined role order
+		return Object.keys(grouped)
+			.sort((a, b) => {
+				const indexA = roleOrder.indexOf(a);
+				const indexB = roleOrder.indexOf(b);
+				// Roles not in the predefined order will appear last
+				return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+			})
+			.reduce((sortedGroups, key) => {
+				sortedGroups[key] = grouped[key];
+				return sortedGroups;
+			}, {});
+	}
+
+	// Reactive statement to group and sort transactionHumans by roleId
+	$: groupedHumans = groupHumansByRole(transactionHumans);
 
 	// Function to get the formatted BirthDate based on accuracy
 	function calculateBirthDate(human) {
 		// If BirthDate exists from the server, use it and format it based on BirthDateAccuracy
 		if (human.BirthDate) {
 			let birthDate = moment(human.BirthDate);
-			if (!birthDate.isValid()) return 'N/A';
+			if (!birthDate.isValid()) return '';
 
 			// Format based on accuracy
 			switch (human.BirthDateAccuracy) {
 				case 'D': return birthDate.format('YYYY-MM-DD'); // Full date
 				case 'M': return birthDate.format('YYYY-MM');    // Year & month only
 				case 'Y': return birthDate.format('YYYY');       // Year only
-				default: return 'N/A';
+				default: return '';
 			}
 		}
 
@@ -253,12 +280,12 @@
 
 		// If BirthDate is missing, calculate based on transaction date and age
 		if (!transaction.date_circa || (!human.AgeYears && !human.AgeMonths)) {
-			return 'N/A';
+			return '';
 		}
 
 		let baseDate = moment(transaction.date_circa, "YYYY-M-D", true);
 		if (!baseDate.isValid()) {
-			return 'N/A';
+			return '';
 		}
 
 		// Subtract Age (years + months) from transaction.date_circa
@@ -269,7 +296,7 @@
 			case 'D': return birthDate.format('YYYY-MM-DD');
 			case 'M': return birthDate.format('YYYY-MM');
 			case 'Y': return birthDate.format('YYYY');
-			default: return 'N/A';
+			default: return '';
 		}
 	}
 
@@ -333,13 +360,13 @@
 	// Function to calculate Birthdate based on Age (years + months)
 	function updateNewHumanBirthDate() {
 		if (!transaction.date_circa || (!newHuman.AgeYears && !newHuman.AgeMonths)) {
-			newHuman.BirthDate = 'N/A';
+			newHuman.BirthDate = '';
 			return;
 		}
 
 		let baseDate = moment(transaction.date_circa, "YYYY-M-D", true);
 		if (!baseDate.isValid()) {
-			newHuman.BirthDate = 'N/A';
+			newHuman.BirthDate = '';
 			return;
 		}
 
@@ -351,7 +378,7 @@
 			case 'D': newHuman.BirthDate = birthDate.format('YYYY-MM-DD'); break;
 			case 'M': newHuman.BirthDate = birthDate.format('YYYY-MM'); break;
 			case 'Y': newHuman.BirthDate = birthDate.format('YYYY'); break;
-			default: newHuman.BirthDate = 'N/A';
+			default: newHuman.BirthDate = '';
 		}
 	}
 
@@ -393,40 +420,6 @@
 				<input id="transaction-type" class="input" type="text" bind:value={transaction.TransactionType} placeholder="Enter transaction type" />
 			</div>
 		
-			<!-- Notary -->
-			<div class="field">
-				<label for="notary">Notary:</label>
-				{#if allHumans.length > 0}
-						<Select 
-							id="notary" 
-							bind:value={selectedNotary} 
-							items={allHumans} 
-							on:change={() => transaction.NotaryHumanId = selectedNotary?.value || null} 
-						/>
-				{:else}
-					<p>Loading humans...</p>
-				{/if}
-			</div>
-		
-			<!-- First Parties -->
-			<div class="field">
-				<label for="first-party">First Parties:</label>
-				{#if allHumans.length > 0}
-					<Select id="first-party" bind:value={selectedFirstParty} items={allHumans} multiple />
-				{:else}
-					<p>Loading humans...</p>
-				{/if}
-			</div>
-		
-			<!-- Second Parties -->
-			<div class="field">
-				<label for="second-party">Second Parties:</label>
-				{#if allHumans.length > 0}
-					<Select id="second-party" bind:value={selectedSecondParty} items={allHumans} multiple />
-				{:else}
-					<p>Loading humans...</p>
-				{/if}
-			</div>
 		
 			<!-- Total Price -->
 			<div class="field">
@@ -510,69 +503,86 @@
 		</form>
 		
 
-		<h4 class="title is-4">Enslaved People Associated with This Transaction</h4>
 
+		{#if Object.keys(groupedHumans).length > 0}
+			{#each Object.entries(groupedHumans) as [roleId, humans]}
+				<h4 class="title is-4">{roleId} People Associated with This Transaction</h4>
+				<div class="role-group">
+					<table>
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Racial Descriptor</th>
+								<th>Sex</th>
+								<th>Height (in)</th>
+								<th>Physical Features</th>
+								<th>Profession</th>
+								<th>Birthplace</th>
+								<th>Age (Years)</th>
+								<th>Age (Months)</th>
+								<th>Birthdate</th>
+								<th>BirthDateAccuracy</th>
+								<th>Price</th> <!-- NEW COLUMN -->
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each humans as human, index}
+								<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
+									<td>{human.FirstName || ''}</td>
+									<td>{human.LastName || ''}</td>
+									<td>{human.RacialDescriptor || ''}</td>
+									<td>{human.Sex || ''}</td>
+									<td>{cmToInches(human.Height_cm)}</td>
+									<td>{human.physical_features || ''}</td>
+									<td>{human.profession || ''}</td>
+									<td>{human.BirthPlace || ''}</td>
+									<td>{human.AgeYears || ''}</td>
+									<td>{human.AgeMonths || ''}</td>
+									<td>{calculateBirthDate(human)}</td>
+									<td>
+										{#if human.BirthDateAccuracy === 'D'}
+											Day
+										{:else if human.BirthDateAccuracy === 'M'}
+											Month
+										{:else if human.BirthDateAccuracy === 'Y'}
+											Year
+										{:else}
+											Unknown
+										{/if}
+									</td>
+									<td>${human.Price || ''}</td> <!-- NEW PRICE COLUMN -->
+									<td>
+										<button class="button is-danger is-small" 
+											type="button" 
+											on:click={e => {
+												e.stopPropagation(); // Prevent row click redirect
+												handleDeleteTransactionHuman(Session.SessionId, transactionId, human.HumanId);
+											}}>
+											Remove
+										</button>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/each}
+		{:else}
+			<p>No humans associated with this transaction.</p>
+		{/if}
+
+			<!-- Add button below the list -->
+			<div class="add-human-button">
+				<button class="button is-primary" on:click={() => window.location.href = `/Human?HumanId=&TransactionId=${transactionId}`}>
+					Add
+				</button>
+			</div>
+
+		<!-- Row for Adding a New Human -->
 		<table>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Racial Descriptor</th>
-					<th>Sex</th>
-					<th>Height (in)</th>
-					<th>Physical Features</th>
-					<th>Profession</th>
-					<th>Birthplace</th>
-					<th>Age (Years)</th>
-					<th>Age (Months)</th>
-					<th>Birthdate</th>
-					<th>BirthDateAccuracy</th>
-					<th>Price</th> <!-- NEW COLUMN -->
-					<th>Action</th>
-				</tr>
-			</thead>
 			<tbody>
-				<!-- Existing Humans -->
-				{#each transactionHumans as human, index}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
-						<td>{human.FirstName || ''}</td>
-						<td>{human.LastName || ''}</td>
-						<td>{human.RacialDescriptor || ''}</td>
-						<td>{human.Sex || ''}</td>
-						<td>{cmToInches(human.Height_cm)}</td>
-						<td>{human.physical_features || ''}</td>
-						<td>{human.profession || ''}</td>
-						<td>{human.BirthPlace || ''}</td>
-						<td>{human.AgeYears || ''}</td>
-						<td>{human.AgeMonths || ''}</td>
-						<td>{calculateBirthDate(human)}</td>
-						<td>
-							{#if human.BirthDateAccuracy === 'D'}
-								Day
-							{:else if human.BirthDateAccuracy === 'M'}
-								Month
-							{:else if human.BirthDateAccuracy === 'Y'}
-								Year
-							{:else}
-								Unknown
-							{/if}
-						</td>
-						<td>${human.Price || ''}</td> <!-- NEW PRICE COLUMN -->
-						<td>
-							<button class="button is-danger is-small" 
-								type="button" 
-								on:click={e => {
-									e.stopPropagation(); // Prevent row click redirect
-									handleDeleteTransactionHuman(Session.SessionId, transactionId, human.HumanId);
-								}}>
-								Remove
-							</button>
-						</td>
-						
-					</tr>
-				{/each}
-
-				<!-- Row for Adding a New Human -->
 				<tr>
 					<td><input type="text" class="input" bind:value={newHuman.FirstName} placeholder="First Name" /></td>
 					<td><input type="text" class="input" bind:value={newHuman.LastName} placeholder="Last Name" /></td>
@@ -585,13 +595,11 @@
 					<td><input type="number" class="input" bind:value={newHuman.AgeYears} placeholder="Age (Years)" /></td>
 					<td><input type="number" class="input" bind:value={newHuman.AgeMonths} placeholder="Age (Months)" /></td>
 					<td><input type="text" class="input" readonly bind:value={newHuman.BirthDate} /></td>
-					<td>
-						<select class="input" bind:value={newHuman.BirthDateAccuracy}>
+					<td><select class="input" bind:value={newHuman.BirthDateAccuracy}>
 							<option value="D">Day</option>
 							<option value="M">Month</option>
 							<option value="Y">Year</option>
-						</select>
-					</td>
+						</select></td>
 					<td><input type="number" class="input" bind:value={newHuman.Price} placeholder="Price (USD)" step="0.01" /></td> <!-- NEW PRICE FIELD -->
 					<td>
 						<button class="button is-primary is-small" type="button" on:click={addHumanToTransaction}>Add</button>
@@ -602,51 +610,7 @@
 
 
 
-		<!-- Notary Link -->
-		<div class="field">
-			<h4 class="title is-4">Notary</h4>
-			{#if transaction.NotaryHumanId}
-				<p>
-					<a href="/Human?HumanId={transaction.NotaryHumanId}">
-						{transaction.NotaryFirstName} {transaction.NotaryLastName}
-					</a>
-				</p>
-			{:else}
-				<p>No Notary Assigned</p>
-			{/if}
-		</div>
-
-		<!-- First Parties Links -->
-		<div class="field">
-			<h4 class="title is-4">First Parties</h4>
-			<ul>
-				{#each transaction.FirstParties as firstParty}
-					{#if firstParty.FirstPartyId}
-						<li>
-							<a href="/Human?HumanId={firstParty.FirstPartyId}">
-								{firstParty.FirstPartyFirstName} {firstParty.FirstPartyLastName}
-							</a>
-						</li>
-					{/if}
-				{/each}
-			</ul>
-		</div>
-
-		<!-- Second Parties Links -->
-		<div class="field">
-			<h4 class="title is-4">Second Parties</h4>
-			<ul>
-				{#each transaction.SecondParties as secondParty}
-					{#if secondParty.SecondPartyId}
-						<li>
-							<a href="/Human?HumanId={secondParty.SecondPartyId}">
-								{secondParty.SecondPartyFirstName} {secondParty.SecondPartyLastName}
-							</a>
-						</li>
-					{/if}
-				{/each}
-			</ul>
-		</div>
+		
 
 		<h4 class="title is-4">NOLA Records</h4>
 
@@ -665,11 +629,11 @@
 				<tbody>
 					{#each rawNolaRecords as record}
 						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNola?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
-							<td>{record.DateOfTransaction ? new Date(record.DateOfTransaction).toLocaleDateString() : 'N/A'}</td>
-							<td>{record.TypeOfTransaction || 'N/A'}</td>
+							<td>{record.DateOfTransaction ? new Date(record.DateOfTransaction).toLocaleDateString() : ''}</td>
+							<td>{record.TypeOfTransaction || ''}</td>
 							
-							<td>{record.FirstParty || 'N/A'}</td>
-							<td>{record.SecondParty || 'N/A'}</td>
+							<td>{record.FirstParty || ''}</td>
+							<td>{record.SecondParty || ''}</td>
 							<td>
 								{#if record.ReferenceURL}
 									<a href={record.ReferenceURL} target="_blank">View</a>
