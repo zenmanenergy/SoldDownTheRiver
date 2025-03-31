@@ -42,7 +42,6 @@ def SaveTransaction():
 		# Extract additional fields
 		date_accuracy = transaction_data.get('date_accuracy', None)
 		TransactionType = transaction_data.get('TransactionType', None)
-		NotaryHumanId = transaction_data.get('NotaryHumanId', None)
 		LocationId = transaction_data.get('LocationId', None)
 		TotalPrice = transaction_data.get('TotalPrice', None)
 		URL = transaction_data.get('URL', None)
@@ -57,33 +56,14 @@ def SaveTransaction():
 		# Convert isApproved to boolean (ensure it's either 0 or 1)
 		isApproved = 1 if str(isApproved).lower() in ["true", "1", "yes"] else 0
 
-		# Handle FirstParties and SecondParties safely
-		FirstParties = transaction_data.get('FirstParties', '[]')
-		SecondParties = transaction_data.get('SecondParties', '[]')
-
-		 # Treat empty strings as empty lists
-		if not FirstParties.strip():
-			FirstParties = '[]'
-		if not SecondParties.strip():
-			SecondParties = '[]'
-
-		# Convert from JSON-encoded string to actual list
-		import json
-		try:
-			FirstParties = json.loads(FirstParties) if isinstance(FirstParties, str) else FirstParties
-			SecondParties = json.loads(SecondParties) if isinstance(SecondParties, str) else SecondParties
-		except json.JSONDecodeError as e:
-			raise ValueError(f"Invalid JSON format in FirstParties or SecondParties: {e}")
+		
 
 		# Call the save_transaction function with the extracted data
 		result = save_transaction(
-			TransactionId, date_circa, date_accuracy, TransactionType,
-			NotaryHumanId, FirstParties, SecondParties, LocationId, TotalPrice,
+			TransactionId, date_circa, date_accuracy, TransactionType, LocationId, TotalPrice,
 			URL, Notes, Act, Page, Volume, Transcriber, isApproved, DataQuestions
 		)
 
-		# Save history for transactions
-		History.SaveHistory(transaction_data, "Transactions", "TransactionId", result["TransactionId"])
 
 		return result
 
@@ -127,18 +107,6 @@ def GetTransaction():
 
 
 
-@blueprint.route("/Transaction/GetNotaryHumans", methods=['GET'])
-@cross_origin()
-def GetNotaryHumans():
-	try:
-		# Get the transaction data to the request
-		transaction_data = request.args.to_dict()
-
-		# Call the get_transaction function to GetTransaction.py
-		result = get_notary_humans()
-		return result
-	except Exception as e:
-		return Debugger(e)
 
 
 
@@ -178,41 +146,21 @@ def SaveTransactionHuman():
 		transaction_data = request.args.to_dict()
 		print(transaction_data)
 
-		# Extract the transaction data from the request
-		HumanId = transaction_data.get('HumanId', None) or ""  # If missing, generate it
+		# Extract only the required fields: TransactionId, HumanId, and RoleId
 		TransactionId = transaction_data.get('TransactionId', None)
-		Price = transaction_data.get('Price', None)
-		Notes = transaction_data.get('Notes', None)
-		
-		# Human Data (to be inserted if missing)
-		FirstName = transaction_data.get('FirstName', None)
-		LastName = transaction_data.get('LastName', None)
-		MiddleName = transaction_data.get('MiddleName', None)
-		BirthDate = transaction_data.get('BirthDate', None)
-		BirthDateAccuracy = transaction_data.get('BirthDateAccuracy', None)
-		BirthPlace = transaction_data.get('BirthPlace', None)
-		RacialDescriptor = transaction_data.get('RacialDescriptor', None)
-		Sex = transaction_data.get('Sex', None)
-		Height_cm = transaction_data.get('Height_cm', None)
-		physical_features = transaction_data.get('physical_features', None)
-		profession = transaction_data.get('profession', None)
+		HumanId = transaction_data.get('HumanId', None) or ""
+		RoleId = transaction_data.get('RoleId', None)
 		
 		# If HumanId is empty, generate a new one
 		if not HumanId:
 			HumanId = "HUM" + str(uuid.uuid4())
-
-		# Save the human and transaction relationship
-		saveresult = save_transactionhuman(
-			TransactionId, HumanId, Price, Notes, FirstName, MiddleName, LastName, BirthDate,
-			BirthDateAccuracy, BirthPlace, RacialDescriptor, Sex, Height_cm, physical_features, profession
-		)
-
-		# Save history for auditing
-		History.SaveHistory(transaction_data, "transactionhumans", "TransactionId:HumanId", TransactionId + ":" + HumanId)
-
-		# Fetch and return the updated human data
+		
+		# Save the transaction-human relationship using only TransactionId, HumanId, and RoleId
+		saveresult = save_transactionhuman(TransactionId, HumanId, RoleId)
+		
+		
+		# Fetch and return updated transaction-human data
 		result = get_transactionHumans(TransactionId)
-
 		return result
 
 	except Exception as e:

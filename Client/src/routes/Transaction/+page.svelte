@@ -21,6 +21,7 @@
 	import { handleDeleteTransactionHuman } from './handleDeleteTransactionHuman.js';
 	import { handleGetRawNolas } from './handleGetRawNolas.js';
 	import { handleGetLocations } from '../Locations/handleGetLocations.js';
+	import { handleGetRoles } from '../Roles/handleGetRoles.js';
 
 	import Select from 'svelte-select';
 	import moment from 'moment';
@@ -40,6 +41,41 @@
 	let allHumans = [];
 	let transactionHumans = [];
 	let allLocations = [];
+	let allRoles = []; // new variable for roles
+	let selectedRoleForHuman = {}; // map human.value --> selected role id
+
+	// New variables for available humans filtering and sorting
+	let searchQuery = '';
+	let sortColumnSearch = '';
+	let sortDirectionSearch = 1;
+	$: filteredHumans = allHumans
+		.filter(h => 
+			h.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			h.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			String(h.value).toLowerCase().includes(searchQuery.toLowerCase()) ||
+			(Array.isArray(h.role) ? h.role.join(' ').toLowerCase() : String(h.role).toLowerCase()).includes(searchQuery.toLowerCase()) ||
+			String(h.racial).toLowerCase().includes(searchQuery.toLowerCase())
+		);
+	if(sortColumnSearch) {
+		filteredHumans.sort((a, b) => {
+			let aVal = a[sortColumnSearch] || '';
+			let bVal = b[sortColumnSearch] || '';
+			// If field is an array, join; otherwise cast to string
+			aVal = Array.isArray(aVal) ? aVal.join(' ').toLowerCase() : String(aVal).toLowerCase();
+			bVal = Array.isArray(bVal) ? bVal.join(' ').toLowerCase() : String(bVal).toLowerCase();
+			return aVal > bVal ? sortDirectionSearch : aVal < bVal ? -sortDirectionSearch : 0;
+		});
+	}
+
+	// New function to sort available humans
+	function sortAvailableHumans(column) {
+		if(sortColumnSearch === column) {
+			sortDirectionSearch *= -1;
+		} else {
+			sortColumnSearch = column;
+			sortDirectionSearch = 1;
+		}
+	}
 
 	function getTransactionIdFromURL() {
 		const params = new URLSearchParams(window.location.search);
@@ -87,11 +123,25 @@
 			if (Array.isArray(data)) {
 				allHumans = data.map(h => ({
 					value: h.HumanId,
-					label: `${h.FirstName} ${h.LastName}`
-					}));
+					label: `${h.FirstName} ${h.LastName}`,
+					firstName: h.FirstName,
+					lastName: h.LastName,
+					role: h.Roles || 'Unknown',
+					racial: h.RacialDescriptor || ''
+				}));
 			} else {
 				console.error("Error: handleGetHumans did not return an array", data);
 				allHumans = [];
+			}
+		});
+
+		// Fetch roles
+		await handleGetRoles(Session.SessionId, (data) => {
+			if (Array.isArray(data)) {
+				allRoles = data; // assume each role object has properties "RoleId" and "Name"
+			} else {
+				console.error("Error: handleGetRoles did not return an array", data);
+				allRoles = [];
 			}
 		});
 
@@ -117,6 +167,17 @@
 
 		isLoading = false;
 	});
+
+	async function addHumanToTransactionFromAvailable(human) {
+		const roleId = selectedRoleForHuman[human.value];
+		if (!roleId) {
+			alert("Please select a role for this human before adding.");
+			return;
+		}
+		const response = await handleSaveTransactionHuman(Session.SessionId, transactionId, human.value, roleId);
+		// Append response to transactionHumans (update as needed)
+		transactionHumans = [...transactionHumans, response];
+	}
 
 	function toggleSort(column) {
 		if (sortColumn === column) {
@@ -218,7 +279,7 @@
 	};
 
 	// Predefined order for roles
-	const roleOrder = ['Enslaved', 'Notary', 'Buyer', 'Seller'];
+	const roleOrder = ['Enslaved', 'Notary Public', 'Buyer', 'Seller'];
 
 	// Function to group and sort humans by roleId
 	function groupHumansByRole(humans) {
@@ -239,8 +300,8 @@
 				// Roles not in the predefined order will appear last
 				return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
 			})
-			.reduce((sortedGroups, key) => {
-				sortedGroups[key] = grouped[key];
+			.reduce((sortedGroups, sortedKey) => {
+				sortedGroups[sortedKey] = grouped[sortedKey];
 				return sortedGroups;
 			}, {});
 	}
@@ -289,45 +350,7 @@
 	}
 
 
-	async function addHumanToTransaction() {
-		
-
-		// Set HumanId to blank so the server can generate one
-		newHuman.HumanId = "";
-
-		// Calculate Birthdate before saving
-		newHuman.BirthDate = calculateBirthDate(newHuman);
-
-		try {
-			// Save the human to the database and get the response
-			const savedHuman = await handleSaveTransactionHuman(Session.SessionId, transactionId, newHuman);
-
-			// Append the server response to transactionHumans
-			transactionHumans = [...transactionHumans, savedHuman];
-
-			// Reset input fields
-			newHuman = {
-				FirstName: '',
-				LastName: '',
-				RacialDescriptor: '',
-				Sex: '',
-				Height_cm: '',
-				physical_features: '',
-				profession: '',
-				BirthPlace: '',
-				AgeYears: '',
-				AgeMonths: '',
-				BirthDateAccuracy: 'D',
-				BirthDate: '',
-				Price: '',
-				Notes: '',
-			};
-		} catch (error) {
-			console.error("Error saving human:", error);
-			alert("Failed to save human.");
-		}
-	}
-
+	
 
 
 
@@ -476,30 +499,10 @@
 				<textarea id="notes" class="textarea" bind:value={transaction.Notes} placeholder="Enter additional notes"></textarea>
 			</div>
 
-			<h4 class="title is-4">Reviewer ONLY:</h4>
-			<!-- isApproved Checkbox -->
-			<div class="field">
-				<label class="checkbox">
-					<input type="checkbox" bind:checked={transaction.isApproved} />
-					Approved
-				</label>
-			</div>
-			<!-- Notes Field -->
-			<div class="field">
-				<label for="DataQuestions">Questions about the Data:</label>
-				<textarea id="DataQuestions" class="textarea" bind:value={transaction.DataQuestions} placeholder="Enter your concerns about this data. This won't be visable to the public"></textarea>
-			</div>
-
-			<!-- Buttons -->
-			<div class="buttons-container">
-				<button class="button is-primary" type="submit">Save</button>
-				{#if transactionId} 
-					<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
-				{/if}
-			</div>
 			
-		</form>
-		
+
+			
+			
 
 
 		{#if Object.keys(groupedHumans).length > 0}
@@ -509,8 +512,8 @@
 					<table>
 						<thead>
 							<tr>
-								<th>First Name</th>
-								<th>Last Name</th>
+								<th width="10%">First Name</th>
+								<th width="10%">Last Name</th>
 								{#if roleId == "Enslaved"}
 									<th>Racial Descriptor</th>
 									<th>Sex</th>
@@ -522,15 +525,17 @@
 									<th>Age (Months)</th>
 									<th>Birthdate</th>
 									<th>Price</th>
+								{:else}
+									<th colspan="10"></th>
 								{/if}
-								<th>Action</th>
+								<th width="10%">Action</th>
 							</tr>
 						</thead>
 						<tbody>
 							{#each humans as human, index}
 								<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
-									<td>{human.FirstName || ''}</td>
-									<td>{human.LastName || ''}</td>
+									<td width="10%">{human.FirstName || ''}</td>
+									<td width="10%">{human.LastName || ''}</td>
 									{#if roleId == "Enslaved"}
 										<td>{human.RacialDescriptor || ''}</td>
 										<td>{human.Sex || ''}</td>
@@ -542,9 +547,11 @@
 										<td>{human.AgeMonths || ''}</td>
 										<td>{calculateBirthDate(human)}</td>
 										
-										<td>{#if human.Price}${human.Price || ''}{/if}</td> <!-- NEW PRICE COLUMN -->
+										<td>{#if human.Price}${human.Price || ''}{/if}</td>
+									{:else}
+										<td colspan="10"></td>
 									{/if}
-									<td>
+									<td width="10%">
 										<button class="button is-danger is-small" 
 											type="button" 
 											on:click={e => {
@@ -564,63 +571,105 @@
 			<p>No humans associated with this transaction.</p>
 		{/if}
 
-			<!-- Add button below the list -->
-			<div class="add-human-button">
-				<button class="button is-primary" on:click={() => window.location.href = `/Human?HumanId=&TransactionId=${transactionId}`}>
-					Add
-				</button>
+		<!-- Add button below the list -->
+		<div class="add-human-button">
+			<button class="button is-primary" on:click={() => window.location.href = `/Human?HumanId=&TransactionId=${transactionId}`}>
+				Add a New Human
+			</button>
+		</div>
+		<!-- New Available Humans Table with search, including humanId filter, select box, and add button -->
+		<div class="available-humans-table">
+			<h4 class="title is-4">Available Humans</h4>
+			<!-- Search Box -->
+			<div class="field">
+				<label for="human-search">Search:</label>
+				<input id="human-search" class="input" type="text" placeholder="Search Humans" bind:value={searchQuery} />
 			</div>
+			<table>
+				<thead>
+					<tr>
+						<th on:click={() => sortAvailableHumans('firstName')}>First Name {sortColumnSearch==='firstName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+						<th on:click={() => sortAvailableHumans('lastName')}>Last Name {sortColumnSearch==='lastName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+						<th on:click={() => sortAvailableHumans('role')}>Role {sortColumnSearch==='role' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+						<th on:click={() => sortAvailableHumans('racial')}>Racial Descriptor {sortColumnSearch==='racial' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+						<th>Assign Role</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each filteredHumans.slice(0,10) as human}
+						<tr>
+							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.firstName}</td>
+							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.lastName}</td>
+							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.role}</td>
+							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.racial}</td>
+							<td>
+								<select class="input" bind:value={selectedRoleForHuman[human.value]}>
+									<option value="">Select Role</option>
+									{#each allRoles as role}
+										<option value={role.RoleId}>{role.Role}</option>
+									{/each}
+								</select>
+							</td>
+							<td>
+								<button class="button is-primary is-small" type="button" on:click={() => addHumanToTransactionFromAvailable(human)}>
+									Add
+								</button>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 
-		<!-- Row for Adding a New Human -->
-		<table>
-			<tbody>
-				<tr>
-					<td><input type="text" class="input" bind:value={newHuman.FirstName} placeholder="First Name" /></td>
-					<td><input type="text" class="input" bind:value={newHuman.LastName} placeholder="Last Name" /></td>
-					<td><input type="text" class="input" bind:value={newHuman.RacialDescriptor} placeholder="Racial Descriptor" /></td>
-					<td><input type="text" class="input" bind:value={newHuman.Sex} placeholder="Sex" /></td>
-					<td><input type="number" class="input" bind:value={newHuman.Height_cm} placeholder="Height (cm)" /></td>
-					<td><input type="text" class="input" bind:value={newHuman.physical_features} placeholder="Physical Features" /></td>
-					<td><input type="text" class="input" bind:value={newHuman.profession} placeholder="Profession" /></td>
-					<td><input type="text" class="input" bind:value={newHuman.BirthPlace} placeholder="Birthplace" /></td>
-					<td><input type="number" class="input" bind:value={newHuman.AgeYears} placeholder="Age (Years)" /></td>
-					<td><input type="number" class="input" bind:value={newHuman.AgeMonths} placeholder="Age (Months)" /></td>
-					<td><input type="text" class="input" readonly bind:value={newHuman.BirthDate} /></td>
-					<td><select class="input" bind:value={newHuman.BirthDateAccuracy}>
-							<option value="D">Day</option>
-							<option value="M">Month</option>
-							<option value="Y">Year</option>
-						</select></td>
-					<td><input type="number" class="input" bind:value={newHuman.Price} placeholder="Price (USD)" step="0.01" /></td> <!-- NEW PRICE FIELD -->
-					<td>
-						<button class="button is-primary is-small" type="button" on:click={addHumanToTransaction}>Add</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
+		
 
 
 		
 
-		<h4 class="title is-4">NOLA Records</h4>
+		
+		<h4 class="title is-4">Reviewer ONLY:</h4>
+		<!-- isApproved Checkbox -->
+		<div class="field">
+			<label class="checkbox">
+				<input type="checkbox" bind:checked={transaction.isApproved} />
+				Approved
+			</label>
+		</div>
+		<!-- Notes Field -->
+		<div class="field">
+			<label for="DataQuestions">Questions about the Data:</label>
+			<textarea id="DataQuestions" class="textarea" bind:value={transaction.DataQuestions} placeholder="Enter your concerns about this data. This won't be visable to the public"></textarea>
+		</div>
+		<div class="buttons-container">
+			<button class="button is-primary" type="submit">Save</button>
+			{#if transactionId} 
+				<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
+			{/if}
+		</div>
+		</form>
+		<br/>
+		<h4 class="title is-4">Reference NOLA Records</h4>
 
 		{#if rawNolaRecords.length > 0}
 			<table>
 				<thead>
 					<tr>
 						
-						<th>First Party</th>
-						<th>Second Party</th>
-						<th>Type</th>
 						<th>Date of Transaction</th>
+						<th>Seller</th>
+						<th>Buyer</th>
+						<th>Type</th>
 						<th>Reference URL</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each rawNolaRecords as record}
 						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
-							<td>{record.DateOfTransaction ? new Date(record.DateOfTransaction).toLocaleDateString() : ''}</td>
+								<td>
+									{moment(record.DateOfTransaction).format('YYYY-MM-DD')}
+									
+								</td>
 							<td>{record.TypeOfTransaction || ''}</td>
 							
 							<td>{record.FirstParty || ''}</td>
@@ -637,8 +686,6 @@
 		{:else}
 			<p>No associated NOLA records found.</p>
 		{/if}
-
-
 	</div>
 
 	

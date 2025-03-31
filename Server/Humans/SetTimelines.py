@@ -3,75 +3,64 @@ from _Lib import Database
 def set_timelines():
 	
 	cursor, connection = Database.ConnectToDatabase()
-
-	# First insert statement: NotaryHumanId
-	query1 = """
-		INSERT IGNORE INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy)
-		SELECT DISTINCT
-			NotaryHumanId AS HumanId,
-			LocationId,
-			date_circa,
-			date_accuracy
-		FROM transactions
-		JOIN humans ON humans.HumanId = transactions.NotaryHumanId
-		WHERE LocationId IS NOT NULL
-			AND NotaryHumanId IS NOT NULL
-			AND date_circa IS NOT NULL
-			AND date_accuracy IS NOT NULL
-		ORDER BY NotaryHumanId, LocationId, date_circa
-	"""
-	print(query1)
-	cursor.execute(query1)
-	connection.commit()
-
-	# Second insert statement: Join partyhumans with transactions on FirstPartyId
+	# Fourth insert statement: Join transactionhumans with transactions
 	query2 = """
-		INSERT IGNORE INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy)
+		insert into humantimeline(HumanId,LocationId, Date_circa, Date_Accuracy,LocationType)
 		SELECT DISTINCT
-			partyhumans.HumanId,
-			transactions.LocationId,
+			transactionhumans.HumanId,
+			raw_nola.LocationIdSecondParty,
 			transactions.date_circa,
-			transactions.date_accuracy
+			transactions.date_accuracy,
+			'Residence'
 		FROM transactions
-		JOIN partyhumans ON transactions.FirstPartyId = partyhumans.PartyId
+		JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
+		join raw_nola on raw_nola.NOLA_ID=transactions.NOLA_ID
 		WHERE transactions.LocationId IS NOT NULL
-			AND transactions.FirstPartyId IS NOT NULL
+			AND transactionhumans.HumanId IS NOT NULL
 			AND transactions.date_circa IS NOT NULL
 			AND transactions.date_accuracy IS NOT NULL
-		ORDER BY partyhumans.HumanId, transactions.LocationId, transactions.date_circa
+			and raw_nola.LocationIdSecondParty is not null
+			and transactionhumans.RoleId='Seller'
+		
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
 	"""
 	print(query2)
 	cursor.execute(query2)
 	connection.commit()
 
-	# Third insert statement: Join partyhumans with transactions on SecondPartyId
 	query3 = """
-		INSERT IGNORE INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy)
+		insert into humantimeline(HumanId,LocationId, Date_circa, Date_Accuracy,LocationType)
 		SELECT DISTINCT
-			partyhumans.HumanId,
-			transactions.LocationId,
+			transactionhumans.HumanId,
+			raw_nola.LocationIdFirstParty,
 			transactions.date_circa,
-			transactions.date_accuracy
+			transactions.date_accuracy,
+			'Residence'
 		FROM transactions
-		JOIN partyhumans ON transactions.SecondPartyId = partyhumans.PartyId
+		JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
+		join raw_nola on raw_nola.NOLA_ID=transactions.NOLA_ID
 		WHERE transactions.LocationId IS NOT NULL
-			AND transactions.SecondPartyId IS NOT NULL
+			AND transactionhumans.HumanId IS NOT NULL
 			AND transactions.date_circa IS NOT NULL
 			AND transactions.date_accuracy IS NOT NULL
-		ORDER BY partyhumans.HumanId, transactions.LocationId, transactions.date_circa
+			and raw_nola.LocationIdFirstParty is not null
+			and transactionhumans.RoleId='Buyer'
+		
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
 	"""
 	print(query3)
 	cursor.execute(query3)
 	connection.commit()
-
+	
 	# Fourth insert statement: Join transactionhumans with transactions
 	query4 = """
-		INSERT IGNORE INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy)
+		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType)
 		SELECT DISTINCT
 			transactionhumans.HumanId,
 			transactions.LocationId,
 			transactions.date_circa,
-			transactions.date_accuracy
+			transactions.date_accuracy,
+			'Transaction'
 		FROM transactions
 		JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
 		WHERE transactions.LocationId IS NOT NULL
@@ -79,6 +68,7 @@ def set_timelines():
 			AND transactions.date_circa IS NOT NULL
 			AND transactions.date_accuracy IS NOT NULL
 		ORDER BY transactionhumans.HumanId, transactions.LocationId, transactions.date_circa
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
 	"""
 	print(query4)
 	cursor.execute(query4)
@@ -86,18 +76,20 @@ def set_timelines():
 
 	# Fifth insert statement: HumanId from voyagehumans with StartLocationId and StartDate
 	query5 = """
-		INSERT IGNORE INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy)
+		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType)
 		SELECT DISTINCT
 			voyagehumans.HumanId,
 			voyages.StartLocationId AS LocationId,
 			voyages.StartDate AS date_circa,
-			'D' AS date_accuracy
+			'D' AS date_accuracy,
+			'Voyage Start'
 		FROM voyages
 		JOIN voyagehumans ON voyages.VoyageId = voyagehumans.VoyageId
 		WHERE voyagehumans.HumanId IS NOT NULL
 			AND voyages.StartLocationId IS NOT NULL
 			AND voyages.StartDate IS NOT NULL
 		ORDER BY voyagehumans.HumanId, voyages.StartLocationId, voyages.StartDate
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
 	"""
 	print(query5)
 	cursor.execute(query5)
@@ -105,18 +97,20 @@ def set_timelines():
 
 	# Sixth insert statement: HumanId from voyagehumans with EndLocationId and EndDate
 	query6 = """
-		INSERT IGNORE INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy)
+		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType)
 		SELECT DISTINCT
 			voyagehumans.HumanId,
 			voyages.EndLocationId AS LocationId,
 			voyages.EndDate AS date_circa,
-			'D' AS date_accuracy
+			'D' AS date_accuracy,
+			'Voyage End'
 		FROM voyages
 		JOIN voyagehumans ON voyages.VoyageId = voyagehumans.VoyageId
 		WHERE voyagehumans.HumanId IS NOT NULL
 			AND voyages.EndLocationId IS NOT NULL
 			AND voyages.EndDate IS NOT NULL
 		ORDER BY voyagehumans.HumanId, voyages.EndLocationId, voyages.EndDate
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
 	"""
 	print(query6)
 	cursor.execute(query6)

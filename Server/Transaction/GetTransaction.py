@@ -53,11 +53,6 @@ def get_transaction(transaction_id):
 				), ''
 			) AS Sellers,
 
-			h3.HumanId AS NotaryHumanId,
-			h3.FirstName AS NotaryFirstName,
-			h3.MiddleName AS NotaryMiddleName,
-			h3.LastName AS NotaryLastName,
-
 			l.Address AS LocationAddress,
 			l.City AS LocationCity,
 			l.County AS LocationCounty,
@@ -71,7 +66,6 @@ def get_transaction(transaction_id):
 		LEFT JOIN transactionhumans th_seller ON t.TransactionId = th_seller.TransactionId AND th_seller.RoleId = 'Seller'
 		LEFT JOIN humans h2 ON th_seller.HumanId = h2.HumanId
 
-		LEFT JOIN humans h3 ON t.NotaryHumanId = h3.HumanId
 		LEFT JOIN locations l ON t.LocationId = l.LocationId
 
 		WHERE t.TransactionId = '{transaction_id}'

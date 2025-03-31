@@ -25,11 +25,6 @@
 	import { saveHuman } from './handleSaveHuman.js';
 	import { handleDelete } from './handleDelete.js';
 	import { handleGetHumanLocations } from './handleGetHumanLocations.js';
-	import { handleGetHumanFirstParty } from './handleGetHumanFirstParty.js';
-	import { handleGetHumanSecondParty } from './handleGetHumanSecondParty.js';
-	import { handleGetNotaryTransactions } from './handleGetNotaryTransactions.js';
-	import { handleGetEnslavedTransactions } from './handleGetEnslavedTransactions.js';
-	import { handleGetCaptains } from './handleGetCaptains.js';
 	import { handleMergeHumans } from '../Merge/Humans/handleMergeHumans.js';
 	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
 	import { handleGetFamilies } from './handleGetFamilies.js';
@@ -60,11 +55,6 @@
 	let HumanId = null;
 	let mergeHumanId = null;
 	let locations = [];
-	let firstPartyTransactions = [];
-	let secondPartyTransactions = [];
-	let notaryTransactions = [];
-	let enslavedTransactions = [];
-	let captainVoyages = [];
 	let voyages = [];
 	let families = [];
 	let returnPath;
@@ -132,11 +122,6 @@
 					Roles: data.Roles ? data.Roles.join(', ') : ''
 				};
 				locations = await handleGetHumanLocations(Session.SessionId, HumanId);
-				firstPartyTransactions = await handleGetHumanFirstParty(Session.SessionId, HumanId);
-				secondPartyTransactions = await handleGetHumanSecondParty(Session.SessionId, HumanId);
-				notaryTransactions = await handleGetNotaryTransactions(Session.SessionId, HumanId);
-				enslavedTransactions = await handleGetEnslavedTransactions(Session.SessionId, HumanId);
-				captainVoyages = await handleGetCaptains(Session.SessionId, HumanId);
 				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
 				timelines = await handleGetTimelines(Session.SessionId, HumanId);
 				if (timelines && timelines.data) {
@@ -253,18 +238,9 @@
 	}
 
 	function formatDate(date, accuracy) {
-		const options = { year: 'numeric', month: 'long', day: 'numeric' };
 		const dateObj = new Date(date);
-		switch (accuracy) {
-			case 'Y':
-				return dateObj.getFullYear();
-			case 'M':
-				return dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
-			case 'D':
-				return dateObj.toLocaleDateString(undefined, options);
-			default:
-				return date;
-		}
+		// Always return the ISO date string without localized adjustments
+		return dateObj.toISOString().split('T')[0];
 	}
 
 	function navigateToTransaction(TransactionId) {
@@ -295,7 +271,6 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/Humans">Back to List</a>
 		<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
 
 		{#if transactionSummary}
@@ -469,8 +444,8 @@
 			<table class="table is-fullwidth is-striped">
 				<thead>
 					<tr>
+						<th>Type</th>
 						<th>Address</th>
-						
 						<th>Latitude</th>
 						<th>Longitude</th>
 						<th>Date Circa</th>
@@ -479,139 +454,11 @@
 				<tbody>
 					{#each locations as location}
 						<tr>
+							<td>{location.LocationType}</td>
 							<td>{location.Address}</td>
-							
 							<td>{location.Latitude}</td>
 							<td>{location.Longitude}</td>
 							<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
-		{#if firstPartyTransactions.length > 0}
-			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a First Party</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Transaction Type</th>
-						<th>Date Circa</th>
-						<th>First Party</th>
-						<th>Second Party</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each firstPartyTransactions as transaction}
-						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
-							<td>{transaction.TransactionType}</td>
-							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
-							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
-							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
-		{#if secondPartyTransactions.length > 0}
-			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a Second Party</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Transaction Type</th>
-						<th>Date Circa</th>
-						<th>First Party</th>
-						<th>Second Party</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each secondPartyTransactions as transaction}
-						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
-							<td>{transaction.TransactionType}</td>
-							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
-							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
-							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
-		{#if notaryTransactions.length > 0}
-			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is a Notary</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Transaction Type</th>
-						<th>Date Circa</th>
-						<th>First Party</th>
-						<th>Second Party</th>
-						<th>Notary</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each notaryTransactions as transaction}
-						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
-							<td>{transaction.TransactionType}</td>
-							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
-							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
-							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
-							<td>{transaction.NotaryFirstName} {transaction.NotaryLastName}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
-		{#if enslavedTransactions.length > 0}
-			<h3 class="title is-3">Transactions where {Human.FirstName} {Human.LastName} is Enslaved</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Transaction Type</th>
-						<th>Date Circa</th>
-						<th>First Party</th>
-						<th>Second Party</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each enslavedTransactions as transaction}
-						<tr on:click={() => navigateToTransaction(transaction.TransactionId)} style="cursor: pointer;">
-							<td>{transaction.TransactionType}</td>
-							<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
-							<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
-							<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
-		{#if captainVoyages.length > 0}
-			<h3 class="title is-3">Voyages where {Human.FirstName} {Human.LastName} is a Captain</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Voyage ID</th>
-						<th>Ship ID</th>
-						<th>Start Location</th>
-						<th>End Location</th>
-						<th>Start Date</th>
-						<th>End Date</th>
-						<th>Notes</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each captainVoyages as voyage}
-						<tr on:click={() => navigateToTransaction(voyage.VoyageId)} style="cursor: pointer;">
-							<td>{voyage.VoyageId}</td>
-							<td>{voyage.ShipId}</td>
-							<td>{voyage.StartAddress}</td>
-							<td>{voyage.EndAddress}</td>
-							<td>{formatDate(voyage.StartDate, 'D')}</td>
-							<td>{formatDate(voyage.EndDate, 'D')}</td>
-							<td>{voyage.Notes}</td>
 						</tr>
 					{/each}
 				</tbody>

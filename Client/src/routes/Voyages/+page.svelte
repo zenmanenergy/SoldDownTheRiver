@@ -81,7 +81,13 @@
 				</thead>
 				<tbody>
 					{#each Voyages as Voyage}
-						<tr on:click={() => window.location.href = `/Voyage?VoyageId=${Voyage.VoyageId}`}>
+						<tr on:click={(event) => {
+							if (event.ctrlKey || event.metaKey) {
+								window.open(`/Voyage?VoyageId=${encodeURIComponent(Voyage.VoyageId)}`, '_blank');
+							} else {
+								location.href=`/Voyage?VoyageId=${encodeURIComponent(Voyage.VoyageId)}`;
+							}
+						}}>
 							<td>{Voyage.ShipName}</td>
 							<td>{Voyage.StartCity} {Voyage.StartState} {moment(Voyage.StartDate).format('MMMM D, YYYY')}</td>
 							<td>{Voyage.EndCity} {Voyage.EndState} {moment(Voyage.EndDate).format('MMMM D, YYYY')}</td>

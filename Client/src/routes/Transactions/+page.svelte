@@ -177,7 +177,14 @@
 				</thead>
 				<tbody>
 					{#each filteredTransactions as transaction}
-						<tr style="cursor: pointer;" on:click={() => location.href=`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`}>
+						<tr on:click={(event) => {
+							if (event.ctrlKey || event.metaKey) {
+								window.open(`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`, '_blank');
+							} else {
+								location.href=`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`;
+							}
+						}}>
+							
 							<td>{formatTransactionDate(transaction.date_circa, transaction.date_accuracy)}</td>
 							<td>{transaction.TransactionType || ''}</td>
 							<td title={`${transaction.NotaryFirstName || ''} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName || ''}`} >

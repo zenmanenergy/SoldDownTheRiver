@@ -19,6 +19,8 @@
 	let sortColumn = 'LastName';
 	let sortAscending = true;
 
+	let relationshipTree = [];
+
 	function getSearchQueryFromURL() {
 		const params = new URLSearchParams(window.location.search);
 		return params.get("search") || ''; // Default to empty string if missing
@@ -43,6 +45,19 @@
 			case 'm': return formattedDate.format('YYYY-MM');
 			case 'y': return formattedDate.format('YYYY');
 			default: return formattedDate.format('YYYY-MM-DD');
+		}
+	}
+
+	function isAlreadyInRelationship(humanId) {
+		return relationshipTree.includes(humanId);
+	}
+
+	function insertRelationship(humanId) {
+		if (!isAlreadyInRelationship(humanId)) {
+			relationshipTree.push(humanId);
+			// ...code to persist the new relationship...
+		} else {
+			alert('This human is already in the relationship tree.');
 		}
 	}
 
@@ -143,7 +158,13 @@
 				</thead>
 				<tbody>
 					{#each displayedHumans as human}
-						<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`}>
+						<tr on:click={(event) => {
+							if (event.ctrlKey || event.metaKey) {
+								window.open(`/Human?HumanId=${human.HumanId}`, '_blank');
+							} else {
+								window.location.href = `/Human?HumanId=${human.HumanId}`;
+							}
+						}}>
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>

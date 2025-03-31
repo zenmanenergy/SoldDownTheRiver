@@ -2,7 +2,8 @@ from _Lib import Database
 
 def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 	cursor, connection = Database.ConnectToDatabase()
-
+	if HumanId==RelatedHumanId:
+		return {"success": False, "message": "Cannot be the same Human"}
 	def insert_parent_child(parent_id, child_id):
 		# Insert direct relationship
 		sql_insert_relationship = f"""
@@ -59,7 +60,24 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 		insert_parent_child(HumanId, RelatedHumanId)
 
 	elif RelationshipType.lower() in ['father', 'mother']:
+		# Insert parent-child relationship for the selected human.
 		insert_parent_child(RelatedHumanId, HumanId)
+		# Now update siblings (if any) to also be linked to the same parent.
+		sql_get_siblings = f"""
+			SELECT DISTINCT ChildHumanId FROM humanrelationships
+			WHERE ChildHumanId <> '{HumanId}'
+			AND ParentHumanId IN (
+				SELECT ParentHumanId FROM humanrelationships
+				WHERE ChildHumanId = '{HumanId}'
+			)
+		"""
+		print("Executing SQL:", sql_get_siblings)
+		cursor.execute(sql_get_siblings)
+		siblings = cursor.fetchall()
+		for sibling in siblings:
+			sibling_id = sibling['ChildHumanId']
+			insert_parent_child(RelatedHumanId, sibling_id)
+		connection.commit()
 
 	elif RelationshipType.lower() in ['sister', 'brother']:
 		# Retrieve all parents of HumanId
@@ -70,20 +88,28 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 		print("Executing SQL:", sql_get_parents)
 		cursor.execute(sql_get_parents)
 		parents = cursor.fetchall()
-		for parent in parents:
-			parent_id = parent['ParentHumanId']  # Access dict by key
-			insert_parent_child(parent_id, RelatedHumanId)
+		if not parents:
+			# No parent found; generate a unique unknown parent per branch.
+			unknownParentId = f"unknown_parent_{HumanId}"
+			print("No parent found; using unique unknown parent:", unknownParentId)
+			# Link the existing human and the new sibling to the unique unknown parent.
+			insert_parent_child(unknownParentId, HumanId)
+			insert_parent_child(unknownParentId, RelatedHumanId)
+		else:
+			for parent in parents:
+				parent_id = parent['ParentHumanId']  # Access dict by key
+				insert_parent_child(parent_id, RelatedHumanId)
 
-		# Insert sibling relationship into humanrelationships
-		sql_insert_sibling_relationship = f"""
-			INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId)
-			SELECT ParentHumanId, '{RelatedHumanId}'
-			FROM humanrelationships
-			WHERE ChildHumanId = '{HumanId}'
-		"""
-		print("Executing SQL:", sql_insert_sibling_relationship)
-		cursor.execute(sql_insert_sibling_relationship)
-		connection.commit()
+			# Insert sibling relationship into humanrelationships
+			sql_insert_sibling_relationship = f"""
+				INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId)
+				SELECT ParentHumanId, '{RelatedHumanId}'
+				FROM humanrelationships
+				WHERE ChildHumanId = '{HumanId}'
+			"""
+			print("Executing SQL:", sql_insert_sibling_relationship)
+			cursor.execute(sql_insert_sibling_relationship)
+			connection.commit()
 
 	elif RelationshipType.lower() in ['husband', 'wife']:
 		# Spouse humanrelationships are not part of the humanclosure table

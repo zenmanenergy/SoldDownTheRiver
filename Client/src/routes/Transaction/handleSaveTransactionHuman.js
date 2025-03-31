@@ -1,25 +1,12 @@
 import { baseURL } from '../Settings';
 import { SuperFetch } from '../SuperFetch';
 
-export async function handleSaveTransactionHuman(SessionId, TransactionId, human) {
+export async function handleSaveTransactionHuman(SessionId, TransactionId, HumanId,RoleId) {
 	const Data = {
 		SessionId: SessionId,
 		TransactionId: TransactionId,
-		HumanId: human.HumanId || "", // Send empty string if no ID
-		FirstName: human.FirstName,
-		LastName: human.LastName,
-		RacialDescriptor: human.RacialDescriptor,
-		Sex: human.Sex,
-		Height_cm: human.Height_cm,
-		physical_features: human.physical_features,
-		profession: human.profession,
-		BirthPlace: human.BirthPlace,
-		AgeYears: human.AgeYears,
-		AgeMonths: human.AgeMonths,
-		BirthDate: human.BirthDate,
-		BirthDateAccuracy: human.BirthDateAccuracy,
-		Price: human.Price,
-		Notes: human.Notes || "",
+		HumanId: HumanId || "",
+		RoleId: RoleId || ""
 	};
 
 	const url = baseURL + '/Transaction/SaveTransactionHuman?';

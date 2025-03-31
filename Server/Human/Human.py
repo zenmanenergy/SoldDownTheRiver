@@ -18,11 +18,6 @@ from .GetHumanLocations import get_humanlocations
 from .GetHumanRoles import get_humanRoles
 from Role.SaveHumanRole import save_HumanRole
 from .GetHumanTransactions import get_human_transactions
-from .GetHumanFirstParty import get_human_first_party
-from .GetHumanSecondParty import get_human_second_party
-from .GetNotaryTransactions import get_notary_transactions
-from .GetEnslavedTransactions import get_enslaved_transactions
-from .GetCaptains import get_captains
 from .GetHumanVoyages import get_human_voyages
 from .GetTimelines import get_timelines
 
@@ -325,80 +320,6 @@ def GetHumanTransactions():
 	except Exception as e:
 		return Debugger(e)
 
-@blueprint.route("/Human/GetHumanFirstParty", methods=['GET'])
-@cross_origin()
-def GetHumanFirstParty():
-	try:
-		# Get the human data from the request
-		human_data = request.args.to_dict()
-
-		# Get the human ID from the request
-		HumanId = human_data.get('HumanId', None)
-		# Call the get_human_first_party function from GetHumanFirstParty.py
-		result = get_human_first_party(HumanId)
-		return result
-	except Exception as e:
-		return Debugger(e)
-
-@blueprint.route("/Human/GetHumanSecondParty", methods=['GET'])
-@cross_origin()
-def GetHumanSecondParty():
-	try:
-		# Get the human data from the request
-		human_data = request.args.to_dict()
-
-		# Get the human ID from the request
-		HumanId = human_data.get('HumanId', None)
-		# Call the get_human_second_party function from GetHumanSecondParty.py
-		result = get_human_second_party(HumanId)
-		return result
-	except Exception as e:
-		return Debugger(e)
-
-@blueprint.route("/Human/GetNotaryTransactions", methods=['GET'])
-@cross_origin()
-def GetNotaryTransactions():
-	try:
-		# Get the human data from the request
-		human_data = request.args.to_dict()
-
-		# Get the human ID from the request
-		HumanId = human_data.get('HumanId', None)
-		# Call the get_notary_transactions function from GetNotaryTransactions.py
-		result = get_notary_transactions(HumanId)
-		return result
-	except Exception as e:
-		return Debugger(e)
-
-@blueprint.route("/Human/GetEnslavedTransactions", methods=['GET'])
-@cross_origin()
-def GetEnslavedTransactions():
-	try:
-		# Get the human data from the request
-		human_data = request.args.to_dict()
-
-		# Get the human ID from the request
-		HumanId = human_data.get('HumanId', None)
-		# Call the get_enslaved_transactions function from GetEnslavedTransactions.py
-		result = get_enslaved_transactions(HumanId)
-		return result
-	except Exception as e:
-		return Debugger(e)
-
-@blueprint.route("/Human/GetCaptains", methods=['GET'])
-@cross_origin()
-def GetCaptains():
-	try:
-		# Get the human data from the request
-		human_data = request.args.to_dict()
-
-		# Get the human ID from the request
-		HumanId = human_data.get('HumanId', None)
-		# Call the get_captains function from GetCaptains.py
-		result = get_captains(HumanId)
-		return result
-	except Exception as e:
-		return Debugger(e)
 
 @blueprint.route("/Human/GetVoyages", methods=['GET'])
 @cross_origin()

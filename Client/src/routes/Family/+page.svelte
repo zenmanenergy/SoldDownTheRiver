@@ -352,7 +352,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredHumans as human}
+					{#each filteredHumans.slice(0, 10) as human}
 						<tr on:click={() => selectHuman(human)} style="cursor: pointer;">
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>

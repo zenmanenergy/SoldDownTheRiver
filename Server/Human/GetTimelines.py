@@ -5,7 +5,7 @@ def get_timelines(HumanId):
 	try:
 		# Query the database for timelines related to the given HumanId, including location details
 		query = """
-			SELECT ht.LocationId, ht.Date_Circa, ht.Date_Accuracy, 
+			SELECT ht.LocationId, ht.Date_Circa, ht.Date_Accuracy, ht.LocationType,
 				l.Address, l.City, l.County, l.State, l.State_abbr, 
 				l.Country, l.Latitude, l.Longitude, l.LocationType
 			FROM humantimeline ht

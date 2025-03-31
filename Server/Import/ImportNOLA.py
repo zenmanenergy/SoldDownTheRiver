@@ -727,6 +727,9 @@ def SaveNOLA(data):
 		raise "break?"
 
 
+# UPDATE solddowntheriver.raw_nola
+# JOIN locationaddresses ON locationaddresses.Address = REGEXP_REPLACE(raw_nola.LocationSecondParty, '[[:punct:][:space:]]+', '')
+# SET raw_nola.LocationIdSecond	Party = locationaddresses.locationId;UPDATE solddowntheriver.raw_nola JOIN locationaddresses ON locationaddresses.Address = REGEXP_REPLACE(raw_nola.LocationFirstParty, '[[:punct:][:space:]]+', '') SET raw_nola.LocationIdFirstParty = locationaddresses.locationId
 
 
 

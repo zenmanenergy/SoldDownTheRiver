@@ -284,13 +284,14 @@ input:required:invalid {
 						</div>
 					</div>
 					<!-- Conditionally render the Users menu -->
+					
+				</div>
+				<div class="navbar-end">
 					<script>
 						if (Cookies.get("UserType") === "Administrator") {
 							document.write('<a class="navbar-item" href="/Users">Users</a>');
 						}
 					</script>
-				</div>
-				<div class="navbar-end">
 					<a class="navbar-item" href="#" onclick="handleLogout()">Logout</a>
 				</div>
 			</div>

@@ -97,7 +97,15 @@ function go(LocationId) {
 					</thead>
 					<tbody>
 						{#each filteredLocations as location}
-							<tr on:click={() => go(location.LocationId)}>
+							<tr on:click={(event) => {
+								if (event.ctrlKey || event.metaKey) {
+									console.log("click1")
+									window.open(`/Location?LocationId=${encodeURIComponent(location.LocationId)}`, '_blank');
+								} else {
+									console.log("click2", "/Location?LocationId=${location.LocationId}")
+									window.location.href = `/Location?LocationId=${encodeURIComponent(location.LocationId)}`;
+								}
+							}}>
 								<td>{location.Address || ''}</td>
 								<td>
 									{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : (location.County || '')}

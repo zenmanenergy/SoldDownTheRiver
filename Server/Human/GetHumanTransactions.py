@@ -13,13 +13,10 @@ def get_human_transactions(HumanId):
 			transactions.TransactionId,
 			transactions.date_circa,
 			transactions.date_accuracy,
-			transactions.FirstPartyId,
-			transactions.SecondPartyId,
 			transactions.TransactionType,
 			transactions.Notes,
 			transactions.Act,
 			transactions.Page,
-			transactions.NotaryHumanId,
 			transactions.Volume,
 			transactions.URL,
 			transactions.NeedsReview,
@@ -40,10 +37,9 @@ def get_human_transactions(HumanId):
 			transactionhumans.originLocationId,
 			transactionhumans.destinationLocationId
 		FROM transactions
-		LEFT JOIN partyhumans AS fp ON transactions.FirstPartyId = fp.PartyId
-		LEFT JOIN partyhumans AS sp ON transactions.SecondPartyId = sp.PartyId
+		
 		LEFT JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
-		WHERE fp.HumanId = '{}' OR sp.HumanId = '{}' OR transactions.NotaryHumanId = '{}' OR transactionhumans.HumanId = '{}'
+		WHERE fp.HumanId = '{}' OR sp.HumanId = '{}' OR transactionhumans.HumanId = '{}'
 		order by date_circa asc
 	""".format(HumanId, HumanId, HumanId, HumanId)
 	
