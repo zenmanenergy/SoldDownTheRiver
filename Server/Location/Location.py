@@ -18,6 +18,7 @@ def SaveLocation():
 		# Extract the location information from the location_data
 		LocationId = location_data.get('LocationId', None)
 		Name = location_data.get('Name', None)
+		Address = location_data.get('Address', None)
 		City = location_data.get('City', None)
 		State = location_data.get('State', None)
 		County = location_data.get('County', None)
@@ -26,7 +27,7 @@ def SaveLocation():
 		Longitude = location_data.get('Longitude', None)
 
 		# Call the save_location function from SaveLocation.py with the extracted data
-		result = save_location(LocationId, Name,City, State, County, Country, Latitude, Longitude)
+		result = save_location(LocationId, Name,Address,City, State, County, Country, Latitude, Longitude)
 		
 
 		return result

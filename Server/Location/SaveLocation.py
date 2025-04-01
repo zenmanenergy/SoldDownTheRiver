@@ -5,15 +5,13 @@ import googlemaps
 # Initialize Google Maps client
 gmaps = googlemaps.Client(key='AIzaSyB_a1_JJZBF0g43m9KeKVrSlr7ik6_AN_Y')
 
-def save_location(LocationId, Name, City, State, County, Country, Latitude, Longitude):
+def save_location(LocationId, Name, Address, City, State, County, Country, Latitude, Longitude):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
 	sql = ""
 
-	# Initialize Address and County to avoid UnboundLocalError
-	Address = ""
-	County = ""
+	
 
 	# Perform geocode lookup if Latitude and Longitude are not provided
 	if not Latitude or not Longitude:

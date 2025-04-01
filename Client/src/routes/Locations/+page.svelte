@@ -28,12 +28,20 @@ onMount(async () => {
 	isLoading = false;
 });
 $: filteredLocations = Locations.filter(location => {
+	// Build the City/County string as before.
 	const cityCounty = location.City && location.County 
 		? `${location.City} ${location.County}` 
-		: location.City || location.County || ''; // Prefer City, fallback to County
-	
-	const fullLocation = `${cityCounty} ${location.State} ${location.Country}`.toLowerCase();
-	return fullLocation.includes(searchQuery.toLowerCase());
+		: location.City || location.County || '';
+	// Create a single searchable string including Name, Latitude and Longitude.
+	const searchableText = [
+		location.Name || '',
+		cityCounty,
+		location.State || '',
+		location.Country || '',
+		location.Latitude != null ? location.Latitude.toString() : '',
+		location.Longitude != null ? location.Longitude.toString() : ''
+	].join(' ').toLowerCase();
+	return searchableText.includes(searchQuery.toLowerCase());
 });
 
 $: filteredLocations = [...filteredLocations].sort((a, b) => {
