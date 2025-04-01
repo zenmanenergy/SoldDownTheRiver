@@ -79,9 +79,11 @@ def get_transaction(transaction_id):
 	if not result:
 		result = {}
 
-	# Convert Buyers and Sellers from string to JSON array
-	result["Buyers"] = json.loads(f"[{result['Buyers']}]" if result["Buyers"] else "[]")
-	result["Sellers"] = json.loads(f"[{result['Sellers']}]" if result["Sellers"] else "[]")
+	# Convert Buyers and Sellers from string to JSON array using default values
+	buyers_str = result.get("Buyers", "")
+	result["Buyers"] = json.loads(f"[{buyers_str}]" if buyers_str else "[]")
+	sellers_str = result.get("Sellers", "")
+	result["Sellers"] = json.loads(f"[{sellers_str}]" if sellers_str else "[]")
 
 	# Close the database connection
 	connection.close()

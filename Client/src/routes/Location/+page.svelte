@@ -37,6 +37,7 @@
 
 	async function setLocation(data) {
 		Location.LocationId = data.LocationId || "";
+		Location.Name = data.Name || "";
 		Location.Address = data.Address || "";
 		Location.City = data.City || "";
 		Location.County = data.County || "";
@@ -80,6 +81,13 @@
 				<input type="hidden" bind:value={Location.LocationId} />
 
 				<div class="field">
+					<label class="label" for="Name">Name</label>
+					<div class="control">
+						<input class="input" type="text" id="Name" placeholder="Enter Name" bind:value={Location.Name}  />
+					</div>
+				</div>
+
+				<div class="field">
 					<label class="label" for="Address">Address</label>
 					<div class="control">
 						<input class="input" type="text" id="Address" placeholder="Enter Address" bind:value={Location.Address}  />
@@ -117,14 +125,14 @@
 				<div class="field">
 					<label class="label" for="Latitude">Latitude</label>
 					<div class="control">
-						<input class="input" type="number" id="Latitude" placeholder="Enter Latitude" step="0.0001" bind:value={Location.Latitude} />
+						<input class="input" type="number" id="Latitude" placeholder="Enter Latitude" bind:value={Location.Latitude} step="any" />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="Longitude">Longitude</label>
 					<div class="control">
-						<input class="input" type="number" id="Longitude" placeholder="Enter Longitude" step="0.0001" bind:value={Location.Longitude} />
+						<input class="input" type="number" id="Longitude" placeholder="Enter Longitude" bind:value={Location.Longitude}  step="any" />
 					</div>
 				</div>
 

@@ -89,6 +89,7 @@ function go(LocationId) {
 				<table class="table is-striped is-hoverable is-fullwidth">
 					<thead>
 						<tr>
+							<th on:click={() => toggleSort('Name')}>Name</th>
 							<th on:click={() => toggleSort('Address')}>Address</th>
 							<th on:click={() => toggleSort('City')}>City/County</th>
 							<th on:click={() => toggleSort('State')}>State</th>
@@ -106,6 +107,7 @@ function go(LocationId) {
 									window.location.href = `/Location?LocationId=${encodeURIComponent(location.LocationId)}`;
 								}
 							}}>
+								<td>{location.Name || ''}</td>
 								<td>{location.Address || ''}</td>
 								<td>
 									{location.City ? `${location.City}${location.County ? `/${location.County}` : ''}` : (location.County || '')}

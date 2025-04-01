@@ -197,11 +197,11 @@
 		const result = await saveHuman(Session.SessionId, HumanId, Human);
 		if (result) {
 			const TransactionId = getURLVariable('TransactionId');
-			// if (TransactionId) {
-			// 	window.location.href = `/Transaction?TransactionId=${TransactionId}`;
-			// } else {
-			// 	window.location.href = returnPath || '/Humans';
-			// }
+			if (TransactionId) {
+				window.location.href = `/Transaction?TransactionId=${TransactionId}`;
+			} else {
+				window.location.href = returnPath || '/Humans';
+			}
 		} else {
 			alert("Failed to save human.");
 		}

@@ -5,7 +5,7 @@ import googlemaps
 # Initialize Google Maps client
 gmaps = googlemaps.Client(key='AIzaSyB_a1_JJZBF0g43m9KeKVrSlr7ik6_AN_Y')
 
-def save_location(LocationId, City, State, Country, Latitude, Longitude):
+def save_location(LocationId, Name, City, State, County, Country, Latitude, Longitude):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
@@ -45,13 +45,14 @@ def save_location(LocationId, City, State, Country, Latitude, Longitude):
 		# Update existing location
 		sql = f"""
 		UPDATE locations 
-		SET Address = '{Address}',
+		SET Name='{Name}',
+			Address = '{Address}',
 			City = '{City}', 
 			County = '{County}',
 			State = '{State}', 
 			Country = '{Country}', 
-			Latitude = {Latitude}, 
-			Longitude = {Longitude}, 
+			Latitude = {Latitude:.6f}, 
+			Longitude = {Longitude:.6f}, 
 			DateUpdated = NOW() 
 		WHERE LocationId = '{LocationId}'
 		"""
@@ -61,9 +62,10 @@ def save_location(LocationId, City, State, Country, Latitude, Longitude):
 
 		# Insert new location
 		sql = f"""
-		INSERT INTO locations (LocationId, Address, City, County, State, Country, Latitude, Longitude, DateUpdated)
-		VALUES ('{LocationId}', '{Address}', '{City}', '{County}', '{State}', '{Country}', {Latitude}, {Longitude}, NOW())
+		INSERT INTO locations (LocationId, Name,Address, City, County, State, Country, Latitude, Longitude, DateUpdated)
+		VALUES ('{LocationId}', '{Name}','{Address}', '{City}', '{County}', '{State}', '{Country}', {Latitude:.6f}, {Longitude:.6f}, NOW())
 		ON DUPLICATE KEY UPDATE 
+			Name = VALUES(Name),
 			Address = VALUES(Address),
 			City = VALUES(City), 
 			County = VALUES(County),

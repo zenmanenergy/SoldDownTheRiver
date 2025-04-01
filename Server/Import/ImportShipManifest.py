@@ -27,7 +27,7 @@ def import_Manifest(data,SessionId):
 			
 
 			rowData['Manifest_Id'] = row[0]
-			print(rowData['Manifest_Id'])
+			# print(rowData['Manifest_Id'])
 			Timestamp_str = row[1]
 			try:
 				rowData['Timestamp'] = datetime.strptime(Timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -59,7 +59,7 @@ def import_Manifest(data,SessionId):
 			rowData['Owner2'] = row[13].replace("'", "`")
 			rowData['Owner2Location'] = row[14].replace("'", "`")
 			rowData['ShipName'] = row[15].replace("'", "`")
-			rowData['ShipSize'] = row[16].replace("'", "`")
+			rowData['ShipSize'] = str(row[16]).replace("'", "`")
 			rowData['ShipType'] = row[17].replace("'", "`")
 			rowData['ShipCaptain'] = row[18].replace("'", "`")
 			rowData['ShipHomePort'] = row[19].replace("'", "`")
@@ -91,12 +91,50 @@ def import_Manifest(data,SessionId):
 			rowData['referencefilename'] = str(row[30]).replace("'", "`")
 			rowData['secondaryreferenceFilename'] = str(row[31]).replace("'", "`")
 
+			rowData['valuation'] = str(row[32]).replace("'", "`")
+			rowData['YearBalize'] = row[33]
+			rowData['MonthDayBalize'] = row[34].replace("'", "`")
+			rowData['NolasaleURL1'] = row[35].replace("'", "`")
+			rowData['FamilySearchURL1'] = row[36].replace("'", "`")
+
 			# print(rowData)
 			SaveManifest(rowData)
 
 
 	return "done"
 			
+
+def SaveManifest( data):
+	cursor, connection = Database.ConnectToDatabase()
+	# SQL query to insert data into the raw_manifest table using an f-string
+	sql = f"""
+		INSERT INTO raw_manifest ( Manifest_ID,  Timestamp,  LastName,  FirstNameMiddleName,  Sex,  Age,  Height_feet,  Height_inches,  Color,  OwnersName,  OwnersLocation,  ShippingAgent,  ShippingAgentLocation,  Owner2, Owner2Location, ShipName,  ShipSize,  ShipType,  ShipCaptain,  ShipHomePort, CollectorAgent,  YearNorfolk,  MonthDayNorfolk,   YearNOLA,  MonthDayNOLA,   Notes,  Transcribers,  shipVoyageId,  teamNumber,  ReferenceScan,  SecondReference,valuation,YearBalize,MonthDayBalize,NolasaleURL1,FamilySearchURL1
+		) VALUES ( '{data['Manifest_Id']}',  '{data['Timestamp'].strftime('%Y-%m-%d %H:%M:%S.%f')}',  '{data['LastName']}',  '{data['FirstMiddleName']}',  '{data['Sex']}',  '{data['Age']}',  '{data['Height_feet']}',  '{data['Height_inches']}',  '{data['Color']}',  '{data['OwnerName']}',  '{data['OwnerLocation']}',  '{data['AgentName']}',  '{data['ShippingAgentLocation']}',  '{data['Owner2']}', '{data['Owner2Location']}', '{data['ShipName']}',  '{data['ShipSize']}',  '{data['ShipType']}',  '{data['ShipCaptain']}',  '{data['ShipHomePort']}', 
+		
+		'{data['NorfolkCollectorName']}',
+		'{str(data['YearManifestNorfolk'])}', 
+		'{str(data['MonthDayManifestNorfolk'])}', 
+		'{str(data['YearNOLA'])}', 
+		'{str(data['MonthDayNOLA'])}', 
+		'{data['Notes']}',  '{data['Transcribers']}',  '{data['VoyageId']}',  '{data['TeamNumber']}',  '{data['referencefilename']}',  '{data['secondaryreferenceFilename']}',
+		'{data['valuation']}','{data['YearBalize']}','{data['MonthDayBalize']}','{data['NolasaleURL1']}','{data['FamilySearchURL1']}'
+		
+		) 
+		ON DUPLICATE KEY UPDATE  Timestamp = VALUES(Timestamp), LastName = VALUES(LastName), FirstNameMiddleName = VALUES(FirstNameMiddleName), Sex = VALUES(Sex), Age = VALUES(Age), Height_feet = VALUES(Height_feet), Height_inches = VALUES(Height_inches), Color = VALUES(Color), OwnersName = VALUES(OwnersName), OwnersLocation = VALUES(OwnersLocation), ShippingAgent = VALUES(ShippingAgent), ShippingAgentLocation = VALUES(ShippingAgentLocation),Owner2 = VALUES(Owner2), Owner2Location = VALUES(Owner2Location),ShipName = VALUES(ShipName), ShipSize = VALUES(ShipSize), ShipType = VALUES(ShipType), ShipCaptain = VALUES(ShipCaptain), ShipHomePort = VALUES(ShipHomePort), YearNorfolk = VALUES(YearNorfolk), MonthDayNorfolk = VALUES(MonthDayNorfolk), CollectorAgent = VALUES(CollectorAgent), YearNOLA = VALUES(YearNOLA), MonthDayNOLA = VALUES(MonthDayNOLA),Notes = VALUES(Notes), Transcribers = VALUES(Transcribers), shipVoyageId = VALUES(shipVoyageId), teamNumber = VALUES(teamNumber), ReferenceScan = VALUES(ReferenceScan), SecondReference = VALUES(SecondReference)
+	"""
+
+	# print(sql)
+	# Execute the SQL query
+	cursor.execute(sql)
+	
+	# Commit the transaction
+	connection.commit()
+
+	cursor.execute(sql)
+	connection.commit()
+	cursor.close()
+	connection.close()
+
 def ProcessManifest():
 	cursor, connection = Database.ConnectToDatabase()
 	Manifests=getManifests(cursor)
@@ -741,34 +779,7 @@ def getManifests(cursor):
 	return results
 
 
-def SaveManifest( data):
-	cursor, connection = Database.ConnectToDatabase()
-	# SQL query to insert data into the raw_manifest table using an f-string
-	sql = f"""
-		INSERT INTO raw_manifest ( Manifest_ID,  Timestamp,  LastName,  FirstNameMiddleName,  Sex,  Age,  Height_feet,  Height_inches,  Color,  OwnersName,  OwnersLocation,  ShippingAgent,  ShippingAgentLocation,  Owner2, Owner2Location, ShipName,  ShipSize,  ShipType,  ShipCaptain,  ShipHomePort, CollectorAgent,  YearNorfolk,  MonthDayNorfolk,   YearNOLA,  MonthDayNOLA,   Notes,  Transcribers,  shipVoyageId,  teamNumber,  ReferenceScan,  SecondReference
-		) VALUES ( '{data['Manifest_Id']}',  '{data['Timestamp'].strftime('%Y-%m-%d %H:%M:%S.%f')}',  '{data['LastName']}',  '{data['FirstMiddleName']}',  '{data['Sex']}',  '{data['Age']}',  '{data['Height_feet']}',  '{data['Height_inches']}',  '{data['Color']}',  '{data['OwnerName']}',  '{data['OwnerLocation']}',  '{data['AgentName']}',  '{data['ShippingAgentLocation']}',  '{data['Owner2']}', '{data['Owner2Location']}', '{data['ShipName']}',  '{data['ShipSize']}',  '{data['ShipType']}',  '{data['ShipCaptain']}',  '{data['ShipHomePort']}', 
-		
-		'{data['NorfolkCollectorName']}',
-		'{str(data['YearManifestNorfolk'])}', 
-		'{str(data['MonthDayManifestNorfolk'])}', 
-		'{str(data['YearNOLA'])}', 
-		'{str(data['MonthDayNOLA'])}', 
-		'{data['Notes']}',  '{data['Transcribers']}',  '{data['VoyageId']}',  '{data['TeamNumber']}',  '{data['referencefilename']}',  '{data['secondaryreferenceFilename']}'
-		) 
-		ON DUPLICATE KEY UPDATE  Timestamp = VALUES(Timestamp), LastName = VALUES(LastName), FirstNameMiddleName = VALUES(FirstNameMiddleName), Sex = VALUES(Sex), Age = VALUES(Age), Height_feet = VALUES(Height_feet), Height_inches = VALUES(Height_inches), Color = VALUES(Color), OwnersName = VALUES(OwnersName), OwnersLocation = VALUES(OwnersLocation), ShippingAgent = VALUES(ShippingAgent), ShippingAgentLocation = VALUES(ShippingAgentLocation),Owner2 = VALUES(Owner2), Owner2Location = VALUES(Owner2Location),ShipName = VALUES(ShipName), ShipSize = VALUES(ShipSize), ShipType = VALUES(ShipType), ShipCaptain = VALUES(ShipCaptain), ShipHomePort = VALUES(ShipHomePort), YearNorfolk = VALUES(YearNorfolk), MonthDayNorfolk = VALUES(MonthDayNorfolk), CollectorAgent = VALUES(CollectorAgent), YearNOLA = VALUES(YearNOLA), MonthDayNOLA = VALUES(MonthDayNOLA),Notes = VALUES(Notes), Transcribers = VALUES(Transcribers), shipVoyageId = VALUES(shipVoyageId), teamNumber = VALUES(teamNumber), ReferenceScan = VALUES(ReferenceScan), SecondReference = VALUES(SecondReference)
-	"""
 
-	# print(sql)
-	# Execute the SQL query
-	cursor.execute(sql)
-	
-	# Commit the transaction
-	connection.commit()
-
-	cursor.execute(sql)
-	connection.commit()
-	cursor.close()
-	connection.close()
 
 def DeleteManifests(Manifest_Ids):
 	cursor, connection = Database.ConnectToDatabase()
