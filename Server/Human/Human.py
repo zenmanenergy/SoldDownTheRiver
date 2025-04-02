@@ -20,6 +20,8 @@ from Role.SaveHumanRole import save_HumanRole
 from .GetHumanTransactions import get_human_transactions
 from .GetHumanVoyages import get_human_voyages
 from .GetTimelines import get_timelines
+from .SaveTimeline import save_timeline  # new import for saving timeline
+from .DeleteTimeline import delete_timeline  # new import for deleting timeline
 
 blueprint = Blueprint('Human', __name__)
 
@@ -347,6 +349,30 @@ def GetTimelines():
 		HumanId = human_data.get('HumanId', None)
 		# Call the get_timelines function from GetTimelines.py
 		result = get_timelines(HumanId)
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Human/SaveTimeline", methods=['GET'])
+@cross_origin()
+def SaveTimeline():
+	try:
+		# Get timeline data from the request
+		timeline_data = request.args.to_dict()
+		# Call the save_timeline function with the timeline data (adjust parameters as needed)
+		result = save_timeline(timeline_data)
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Human/DeleteTimeline", methods=['GET'])
+@cross_origin()
+def DeleteTimeline():
+	try:
+		# Get timeline data from the request
+		timeline_data = request.args.to_dict()
+		# Call the delete_timeline function with the timeline data
+		result = delete_timeline(timeline_data)
 		return result
 	except Exception as e:
 		return Debugger(e)

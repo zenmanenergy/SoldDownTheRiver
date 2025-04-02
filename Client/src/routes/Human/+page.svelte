@@ -36,6 +36,8 @@
 	import { handleDeleteAkaName } from './handleDeleteAkaName.js';
 	import { handleGetTransaction } from '../Transaction/handleGetTransaction.js';
 	import { handleGetRoles } from './handleGetRoles.js';
+	import { handleSaveTimeline } from './handleSaveTimeline.js';
+	import { handleDeleteTimeline } from './handleDeleteTimeline.js';
 
 	let Human = {
 		FirstName: '',
@@ -73,6 +75,49 @@
 	let transactionDate = null;
 	let ageYears = '';
 	let ageMonths = '';
+
+	// New variable for the new location/timeline form
+	let newLocation = {
+		LocationType: '',
+		Address: '',
+		Latitude: '',
+		Longitude: '',
+		Date_Circa: '',
+		Date_Accuracy: 'D',
+		Name: '',
+		City: '',
+		County: '',
+		State: '',
+		State_abbr: '',
+		Country: ''
+	};
+
+	// Updated function to handle saving a timeline using SuperFetch backend
+	async function addNewLocation() {
+		 // Validate required fields
+		if (!newLocation.Latitude || !newLocation.Longitude || !newLocation.Date_Circa) {
+			alert("Please enter Latitude, Longitude, and Date Circa.");
+			return;
+		}
+		newLocation.HumanId = HumanId;
+		const result = await handleSaveTimeline(Session.SessionId, HumanId, newLocation);
+		if(result) {
+			locations = [...locations, { ...newLocation, LocationId: result.TimelineId }];
+			newLocation = { LocationType: '', Address: '', Latitude: '', Longitude: '', Date_Circa: '', Date_Accuracy: 'D', Name: '', City: '', County: '', State: '', State_abbr: '', Country: '' };
+		} else {
+			alert("Failed to save timeline.");
+		}
+	}
+
+	// New function to delete a timeline entry using LocationId
+	async function deleteTimeline(locationId) {
+		const result = await handleDeleteTimeline(Session.SessionId, HumanId, locationId);
+		if(result && result.success) {
+			locations = locations.filter(t => t.LocationId !== locationId);
+		} else {
+			alert("Failed to delete timeline.");
+		}
+	}
 
 	function getURLVariable(name) {
 		return new URLSearchParams(window.location.search).get(name);
@@ -238,9 +283,15 @@
 	}
 
 	function formatDate(date, accuracy) {
-		const dateObj = new Date(date);
-		// Always return the ISO date string without localized adjustments
-		return dateObj.toISOString().split('T')[0];
+		const d = new Date(date);
+		if (isNaN(d)) return "";
+		if (accuracy === "M") {
+			return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+		} else if (accuracy === "Y") {
+			return d.getFullYear().toString();
+		} else { // Default "D"
+			return d.toISOString().split('T')[0];
+		}
 	}
 
 	function navigateToTransaction(TransactionId) {
@@ -439,31 +490,65 @@
 			No family relationships defined
 		{/if}
 
-		{#if locations.length > 0}
-			<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Type</th>
-						<th>Address</th>
-						<th>Latitude</th>
-						<th>Longitude</th>
-						<th>Date Circa</th>
-					</tr>
-				</thead>
-				<tbody>
+		
+		<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
+		<table class="table is-fullwidth is-striped">
+			<thead>
+				<tr>
+					<th>Type</th>
+					<th>Address</th>
+					<th>Latitude</th>
+					<th>Longitude</th>
+					<th>Date Circa</th>
+					<th>Date Accuracy</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#if locations.length > 0}
 					{#each locations as location}
 						<tr>
-							<td>{location.LocationType}</td>
-							<td>{location.Address}</td>
-							<td>{location.Latitude}</td>
-							<td>{location.Longitude}</td>
+							<td>{location.LocationType || ''}</td>
+							<td>{location.Address || ''}</td>
+							<td>{location.Latitude || ''}</td>
+							<td>{location.Longitude || ''}</td>
 							<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
+							<td>{location.Date_Accuracy || 'D'}</td>
+							<td>
+								<button class="button is-danger" on:click={() => deleteTimeline(location.LocationId)}>Delete</button>
+							</td>
 						</tr>
 					{/each}
-				</tbody>
-			</table>
-		{/if}
+				{/if}
+				<tr>
+					<td>
+						<input class="input" type="text" bind:value={newLocation.LocationType} placeholder="Type..." />
+					</td>
+					<td>
+						<input class="input" type="text" bind:value={newLocation.Address} placeholder="Address..." />
+					</td>
+					<td>
+						<input class="input" type="number" bind:value={newLocation.Latitude} placeholder="Latitude..." />
+					</td>
+					<td>
+						<input class="input" type="number" bind:value={newLocation.Longitude} placeholder="Longitude..." />
+					</td>
+					<td>
+						<input class="input" type="date" bind:value={newLocation.Date_Circa} placeholder="Date Circa..." />
+					</td>
+					<td>
+						<select class="input" bind:value={newLocation.Date_Accuracy}>
+							<option value="D">D</option>
+							<option value="M">M</option>
+							<option value="Y">Y</option>
+						</select>
+					</td>
+					<td>
+						<button class="button is-primary" type="button" on:click={addNewLocation}>Save</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
 		{#if voyages.length > 0}
 			<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>

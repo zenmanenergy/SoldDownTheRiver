@@ -7,9 +7,30 @@ import traceback
 from dateutil import parser
 import googlemaps
 from collections import Counter
+import re  # NEW: import re for regex matching
 
 gmaps = googlemaps.Client(key='AIzaSyB_a1_JJZBF0g43m9KeKVrSlr7ik6_AN_Y')
 
+def convert_age(age_str):
+	"""
+	Convert an age string to a number.
+	If the string contains 'mos' (months), extract the number and return months/12.
+	Otherwise, try converting to float.
+	"""
+	if isinstance(age_str, str):
+		lower_age = age_str.lower()
+		if "mos." in lower_age:
+			m = re.search(r'(\d+)', lower_age)
+			if m:
+				months = int(m.group(1))
+				return months / 12.0
+			else:
+				return 0		# NEW: if no digits found, return 0
+		try:
+			return float(age_str)
+		except ValueError:
+			return age_str
+	return age_str
 
 def import_Manifest(data,SessionId):
 	
@@ -48,7 +69,7 @@ def import_Manifest(data,SessionId):
 			rowData['LastName'] = row[2].replace("'", "`")
 			rowData['FirstMiddleName'] = row[3].replace("'", "`")
 			rowData['Sex'] = row[4].replace("'", "`")
-			rowData['Age'] = row[5]
+			rowData['Age'] = convert_age(row[5])  # UPDATED: convert age string to a number
 			rowData['Height_feet'] = row[6]
 			rowData['Height_inches'] = row[7]
 			rowData['Color'] = row[8].replace("'", "`")
@@ -155,12 +176,15 @@ def ProcessManifest():
 		newRow['Humans']['Enslaved']=ParseHumanNames(f"{row['LastName']} {row['FirstNameMiddleName']}", 'Enslaved')
 		
 		newRow['Humans']['Enslaved'][0]['Age']=row['Age']
-		newRow['Humans']['Enslaved'][0]['Color']=row['Color']
+		newRow['Humans']['Enslaved'][0]['RacialDescriptor']=row['Color']
 		newRow['Humans']['Enslaved'][0]['Height_feet']=row['Height_feet']
 		newRow['Humans']['Enslaved'][0]['Height_inches']=row['Height_inches']
 		newRow['Humans']['Enslaved'][0]['Height_cm']=height_to_cm(row['Height_feet'], row['Height_inches'])
 		newRow['Humans']['Enslaved'][0]['Sex']=row['Sex']
 		newRow['Humans']['Enslaved'][0]['Notes']=row['Notes']
+		newRow['Norfolk_date'] = row.get('Norfolk_date')  # Capture Norfolk_date
+		# NEW: Capture the norfolk_date_accuracy from the raw data
+		newRow['Norfolk_date_accuracy'] = row.get('Norfolk_date_accuracy')
 		# print(newRow['Humans']['Enslaved'][0])
 		# print(newRow['VoyageId'])
 		newRow['Humans']['Enslaved'][0]['HumanId']=GetVoyageHuman(connection, cursor, newRow['Humans']['Enslaved'][0],newRow['VoyageId'])
@@ -251,88 +275,95 @@ def ProcessManifest():
 	return Processed
 
 def GetVoyageHuman(connection, cursor, data, VoyageId):
-	# print(data)
-
-	# Base SQL query
+	# Clean FirstName and LastName. If error text is present, return None.
+	first_name = data.get('FirstName', '').strip()
+	last_name = data.get('LastName', '').strip()
+	if "could not convert string to float" in first_name or "could not convert string to float" in last_name:
+		return None
+	# Build the SQL filtering as per your original logic.
 	sql = f"""
 	SELECT h.HumanId
 	from humans h
 	INNER JOIN voyagehumans vh ON h.HumanId = vh.HumanId
-	WHERE h.FirstName = '{data['FirstName']}' 
-	  AND h.LastName = '{data['LastName']}'
-	  AND vh.VoyageId = '{VoyageId}'
+	WHERE h.FirstName = '{data['FirstName']}'
+	AND h.LastName = '{data['LastName']}'
+	AND vh.VoyageId = '{VoyageId}'
 	"""
-
-	# Adding optional filters based on provided values
 	if 'BirthDateAccuracy' in data and data['BirthDateAccuracy']:
 		sql += f" AND h.BirthDateAccuracy = '{data['BirthDateAccuracy']}'"
-
 	if 'Notes' in data and data['Notes']:
 		sql += f" AND h.Notes = '{data['Notes']}'"
-
 	if 'Color' in data and data['Color']:
-		sql += f" AND h.Color = '{data['Color']}'"
-
+		sql += f" AND h.RacialDescriptor = '{data['Color']}'"
 	if 'Sex' in data and data['Sex']:
 		sql += f" AND h.Sex = '{data['Sex']}'"
-
 	if 'Height_cm' in data and data['Height_cm'] is not None:
 		sql += f" AND h.Height_cm = {data['Height_cm']}"
-
-	# Print the final SQL query for debugging purposes
-
-	# Execute the query
-	cursor.execute(sql)
+	try:
+		cursor.execute(sql)
+	except Exception as e:
+		print("Error executing SQL:", e)
+		print("Data packet:", data)
+		raise
 	result = cursor.fetchone()
-
-	# Return the HumanId if found
 	if result:
-		return result['HumanId']  # HumanId is in the first column
+		return result['HumanId']
 	else:
-		return None  # No matching human found
+		return None
 
 def convert_mixed_number_to_float(mixed_str):
-	# Split the string by space
+	# NEW: If input is already a number, return its float value.
+	if isinstance(mixed_str, (int, float)):
+		return float(mixed_str)
 	parts = mixed_str.split()
-
-	# Initialize the result
 	result = 0.0
-
-	# Handle different cases
 	if len(parts) == 1:
-		# Case 1: Only a whole number or a fraction
 		if "/" in parts[0]:
-			# It's a fraction (e.g., "7/8")
 			numerator, denominator = parts[0].split("/")
 			result = float(numerator) / float(denominator)
 		else:
-			# It's a whole number (e.g., "6")
 			result = float(parts[0])
-
 	elif len(parts) == 2:
-		# Case 2: Mixed number (e.g., "3 1/4")
-		# Convert the whole number part
 		result = float(parts[0])
-		# Convert the fraction part
-		numerator, denominator = parts[1].split("/")
-		fraction = float(numerator) / float(denominator)
+		# Check if fraction part contains a "/"
+		if "/" in parts[1]:
+			numerator, denominator = parts[1].split("/")
+			fraction = float(numerator) / float(denominator)
+		else:
+			fraction = float(parts[1])
 		result += fraction
-
 	return result
 
-
 def calculate_birthdate(age, reference_date):
-	# Subtract age from the reference date to get an approximate birthdate
-	age=convert_mixed_number_to_float(age)
+	if reference_date is None:
+		return None  # Return None if no valid reference date is provided
+	age = convert_mixed_number_to_float(age)
 	birth_year = reference_date.year - int(age)
 	return reference_date.replace(year=birth_year)
+
+# NEW FUNCTION: calculate_birthdate_from_norfolk uses the Norfolk_date field instead
+def calculate_birthdate_from_norfolk(age, norfolk_date):
+	if norfolk_date is None:
+		return None
+	age_val = convert_mixed_number_to_float(age)
+	try:
+		return norfolk_date.replace(year=norfolk_date.year - int(age_val))
+	except ValueError:
+		# Handle potential date errors (e.g., Feb 29)
+		return norfolk_date.replace(year=norfolk_date.year - int(age_val), day=norfolk_date.day-1)
+
 def SaveHumans(connection, cursor, data):
 	for role in data['Humans']:
 		for human in data['Humans'][role]:
 			if len(human['FirstName'])==0 and len(human['LastName'])==0:
 				continue
+			# Use Norfolk_date from data instead of Voyage Start date
 			if human.get('Age'):
-				human['birth_date'] = calculate_birthdate(human['Age'], data['Voyage']['Start']['Date']['parsed_date'])
+				# Normalize Age using convert_age to avoid strings like "mos."
+				norm_age = convert_age(human['Age'])
+				human['birth_date'] = calculate_birthdate_from_norfolk(norm_age, data.get('Norfolk_date'))
+				# NEW: Set BirthDateAccuracy based on the Norfolk_date_accuracy column
+				human['BirthDateAccuracy'] = data.get('Norfolk_date_accuracy')
 			else:
 				human['birth_date'] = None
 			# print(human)
@@ -347,9 +378,9 @@ def SaveHumans(connection, cursor, data):
 						LastName = '{human['LastName']}',
 						Notes = {f"'{human.get('Notes')}'" if human.get('Notes') else 'NULL'},
 						BirthDate = {f"'{human['birth_date']}'" if human['birth_date'] else 'NULL'},
-						BirthDateAccuracy = {f"'{human.get('BirthDateAccuracy')}'" if human.get('BirthDateAccuracy') else 'NULL'},
+						BirthDateAccuracy = {f"'{human.get('BirthDateAccuracy')[:45]}'" if human.get('BirthDateAccuracy') else 'NULL'},
 						BirthPlace = {f"'{human.get('BirthPlace')}'" if human.get('BirthPlace') else 'NULL'},
-						Color = {f"'{human.get('Color')}'" if human.get('Color') else 'NULL'},
+						RacialDescriptor = {f"'{human.get('Color')}'" if human.get('Color') else 'NULL'},
 						Sex = {f"'{human.get('Sex')}'" if human.get('Sex') else 'NULL'},
 						Height_cm = {f"'{human.get('Height_cm')}'" if human.get('Height_cm') else 'NULL'},
 						DateUpdated = NOW()
@@ -362,7 +393,7 @@ def SaveHumans(connection, cursor, data):
 				# If no row exists, insert a new row with a unique HumanId
 				HumanId = "HUM"+str(uuid.uuid4()).replace("-", "")
 				insert_query = f"""
-					INSERT into humans (HumanId, FirstName, MiddleName, LastName, Notes, BirthDate, BirthDateAccuracy, BirthPlace, Color, Sex, Height_cm, DateUpdated)
+					INSERT into humans (HumanId, FirstName, MiddleName, LastName, Notes, BirthDate, BirthDateAccuracy, BirthPlace, RacialDescriptor, Sex, Height_cm, DateUpdated)
 					VALUES (
 						'{HumanId}', 
 						'{human.get('FirstName')}', 
@@ -370,7 +401,7 @@ def SaveHumans(connection, cursor, data):
 						'{human.get('LastName')}', 
 						{f"'{human.get('Notes')}'" if human.get('Notes') else 'NULL'},
 						{f"'{human['birth_date']}'" if human['birth_date'] else 'NULL'},
-						{f"'{human.get('BirthDateAccuracy')}'" if human.get('BirthDateAccuracy') else 'NULL'},
+						{f"'{human.get('BirthDateAccuracy')[:45]}'" if human.get('BirthDateAccuracy') else 'NULL'},
 						{f"'{human.get('BirthPlace')}'" if human.get('BirthPlace') else 'NULL'},
 						{f"'{human.get('Color')}'" if human.get('Color') else 'NULL'},
 						{f"'{human.get('Sex')}'" if human.get('Sex') else 'NULL'},
@@ -408,7 +439,9 @@ def SaveHumans(connection, cursor, data):
 def SaveVoyage(connection, cursor, data):
 	# Extracting relevant information from the data
 	ship_id = data['Ship']['ShipId']
-	captain_human_id = data['Humans']['Captain'][0]['HumanId']
+	# NEW: Check if 'Captain' list exists and is non-empty; if not, set captain_human_id to an empty string.
+	captain_list = data['Humans'].get('Captain', [])
+	captain_human_id = captain_list[0]['HumanId'] if captain_list and len(captain_list) > 0 else ""
 	start_location_id = data['Voyage']['Start']['LocationId']
 	end_location_id = data['Voyage']['End']['LocationId']
 	start_date = data['Voyage']['Start']['Date']['parsed_date']
@@ -498,24 +531,16 @@ def parse_inches(inches_str):
 
 def height_to_cm(height_feet, height_inches):
 	try:
-		# Convert feet to float
+		if height_feet is None or height_inches is None:
+			return None  # If either value is missing, return None
 		height_feet = float(height_feet)
-		
-		# Parse inches correctly
 		height_inches = convert_mixed_number_to_float(height_inches)
-
-		# Convert feet to inches and add the extra inches
 		total_inches = (height_feet * 12) + height_inches
-
-		# Convert inches to centimeters
 		height_cm = total_inches * 2.54
-
-		# Round to 1 decimal place
 		return round(height_cm, 1)
-
 	except ValueError as e:
 		return f"Invalid input: {e}"
-	
+
 def ParseHumanNames(Name, Role):
 	parsed_names = []
 	original_name = Name.strip()  # Keep the original value intact
@@ -597,77 +622,50 @@ def ParseHumanNames(Name, Role):
 
 	return parsed_names
 
-def ParseDate(ManifestId,MonthDay,Year):
-
-
-	MonthDay=MonthDay.replace("-","/")
+def ParseDate(ManifestId, MonthDay, Year):
+	MonthDay = MonthDay.replace("-", "/")
 	MonthDay_list = MonthDay.split("/")
-	date_string = f"{MonthDay}/{Year}"
-	DateOfTransaction={}
-	DateOfTransaction['Original']={}
-	DateOfTransaction['Original']['MonthDayNorfolk']=MonthDay
-	DateOfTransaction['Original']['YearNorfolk']=Year
+	DateOfTransaction = {}
+	DateOfTransaction['Original'] = {"MonthDayNorfolk": MonthDay, "YearNorfolk": Year}
 	
 	if Year == "":
 		DateOfTransaction['parsed_date'] = None
 		DateOfTransaction['DateAccuracy'] = None
 		return DateOfTransaction
-	elif MonthDay=="":
-		date_str= f"xx/xx/{Year}"
-
-		DateOfTransaction['DateAccuracy'] = "Y"  # Indicates that only the year is known
-		# Attempt to parse the year only
+	elif MonthDay == "":
+		# Only year known
+		DateOfTransaction['DateAccuracy'] = "Y"
 		try:
-			# Extract the year and create a date object with January 1st as a placeholder
-			year = Year
-			DateOfTransaction['parsed_date'] = datetime.strptime(f"{year}-01-01", "%Y-%m-%d").date()
+			DateOfTransaction['parsed_date'] = datetime.strptime(f"{Year}-01-01", "%Y-%m-%d").date()
 		except ValueError as e:
 			DateOfTransaction['parsed_date'] = None
-			DateOfTransaction['DateAccuracy'] = f"ERROR {e}"
-			print(f"Error parsing year from date '{date_str}': {e}")
-
-	elif len(MonthDay_list)==1:
-		print("ONLY MONTH!")
-		date_str= f"{MonthDay}/xx/{Year}"
-
-		DateOfTransaction['DateAccuracy'] = "M"  # Indicates that only the year is known
-		# Attempt to parse the year only
+		return DateOfTransaction
+	elif len(MonthDay_list) == 1:
+		# Only month is provided
+		DateOfTransaction['DateAccuracy'] = "M"
 		try:
-			# Extract the year and create a date object with January 1st as a placeholder
-			year = Year
-			DateOfTransaction['parsed_date'] = datetime.strptime(f"{year}-{MonthDay}-01", "%Y-%m-%d").date()
+			DateOfTransaction['parsed_date'] = datetime.strptime(f"{Year}-{MonthDay}-01", "%Y-%m-%d").date()
 		except ValueError as e:
 			DateOfTransaction['parsed_date'] = None
-			DateOfTransaction['DateAccuracy'] = f"ERROR {e}"
-			print(f"Error parsing year from date '{date_str}': {e}")
+		return DateOfTransaction
 	else:
-		date_str= f"{MonthDay}/{Year}"
-
+		# Both month and day provided
 		DateOfTransaction['DateAccuracy'] = "D"
-		# List of possible date formats
+		date_str = f"{MonthDay}/{Year}"
 		date_formats = [
-			"%Y-%m-%d",  # "1831-03-19"
-			"%Y-%m-%dT%H:%M:%S.%fZ",  # "1839-02-05T04:56:02.000Z"
+			"%Y-%m-%d",
+			"%Y-%m-%dT%H:%M:%S.%fZ",
 			"%m/%d/%Y"
 		]
-
-		# Try to parse the date string with each format
 		for fmt in date_formats:
 			try:
-				# Parse the date and store it in the dictionary as a date object
 				DateOfTransaction['parsed_date'] = datetime.strptime(date_str, fmt).date()
-				break  # Exit the loop if parsing succeeds
+				break
 			except ValueError:
-				# If the format doesn't match, continue to the next one
 				continue
 		else:
-			# If none of the formats match, store None
 			DateOfTransaction['parsed_date'] = None
-			DateOfTransaction['DateAccuracy'] = f"ERROR - No matching format"
-			print(f"Error parsing date '{date_str}': No matching format found. {ManifestId}")
-
-	return DateOfTransaction
-
+		return DateOfTransaction
 
 def getLocation(connection, cursor, location_str):
 	location_str=location_str.replace(" ","")
@@ -704,6 +702,7 @@ def geocode_location(connection, cursor, address):
 		print("Geocode result found.")
 		location_data = geocode_result[0]
 		location = location_data['geometry']['location']
+		# Update: extract longitude correctly instead of 'lng'
 		lat, lng = location['lat'], location['lng']
 		
 		# Extract more detailed location components
