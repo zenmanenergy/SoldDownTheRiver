@@ -9,9 +9,6 @@ def delete_human(HumanId):
 	cursor.execute(query)
 	connection.commit()
 
-	query = f"DELETE from humanlocations WHERE HumanId = '{HumanId}'"
-	cursor.execute(query)
-	connection.commit()
 
 	query = f"DELETE from humanrelationships WHERE ParentHumanId = '{HumanId}' or ChildHumanId = '{HumanId}'"
 	cursor.execute(query)

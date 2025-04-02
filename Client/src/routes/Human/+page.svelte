@@ -24,7 +24,6 @@
 	import { handleGetHuman } from './handleGetHuman.js';
 	import { saveHuman } from './handleSaveHuman.js';
 	import { handleDelete } from './handleDelete.js';
-	import { handleGetHumanLocations } from './handleGetHumanLocations.js';
 	import { handleMergeHumans } from '../Merge/Humans/handleMergeHumans.js';
 	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
 	import { handleGetFamilies } from './handleGetFamilies.js';
@@ -166,7 +165,6 @@
 					BirthDate: originalBirthDate, // use originalBirthDate
 					Roles: data.Roles ? data.Roles.join(', ') : ''
 				};
-				locations = await handleGetHumanLocations(Session.SessionId, HumanId);
 				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
 				timelines = await handleGetTimelines(Session.SessionId, HumanId);
 				if (timelines && timelines.data) {

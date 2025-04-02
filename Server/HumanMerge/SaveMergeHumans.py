@@ -51,7 +51,7 @@ def save_mergehumans(HumanId, MergeHumanId):
 			("partyhumans", "HumanId"), 
 			("voyagehumans", "HumanId"), 
 			("humantimeline", "HumanId"), 
-			("humanlocations", "HumanId"),
+			("humantimelines", "HumanId"),
 			("voyages", "CaptainHumanId")
 		]
 		

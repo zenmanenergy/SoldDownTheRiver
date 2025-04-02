@@ -14,7 +14,6 @@ from .DeleteFamily import delete_Family
 from .GetFamilies import get_Families
 from .GetPossibleFamilies import get_possible_Families
 from .GetRoles import get_roles
-from .GetHumanLocations import get_humanlocations
 from .GetHumanRoles import get_humanRoles
 from Role.SaveHumanRole import save_HumanRole
 from .GetHumanTransactions import get_human_transactions
@@ -272,21 +271,6 @@ def GetBusinesses():
 
 		# Call the get_role function from GetRoles.py
 		result = get_roles()
-
-		return result
-	except Exception as e:
-		return Debugger(e)
-
-@blueprint.route("/Human/GetHumanLocations", methods=['GET'])
-@cross_origin()
-def GetHumanLocations():
-	try:
-		# Get the role data from the request
-		human_data = request.args.to_dict()
-
-		HumanId = human_data.get('HumanId', None)
-		# Call the get_role function from GetRoles.py
-		result = get_humanlocations(HumanId)
 
 		return result
 	except Exception as e:
