@@ -406,286 +406,288 @@
 	</div>
 {:else}
 	<div class="section">
-		<h3 class="title is-2">{transactionId ? 'Edit' : 'Add'} Transaction</h3>
-		
-		<form on:submit|preventDefault={submitTransaction}>
-			<!-- Transaction Date -->
-			<div class="field">
-				<label for="date">Date:</label>
-				<input id="date" class="input" type="date" bind:value={transaction.date_circa} on:input={updateDateFormat} />
-			</div>
-		
-			<!-- Date Accuracy -->
-			<div class="field">
-				<label for="date-accuracy">Date Accuracy:</label>
-				<select id="date-accuracy" class="input" bind:value={transaction.date_accuracy} on:change={updateDateFormat}>
-					<option value="D">Day</option>
-					<option value="M">Month</option>
-					<option value="Y">Year</option>
-				</select>
-			</div>
-		
-			<!-- Transaction Type -->
-			<div class="field">
-				<label for="transaction-type">Transaction Type:</label>
-				<input id="transaction-type" class="input" type="text" bind:value={transaction.TransactionType} placeholder="Enter transaction type" />
-			</div>
-		
-			<!-- New Location select box -->
-			<div class="field">
-				<label for="location">Location:</label>
-				<select id="location" class="input" bind:value={transaction.LocationId}>
-					<option value="">Select a Location</option>
-					{#each allLocations as loc}
-						<option value={loc.LocationId}>{loc.Address}</option>
-					{/each}
-				</select>
-			</div>
-		
-			<!-- Total Price -->
-			<div class="field">
-				<label for="total-price">Total Price:</label>
-				<input id="total-price" class="input" type="number" step="0.01" bind:value={transaction.TotalPrice} placeholder="Enter total price" />
-			</div>
-		
-			<!-- Act -->
-			<div class="field">
-				<label for="act">Act:</label>
-				<input id="act" class="input" type="text" bind:value={transaction.Act} placeholder="Enter act number or description" />
-			</div>
-		
-			<!-- Page -->
-			<div class="field">
-				<label for="page">Page:</label>
-				<input id="page" class="input" type="number" bind:value={transaction.Page} placeholder="Enter page number" />
-			</div>
-		
-			<!-- Volume -->
-			<div class="field">
-				<label for="volume">Volume:</label>
-				<input id="volume" class="input" type="number" bind:value={transaction.Volume} placeholder="Enter volume number" />
-			</div>
-		
-			<!-- URL -->
-			<!-- URL Input Field -->
-			<div class="field">
-				<label for="url">URL:</label>
-				<input id="url" class="input" type="text" bind:value={transaction.URL} placeholder="Enter URL" />
-			</div>
-
-			<!-- Read-Only Clickable Link (updates dynamically) -->
-			{#if transaction.URL}
+		<div class="ActionBox">
+			<h3 class="title is-2">{transactionId ? 'Edit' : 'Add'} Transaction</h3>
+			
+			<form on:submit|preventDefault={submitTransaction}>
+				<!-- Transaction Date -->
 				<div class="field">
-					<p>
-						<a href="{transaction.URL}" target="_blank" rel="noopener noreferrer">
-							{transaction.URL}
-						</a>
-					</p>
+					<label for="date">Date:</label>
+					<input id="date" class="input" type="date" bind:value={transaction.date_circa} on:input={updateDateFormat} />
 				</div>
+			
+				<!-- Date Accuracy -->
+				<div class="field">
+					<label for="date-accuracy">Date Accuracy:</label>
+					<select id="date-accuracy" class="input" bind:value={transaction.date_accuracy} on:change={updateDateFormat}>
+						<option value="D">Day</option>
+						<option value="M">Month</option>
+						<option value="Y">Year</option>
+					</select>
+				</div>
+			
+				<!-- Transaction Type -->
+				<div class="field">
+					<label for="transaction-type">Transaction Type:</label>
+					<input id="transaction-type" class="input" type="text" bind:value={transaction.TransactionType} placeholder="Enter transaction type" />
+				</div>
+			
+				<!-- New Location select box -->
+				<div class="field">
+					<label for="location">Location:</label>
+					<select id="location" class="input" bind:value={transaction.LocationId}>
+						<option value="">Select a Location</option>
+						{#each allLocations as loc}
+							<option value={loc.LocationId}>{loc.Address}</option>
+						{/each}
+					</select>
+				</div>
+			
+				<!-- Total Price -->
+				<div class="field">
+					<label for="total-price">Total Price:</label>
+					<input id="total-price" class="input" type="number" step="0.01" bind:value={transaction.TotalPrice} placeholder="Enter total price" />
+				</div>
+			
+				<!-- Act -->
+				<div class="field">
+					<label for="act">Act:</label>
+					<input id="act" class="input" type="text" bind:value={transaction.Act} placeholder="Enter act number or description" />
+				</div>
+			
+				<!-- Page -->
+				<div class="field">
+					<label for="page">Page:</label>
+					<input id="page" class="input" type="number" bind:value={transaction.Page} placeholder="Enter page number" />
+				</div>
+			
+				<!-- Volume -->
+				<div class="field">
+					<label for="volume">Volume:</label>
+					<input id="volume" class="input" type="number" bind:value={transaction.Volume} placeholder="Enter volume number" />
+				</div>
+			
+				<!-- URL -->
+				<!-- URL Input Field -->
+				<div class="field">
+					<label for="url">URL:</label>
+					<input id="url" class="input" type="text" bind:value={transaction.URL} placeholder="Enter URL" />
+				</div>
+
+				<!-- Read-Only Clickable Link (updates dynamically) -->
+				{#if transaction.URL}
+					<div class="field">
+						<p>
+							<a href="{transaction.URL}" target="_blank" rel="noopener noreferrer">
+								{transaction.URL}
+							</a>
+						</p>
+					</div>
+				{/if}
+
+			
+				<!-- Transcriber -->
+				<div class="field">
+					<label for="transcriber">Transcriber:</label>
+					<input id="transcriber" class="input" type="text" bind:value={transaction.Transcriber} placeholder="Enter transcriber's name" />
+				</div>
+			
+				
+			
+				<!-- Notes Field -->
+				<div class="field">
+					<label for="notes">Notes:</label>
+					<textarea id="notes" class="textarea" bind:value={transaction.Notes} placeholder="Enter additional notes"></textarea>
+				</div>
+
+				
+
+				
+				
+
+
+			{#if Object.keys(groupedHumans).length > 0}
+				{#each Object.entries(groupedHumans) as [roleId, humans]}
+					<h4 class="title is-4">{roleId} People Associated with This Transaction</h4>
+					<div class="role-group">
+						<table>
+							<thead>
+								<tr>
+									<th width="10%">First Name</th>
+									<th width="10%">Last Name</th>
+									{#if roleId == "Enslaved"}
+										<th>Racial Descriptor</th>
+										<th>Sex</th>
+										<th>Height (in)</th>
+										<th>Physical Features</th>
+										<th>Profession</th>
+										<th>Birthplace</th>
+										<th>Age (Years)</th>
+										<th>Age (Months)</th>
+										<th>Birthdate</th>
+										<th>Price</th>
+									{:else}
+										<th colspan="10"></th>
+									{/if}
+									<th width="10%">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each humans as human, index}
+									<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
+										<td width="10%">{human.FirstName || ''}</td>
+										<td width="10%">{human.LastName || ''}</td>
+										{#if roleId == "Enslaved"}
+											<td>{human.RacialDescriptor || ''}</td>
+											<td>{human.Sex || ''}</td>
+											<td>{cmToInches(human.Height_cm)}</td>
+											<td>{human.physical_features || ''}</td>
+											<td>{human.profession || ''}</td>
+											<td>{human.BirthPlace || ''}</td>
+											<td>{human.AgeYears || ''}</td>
+											<td>{human.AgeMonths || ''}</td>
+											<td>{calculateBirthDate(human)}</td>
+											
+											<td>{#if human.Price}${human.Price || ''}{/if}</td>
+										{:else}
+											<td colspan="10"></td>
+										{/if}
+										<td width="10%">
+											<button class="button is-danger is-small" 
+												type="button" 
+												on:click={e => {
+													e.stopPropagation(); // Prevent row click redirect
+													handleDeleteTransactionHuman(Session.SessionId, transactionId, human.HumanId);
+												}}>
+												Remove
+											</button>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				{/each}
+			{:else}
+				<p>No humans associated with this transaction.</p>
 			{/if}
 
-		
-			<!-- Transcriber -->
-			<div class="field">
-				<label for="transcriber">Transcriber:</label>
-				<input id="transcriber" class="input" type="text" bind:value={transaction.Transcriber} placeholder="Enter transcriber's name" />
+			<!-- Add button below the list -->
+			<div class="add-human-button">
+				<button class="button is-primary" on:click={() => window.location.href = `/Human?HumanId=&TransactionId=${transactionId}`}>
+					Add a New Human
+				</button>
 			</div>
-		
+			<!-- New Available Humans Table with search, including humanId filter, select box, and add button -->
+			<div class="available-humans-table">
+				<h4 class="title is-4">Available Humans</h4>
+				<!-- Search Box -->
+				<div class="field">
+					<label for="human-search">Search:</label>
+					<input id="human-search" class="input" type="text" placeholder="Search Humans" bind:value={searchQuery} />
+				</div>
+				<table>
+					<thead>
+						<tr>
+							<th on:click={() => sortAvailableHumans('firstName')}>First Name {sortColumnSearch==='firstName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+							<th on:click={() => sortAvailableHumans('lastName')}>Last Name {sortColumnSearch==='lastName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+							<th on:click={() => sortAvailableHumans('role')}>Role {sortColumnSearch==='role' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+							<th on:click={() => sortAvailableHumans('racial')}>Racial Descriptor {sortColumnSearch==='racial' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
+							<th>Assign Role</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each filteredHumans.slice(0,10) as human}
+							<tr>
+								<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.firstName}</td>
+								<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.lastName}</td>
+								<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.role}</td>
+								<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.racial}</td>
+								<td>
+									<select class="input" bind:value={selectedRoleForHuman[human.value]}>
+										<option value="">Select Role</option>
+										{#each allRoles as role}
+											<option value={role.RoleId}>{role.Role}</option>
+										{/each}
+									</select>
+								</td>
+								<td>
+									<button class="button is-primary is-small" type="button" on:click={() => addHumanToTransactionFromAvailable(human)}>
+										Add
+									</button>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+
 			
-		
+
+
+			
+
+			
+			<h4 class="title is-4">Reviewer ONLY:</h4>
+			<!-- isApproved Checkbox -->
+			<div class="field">
+				<label class="checkbox">
+					<input type="checkbox" bind:checked={transaction.isApproved} />
+					Approved
+				</label>
+			</div>
 			<!-- Notes Field -->
 			<div class="field">
-				<label for="notes">Notes:</label>
-				<textarea id="notes" class="textarea" bind:value={transaction.Notes} placeholder="Enter additional notes"></textarea>
+				<label for="DataQuestions">Questions about the Data:</label>
+				<textarea id="DataQuestions" class="textarea" bind:value={transaction.DataQuestions} placeholder="Enter your concerns about this data. This won't be visable to the public"></textarea>
 			</div>
-
-			
-
-			
-			
-
-
-		{#if Object.keys(groupedHumans).length > 0}
-			{#each Object.entries(groupedHumans) as [roleId, humans]}
-				<h4 class="title is-4">{roleId} People Associated with This Transaction</h4>
-				<div class="role-group">
-					<table>
-						<thead>
-							<tr>
-								<th width="10%">First Name</th>
-								<th width="10%">Last Name</th>
-								{#if roleId == "Enslaved"}
-									<th>Racial Descriptor</th>
-									<th>Sex</th>
-									<th>Height (in)</th>
-									<th>Physical Features</th>
-									<th>Profession</th>
-									<th>Birthplace</th>
-									<th>Age (Years)</th>
-									<th>Age (Months)</th>
-									<th>Birthdate</th>
-									<th>Price</th>
-								{:else}
-									<th colspan="10"></th>
-								{/if}
-								<th width="10%">Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each humans as human, index}
-								<tr on:click={() => window.location.href = `/Human?HumanId=${human.HumanId}`} class="clickable-row">
-									<td width="10%">{human.FirstName || ''}</td>
-									<td width="10%">{human.LastName || ''}</td>
-									{#if roleId == "Enslaved"}
-										<td>{human.RacialDescriptor || ''}</td>
-										<td>{human.Sex || ''}</td>
-										<td>{cmToInches(human.Height_cm)}</td>
-										<td>{human.physical_features || ''}</td>
-										<td>{human.profession || ''}</td>
-										<td>{human.BirthPlace || ''}</td>
-										<td>{human.AgeYears || ''}</td>
-										<td>{human.AgeMonths || ''}</td>
-										<td>{calculateBirthDate(human)}</td>
-										
-										<td>{#if human.Price}${human.Price || ''}{/if}</td>
-									{:else}
-										<td colspan="10"></td>
-									{/if}
-									<td width="10%">
-										<button class="button is-danger is-small" 
-											type="button" 
-											on:click={e => {
-												e.stopPropagation(); // Prevent row click redirect
-												handleDeleteTransactionHuman(Session.SessionId, transactionId, human.HumanId);
-											}}>
-											Remove
-										</button>
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			{/each}
-		{:else}
-			<p>No humans associated with this transaction.</p>
-		{/if}
-
-		<!-- Add button below the list -->
-		<div class="add-human-button">
-			<button class="button is-primary" on:click={() => window.location.href = `/Human?HumanId=&TransactionId=${transactionId}`}>
-				Add a New Human
-			</button>
-		</div>
-		<!-- New Available Humans Table with search, including humanId filter, select box, and add button -->
-		<div class="available-humans-table">
-			<h4 class="title is-4">Available Humans</h4>
-			<!-- Search Box -->
-			<div class="field">
-				<label for="human-search">Search:</label>
-				<input id="human-search" class="input" type="text" placeholder="Search Humans" bind:value={searchQuery} />
+			<div class="buttons-container">
+				<button class="button is-primary" type="submit">Save</button>
+				{#if transactionId} 
+					<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
+				{/if}
 			</div>
-			<table>
-				<thead>
-					<tr>
-						<th on:click={() => sortAvailableHumans('firstName')}>First Name {sortColumnSearch==='firstName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
-						<th on:click={() => sortAvailableHumans('lastName')}>Last Name {sortColumnSearch==='lastName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
-						<th on:click={() => sortAvailableHumans('role')}>Role {sortColumnSearch==='role' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
-						<th on:click={() => sortAvailableHumans('racial')}>Racial Descriptor {sortColumnSearch==='racial' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}</th>
-						<th>Assign Role</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredHumans.slice(0,10) as human}
+			</form>
+			<br/>
+			<h4 class="title is-4">Reference NOLA Records</h4>
+
+			{#if rawNolaRecords.length > 0}
+				<table>
+					<thead>
 						<tr>
-							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.firstName}</td>
-							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.lastName}</td>
-							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.role}</td>
-							<td on:click={() => window.location.href = `/Human?HumanId=${human.value}`}>{human.racial}</td>
-							<td>
-								<select class="input" bind:value={selectedRoleForHuman[human.value]}>
-									<option value="">Select Role</option>
-									{#each allRoles as role}
-										<option value={role.RoleId}>{role.Role}</option>
-									{/each}
-								</select>
-							</td>
-							<td>
-								<button class="button is-primary is-small" type="button" on:click={() => addHumanToTransactionFromAvailable(human)}>
-									Add
-								</button>
-							</td>
+							
+							<th>Date of Transaction</th>
+							<th>Seller</th>
+							<th>Buyer</th>
+							<th>Type</th>
+							<th>Reference URL</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-
-		
-
-
-		
-
-		
-		<h4 class="title is-4">Reviewer ONLY:</h4>
-		<!-- isApproved Checkbox -->
-		<div class="field">
-			<label class="checkbox">
-				<input type="checkbox" bind:checked={transaction.isApproved} />
-				Approved
-			</label>
-		</div>
-		<!-- Notes Field -->
-		<div class="field">
-			<label for="DataQuestions">Questions about the Data:</label>
-			<textarea id="DataQuestions" class="textarea" bind:value={transaction.DataQuestions} placeholder="Enter your concerns about this data. This won't be visable to the public"></textarea>
-		</div>
-		<div class="buttons-container">
-			<button class="button is-primary" type="submit">Save</button>
-			{#if transactionId} 
-				<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
+					</thead>
+					<tbody>
+						{#each rawNolaRecords as record}
+							<tr style="cursor: pointer;" on:click={() => location.href=`/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
+									<td>
+										{moment(record.DateOfTransaction).format('YYYY-MM-DD')}
+										
+									</td>
+								<td>{record.TypeOfTransaction || ''}</td>
+								
+								<td>{record.FirstParty || ''}</td>
+								<td>{record.SecondParty || ''}</td>
+								<td>
+									{#if record.ReferenceURL}
+										<a href={record.ReferenceURL} target="_blank">View</a>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{:else}
+				<p>No associated NOLA records found.</p>
 			{/if}
 		</div>
-		</form>
-		<br/>
-		<h4 class="title is-4">Reference NOLA Records</h4>
-
-		{#if rawNolaRecords.length > 0}
-			<table>
-				<thead>
-					<tr>
-						
-						<th>Date of Transaction</th>
-						<th>Seller</th>
-						<th>Buyer</th>
-						<th>Type</th>
-						<th>Reference URL</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each rawNolaRecords as record}
-						<tr style="cursor: pointer;" on:click={() => location.href=`/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} >
-								<td>
-									{moment(record.DateOfTransaction).format('YYYY-MM-DD')}
-									
-								</td>
-							<td>{record.TypeOfTransaction || ''}</td>
-							
-							<td>{record.FirstParty || ''}</td>
-							<td>{record.SecondParty || ''}</td>
-							<td>
-								{#if record.ReferenceURL}
-									<a href={record.ReferenceURL} target="_blank">View</a>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{:else}
-			<p>No associated NOLA records found.</p>
-		{/if}
 	</div>
 
 	

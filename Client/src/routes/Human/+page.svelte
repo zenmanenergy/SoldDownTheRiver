@@ -320,256 +320,259 @@
 	</div>
 {:else}
 	<div class="section">
-		<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
+		<div class="ActionBox">
+			<form>
+			<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
 
-		{#if transactionSummary}
-			<div class="transaction-summary">
-				<h3 class="title is-3">Transaction Summary</h3>
-				<p><strong>Type:</strong> {transactionSummary.TransactionType}</p>
-				<p><strong>Date:</strong> {formatDate(transactionSummary.date_circa, transactionSummary.date_accuracy)}</p>
-				<p><strong>Buyer:</strong> {transactionSummary.Buyers[0].BuyerFirstName} {transactionSummary.Buyers[0].BuyerLastName}</p>
-				<p><strong>Seller:</strong> {transactionSummary.Sellers[0].SellerFirstName} {transactionSummary.Sellers[0].SellerLastName}</p>
-			</div>
-		{/if}
+			{#if transactionSummary}
+				<div class="transaction-summary">
+					<h3 class="title is-3">Transaction Summary</h3>
+					<p><strong>Type:</strong> {transactionSummary.TransactionType}</p>
+					<p><strong>Date:</strong> {formatDate(transactionSummary.date_circa, transactionSummary.date_accuracy)}</p>
+					<p><strong>Buyer:</strong> {transactionSummary.Buyers[0].BuyerFirstName} {transactionSummary.Buyers[0].BuyerLastName}</p>
+					<p><strong>Seller:</strong> {transactionSummary.Sellers[0].SellerFirstName} {transactionSummary.Sellers[0].SellerLastName}</p>
+				</div>
+			{/if}
 
-		{#if mergeHuman}
-			<div class="merge-box">
-				<h3 class="title is-3">Merge Human</h3>
+			{#if mergeHuman}
+				<div class="merge-box">
+					<h3 class="title is-3">Merge Human</h3>
+					<table class="table is-fullwidth is-striped">
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Last Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>{mergeHuman.FirstName}</td>
+								<td>{mergeHuman.LastName}</td>
+							</tr>
+						</tbody>
+					</table>
+					<button class="button is-warning" on:click={mergeHumans}>Merge These Humans</button>
+				</div>
+			{/if}
+			
+			<form on:submit|preventDefault={submitHuman}>
+				<div class="field">
+					<label for="first-name">First Name:</label>
+					<input id="first-name" class="input" type="text" bind:value={Human.FirstName} />
+				</div>
+
+				<div class="field">
+					<label for="middle-name">Middle Name:</label>
+					<input id="middle-name" class="input" type="text" bind:value={Human.MiddleName} />
+				</div>
+
+				<div class="field">
+					<label for="last-name">Last Name:</label>
+					<input id="last-name" class="input" type="text" bind:value={Human.LastName} />
+				</div>
+
+				{#if transactionSummary}
+					<div class="field">
+						<label for="role-select">Role:</label>
+						<select id="role-select" class="input" bind:value={Human.Role}>
+							<option value=""></option>
+							{#each rolesOptions as role}
+								<option value={role.RoleId}>{role.Role}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="field">
+						<label for="age-years">Age (years):</label>
+						<input id="age-years" class="input" type="number" bind:value={ageYears} min="0" />
+					</div>
+					<div class="field">
+						<label for="age-months">Age (months):</label>
+						<input id="age-months" class="input" type="number" bind:value={ageMonths} min="0" max="11" />
+					</div>
+				{/if}
+
+				<div class="field">
+					<label for="birth-date">Birth Date:</label>
+					<input id="birth-date" class="input" type="date" bind:value={Human.BirthDate} />
+				</div>
+
+				<div class="field">
+					<label for="birth-accuracy">Birth Date Accuracy:</label>
+					<select id="birth-accuracy" class="input" bind:value={Human.BirthDateAccuracy}>
+						<option value="d">Day</option>
+						<option value="m">Month</option>
+						<option value="y">Year</option>
+					</select>
+				</div>
+
+				<div class="field">
+					<label for="racial-descriptor">Racial Descriptor:</label>
+					<input id="racial-descriptor" class="input" type="text" bind:value={Human.RacialDescriptor} />
+				</div>
+
+				<div class="field">
+					<label for="sex">Sex:</label>
+					<select id="sex" class="input" bind:value={Human.Sex}>
+						<option value="">Select</option>
+						<option value="Male">Male</option>
+						<option value="Female">Female</option>
+					</select>
+				</div>
+
+				
+
+				<div class="field">
+					<label for="height-inches">Height (inches):</label>
+					<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
+				</div>
+
+				<div class="field">
+					<label for="roles">Roles (comma-separated):</label>
+					<input id="roles" class="input" type="text" bind:value={Human.Roles} placeholder="Role1, Role2, ..." />
+				</div>
+
+				<div class="buttons-container">
+					<button class="button is-primary" type="submit">Save</button>
+					{#if HumanId} 
+						<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
+					{/if}
+				</div>
+			</form>
+
+			{#if akaNames.length > 0}
+				<h3 class="title is-3">Also Known As (AKA)</h3>
 				<table class="table is-fullwidth is-striped">
 					<thead>
 						<tr>
 							<th>First Name</th>
+							<th>Middle Name</th>
 							<th>Last Name</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>{mergeHuman.FirstName}</td>
-							<td>{mergeHuman.LastName}</td>
-						</tr>
+						{#each akaNames as aka}
+							<tr>
+								<td>{aka.AKAFirstName}</td>
+								<td>{aka.AKAMiddleName}</td>
+								<td>{aka.AKALastName}</td>
+								<td>
+									<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
+								</td>
+							</tr>
+						{/each}
 					</tbody>
 				</table>
-				<button class="button is-warning" on:click={mergeHumans}>Merge These Humans</button>
-			</div>
-		{/if}
-		
-		<form on:submit|preventDefault={submitHuman}>
-			<div class="field">
-				<label for="first-name">First Name:</label>
-				<input id="first-name" class="input" type="text" bind:value={Human.FirstName} />
-			</div>
-
-			<div class="field">
-				<label for="middle-name">Middle Name:</label>
-				<input id="middle-name" class="input" type="text" bind:value={Human.MiddleName} />
-			</div>
-
-			<div class="field">
-				<label for="last-name">Last Name:</label>
-				<input id="last-name" class="input" type="text" bind:value={Human.LastName} />
-			</div>
-
-			{#if transactionSummary}
-				<div class="field">
-					<label for="role-select">Role:</label>
-					<select id="role-select" class="input" bind:value={Human.Role}>
-						<option value=""></option>
-						{#each rolesOptions as role}
-							<option value={role.RoleId}>{role.Role}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="field">
-					<label for="age-years">Age (years):</label>
-					<input id="age-years" class="input" type="number" bind:value={ageYears} min="0" />
-				</div>
-				<div class="field">
-					<label for="age-months">Age (months):</label>
-					<input id="age-months" class="input" type="number" bind:value={ageMonths} min="0" max="11" />
-				</div>
 			{/if}
 
-			<div class="field">
-				<label for="birth-date">Birth Date:</label>
-				<input id="birth-date" class="input" type="date" bind:value={Human.BirthDate} />
-			</div>
+			<h3 class="title is-3">Add New AKA</h3>
+			<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
+				<div class="field">
+					<label for="aka-first-name">First Name:</label>
+					<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
+				</div>
+				<div class="field">
+					<label for="aka-middle-name">Middle Name:</label>
+					<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
+				</div>
+				<div class="field">
+					<label for="aka-last-name">Last Name:</label>
+					<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
+				</div>
+				<button class="button is-primary" type="submit">Add AKA</button>
+			</form>
 
-			<div class="field">
-				<label for="birth-accuracy">Birth Date Accuracy:</label>
-				<select id="birth-accuracy" class="input" bind:value={Human.BirthDateAccuracy}>
-					<option value="d">Day</option>
-					<option value="m">Month</option>
-					<option value="y">Year</option>
-				</select>
-			</div>
-
-			<div class="field">
-				<label for="racial-descriptor">Racial Descriptor:</label>
-				<input id="racial-descriptor" class="input" type="text" bind:value={Human.RacialDescriptor} />
-			</div>
-
-			<div class="field">
-				<label for="sex">Sex:</label>
-				<select id="sex" class="input" bind:value={Human.Sex}>
-					<option value="">Select</option>
-					<option value="Male">Male</option>
-					<option value="Female">Female</option>
-				</select>
-			</div>
+			{#if families.length > 0}
+				<h3 class="title is-3">Family Tree</h3>
+				<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
+				<FamilyTreeCanvas {families} />
+			{:else}
+				No family relationships defined
+			{/if}
 
 			
-
-			<div class="field">
-				<label for="height-inches">Height (inches):</label>
-				<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
-			</div>
-
-			<div class="field">
-				<label for="roles">Roles (comma-separated):</label>
-				<input id="roles" class="input" type="text" bind:value={Human.Roles} placeholder="Role1, Role2, ..." />
-			</div>
-
-			<div class="buttons-container">
-				<button class="button is-primary" type="submit">Save</button>
-				{#if HumanId} 
-					<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
-				{/if}
-			</div>
-		</form>
-
-		{#if akaNames.length > 0}
-			<h3 class="title is-3">Also Known As (AKA)</h3>
+			<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
 			<table class="table is-fullwidth is-striped">
 				<thead>
 					<tr>
-						<th>First Name</th>
-						<th>Middle Name</th>
-						<th>Last Name</th>
+						<th>Type</th>
+						<th>Address</th>
+						<th>Latitude</th>
+						<th>Longitude</th>
+						<th>Date Circa</th>
+						<th>Date Accuracy</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each akaNames as aka}
-						<tr>
-							<td>{aka.AKAFirstName}</td>
-							<td>{aka.AKAMiddleName}</td>
-							<td>{aka.AKALastName}</td>
-							<td>
-								<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-
-		<h3 class="title is-3">Add New AKA</h3>
-		<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
-			<div class="field">
-				<label for="aka-first-name">First Name:</label>
-				<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
-			</div>
-			<div class="field">
-				<label for="aka-middle-name">Middle Name:</label>
-				<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
-			</div>
-			<div class="field">
-				<label for="aka-last-name">Last Name:</label>
-				<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
-			</div>
-			<button class="button is-primary" type="submit">Add AKA</button>
-		</form>
-
-		{#if families.length > 0}
-			<h3 class="title is-3">Family Tree</h3>
-			<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
-			<FamilyTreeCanvas {families} />
-		{:else}
-			No family relationships defined
-		{/if}
-
-		
-		<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
-		<table class="table is-fullwidth is-striped">
-			<thead>
-				<tr>
-					<th>Type</th>
-					<th>Address</th>
-					<th>Latitude</th>
-					<th>Longitude</th>
-					<th>Date Circa</th>
-					<th>Date Accuracy</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#if locations.length > 0}
-					{#each locations as location}
-						<tr>
-							<td>{location.LocationType || ''}</td>
-							<td>{location.Address || ''}</td>
-							<td>{location.Latitude || ''}</td>
-							<td>{location.Longitude || ''}</td>
-							<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
-							<td>{location.Date_Accuracy || 'D'}</td>
-							<td>
-								<button class="button is-danger" on:click={() => deleteTimeline(location.LocationId)}>Delete</button>
-							</td>
-						</tr>
-					{/each}
-				{/if}
-				<tr>
-					<td>
-						<input class="input" type="text" bind:value={newLocation.LocationType} placeholder="Type..." />
-					</td>
-					<td>
-						<input class="input" type="text" bind:value={newLocation.Address} placeholder="Address..." />
-					</td>
-					<td>
-						<input class="input" type="number" bind:value={newLocation.Latitude} placeholder="Latitude..." />
-					</td>
-					<td>
-						<input class="input" type="number" bind:value={newLocation.Longitude} placeholder="Longitude..." />
-					</td>
-					<td>
-						<input class="input" type="date" bind:value={newLocation.Date_Circa} placeholder="Date Circa..." />
-					</td>
-					<td>
-						<select class="input" bind:value={newLocation.Date_Accuracy}>
-							<option value="D">D</option>
-							<option value="M">M</option>
-							<option value="Y">Y</option>
-						</select>
-					</td>
-					<td>
-						<button class="button is-primary" type="button" on:click={addNewLocation}>Save</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-
-		{#if voyages.length > 0}
-			<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
+					{#if locations.length > 0}
+						{#each locations as location}
+							<tr>
+								<td>{location.LocationType || ''}</td>
+								<td>{location.Address || ''}</td>
+								<td>{location.Latitude || ''}</td>
+								<td>{location.Longitude || ''}</td>
+								<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
+								<td>{location.Date_Accuracy || 'D'}</td>
+								<td>
+									<button class="button is-danger" on:click={() => deleteTimeline(location.LocationId)}>Delete</button>
+								</td>
+							</tr>
+						{/each}
+					{/if}
 					<tr>
-						<th>Voyage ID</th>
-						<th>Role ID</th>
-						<th>Notes</th>
+						<td>
+							<input class="input" type="text" bind:value={newLocation.LocationType} placeholder="Type..." />
+						</td>
+						<td>
+							<input class="input" type="text" bind:value={newLocation.Address} placeholder="Address..." />
+						</td>
+						<td>
+							<input class="input" type="number" bind:value={newLocation.Latitude} placeholder="Latitude..." />
+						</td>
+						<td>
+							<input class="input" type="number" bind:value={newLocation.Longitude} placeholder="Longitude..." />
+						</td>
+						<td>
+							<input class="input" type="date" bind:value={newLocation.Date_Circa} placeholder="Date Circa..." />
+						</td>
+						<td>
+							<select class="input" bind:value={newLocation.Date_Accuracy}>
+								<option value="D">D</option>
+								<option value="M">M</option>
+								<option value="Y">Y</option>
+							</select>
+						</td>
+						<td>
+							<button class="button is-primary" type="button" on:click={addNewLocation}>Save</button>
+						</td>
 					</tr>
-				</thead>
-				<tbody>
-					{#each voyages as voyage}
-						<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
-							<td>{voyage.VoyageId}</td>
-							<td>{voyage.RoleId}</td>
-							<td>{voyage.Notes}</td>
-						</tr>
-					{/each}
 				</tbody>
 			</table>
-		{/if}
 
-		
+			{#if voyages.length > 0}
+				<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>
+				<table class="table is-fullwidth is-striped">
+					<thead>
+						<tr>
+							<th>Voyage ID</th>
+							<th>Role ID</th>
+							<th>Notes</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each voyages as voyage}
+							<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
+								<td>{voyage.VoyageId}</td>
+								<td>{voyage.RoleId}</td>
+								<td>{voyage.Notes}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{/if}
+
+		</form>
+		</div>
 	</div>
 {/if}

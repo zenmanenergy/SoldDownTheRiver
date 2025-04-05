@@ -1,7 +1,5 @@
 <!-- src/routes/Voyages/+page.svelte -->
-<style>
-		@import '/static/FormPages.css';
-	</style>
+
 	<script>
 		import moment from 'moment';
 		import { onMount } from 'svelte';
@@ -121,7 +119,6 @@
 		</div>
 	{:else}
 		<div class="section">
-			<a href="/Voyages?">Back to Voyages</a>
 			<div class="ActionBox">
 				<form>
 					<h3 class="title is-2">Voyage</h3>

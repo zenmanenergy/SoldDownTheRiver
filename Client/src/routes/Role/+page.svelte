@@ -1,7 +1,5 @@
 <!-- src/routes/Roles/+page.svelte -->
-<style>
-	@import '/static/FormPages.css';
-</style>
+
 
 <script>
 	import { onMount } from 'svelte';
@@ -42,7 +40,6 @@
 	</div>
 {:else}
 	<div class="section">
-		<a href="/Roles">Back to Roles</a>
 		<div class="ActionBox">
 			<form>
 				<div class="title-container">
