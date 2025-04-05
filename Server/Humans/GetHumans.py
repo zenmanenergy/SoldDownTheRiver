@@ -7,25 +7,24 @@ def get_humans(Search):
 
 	# Construct the SQL query
 	query = f"SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.BirthDate, h.BirthDateAccuracy, "
-	query += f" h.RacialDescriptor, h.Sex, h.Height_cm,  "
+	query += f" h.RacialDescriptor, h.Sex, h.Height_cm, "
+	query += f" GROUP_CONCAT(CONCAT_WS(' ', ha.AKAFirstName, ha.AKAMiddleName, ha.AKALastName) ORDER BY ha.AKAHumanId SEPARATOR ', ') AS AlsoKnownAs, "
 	query += f" GROUP_CONCAT(r.Role ORDER BY r.Role SEPARATOR ', ') AS Roles "
 	query += f" from humans h "
 	query += f" LEFT JOIN humanroles hr ON h.HumanId = hr.HumanId "
 	query += f" LEFT JOIN roles r ON hr.RoleId = r.RoleId "
+	query += f" LEFT JOIN humansaka ha ON h.HumanId = ha.HumanId "
 	
-	query +=f" where 1=1 "
+	query += f" where 1=1 "
 	if Search:
-		query +=f" and FirstName='{Search}'"
+		query += f" and FirstName='{Search}'"
 	query += f" GROUP BY h.HumanId; "
-
-	
 	query += f" order by LastName, FirstName, MiddleName"
 	
-
 	cursor.execute(query)
 	result = cursor.fetchall()
 	if not result:
-		result=[]
+		result = []
 		
 	# Close the database connection
 	connection.close()

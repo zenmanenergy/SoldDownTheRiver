@@ -7,7 +7,7 @@ def get_family(HumanId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	cursor.execute(f"""
-		SELECT HumanId, FirstName, LastName, Sex
+		SELECT HumanId, FirstName, LastName, Sex, spouseHumanId
 		FROM humans
 		WHERE HumanId = '{HumanId}'
 	""")
@@ -66,7 +66,7 @@ def get_family(HumanId):
 		JOIN humanrelationships r2 ON r1.ParentHumanId = r2.ParentHumanId
 		JOIN humans h ON r2.ChildHumanId = h.HumanId
 		WHERE r1.ChildHumanId = '{HumanId}'
-		  AND r2.ChildHumanId != '{HumanId}';
+		AND r2.ChildHumanId != '{HumanId}';
 	""")
 
 	siblings = list(cursor.fetchall())
@@ -81,7 +81,6 @@ def get_family(HumanId):
 		depth = member['Depth']
 
 		if relation == 'ancestor':
-			# invert depth explicitly
 			if depth == 1:
 				relation_label = 'father' if sex == 'Male' else 'mother'
 			elif depth == 2:
@@ -104,7 +103,6 @@ def get_family(HumanId):
 		else:
 			relation_label = 'relative'
 
-		# Explicitly invert ancestor depth here
 		final_depth = -depth if relation == 'ancestor' else depth
 
 		family_tree.append({
@@ -114,5 +112,26 @@ def get_family(HumanId):
 			'Relationship': relation_label,
 			'Depth': final_depth
 		})
+
+	# Query and add spouse if available.
+	if human.get('spouseHumanId'):
+		cursor, connection = Database.ConnectToDatabase()
+		cursor.execute(f"""
+			SELECT HumanId, FirstName, LastName, Sex
+			FROM humans
+			WHERE HumanId = '{human['spouseHumanId']}'
+		""")
+		spouse = cursor.fetchone()
+		connection.close()
+		if spouse:
+			# Determine relationship label based on main human's Sex
+			rel_label = 'wife' if human.get('Sex', '').lower() == 'male' else 'husband'
+			family_tree.append({
+				'HumanId': spouse['HumanId'],
+				'FirstName': spouse['FirstName'],
+				'LastName': spouse['LastName'],
+				'Relationship': rel_label,
+				'Depth': 0
+			})
 
 	return family_tree

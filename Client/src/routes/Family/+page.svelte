@@ -67,37 +67,44 @@
 			nodePositions = positions; // store for click detection
 		}
 		
-		// Draw connecting lines from the self node to other nodes using specific connection points.
+		// Draw connecting lines with T-style for child with two parents.
 		const selfPos = positions.find(pos => pos.node.Relationship === 'self');
+		const spouseNode = positions.find(
+			p => p.node.Relationship === 'wife' || p.node.Relationship === 'husband'
+		);
 		if (selfPos) {
 			positions.forEach(pos => {
-				if (pos.node.Relationship !== 'self') {
-					let startPoint = {}, endPoint = {};
-					if (pos.node.Depth > selfPos.node.Depth) {
-						// Descendant: connect from self's bottom center to child's top center.
-						startPoint = { x: selfPos.x + nodeWidth/2, y: selfPos.y + nodeHeight };
-						endPoint   = { x: pos.x + nodeWidth/2,    y: pos.y };
-					} else if (pos.node.Depth < selfPos.node.Depth) {
-						// Ancestor: connect from self's top center to parent's bottom center.
-						startPoint = { x: selfPos.x + nodeWidth/2, y: selfPos.y };
-						endPoint   = { x: pos.x + nodeWidth/2,    y: pos.y + nodeHeight };
+				// Skip drawing connection for the self and spouse nodes
+				if (pos.node.Relationship === 'self' || pos.node.Relationship === 'wife' || pos.node.Relationship === 'husband') return;
+				let startPoint = {}, endPoint = {};
+				if (pos.node.Depth > selfPos.node.Depth) {
+					// For direct children (Depth==1) and when spouse exists, use midpoint from the couple.
+					if (pos.node.Depth === 1 && spouseNode) {
+						startPoint = {
+							x: (selfPos.x + nodeWidth/2 + spouseNode.x + nodeWidth/2) / 2,
+							y: selfPos.y + nodeHeight
+						};
 					} else {
-						// Sibling: connect horizontally.
-						if (pos.x > selfPos.x) {
-							// Sibling to the right: from self's right center to sibling's left center.
-							startPoint = { x: selfPos.x + nodeWidth, y: selfPos.y + nodeHeight/2 };
-							endPoint   = { x: pos.x,                y: pos.y + nodeHeight/2 };
-						} else {
-							// Sibling to the left: from self's left center to sibling's right center.
-							startPoint = { x: selfPos.x,          y: selfPos.y + nodeHeight/2 };
-							endPoint   = { x: pos.x + nodeWidth,    y: pos.y + nodeHeight/2 };
-						}
+						startPoint = { x: selfPos.x + nodeWidth/2, y: selfPos.y + nodeHeight };
 					}
-					ctx.beginPath();
-					ctx.moveTo(startPoint.x, startPoint.y);
-					ctx.lineTo(endPoint.x, endPoint.y);
-					ctx.stroke();
+					endPoint = { x: pos.x + nodeWidth/2, y: pos.y };
+				} else if (pos.node.Depth < selfPos.node.Depth) {
+					startPoint = { x: selfPos.x + nodeWidth/2, y: selfPos.y };
+					endPoint = { x: pos.x + nodeWidth/2, y: pos.y + nodeHeight };
+				} else {
+					// Sibling horizontal line.
+					if (pos.x > selfPos.x) {
+						startPoint = { x: selfPos.x + nodeWidth, y: selfPos.y + nodeHeight/2 };
+						endPoint = { x: pos.x, y: pos.y + nodeHeight/2 };
+					} else {
+						startPoint = { x: selfPos.x, y: selfPos.y + nodeHeight/2 };
+						endPoint = { x: pos.x + nodeWidth, y: pos.y + nodeHeight/2 };
+					}
 				}
+				ctx.beginPath();
+				ctx.moveTo(startPoint.x, startPoint.y);
+				ctx.lineTo(endPoint.x, endPoint.y);
+				ctx.stroke();
 			});
 		}
 		
@@ -298,7 +305,6 @@
 		<!-- In case Bulma is causing canvas sizing issues, add inline style -->
 		<div class="tree-container" style="padding:1rem;">
 			<h3 class="title is-3">Family Tree</h3>
-			<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
 			<!-- Pass the onRemove callback -->
 			<FamilyTreeCanvas {families} onRemove={removeRelationship} />
 			<!-- Optionally keep selected human display if needed -->

@@ -73,7 +73,8 @@
 				human.Sex,
 				human.Height_in ? human.Height_in.toString() : '',
 				human.Roles ? human.Roles.join(', ') : '',
-				human.HumanId // Include HumanId in the search
+				human.HumanId, // Include HumanId in the search,
+				human.AlsoKnownAs ? human.AlsoKnownAs.join(', ') : ''
 			];
 			return values.some(value => value && value.toLowerCase().includes(search));
 		});
