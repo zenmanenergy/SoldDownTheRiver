@@ -265,7 +265,7 @@ def SaveHuman(connection, cursor, humans):
 
 			if "ResidenceLocationId" in human:
 				insert_role = f"""
-					INSERT into humantimelines (HumanId, LocationId, date_circa, date_accuracy, LocationType)
+					INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType)
 					VALUES (
 						'{HumanId}', 
 						{f"'{human['ResidenceLocationId']}'" if human.get('ResidenceLocationId') is not None else 'NULL'}, 
@@ -285,7 +285,7 @@ def SaveHuman(connection, cursor, humans):
 
 			if "OfficeLocationId" in human:
 				insert_role = f"""
-					INSERT into humantimelines (HumanId, LocationId, date_circa, date_accuracy, LocationType)
+					INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType)
 					VALUES (
 						'{HumanId}', 
 						{f"'{human['OfficeLocationId']}'" if human.get('OfficeLocationId') is not None else 'NULL'}, 

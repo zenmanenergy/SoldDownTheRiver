@@ -1,7 +1,7 @@
 import uuid
 from _Lib import Database
 from _Lib import History
-from datetime import datetime, date, timedelta,timezone
+from datetime import datetime, date, timedelta, timezone
 import traceback
 
 from dateutil import parser
@@ -32,17 +32,17 @@ def convert_age(age_str):
 			return age_str
 	return age_str
 
-def import_Manifest(data,SessionId):
+def import_Manifest(data, SessionId):
 	
 	headers = data['Headers']
 	rows = data['Data']
 	Manifest_Ids = data['Manifest_Ids']
-	print("len",len(rows))
+	print("len", len(rows))
 	# DeleteManifests(Manifest_Ids)
 	for row in rows:
 		# print(row)
 		# print()
-		rowData={}
+		rowData = {}
 		if isinstance(row, list):
 			# Extract specific columns from the row (example)
 			
@@ -57,11 +57,11 @@ def import_Manifest(data,SessionId):
 				try:
 					rowData['Timestamp'] = datetime.strptime(Timestamp_str, "%Y-%m-%dT%H:%M:%S.%f")
 				except:
-					print("Timestamp_str ERROR!",Timestamp_str)
+					print("Timestamp_str ERROR!", Timestamp_str)
 					return False
 				
 			# print(Timestamp_str)
-			rowData['Timestamp']=rowData['Timestamp'].replace(tzinfo=timezone.utc)
+			rowData['Timestamp'] = rowData['Timestamp'].replace(tzinfo=timezone.utc)
 			
 
 
@@ -125,7 +125,7 @@ def import_Manifest(data,SessionId):
 	return "done"
 			
 
-def SaveManifest( data):
+def SaveManifest(data):
 	cursor, connection = Database.ConnectToDatabase()
 	# SQL query to insert data into the raw_manifest table using an f-string
 	sql = f"""
@@ -158,97 +158,104 @@ def SaveManifest( data):
 
 def ProcessManifest():
 	cursor, connection = Database.ConnectToDatabase()
-	Manifests=getManifests(cursor)
+	Manifests = getManifests(cursor)
 	cursor.close()
 	connection.close()
 
-	DateOfTransactions=[]
-	Processed=[]
+	DateOfTransactions = []
+	Processed = []
 	for i, row in enumerate(Manifests):
-		newRow={}
+		newRow = {}
 		cursor, connection = Database.ConnectToDatabase()
 
-		newRow['Manifest_ID']=row['Manifest_ID']
-		newRow['Timestamp']=row['Timestamp']
-		newRow['VoyageId']=row['shipVoyageId']
-		newRow['Humans']={}
-		newRow['Humans']['Enslaved']={}
-		newRow['Humans']['Enslaved']=ParseHumanNames(f"{row['LastName']} {row['FirstNameMiddleName']}", 'Enslaved')
+		newRow['Manifest_ID'] = row['Manifest_ID']
+		newRow['Timestamp'] = row['Timestamp']
+		newRow['VoyageId'] = row['shipVoyageId']
+		newRow['Humans'] = {}
+		newRow['Humans']['Enslaved'] = {}
+		newRow['Humans']['Enslaved'] = ParseHumanNames(f"{row['LastName']} {row['FirstNameMiddleName']}", 'Enslaved')
 		
-		newRow['Humans']['Enslaved'][0]['Age']=row['Age']
-		newRow['Humans']['Enslaved'][0]['RacialDescriptor']=row['Color']
-		newRow['Humans']['Enslaved'][0]['Height_feet']=row['Height_feet']
-		newRow['Humans']['Enslaved'][0]['Height_inches']=row['Height_inches']
-		newRow['Humans']['Enslaved'][0]['Height_cm']=height_to_cm(row['Height_feet'], row['Height_inches'])
-		newRow['Humans']['Enslaved'][0]['Sex']=row['Sex']
-		newRow['Humans']['Enslaved'][0]['Notes']=row['Notes']
+		newRow['Humans']['Enslaved'][0]['Age'] = row['Age']
+		newRow['Humans']['Enslaved'][0]['RacialDescriptor'] = row['Color']
+		newRow['Humans']['Enslaved'][0]['Height_feet'] = row['Height_feet']
+		newRow['Humans']['Enslaved'][0]['Height_inches'] = row['Height_inches']
+		newRow['Humans']['Enslaved'][0]['Height_cm'] = height_to_cm(row['Height_feet'], row['Height_inches'])
+		newRow['Humans']['Enslaved'][0]['Sex'] = row['Sex']
+		newRow['Humans']['Enslaved'][0]['Notes'] = row['Notes']
 		newRow['Norfolk_date'] = row.get('Norfolk_date')  # Capture Norfolk_date
 		# NEW: Capture the norfolk_date_accuracy from the raw data
 		newRow['Norfolk_date_accuracy'] = row.get('Norfolk_date_accuracy')
 		# print(newRow['Humans']['Enslaved'][0])
 		# print(newRow['VoyageId'])
-		newRow['Humans']['Enslaved'][0]['HumanId']=GetVoyageHuman(connection, cursor, newRow['Humans']['Enslaved'][0],newRow['VoyageId'])
+		newRow['Humans']['Enslaved'][0]['HumanId'] = GetVoyageHuman(connection, cursor, newRow['Humans']['Enslaved'][0], newRow['VoyageId'])
 		
 
-		newRow['Humans']['Captain']=ParseHumanNames(row['ShipCaptain'], 'Captain')
+		newRow['Humans']['Captain'] = ParseHumanNames(row['ShipCaptain'], 'Captain')
 		if newRow['Humans']['Captain']:
-			newRow['Humans']['Captain'][0]['HumanId']=GetVoyageHuman(connection, cursor, newRow['Humans']['Captain'][0],newRow['VoyageId'])
+			newRow['Humans']['Captain'][0]['HumanId'] = GetVoyageHuman(connection, cursor, newRow['Humans']['Captain'][0], newRow['VoyageId'])
 
 		
-		newRow['Humans']['ShippingAgent']=ParseHumanNames(row['ShippingAgent'], 'ShippingAgent')
+		newRow['Humans']['ShippingAgent'] = ParseHumanNames(row['ShippingAgent'], 'ShippingAgent')
 		if newRow['Humans']['ShippingAgent']:
 			for human in newRow['Humans']['ShippingAgent']:
-				human['LocationId']=getLocation(connection, cursor, row['ShippingAgentLocation'])
-				human['HumanId']=GetVoyageHuman(connection, cursor, human,newRow['VoyageId'])
+				human['LocationId'] = getLocation(connection, cursor, row['ShippingAgentLocation'])
+				human['HumanId'] = GetVoyageHuman(connection, cursor, human, newRow['VoyageId'])
 
 
-		newRow['Humans']['CollectorAgent']=ParseHumanNames(row['CollectorAgent'], 'CollectorAgent')
+		newRow['Humans']['CollectorAgent'] = ParseHumanNames(row['CollectorAgent'], 'CollectorAgent')
 		if newRow['Humans']['CollectorAgent']:
-			newRow['Humans']['CollectorAgent'][0]['HumanId']=GetVoyageHuman(connection, cursor, newRow['Humans']['CollectorAgent'][0],newRow['VoyageId'])
+			newRow['Humans']['CollectorAgent'][0]['HumanId'] = GetVoyageHuman(connection, cursor, newRow['Humans']['CollectorAgent'][0], newRow['VoyageId'])
 		
-		newRow['Humans']['Owner1']=ParseHumanNames(row['OwnersName'], 'Owner1')
+		newRow['Humans']['Owner1'] = ParseHumanNames(row['OwnersName'], 'Owner1')
 		if newRow['Humans']['Owner1']:
 			for human in newRow['Humans']['Owner1']:
-				human['LocationId']=getLocation(connection, cursor, row['OwnersLocation'])
-				human['HumanId']=GetVoyageHuman(connection, cursor, human,newRow['VoyageId'])
+				human['LocationId'] = getLocation(connection, cursor, row['OwnersLocation'])
+				human['HumanId'] = GetVoyageHuman(connection, cursor, human, newRow['VoyageId'])
 
-		newRow['Humans']['Owner2']=ParseHumanNames(row['Owner2'], 'Owner2')
+		newRow['Humans']['Owner2'] = ParseHumanNames(row['Owner2'], 'Owner2')
 		if newRow['Humans']['Owner2']:
 			for human in newRow['Humans']['Owner2']:
-				human['LocationId']=getLocation(connection, cursor, row['Owner2Location'])
-				human['HumanId']=GetVoyageHuman(connection, cursor, human,newRow['VoyageId'])
+				human['LocationId'] = getLocation(connection, cursor, row['Owner2Location'])
+				human['HumanId'] = GetVoyageHuman(connection, cursor, human, newRow['VoyageId'])
 
-		newRow['Norfolk']={}
+		newRow['Norfolk'] = {}
 		# newRow['Norfolk']
 
-		newRow['New Orleans']={}
+		newRow['New Orleans'] = {}
 		# newRow['New Orleans']
 
-		newRow['Ship']={}
-		newRow['Ship']['ShipId']=GetShipId(connection, cursor, row['ShipName'])
-		newRow['Ship']['ShipName']=row['ShipName']
-		newRow['Ship']['ShipSize']=row['ShipSize']
-		newRow['Ship']['ShipType']=row['ShipType']
-		newRow['Ship']['ShipCaptain']=row['ShipCaptain']
-		newRow['Ship']['ShipHomePort']=row['ShipHomePort']
-		newRow['Ship']['ShipHomePortLocationId']=getLocation(connection, cursor, row['ShipHomePort'])
-		newRow['Voyage']={}
-		newRow['Voyage']['Start']={}
-		newRow['Voyage']['Start']['Name']="Norfolk, VA"
-		newRow['Voyage']['Start']['LocationId']=getLocation(connection, cursor, "Norfolk, VA")
-		newRow['Voyage']['Start']['Date']=ParseDate(row['Manifest_ID'], row['MonthDayNorfolk'],row['YearNorfolk'])
-		newRow['Voyage']['End']={}
-		newRow['Voyage']['End']['Name']="New Orleans, LA"
-		newRow['Voyage']['End']['LocationId']=getLocation(connection, cursor, "New Orleans, LA")
-		newRow['Voyage']['End']['Date']=ParseDate(row['Manifest_ID'], row['MonthDayNOLA'],row['YearNOLA'])
+		newRow['Ship'] = {}
+		newRow['Ship']['ShipId'] = GetShipId(connection, cursor, row['ShipName'])
+		newRow['Ship']['ShipName'] = row['ShipName']
+		newRow['Ship']['ShipSize'] = row['ShipSize']
+		newRow['Ship']['ShipType'] = row['ShipType']
+		newRow['Ship']['ShipCaptain'] = row['ShipCaptain']
+		newRow['Ship']['ShipHomePort'] = row['ShipHomePort']
+		newRow['Ship']['ShipHomePortLocationId'] = getLocation(connection, cursor, row['ShipHomePort'])
+		newRow['Voyage'] = {}
+		newRow['Voyage']['Start'] = {}
+		newRow['Voyage']['Start']['Name'] = "Norfolk Custom House 1820s-1857"
+		newRow['Voyage']['Start']['LocationId'] = "LOC69239764-5c09-462d-ac9e-065bd49280fb"
+		newRow['Voyage']['Start']['Date'] = row['Norfolk_date']
+		newRow['Voyage']['Start']['DateAccuracy'] = "D"
+		newRow['Voyage']['Customs'] = {}
+		newRow['Voyage']['Customs']['Name'] = "La Balize Fort and Custom Station"
+		newRow['Voyage']['Customs']['LocationId'] = "LOC5a0adf20-c799-41e9-bda2-3d51d31733f9"
+		newRow['Voyage']['Customs']['Date'] = row['balize_date']
+		newRow['Voyage']['Customs']['DateAccuracy'] = "D"
+		newRow['Voyage']['End'] = {}
+		newRow['Voyage']['End']['Name'] = "English Turn"
+		newRow['Voyage']['End']['LocationId'] = "LOC43966a15-ad08-427b-8ece-42c8eca61bd5"
+		newRow['Voyage']['End']['Date'] = row['NOLA_date']
+		newRow['Voyage']['End']['DateAccuracy'] = "D"
 
-		newRow['Reference']={}
-		newRow['Reference']['teamNumber']=row['teamNumber']
-		newRow['Reference']['ReferenceScan']=row['ReferenceScan']
-		newRow['Reference']['SecondReference']=row['SecondReference']
-		newRow['Reference']['Transcribers']=row['Transcribers']
+		newRow['Reference'] = {}
+		newRow['Reference']['teamNumber'] = row['teamNumber']
+		newRow['Reference']['ReferenceScan'] = row['ReferenceScan']
+		newRow['Reference']['SecondReference'] = row['SecondReference']
+		newRow['Reference']['Transcribers'] = row['Transcribers']
 
-		newRow['Notes']=row['Notes']
+		newRow['Notes'] = row['Notes']
 		Processed.append(newRow)
 		try:
 			SaveShip(connection, cursor, newRow)
@@ -355,7 +362,7 @@ def calculate_birthdate_from_norfolk(age, norfolk_date):
 def SaveHumans(connection, cursor, data):
 	for role in data['Humans']:
 		for human in data['Humans'][role]:
-			if len(human['FirstName'])==0 and len(human['LastName'])==0:
+			if len(human['FirstName']) == 0 and len(human['LastName']) == 0:
 				continue
 			# Use Norfolk_date from data instead of Voyage Start date
 			if human.get('Age'):
@@ -369,7 +376,7 @@ def SaveHumans(connection, cursor, data):
 			# print(human)
 			if human['HumanId']:
 				
-				HumanId=human['HumanId']
+				HumanId = human['HumanId']
 				# If a row exists, update it
 				update_query = f"""
 					update humans
@@ -412,11 +419,26 @@ def SaveHumans(connection, cursor, data):
 				# print(insert_query)
 				cursor.execute(insert_query)
 
+			# ---- New timeline insertion loop ----
+			for event in ['Start', 'Customs', 'End']:
+				eventData = data['Voyage'][event]
+				if eventData.get('Date') is not None:
+					LocationType=f"Voyage {event}"
+					insert_timeline = f"""
+					INSERT into humantimeline (HumanId, RoleId, LocationId, LocationType, date_circa, date_accuracy)
+					VALUES ('{HumanId}', '{role}', '{eventData['LocationId']}', '{LocationType}',{f"'{eventData['Date']}'"}, {f"'{eventData['DateAccuracy']}'"})
+					ON DUPLICATE KEY UPDATE 
+						date_circa=VALUES(date_circa), 
+						date_accuracy=VALUES(date_accuracy)
+					"""
+					cursor.execute(insert_timeline)
+			# ---- End timeline insertion loop ----
+
 			insert_role = f"""
 				INSERT into humanroles (HumanId, RoleId, date_circa, date_accuracy)
 				VALUES ('{HumanId}', '{role}', 
-						{f"'{data['Voyage']['Start']['Date']['parsed_date']}'" if data['Voyage']['Start']['Date']['parsed_date'] is not None else 'NULL'}, 
-						{f"'{data['Voyage']['Start']['Date']['DateAccuracy']}'" if data['Voyage']['Start']['Date']['DateAccuracy'] is not None else 'NULL'})
+						{f"'{data['Voyage']['Start']['Date']}'" if data['Voyage']['Start']['Date'] is not None else 'NULL'}, 
+						{f"'{data['Voyage']['Start']['DateAccuracy']}'" if data['Voyage']['Start']['DateAccuracy'] is not None else 'NULL'})
 				ON DUPLICATE KEY UPDATE 
 					RoleId=VALUES(RoleId), 
 					date_circa=VALUES(date_circa), 
@@ -439,13 +461,19 @@ def SaveHumans(connection, cursor, data):
 def SaveVoyage(connection, cursor, data):
 	# Extracting relevant information from the data
 	ship_id = data['Ship']['ShipId']
+	manifest_id = data['Manifest_ID']
 	# NEW: Check if 'Captain' list exists and is non-empty; if not, set captain_human_id to an empty string.
 	captain_list = data['Humans'].get('Captain', [])
 	captain_human_id = captain_list[0]['HumanId'] if captain_list and len(captain_list) > 0 else ""
 	start_location_id = data['Voyage']['Start']['LocationId']
 	end_location_id = data['Voyage']['End']['LocationId']
-	start_date = data['Voyage']['Start']['Date']['parsed_date']
-	end_date = data['Voyage']['End']['Date']['parsed_date']
+	customs_date = data['Voyage']['Customs']['Date']
+	if customs_date:
+		customs_location_id = data['Voyage']['Customs']['LocationId']
+	else:
+		customs_location_id = f"NULL"
+	start_date = data['Voyage']['Start']['Date']
+	end_date = data['Voyage']['End']['Date']
 	Notes = data.get('Notes', '')
 
 	# Use the provided VoyageId or generate a new one
@@ -453,13 +481,16 @@ def SaveVoyage(connection, cursor, data):
 
 	# SQL query to insert or update the voyage record
 	sql = f"""
-	INSERT into voyages (VoyageId, ShipId, CaptainHumanId, StartLocationId, EndLocationId, StartDate, EndDate, Notes)
-	VALUES ('{voyage_id}', '{ship_id}', '{captain_human_id}', '{start_location_id}', '{end_location_id}', {f"'{start_date}'" if start_date else 'NULL'}, {f"'{end_date}'" if end_date else 'NULL'}, '{Notes}')
+	INSERT into voyages (VoyageId, manifest_id, ShipId, CaptainHumanId, StartLocationId, EndLocationId, CustomsLocationId, CustomsDate, StartDate, EndDate, Notes)
+	VALUES ('{voyage_id}', '{manifest_id}','{ship_id}',{f"'{captain_human_id}'" if captain_human_id else 'NULL'},  '{start_location_id}', '{end_location_id}',{f"'{customs_location_id}'" if customs_location_id else 'NULL'},{f"'{customs_date}'" if customs_date else 'NULL'}, {f"'{start_date}'" if start_date else 'NULL'}, {f"'{end_date}'" if end_date else 'NULL'}, '{Notes}')
 	ON DUPLICATE KEY UPDATE
+	manifest_id = VALUES(manifest_id),
 	ShipId = VALUES(ShipId),
 	CaptainHumanId = VALUES(CaptainHumanId),
 	StartLocationId = VALUES(StartLocationId),
 	EndLocationId = VALUES(EndLocationId),
+	CustomsLocationId = VALUES(CustomsLocationId),
+	CustomsDate = VALUES(CustomsDate),
 	StartDate = VALUES(StartDate),
 	EndDate = VALUES(EndDate),
 	Notes = VALUES(Notes);
@@ -573,7 +604,7 @@ def ParseHumanNames(Name, Role):
 			else:
 				middle_name = ""  # No middle name present
 
-			if (len(first_name) and len(last_name)) or Role=='Enslaved':
+			if (len(first_name) and len(last_name)) or Role == 'Enslaved':
 				# Append the parsed data for each individual human
 				parsed_names.append({
 				
@@ -609,7 +640,7 @@ def ParseHumanNames(Name, Role):
 			middle_name = ""  # No middle name present
 
 		# print(Role)
-		if (len(first_name) and len(last_name)) or Role=='Enslaved':
+		if (len(first_name) and len(last_name)) or Role == 'Enslaved':
 			
 			# Append the parsed data for the single human
 			parsed_names.append({
@@ -668,9 +699,9 @@ def ParseDate(ManifestId, MonthDay, Year):
 		return DateOfTransaction
 
 def getLocation(connection, cursor, location_str):
-	location_str=location_str.replace(" ","")
-	location_str=location_str.replace(",","")
-	location_str=location_str.replace(".","")
+	location_str = location_str.replace(" ", "")
+	location_str = location_str.replace(",", "")
+	location_str = location_str.replace(".", "")
 
 	if not len(location_str):
 		return "None"
@@ -685,12 +716,12 @@ def getLocation(connection, cursor, location_str):
 	else:
 		print(location_str)
 		print("geocode lookup")
-		LocationId=geocode_location(connection, cursor,location_str)
+		LocationId = geocode_location(connection, cursor, location_str)
 		query = f"insert into locationaddresses(LocationId,Address) values('{LocationId}','{location_str}')"
 		cursor.execute(query)
 		connection.commit()
 
-		print("LocationId",LocationId)
+		print("LocationId", LocationId)
 		return LocationId
 	
 	
@@ -771,9 +802,9 @@ def geocode_location(connection, cursor, address):
 
 
 def getManifests(cursor):
-	sql=f"select distinct * from raw_manifest"
+	sql = f"select distinct * from raw_manifest"
 	cursor.execute(sql)
-	results=cursor.fetchall()
+	results = cursor.fetchall()
 	
 	return results
 

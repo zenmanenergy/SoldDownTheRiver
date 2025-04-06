@@ -163,7 +163,7 @@
 									bind:value={Voyage.StartLocationId} 
 									options={Locations.map(location => ({
 										value: location.LocationId, 
-										label: `${location.City} ${location.State}`
+										label: (location.Name && location.Name.length) ? location.Name : `${location.City} ${location.State}`
 									}))} 
 								/>
 							</div>
@@ -180,7 +180,7 @@
 									bind:value={Voyage.EndLocationId} 
 									options={Locations.map(location => ({
 										value: location.LocationId, 
-										label: `${location.City} ${location.State}`
+										label: (location.Name && location.Name.length) ? location.Name : `${location.City} ${location.State}`
 									}))} 
 								/>
 							</div>
