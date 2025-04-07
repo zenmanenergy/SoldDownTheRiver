@@ -7,8 +7,8 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 	def insert_parent_child(parent_id, child_id):
 		# Insert direct relationship
 		sql_insert_relationship = f"""
-			INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId)
-			VALUES ('{parent_id}', '{child_id}')
+			INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId, DateUpdated)
+			VALUES ('{parent_id}', '{child_id}', now())
 		"""
 		print("Executing SQL:", sql_insert_relationship)
 		cursor.execute(sql_insert_relationship)
@@ -16,8 +16,8 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 
 		# Insert direct humanclosure relationship (depth=1)
 		sql_insert_closure_depth_1 = f"""
-			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
-			VALUES ('{parent_id}', '{child_id}', 1)
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth, DateUpdated)
+			VALUES ('{parent_id}', '{child_id}', 1, now())
 		"""
 		print("Executing SQL:", sql_insert_closure_depth_1)
 		cursor.execute(sql_insert_closure_depth_1)
@@ -25,8 +25,8 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 
 		# Insert all indirect ancestors (ancestors of parent → child)
 		sql_insert_indirect_ancestors = f"""
-			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
-			SELECT AncestorHumanId, '{child_id}', Depth + 1
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth, DateUpdated)
+			SELECT AncestorHumanId, '{child_id}', Depth + 1, now()
 			FROM humanclosure
 			WHERE DescendantHumanId = '{parent_id}'
 		"""
@@ -36,8 +36,8 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 
 		# Insert all indirect descendants (parent → descendants of child)
 		sql_insert_indirect_descendants = f"""
-			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
-			SELECT '{parent_id}', DescendantHumanId, Depth + 1
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth, DateUpdated)
+			SELECT '{parent_id}', DescendantHumanId, Depth + 1, now()
 			FROM humanclosure
 			WHERE AncestorHumanId = '{child_id}'
 		"""
@@ -47,8 +47,8 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 
 		# Insert transitive humanrelationships (ancestors of parent → descendants of child)
 		sql_insert_transitive_relationships = f"""
-			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth)
-			SELECT c1.AncestorHumanId, c2.DescendantHumanId, c1.Depth + c2.Depth + 1
+			INSERT IGNORE INTO humanclosure (AncestorHumanId, DescendantHumanId, Depth, DateUpdated)
+			SELECT c1.AncestorHumanId, c2.DescendantHumanId, c1.Depth + c2.Depth + 1, now()
 			FROM humanclosure c1
 			JOIN humanclosure c2 ON c1.DescendantHumanId = '{parent_id}' AND c2.AncestorHumanId = '{child_id}'
 		"""
@@ -100,10 +100,10 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 				parent_id = parent['ParentHumanId']  # Access dict by key
 				insert_parent_child(parent_id, RelatedHumanId)
 
-			# Insert sibling relationship into humanrelationships
+			# Insert sibling relationship into humanrelationships with DateUpdated now()
 			sql_insert_sibling_relationship = f"""
-				INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId)
-				SELECT ParentHumanId, '{RelatedHumanId}'
+				INSERT IGNORE INTO humanrelationships (ParentHumanId, ChildHumanId, DateUpdated)
+				SELECT ParentHumanId, '{RelatedHumanId}', now()
 				FROM humanrelationships
 				WHERE ChildHumanId = '{HumanId}'
 			"""
@@ -115,7 +115,7 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 		# Spouse humanrelationships are not part of the humanclosure table
 		sql_update_spouse_1 = f"""
 			UPDATE humans
-			SET spouseHumanId = '{RelatedHumanId}'
+			SET spouseHumanId = '{RelatedHumanId}', DateUpdated = NOW()
 			WHERE HumanId = '{HumanId}'
 		"""
 		print("Executing SQL:", sql_update_spouse_1)
@@ -123,7 +123,7 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 
 		sql_update_spouse_2 = f"""
 			UPDATE humans
-			SET spouseHumanId = '{HumanId}'
+			SET spouseHumanId = '{HumanId}', DateUpdated = NOW()
 			WHERE HumanId = '{RelatedHumanId}'
 		"""
 		print("Executing SQL:", sql_update_spouse_2)
@@ -134,7 +134,7 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 	if RelationshipType.lower() in ['husband', 'son', 'brother', 'father']:
 		sql_update_sex_male = f"""
 			UPDATE humans
-			SET sex = 'Male'
+			SET sex = 'Male', DateUpdated = NOW()
 			WHERE HumanId = '{RelatedHumanId}' AND sex IS NULL
 		"""
 		print("Executing SQL:", sql_update_sex_male)
@@ -143,7 +143,7 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 	elif RelationshipType.lower() in ['wife', 'daughter', 'sister', 'mother']:
 		sql_update_sex_female = f"""
 			UPDATE humans
-			SET sex = 'Female'
+			SET sex = 'Female', DateUpdated = NOW()
 			WHERE HumanId = '{RelatedHumanId}' AND sex IS NULL
 		"""
 		print("Executing SQL:", sql_update_sex_female)

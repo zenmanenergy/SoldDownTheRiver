@@ -5,13 +5,14 @@ def set_timelines():
 	cursor, connection = Database.ConnectToDatabase()
 	# Fourth insert statement: Join transactionhumans with transactions
 	query2 = """
-		insert into humantimeline(HumanId,LocationId, Date_circa, Date_Accuracy,LocationType)
+		insert into humantimeline(HumanId,LocationId, Date_circa, Date_Accuracy,LocationType, DateUpdated)
 		SELECT DISTINCT
 			transactionhumans.HumanId,
 			raw_nola.LocationIdSecondParty,
 			transactions.date_circa,
 			transactions.date_accuracy,
-			'Residence'
+			'Residence',
+			NOW()
 		FROM transactions
 		JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
 		join raw_nola on raw_nola.NOLA_ID=transactions.NOLA_ID
@@ -22,20 +23,21 @@ def set_timelines():
 			and raw_nola.LocationIdSecondParty is not null
 			and transactionhumans.RoleId='Seller'
 		
-		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), DateUpdated = NOW()
 	"""
 	print(query2)
 	cursor.execute(query2)
 	connection.commit()
 
 	query3 = """
-		insert into humantimeline(HumanId,LocationId, Date_circa, Date_Accuracy,LocationType)
+		insert into humantimeline(HumanId,LocationId, Date_circa, Date_Accuracy,LocationType, DateUpdated)
 		SELECT DISTINCT
 			transactionhumans.HumanId,
 			raw_nola.LocationIdFirstParty,
 			transactions.date_circa,
 			transactions.date_accuracy,
-			'Residence'
+			'Residence',
+			NOW()
 		FROM transactions
 		JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
 		join raw_nola on raw_nola.NOLA_ID=transactions.NOLA_ID
@@ -46,7 +48,7 @@ def set_timelines():
 			and raw_nola.LocationIdFirstParty is not null
 			and transactionhumans.RoleId='Buyer'
 		
-		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), DateUpdated = NOW()
 	"""
 	print(query3)
 	cursor.execute(query3)
@@ -54,13 +56,14 @@ def set_timelines():
 	
 	# Fourth insert statement: Join transactionhumans with transactions
 	query4 = """
-		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType)
+		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType, DateUpdated)
 		SELECT DISTINCT
 			transactionhumans.HumanId,
 			transactions.LocationId,
 			transactions.date_circa,
 			transactions.date_accuracy,
-			'Transaction'
+			'Transaction',
+			NOW()
 		FROM transactions
 		JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
 		WHERE transactions.LocationId IS NOT NULL
@@ -68,7 +71,7 @@ def set_timelines():
 			AND transactions.date_circa IS NOT NULL
 			AND transactions.date_accuracy IS NOT NULL
 		ORDER BY transactionhumans.HumanId, transactions.LocationId, transactions.date_circa
-		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), DateUpdated = NOW()
 	"""
 	print(query4)
 	cursor.execute(query4)
@@ -76,20 +79,21 @@ def set_timelines():
 
 	# Fifth insert statement: HumanId from voyagehumans with StartLocationId and StartDate
 	query5 = """
-		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType)
+		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType, DateUpdated)
 		SELECT DISTINCT
 			voyagehumans.HumanId,
 			voyages.StartLocationId AS LocationId,
 			voyages.StartDate AS date_circa,
 			'D' AS date_accuracy,
-			'Voyage Start'
+			'Voyage Start',
+			NOW()
 		FROM voyages
 		JOIN voyagehumans ON voyages.VoyageId = voyagehumans.VoyageId
 		WHERE voyagehumans.HumanId IS NOT NULL
 			AND voyages.StartLocationId IS NOT NULL
 			AND voyages.StartDate IS NOT NULL
 		ORDER BY voyagehumans.HumanId, voyages.StartLocationId, voyages.StartDate
-		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), DateUpdated = NOW()
 	"""
 	print(query5)
 	cursor.execute(query5)
@@ -97,20 +101,21 @@ def set_timelines():
 
 	# Sixth insert statement: HumanId from voyagehumans with EndLocationId and EndDate
 	query6 = """
-		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType)
+		INSERT INTO humantimeline(HumanId, LocationId, date_circa, date_accuracy, LocationType, DateUpdated)
 		SELECT DISTINCT
 			voyagehumans.HumanId,
 			voyages.EndLocationId AS LocationId,
 			voyages.EndDate AS date_circa,
 			'D' AS date_accuracy,
-			'Voyage End'
+			'Voyage End',
+			NOW()
 		FROM voyages
 		JOIN voyagehumans ON voyages.VoyageId = voyagehumans.VoyageId
 		WHERE voyagehumans.HumanId IS NOT NULL
 			AND voyages.EndLocationId IS NOT NULL
 			AND voyages.EndDate IS NOT NULL
 		ORDER BY voyagehumans.HumanId, voyages.EndLocationId, voyages.EndDate
-		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType)
+		ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), DateUpdated = NOW()
 	"""
 	print(query6)
 	cursor.execute(query6)

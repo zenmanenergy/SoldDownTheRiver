@@ -8,10 +8,11 @@ def save_transactionhuman(TransactionId, HumanId, RoleId):
 
 	# Prepare the query and values for transactionhumans
 	relationship_query = """
-		INSERT INTO transactionhumans (TransactionId, HumanId, RoleId)
-		VALUES (%s, %s, %s)
+		INSERT INTO transactionhumans (TransactionId, HumanId, RoleId, DateUpdated)
+		VALUES (%s, %s, %s, NOW())
 		ON DUPLICATE KEY UPDATE
-			RoleId = VALUES(RoleId)
+			RoleId = VALUES(RoleId),
+			DateUpdated = NOW()
 	"""
 	relationship_values = (TransactionId, HumanId, RoleId)
 
@@ -30,11 +31,12 @@ def save_transactionhuman(TransactionId, HumanId, RoleId):
 	if row:
 		 # Updated timeline query with ON DUPLICATE KEY UPDATE clause
 		timeline_query = """
-			INSERT INTO humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy)
-			VALUES (%s, %s, %s, %s)
+			INSERT INTO humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, DateUpdated)
+			VALUES (%s, %s, %s, %s, NOW())
 			ON DUPLICATE KEY UPDATE
 				Date_Circa = VALUES(Date_Circa),
-				Date_Accuracy = VALUES(Date_Accuracy)
+				Date_Accuracy = VALUES(Date_Accuracy),
+				DateUpdated = NOW()
 		"""
 		timeline_values = (HumanId, row['LocationId'], row['Date_Circa'], row['Date_Accuracy'])
 		cursor.execute(timeline_query, timeline_values)

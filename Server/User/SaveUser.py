@@ -8,13 +8,13 @@ def save_user(UserId, FirstName, LastName, Email, Phone, Password, School, Semes
 	# Check if the UserId is present
 	if UserId:
 		# If the UserId is present, update the existing user
-		query = "update users SET FirstName = %s, LastName = %s, Email = %s, Phone = %s,Password=%s, School = %s, SemesterYear = %s, UserType = %s WHERE UserId = %s"
+		query = "update users SET FirstName = %s, LastName = %s, Email = %s, Phone = %s, Password = %s, School = %s, SemesterYear = %s, UserType = %s, DateUpdated = NOW() WHERE UserId = %s"
 		values = (FirstName, LastName, Email, Phone, Password, School, SemesterYear, UserType, UserId)
 	else:
 		# If the UserId is not present, create a new user
 		UserId = "USR"+str(uuid.uuid4())
-		query = "INSERT into users (UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear, UserType) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-		values = (UserId, FirstName, LastName, Email, Phone, Password,School, SemesterYear,UserType)
+		query = "INSERT into users (UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear, UserType, DateUpdated) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())"
+		values = (UserId, FirstName, LastName, Email, Phone, Password, School, SemesterYear, UserType)
 
 	# Execute the query and commit the changes
 	print(query, values)

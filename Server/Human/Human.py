@@ -67,9 +67,9 @@ def SaveHuman():
 		if TransactionId and RoleId:
 			cursor2, connection2 = Database.ConnectToDatabase()
 			query2 = """
-				INSERT INTO transactionhumans (TransactionId, HumanId, RoleId)
-				VALUES (%s, %s, %s)
-				ON DUPLICATE KEY UPDATE RoleId = VALUES(RoleId)
+				INSERT INTO transactionhumans (TransactionId, HumanId, RoleId, DateUpdated)
+				VALUES (%s, %s, %s, NOW())
+				ON DUPLICATE KEY UPDATE RoleId = VALUES(RoleId), DateUpdated=NOW()
 			"""
 			cursor2.execute(query2, (TransactionId, HumanId, RoleId))
 			connection2.commit()

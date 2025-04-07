@@ -425,33 +425,37 @@ def SaveHumans(connection, cursor, data):
 				if eventData.get('Date') is not None:
 					LocationType=f"Voyage {event}"
 					insert_timeline = f"""
-					INSERT into humantimeline (HumanId, RoleId, LocationId, LocationType, date_circa, date_accuracy)
-					VALUES ('{HumanId}', '{role}', '{eventData['LocationId']}', '{LocationType}',{f"'{eventData['Date']}'"}, {f"'{eventData['DateAccuracy']}'"})
+					INSERT into humantimeline (HumanId, RoleId, LocationId, LocationType, date_circa, date_accuracy, DateUpdated)
+					VALUES ('{HumanId}', '{role}', '{eventData['LocationId']}', '{LocationType}',{f"'{eventData['Date']}'"}, {f"'{eventData['DateAccuracy']}'"}, NOW())
 					ON DUPLICATE KEY UPDATE 
 						date_circa=VALUES(date_circa), 
-						date_accuracy=VALUES(date_accuracy)
+						date_accuracy=VALUES(date_accuracy),
+						DateUpdated=NOW()
 					"""
 					cursor.execute(insert_timeline)
 			# ---- End timeline insertion loop ----
 
 			insert_role = f"""
-				INSERT into humanroles (HumanId, RoleId, date_circa, date_accuracy)
+				INSERT into humanroles (HumanId, RoleId, date_circa, date_accuracy, DateUpdated)
 				VALUES ('{HumanId}', '{role}', 
 						{f"'{data['Voyage']['Start']['Date']}'" if data['Voyage']['Start']['Date'] is not None else 'NULL'}, 
-						{f"'{data['Voyage']['Start']['DateAccuracy']}'" if data['Voyage']['Start']['DateAccuracy'] is not None else 'NULL'})
+						{f"'{data['Voyage']['Start']['DateAccuracy']}'" if data['Voyage']['Start']['DateAccuracy'] is not None else 'NULL'},
+						NOW())
 				ON DUPLICATE KEY UPDATE 
 					RoleId=VALUES(RoleId), 
 					date_circa=VALUES(date_circa), 
-					date_accuracy=VALUES(date_accuracy)
+					date_accuracy=VALUES(date_accuracy),
+					DateUpdated=NOW()
 				"""
 			# print(insert_role)
 			cursor.execute(insert_role)
 
 			insert_role = f"""
-				INSERT into voyagehumans (VoyageId,HumanId, RoleId)
-				VALUES ('{data['VoyageId']}','{HumanId}', '{role}')
+				INSERT into voyagehumans (VoyageId, HumanId, RoleId, DateUpdated)
+				VALUES ('{data['VoyageId']}', '{HumanId}', '{role}', NOW())
 				ON DUPLICATE KEY UPDATE 
-					RoleId=VALUES(RoleId)
+					RoleId=VALUES(RoleId),
+					DateUpdated=NOW()
 				"""
 			# print(insert_role)
 			cursor.execute(insert_role)
@@ -516,13 +520,14 @@ def SaveShip(connection, cursor, data):
 
 	# SQL query to insert or update the ship record
 	sql = f"""
-	INSERT into ships (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
-	VALUES ('{ship_id}', '{ship_name}', NULL, NULL, '{ship_type}', '{ship_size}', '{home_port_location_id}')
+	INSERT into ships (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId, DateUpdated)
+	VALUES ('{ship_id}', '{ship_name}', NULL, NULL, '{ship_type}', '{ship_size}', '{home_port_location_id}', NOW())
 	ON DUPLICATE KEY UPDATE
 	ShipName = VALUES(ShipName),
 	ShipType = VALUES(ShipType),
 	Size = VALUES(Size),
-	HomePortLocationId = VALUES(HomePortLocationId);
+	HomePortLocationId = VALUES(HomePortLocationId),
+	DateUpdated = NOW();
 	"""
 
 	# Execute the query
@@ -717,7 +722,7 @@ def getLocation(connection, cursor, location_str):
 		print(location_str)
 		print("geocode lookup")
 		LocationId = geocode_location(connection, cursor, location_str)
-		query = f"insert into locationaddresses(LocationId,Address) values('{LocationId}','{location_str}')"
+		query = f"INSERT INTO locationaddresses (LocationId, Address, DateUpdated) VALUES ('{LocationId}', '{location_str}', NOW())"
 		cursor.execute(query)
 		connection.commit()
 
@@ -734,7 +739,7 @@ def geocode_location(connection, cursor, address):
 		location_data = geocode_result[0]
 		location = location_data['geometry']['location']
 		# Update: extract longitude correctly instead of 'lng'
-		lat, lng = location['lat'], location['lng']
+		lat, lng = location['lat'], 'lng'
 		
 		# Extract more detailed location components
 		address_components = {comp['types'][0]: comp['long_name'] for comp in location_data['address_components']}
@@ -780,7 +785,17 @@ def geocode_location(connection, cursor, address):
 		location_id = "LOC" + str(uuid.uuid4()).replace("-", "")
 		insert_query = """
 		INSERT into locations (LocationId, Address, City, County, State, State_abbr, Country, Latitude, Longitude, DateUpdated)
-		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+		ON DUPLICATE KEY UPDATE
+			Address = VALUES(Address),
+			City = VALUES(City),
+			County = VALUES(County),
+			State = VALUES(State),
+			State_abbr = VALUES(State_abbr),
+			Country = VALUES(Country),
+			Latitude = VALUES(Latitude),
+			Longitude = VALUES(Longitude),
+			DateUpdated = NOW()
 		"""
 		cursor.execute(insert_query, (
 			location_id,
@@ -791,8 +806,7 @@ def geocode_location(connection, cursor, address):
 			location_data['state_abbr'],
 			location_data['country_abbr'],
 			location_data['latitude'],
-			location_data['longitude'],
-			datetime.now()
+			location_data['longitude']
 		))
 		print("Inserted new location into the database.")
 		connection.commit()
@@ -843,3 +857,19 @@ def Get_LastManifest():
 	result = cursor.fetchone()
 		
 	return result
+
+def SaveTimeLine(HumanId, LocationId, DateThere):
+	cursor, connection = Database.ConnectToDatabase()
+	dateThere_dt = parse_date(DateThere)
+	insert_TimeLine = """
+	INSERT into humantimeline (HumanId, LocationId, dateThere_s, dateThere_dt, DateUpdated)
+	VALUES (%s, %s, %s, %s, NOW())
+	ON DUPLICATE KEY UPDATE 
+		HumanId=VALUES(HumanId), 
+		LocationId=VALUES(LocationId), 
+		dateThere_s=VALUES(dateThere_s), 
+		dateThere_dt=VALUES(dateThere_dt),
+		DateUpdated=NOW()
+	"""
+	cursor.execute(insert_TimeLine, (HumanId, LocationId, DateThere, dateThere_dt))
+	connection.commit()

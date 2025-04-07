@@ -13,8 +13,8 @@ def InsertTransaction(connection, cursor, txn):
 		# Create a new transaction
 		txn["TransactionId"] = "TXN" + str(uuid.uuid4()).replace("-", "")
 	query_insert = (
-		"INSERT INTO transactions (TransactionId, date_circa, date_accuracy, TransactionType, Notes, Act, Page, Volume, URL, NeedsReview, Transcriber, NOLA_ID, Parsed_Notes, QuantityOfSlaves, TotalPrice, dataIssue, Issues, LocationId, processedNotes, isApproved, DataQuestions) "
-		"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+		"INSERT INTO transactions (TransactionId, date_circa, date_accuracy, TransactionType, Notes, Act, Page, Volume, URL, NeedsReview, Transcriber, NOLA_ID, Parsed_Notes, QuantityOfSlaves, TotalPrice, dataIssue, Issues, LocationId, processedNotes, isApproved, DataQuestions, DateUpdated) "
+		"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW()) "
 		"ON DUPLICATE KEY UPDATE "
 		"date_circa = VALUES(date_circa), "
 		"date_accuracy = VALUES(date_accuracy), "
@@ -34,7 +34,8 @@ def InsertTransaction(connection, cursor, txn):
 		"LocationId = VALUES(LocationId), "
 		"processedNotes = VALUES(processedNotes), "
 		"isApproved = VALUES(isApproved), "
-		"DataQuestions = VALUES(DataQuestions)"
+		"DataQuestions = VALUES(DataQuestions), "
+		"DateUpdated = NOW()"
 	)
 	values = (
 		txn.get("TransactionId"),

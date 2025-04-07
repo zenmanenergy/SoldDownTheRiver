@@ -29,7 +29,7 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 		query = ("UPDATE transactions SET "
 				"date_circa=%s, date_accuracy=%s, TransactionType=%s, Notes=%s, URL=%s, "
 				"TotalPrice=%s, LocationId=%s, Act=%s, Page=%s, Volume=%s, Transcriber=%s, "
-				"isApproved=%s, DataQuestions=%s "
+				"isApproved=%s, DataQuestions=%s, DateUpdated=NOW() "
 				"WHERE TransactionId=%s")
 		params = (
 			date_circa, 
@@ -52,8 +52,8 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 		TransactionId = "TRN" + str(uuid.uuid4())
 		query = ("INSERT INTO transactions "
 				"(TransactionId, date_circa, date_accuracy, TransactionType, Notes, URL, TotalPrice, "
-				"LocationId, Act, Page, Volume, Transcriber, isApproved, DataQuestions) "
-				"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+				"LocationId, Act, Page, Volume, Transcriber, isApproved, DataQuestions, DateUpdated) "
+				"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())")
 		params = (
 			TransactionId,
 			date_circa,

@@ -184,9 +184,9 @@ def SaveTransaction(connection, cursor, Transaction):
 			cursor.execute(insert_first)
 			residence = human['Human'].get('ResidenceLocationId', None)
 			timeline_query = f"""
-				INSERT into humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType)
-				VALUES ('{human_id}', {f"'{residence}'" if residence else 'NULL'}, {f"'{date_circa}'" if date_circa else 'NULL'}, {f"'{date_accuracy}'" if date_accuracy else 'NULL'}, 'Residence')
-				ON DUPLICATE KEY UPDATE Date_Circa=VALUES(Date_Circa), Date_Accuracy=VALUES(Date_Accuracy)
+				INSERT into humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType, DateUpdated)
+				VALUES ('{human_id}', {f"'{residence}'" if residence else 'NULL'}, {f"'{date_circa}'" if date_circa else 'NULL'}, {f"'{date_accuracy}'" if date_accuracy else 'NULL'}, 'Residence', NOW())
+				ON DUPLICATE KEY UPDATE Date_Circa=VALUES(Date_Circa), Date_Accuracy=VALUES(Date_Accuracy), DateUpdated=NOW()
 			"""
 			cursor.execute(timeline_query)
 		
@@ -197,9 +197,9 @@ def SaveTransaction(connection, cursor, Transaction):
 			cursor.execute(insert_second)
 			residence = human['Human'].get('ResidenceLocationId', None)
 			timeline_query = f"""
-				INSERT into humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType)
-				VALUES ('{human_id}', {f"'{residence}'" if residence else 'NULL'}, {f"'{date_circa}'" if date_circa else 'NULL'}, {f"'{date_accuracy}'" if date_accuracy else 'NULL'}, 'Residence')
-				ON DUPLICATE KEY UPDATE Date_Circa=VALUES(Date_Circa), Date_Accuracy=VALUES(Date_Accuracy)
+				INSERT into humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType, DateUpdated)
+				VALUES ('{human_id}', {f"'{residence}'" if residence else 'NULL'}, {f"'{date_circa}'" if date_circa else 'NULL'}, {f"'{date_accuracy}'" if date_accuracy else 'NULL'}, 'Residence', NOW())
+				ON DUPLICATE KEY UPDATE Date_Circa=VALUES(Date_Circa), Date_Accuracy=VALUES(Date_Accuracy), DateUpdated=NOW()
 			"""
 			cursor.execute(timeline_query)
 		
@@ -221,7 +221,7 @@ def SaveHumanOLD(connection, cursor, humans, human_map,role):
 			if key in human_map:
 				HumanId = human_map[key]
 				update_query = (
-					"update humans SET FirstName = '{FirstName}', MiddleName = '{MiddleName}', LastName = '{LastName}' "
+					"update humans SET FirstName = '{FirstName}', MiddleName = '{MiddleName}', LastName = '{LastName}', DateUpdated = NOW() "
 					"WHERE HumanId = '{HumanId}'"
 				).format(FirstName=human['FirstName'], MiddleName=human['MiddleName'], LastName=human['LastName'], HumanId=HumanId)
 				cursor.execute(update_query)
@@ -229,8 +229,8 @@ def SaveHumanOLD(connection, cursor, humans, human_map,role):
 			else:
 				HumanId = "HUM" + str(uuid.uuid4()).replace("-", "")
 				insert_query = (
-					"INSERT into humans (HumanId, FirstName, MiddleName, LastName) "
-					"VALUES ('{HumanId}', '{FirstName}', '{MiddleName}', '{LastName}')"
+					"INSERT into humans (HumanId, FirstName, MiddleName, LastName, DateUpdated) "
+					"VALUES ('{HumanId}', '{FirstName}', '{MiddleName}', '{LastName}', NOW())"
 				).format(HumanId=HumanId, FirstName=human['FirstName'], MiddleName=human['MiddleName'], LastName=human['LastName'])
 				cursor.execute(insert_query)
 				connection.commit()
@@ -244,10 +244,10 @@ def SaveHumanOLD(connection, cursor, humans, human_map,role):
 			
 			if "ResidenceLocationId" in human:
 				insert_timeline = (
-					"INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId) "
-					"VALUES ('{HumanId}', {residence}, {date_circa}, {date_accuracy}, 'Residence','{role}') "
+					"INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId, DateUpdated) "
+					"VALUES ('{HumanId}', {residence}, {date_circa}, {date_accuracy}, 'Residence','{role}', NOW()) "
 					"ON DUPLICATE KEY UPDATE HumanId=VALUES(HumanId), LocationId=VALUES(LocationId), "
-					"date_circa=VALUES(date_circa), date_accuracy=VALUES(date_accuracy), LocationType=VALUES(LocationType)"
+					"date_circa=VALUES(date_circa), date_accuracy=VALUES(date_accuracy), LocationType=VALUES(LocationType), DateUpdated=NOW()"
 				).format(
 					HumanId=HumanId,
 					residence=(f"'{human['ResidenceLocationId']}'" if human.get('ResidenceLocationId') is not None else 'NULL'),
@@ -258,10 +258,10 @@ def SaveHumanOLD(connection, cursor, humans, human_map,role):
 				connection.commit()
 			if "OfficeLocationId" in human:
 				insert_office = (
-					"INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId) "
-					"VALUES ('{HumanId}', {office}, {date_circa}, {date_accuracy}, 'Notary Office','{role}') "
+					"INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId, DateUpdated) "
+					"VALUES ('{HumanId}', {office}, {date_circa}, {date_accuracy}, 'Notary Office','{role}', NOW()) "
 					"ON DUPLICATE KEY UPDATE HumanId=VALUES(HumanId), LocationId=VALUES(LocationId), "
-					"date_circa=VALUES(date_circa), date_accuracy=VALUES(date_accuracy), LocationType=VALUES(LocationType)"
+					"date_circa=VALUES(date_circa), date_accuracy=VALUES(date_accuracy), LocationType=VALUES(LocationType), DateUpdated=NOW()"
 				).format(
 					HumanId=HumanId,
 					office=(f"'{human['OfficeLocationId']}'" if human.get('OfficeLocationId') is not None else 'NULL'),
@@ -355,7 +355,7 @@ def getLocation(connection, cursor, location_str):
 		print(location_str)
 		print("geocode lookup")
 		LocationId=geocode_location(connection, cursor,location_str)
-		query = f"insert into locationaddresses(LocationId,Address) values('{LocationId}','{location_str}')"
+		query = f"INSERT INTO locationaddresses (LocationId, Address, DateUpdated) VALUES ('{LocationId}', '{location_str}', NOW())"
 		cursor.execute(query)
 		connection.commit()
 

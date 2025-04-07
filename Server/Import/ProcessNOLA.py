@@ -18,7 +18,7 @@ from collections import defaultdict
 import json
 # openai.api_key = ''
 
-from InsertTransactions import InsertTransaction  # new import
+# from InsertTransactions import InsertTransaction  # new import
 
 gmaps = googlemaps.Client(key='AIzaSyB_a1_JJZBF0g43m9KeKVrSlr7ik6_AN_Y')
 
@@ -138,7 +138,38 @@ def ProcessNOLA():
 			"isApproved": 0,
 			"DataQuestions": ""
 		}
-		TransactionId=InsertTransaction(connection, cursor, txn)
+		# TransactionId=InsertTransaction(connection, cursor, txn)
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
+		print("uncomment!")
 
 		parsed_data = json.loads(row['Parsed_Notes'])
 		# print(parsed_data)
@@ -351,7 +382,7 @@ def getLocation(connection, cursor, location_str):
 		print(location_str)
 		print("geocode lookup")
 		LocationId=geocode_location(connection, cursor,location_str)
-		query = f"insert into locationaddresses(LocationId,Address) values('{LocationId}','{location_str}')"
+		query = f"insert into locationaddresses(LocationId,Address,DateUpdated) values('{LocationId}','{location_str}',NOW())"
 		cursor.execute(query)
 		connection.commit()
 
@@ -380,7 +411,7 @@ def SaveHuman(connection, cursor, humans, human_map):
 			HumanId = result['HumanId']
 		else:
 			HumanId = "HUM" + str(uuid.uuid4()).replace("-", "")
-			query = f"INSERT INTO humans (HumanId,FirstName, MiddleName, LastName) VALUES ('{HumanId}','{first}', '{middle}', '{last}')"
+			query = f"INSERT INTO humans (HumanId,FirstName, MiddleName, LastName, DateUpdated) VALUES ('{HumanId}','{first}', '{middle}', '{last}', NOW())"
 			print(query)
 			cursor.execute(query)
 			connection.commit()
@@ -390,9 +421,9 @@ def SaveHuman(connection, cursor, humans, human_map):
 
 def InsertHumanTimeline(cursor, human_id, location_id, date_circa, location_type, role):
 	query_tl = (
-		f"INSERT INTO humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType, RoleId) "
-		f"VALUES ('{human_id}', '{location_id}', '{date_circa}', 'D', '{location_type}', '{role}') "
-		f"ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), RoleId = VALUES(RoleId)"
+		f"INSERT INTO humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType, RoleId, DateUpdated) "
+		f"VALUES ('{human_id}', '{location_id}', '{date_circa}', 'D', '{location_type}', '{role}', NOW()) "
+		f"ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), RoleId = VALUES(RoleId), DateUpdated = NOW()"
 	)
 	print(query_tl)
 	cursor.execute(query_tl)
@@ -629,12 +660,13 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	cursor.execute(sql)
 	connection.commit()
 	sql = f"""
-		INSERT into transactionhumans (TransactionId, HumanId, Notes, parsedNotes, originLocationId, destinationLocationId, price)
-		VALUES ('{transaction['TransactionId']}', '{HumanId}', '{transaction['Notes'].replace("'", "''")}','{transaction['Parsed_Notes'].replace("'", "''")}','{originLocationId}','{destinationLocationId}','{price}')
+		INSERT into transactionhumans (TransactionId, HumanId, Notes, parsedNotes, originLocationId, destinationLocationId, price, DateUpdated)
+		VALUES ('{transaction['TransactionId']}', '{HumanId}', '{transaction['Notes'].replace("'", "''")}', '{transaction['Parsed_Notes'].replace("'", "''")}', '{originLocationId}', '{destinationLocationId}', '{price}', NOW())
 		ON DUPLICATE KEY UPDATE 
 			price = VALUES(price),
-			originLocationId=values(originLocationId),
-			destinationLocationId=values(destinationLocationId);
+			originLocationId = VALUES(originLocationId),
+			destinationLocationId = VALUES(destinationLocationId),
+			DateUpdated = NOW();
 	"""
 
 	sql=replace_none_to_null(sql)
@@ -643,7 +675,7 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	connection.commit()
 
 	sql = f"""
-		update transactions set processedNotes=1 where TransactionId='{transaction['TransactionId']}'
+		update transactions set processedNotes=1, DateUpdated=NOW() where TransactionId='{transaction['TransactionId']}'
 	"""
 
 	sql=replace_none_to_null(sql)

@@ -7,15 +7,10 @@ def save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,Buying
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 	
-
-
-	
-	query = "INSERT into voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)"
-	query += f" VALUES ('{VoyageId}', '{HumanId}','{RoleId}','{SellingSlaveTraderHumanId}', '{BuyingSlaveTraderHumanId}','{ShippingAgentHumanId}', '{CollectingAgentHumanId}','{Notes}')"
-	query +=" ON DUPLICATE KEY update voyageId=values(VoyageId),HumanId=values(HumanId) ,RoleId=values(RoleId), SellingSlaveTraderHumanId=values(SellingSlaveTraderHumanId),BuyingSlaveTraderHumanId=values(BuyingSlaveTraderHumanId),ShippingAgentHumanId=values(ShippingAgentHumanId),CollectingAgentHumanId=values(CollectingAgentHumanId),Notes=values(Notes)"
+	query = "INSERT into voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, DateUpdated)"
+	query += f" VALUES ('{VoyageId}', '{HumanId}', '{RoleId}', '{SellingSlaveTraderHumanId}', '{BuyingSlaveTraderHumanId}', '{ShippingAgentHumanId}', '{CollectingAgentHumanId}', '{Notes}', NOW())"
+	query += " ON DUPLICATE KEY update voyageId=values(VoyageId), HumanId=values(HumanId), RoleId=values(RoleId), SellingSlaveTraderHumanId=values(SellingSlaveTraderHumanId), BuyingSlaveTraderHumanId=values(BuyingSlaveTraderHumanId), ShippingAgentHumanId=values(ShippingAgentHumanId), CollectingAgentHumanId=values(CollectingAgentHumanId), Notes=values(Notes), DateUpdated=NOW()"
 		
-
-
 	print(query )
 
 	# Execute the query and commit the changes

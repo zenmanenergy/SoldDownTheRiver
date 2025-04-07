@@ -22,7 +22,8 @@ def save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocati
 		sql = """
 			UPDATE ships 
 			SET ShipName = %s, BuildDate = %s, Notes = %s, 
-				ShipType = %s, Size = %s, HomePortLocationId = %s
+				ShipType = %s, Size = %s, HomePortLocationId = %s,
+				DateUpdated = NOW()
 			WHERE ShipId = %s
 		"""
 		values = (ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId, ShipId)
@@ -32,8 +33,8 @@ def save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocati
 
 		# Insert new ship
 		sql = """
-			INSERT INTO ships (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId) 
-			VALUES (%s, %s, %s, %s, %s, %s, %s)
+			INSERT INTO ships (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId, DateUpdated) 
+			VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
 		"""
 		values = (ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
 

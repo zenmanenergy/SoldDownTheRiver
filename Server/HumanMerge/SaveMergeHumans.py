@@ -26,7 +26,7 @@ def save_mergehumans(HumanId, MergeHumanId):
 			COALESCE(h1.RacialDescriptor, h2.RacialDescriptor), 
 			COALESCE(h1.Sex, h2.Sex), 
 			COALESCE(h1.Height_cm, h2.Height_cm), 
-			COALESCE(h1.DateUpdated, h2.DateUpdated), 
+			NOW(),
 			COALESCE(h1.originCity, h2.originCity), 
 			COALESCE(h1.physical_features, h2.physical_features), 
 			COALESCE(h1.profession, h2.profession)
@@ -39,7 +39,7 @@ def save_mergehumans(HumanId, MergeHumanId):
 		# Update the original records to set mergedHumanId
 		update_query = f"""
 		UPDATE humans
-		SET mergedHumanId = '{NewHumanId}'
+		SET mergedHumanId = '{NewHumanId}', DateUpdated = NOW()
 		WHERE HumanId IN ('{HumanId}', '{MergeHumanId}')
 		"""
 		cursor.execute(update_query)
@@ -59,10 +59,12 @@ def save_mergehumans(HumanId, MergeHumanId):
 		for table, column in tables:
 			copy_query = f"""
 			INSERT INTO {table} (SELECT * FROM {table} WHERE {column} = '{HumanId}')
+			ON DUPLICATE KEY UPDATE DateUpdated = NOW()
 			"""
 			cursor.execute(copy_query)
 			copy_query = f"""
 			INSERT INTO {table} (SELECT * FROM {table} WHERE {column} = '{MergeHumanId}')
+			ON DUPLICATE KEY UPDATE DateUpdated = NOW()
 			"""
 			cursor.execute(copy_query)
 		
@@ -73,11 +75,15 @@ def save_mergehumans(HumanId, MergeHumanId):
 		]
 		for column in voyagehumans_columns:
 			copy_query = f"""
-			INSERT INTO voyagehumans (SELECT * FROM voyagehumans WHERE {column} = '{HumanId}')
+			INSERT INTO voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, DateUpdated)
+			SELECT VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, NOW()
+			FROM voyagehumans WHERE {column} = '{HumanId}'
 			"""
 			cursor.execute(copy_query)
 			copy_query = f"""
-			INSERT INTO voyagehumans (SELECT * FROM voyagehumans WHERE {column} = '{MergeHumanId}')
+			INSERT INTO voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, DateUpdated)
+			SELECT VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, NOW()
+			FROM voyagehumans WHERE {column} = '{MergeHumanId}'
 			"""
 			cursor.execute(copy_query)
 		

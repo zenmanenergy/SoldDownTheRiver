@@ -20,11 +20,12 @@ def save_timeline(timeline_data):
 		
 		cursor, connection = Database.ConnectToDatabase()
 		query = """
-			INSERT INTO humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType)
-			VALUES (%s, %s, %s, %s, %s)
+			INSERT INTO humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, DateUpdated)
+			VALUES (%s, %s, %s, %s, %s, NOW())
 			ON DUPLICATE KEY UPDATE 
 				date_circa = VALUES(date_circa),
-				date_accuracy = VALUES(date_accuracy)
+				date_accuracy = VALUES(date_accuracy),
+				DateUpdated = NOW()
 		"""
 		cursor.execute(query, (human_id, location_id, date_circa, date_accuracy, location_type))
 		
@@ -52,7 +53,8 @@ def save_timeline(timeline_data):
 				Country = VALUES(Country),
 				Latitude = VALUES(Latitude),
 				Longitude = VALUES(Longitude),
-				LocationType = VALUES(LocationType)
+				LocationType = VALUES(LocationType),
+				DateUpdated = NOW()
 		"""
 		cursor.execute(insert_query, (location_id, name, address, city, county, state, state_abbr, country, latitude, longitude, location_type))
 		connection.commit()
