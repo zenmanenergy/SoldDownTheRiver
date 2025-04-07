@@ -14,5 +14,5 @@ export async function handleSaveTransaction(SessionId, transactionId, transactio
 		return false;
 	}
 
-	return true;
+	return response;
 }

@@ -70,52 +70,59 @@ def import_NOLA(data,SessionId):
 
 def ProcessNOLA():
 	cursor, connection = Database.ConnectToDatabase()
-	NOLAs=getNOLAs(cursor)
+	NOLAs = getNOLAs(cursor)
 	cursor.close()
 	connection.close()
-
 	
-	thedates=[]
+	# Load human_map one time here
+	connection2 = Database.ConnectToDatabase()[1]
+	human_map = loadHumanMap(connection2)
+	connection2.close()
+	
+	thedates = []
 	for i, row in enumerate(NOLAs):
-		
 		cursor, connection = Database.ConnectToDatabase()
 		
 		# Parse the FirstParty names and store the result back in the dictionary
-		NOLAs[i]['DateOfTransaction']=ParseDate(row['DateOfTransaction'], row['NOLA_ID'])
-		NOLAs[i]['NOLA_ID']=row['NOLA_ID']
+		NOLAs[i]['DateOfTransaction'] = ParseDate(row['DateOfTransaction'], row['NOLA_ID'])
+		NOLAs[i]['NOLA_ID'] = row['NOLA_ID']
 		
-		FirstParty = ParseHumanNames(row['FirstParty'], 'FirstParty',NOLAs[i]['DateOfTransaction'])
+		FirstParty = ParseHumanNames(row['FirstParty'], 'FirstParty', NOLAs[i]['DateOfTransaction'])
+		
 		NOLAs[i]['FirstParty'] = FirstParty
-		NOLAs[i]['FirstParty'][0]['Human']['ResidenceLocationId']=getLocation(connection, cursor, row['LocationFirstParty'])
+		NOLAs[i]['FirstParty'][0]['Human']['ResidenceLocationId'] = getLocation(connection, cursor, row['LocationFirstParty'])
 		
-		SecondParty = ParseHumanNames(row['SecondParty'], 'SecondParty',NOLAs[i]['DateOfTransaction'])
-		NOLAs[i]['SecondParty'] = SecondParty
-		NOLAs[i]['SecondParty'][0]['Human']['ResidenceLocationId']=getLocation(connection, cursor, row['LocationSecondParty'])
+		# Pass human_map to SaveHuman instead of reselecting humans each time.
+		HumanIds = SaveHuman(connection, cursor, NOLAs[i]['FirstParty'], human_map,'Seller')
+		for count, HumanId in enumerate(HumanIds):
+			NOLAs[i]['FirstParty'][count]['Human']['HumanId'] = HumanId
+
+		# SecondParty = ParseHumanNames(row['SecondParty'], 'SecondParty', NOLAs[i]['DateOfTransaction'])
+		# NOLAs[i]['SecondParty'] = SecondParty
+		# NOLAs[i]['SecondParty'][0]['Human']['ResidenceLocationId'] = getLocation(connection, cursor, row['LocationSecondParty'])
 		
-		NotaryPublic = ParseHumanNames(row['NotaryPublic'], 'NotaryPublic',NOLAs[i]['DateOfTransaction'])
-		NOLAs[i]['NotaryPublic'] = NotaryPublic
-		NOLAs[i]['NotaryPublic'][0]['Human']['OfficeLocationId']=getLocation(connection, cursor, 'New Orleans, Louisiana')
+		# NotaryPublic = ParseHumanNames(row['NotaryPublic'], 'NotaryPublic', NOLAs[i]['DateOfTransaction'])
+		# NOLAs[i]['NotaryPublic'] = NotaryPublic
+		# NOLAs[i]['NotaryPublic'][0]['Human']['OfficeLocationId'] = getLocation(connection, cursor, 'New Orleans, Louisiana')
 		
 	
-		HumanIds=SaveHuman(connection, cursor, NOLAs[i]['FirstParty'])
-		for count,HumanId in enumerate(HumanIds):
-			NOLAs[i]['FirstParty'][count]['Human']['HumanId']=HumanId
-
-		HumanIds=SaveHuman(connection, cursor, NOLAs[i]['SecondParty'])
-		for count,HumanId in enumerate(HumanIds):
-			NOLAs[i]['SecondParty'][count]['Human']['HumanId']=HumanId
 		
-		HumanIds=SaveHuman(connection, cursor, NOLAs[i]['NotaryPublic'])
-		for count,HumanId in enumerate(HumanIds):
-			NOLAs[i]['NotaryPublic'][count]['Human']['HumanId']=HumanId
-		try:
-			SaveTransaction(connection, cursor, NOLAs[i])
-		except Exception as e:
-			# Print the error type, message, and traceback
-			print("ERROR!")
-			print(f"Type: {type(e).__name__}")
-			print(f"Message: {str(e)}")
-			return str(traceback.print_exc())
+
+		# HumanIds = SaveHuman(connection, cursor, NOLAs[i]['SecondParty'], human_map)
+		# for count, HumanId in enumerate(HumanIds):
+		# 	NOLAs[i]['SecondParty'][count]['Human']['HumanId'] = HumanId
+		
+		# HumanIds = SaveHuman(connection, cursor, NOLAs[i]['NotaryPublic'], human_map)
+		# for count, HumanId in enumerate(HumanIds):
+		# 	NOLAs[i]['NotaryPublic'][count]['Human']['HumanId'] = HumanId
+		# try:
+		# 	SaveTransaction(connection, cursor, NOLAs[i])
+		# except Exception as e:
+		# 	# Print the error type, message, and traceback
+		# 	print("ERROR!")
+		# 	print(f"Type: {type(e).__name__}")
+		# 	print(f"Message: {str(e)}")
+		# 	return str(traceback.print_exc())
 		
 
 		connection.commit()
@@ -125,185 +132,144 @@ def ProcessNOLA():
 
 	return str(i+1)
 
-def SaveTransaction(connection, cursor,Transaction):
-	FirstPartyId=SaveParty(connection, cursor, Transaction['FirstParty'], 'FirstParty')
-	SecondPartyId=SaveParty(connection, cursor, Transaction['SecondParty'], 'SecondParty')
-	NotaryHumanId=Transaction['NotaryPublic'][0]['Human']['HumanId']
-	date_circa=Transaction['DateOfTransaction']['parsed_date']
-	date_accuracy=Transaction['DateOfTransaction']['DateAccuracy']
-	Notes=Transaction['Notes']
-	Parsed_Notes=Transaction['Parsed_Notes']
-	if Parsed_Notes:
-		Parsed_Notes=Parsed_Notes.replace("'", "\\'")
-	NOLA_ID=Transaction['NOLA_ID']
-	Act=Transaction['Act']
-	Page=Transaction['Page']
-	Volume=Transaction['Volume']
-	ReferenceURL=Transaction['ReferenceURL']
-	TransactionType=Transaction['TypeOfTransaction']
-	transcriber_info=Transaction['NameOfTranscriber']
-
-	sql_query = f"SELECT TransactionId from transactions WHERE FirstPartyId='{FirstPartyId}' and SecondPartyId='{SecondPartyId}' and NotaryHumanId='{NotaryHumanId}'"
-	# print(sql_query)
+def SaveTransaction(connection, cursor, Transaction):
+	NotaryHumanId = Transaction['NotaryPublic'][0]['Human']['HumanId']
+	date_circa = Transaction['DateOfTransaction']['parsed_date']
+	date_accuracy = Transaction['DateOfTransaction']['DateAccuracy']
+	Notes = Transaction['Notes']
+	Parsed_Notes = Transaction['Parsed_Notes']
+	NOLA_ID = Transaction['NOLA_ID']
+	TransactionType = Transaction['TypeOfTransaction']
+	Act = Transaction['Act']
+	Page = Transaction['Page']
+	Volume = Transaction['Volume']
+	ReferenceURL = Transaction['ReferenceURL']
+	transcriber_info = Transaction['NameOfTranscriber']
+	
+	# Duplicate check based on NOLA_ID
+	sql_query = f"SELECT TransactionId from transactions WHERE NOLA_ID='{NOLA_ID}'"
 	cursor.execute(sql_query)
 	result = cursor.fetchone()
-
+	
 	if not result:
-		TransactionId="TRN"+str(uuid.uuid4()).replace("-", "")
+		TransactionId = "TRN" + str(uuid.uuid4()).replace("-", "")
 		insert_query = f"""
 			INSERT into transactions (
-				TransactionId, NOLA_ID, date_circa, date_accuracy, FirstPartyId, SecondPartyId, 
-				TransactionType, Notes, Parsed_Notes, Act, Page, NotaryHumanId, Volume, URL, Transcriber
+				TransactionId, NOLA_ID, date_circa, date_accuracy, 
+				TransactionType, Notes, Parsed_Notes, Act, Page, Volume, URL, Transcriber
 			)
 			VALUES (
 				'{TransactionId}', 
 				{f"'{NOLA_ID}'" if NOLA_ID is not None else 'NULL'}, 
 				{f"'{date_circa}'" if date_circa is not None else 'NULL'}, 
 				{f"'{date_accuracy}'" if date_accuracy is not None else 'NULL'}, 
-				{f"'{FirstPartyId}'" if FirstPartyId is not None else 'NULL'}, 
-				{f"'{SecondPartyId}'" if SecondPartyId is not None else 'NULL'}, 
 				{f"'{TransactionType}'" if TransactionType is not None else 'NULL'}, 
 				{f"'{Notes}'" if Notes is not None else 'NULL'}, 
 				{f"'{Parsed_Notes}'" if Parsed_Notes is not None else 'NULL'}, 
 				{f"'{Act}'" if Act is not None else 'NULL'}, 
 				{f"'{Page}'" if Page is not None else 'NULL'}, 
-				{f"'{NotaryHumanId}'" if NotaryHumanId is not None else 'NULL'}, 
 				{f"'{Volume}'" if Volume is not None else 'NULL'}, 
 				{f"'{ReferenceURL}'" if ReferenceURL is not None else 'NULL'}, 
 				{f"'{transcriber_info}'" if transcriber_info is not None else 'NULL'}
 			)
-			"""
-		cursor.execute(insert_query)
-		# Commit the transaction
-		connection.commit()
-	else:
-		TransactionId=result['TransactionId']
-
-	return TransactionId
-
-def SaveParty(connection, cursor, Party, WhichParty):
-	try:
-		human_ids = [human['Human']['HumanId'] for human in Party]
-	except KeyError:
-		# Return None if 'HumanId' is not found
-		print("KeyError: 'HumanId' not found in one of the entries")
-		return None
-	
-	human_id_count = Counter(human_ids)
-	human_ids_list = list(human_id_count.keys())
-	human_ids_str = ', '.join(f"'{human_id}'" for human_id in human_ids_list)
-
-	sql_query = f"SELECT PartyId FROM partyhumans WHERE HumanId IN ({human_ids_str}) GROUP BY PartyId HAVING COUNT(DISTINCT HumanId) = {len(human_ids_list)};"
-	cursor.execute(sql_query)
-	result = cursor.fetchone()
-	
-	if not result:
-		# No existing party found, create a new PartyId
-		PartyId = "PRT" + str(uuid.uuid4()).replace("-", "")
-		insert_query = f"INSERT INTO parties (PartyId, WhichParty) VALUES ('{PartyId}', '{WhichParty}');"
+		"""
 		cursor.execute(insert_query)
 		connection.commit()
 		
-		for human_id in human_ids_list:
-			insert_query = f"INSERT INTO partyhumans (PartyId, HumanId) VALUES ('{PartyId}', '{human_id}');"
-			cursor.execute(insert_query)
-
-		# Commit the transaction
+		# For each firstParty human: insert into transactionhumans (without location)
+		# then into humantimeline with the residence data.
+		for human in Transaction['FirstParty']:
+			human_id = human['Human']['HumanId']
+			insert_first = f"INSERT into transactionhumans (TransactionId, HumanId, RoleId) VALUES ('{TransactionId}', '{human_id}', 'FirstParty')"
+			cursor.execute(insert_first)
+			residence = human['Human'].get('ResidenceLocationId', None)
+			timeline_query = f"""
+				INSERT into humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType)
+				VALUES ('{human_id}', {f"'{residence}'" if residence else 'NULL'}, {f"'{date_circa}'" if date_circa else 'NULL'}, {f"'{date_accuracy}'" if date_accuracy else 'NULL'}, 'Residence')
+				ON DUPLICATE KEY UPDATE Date_Circa=VALUES(Date_Circa), Date_Accuracy=VALUES(Date_Accuracy)
+			"""
+			cursor.execute(timeline_query)
+		
+		# For each secondParty human do the same.
+		for human in Transaction['SecondParty']:
+			human_id = human['Human']['HumanId']
+			insert_second = f"INSERT into transactionhumans (TransactionId, HumanId, RoleId) VALUES ('{TransactionId}', '{human_id}', 'SecondParty')"
+			cursor.execute(insert_second)
+			residence = human['Human'].get('ResidenceLocationId', None)
+			timeline_query = f"""
+				INSERT into humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType)
+				VALUES ('{human_id}', {f"'{residence}'" if residence else 'NULL'}, {f"'{date_circa}'" if date_circa else 'NULL'}, {f"'{date_accuracy}'" if date_accuracy else 'NULL'}, 'Residence')
+				ON DUPLICATE KEY UPDATE Date_Circa=VALUES(Date_Circa), Date_Accuracy=VALUES(Date_Accuracy)
+			"""
+			cursor.execute(timeline_query)
+		
+		# Insert the Notary into transactionhumans without a location.
+		insert_notary = f"INSERT into transactionhumans (TransactionId, HumanId, RoleId) VALUES ('{TransactionId}', '{NotaryHumanId}', 'Notary')"
+		cursor.execute(insert_notary)
 		connection.commit()
 	else:
-		PartyId = result['PartyId']
+		TransactionId = result['TransactionId']
 	
-	# Return the PartyId (either new or existing)
-	return PartyId
+	return TransactionId
 
-
-def SaveHuman(connection, cursor, humans):
-	cursor, connection = Database.ConnectToDatabase()
-	HumanIds=[]
-	for human in humans:
-		human=human['Human']
+def SaveHumanOLD(connection, cursor, humans, human_map,role):
+	HumanIds = []
+	for human_obj in humans:
+		human = human_obj['Human']
 		if len(human['FirstName']) or len(human['LastName']):
-			# Using parameterized query to handle special characters
-			sql = f"SELECT HumanId from humans WHERE FirstName = '{human['FirstName']}' AND LastName = '{human['LastName']}'"
-			cursor.execute(sql)
-			result = cursor.fetchone()
-			
-			if result:
-				HumanId=result['HumanId']
-				# If a row exists, update it
-				update_query = f"""
-				update humans
-				SET FirstName = '{human['FirstName']}', MiddleName = '{human['MiddleName']}', LastName = '{human['LastName']}'
-				WHERE HumanId = '{HumanId}'
-				"""
+			key = f"{human['FirstName'].strip().lower()}:{human['LastName'].strip().lower()}"
+			if key in human_map:
+				HumanId = human_map[key]
+				update_query = (
+					"update humans SET FirstName = '{FirstName}', MiddleName = '{MiddleName}', LastName = '{LastName}' "
+					"WHERE HumanId = '{HumanId}'"
+				).format(FirstName=human['FirstName'], MiddleName=human['MiddleName'], LastName=human['LastName'], HumanId=HumanId)
 				cursor.execute(update_query)
 				connection.commit()
 			else:
-				# If no row exists, insert a new row with a unique HumanId
-				HumanId = "HUM"+str(uuid.uuid4()).replace("-", "")
-				insert_query = f"""
-				INSERT into humans (HumanId, FirstName, MiddleName, LastName)
-				VALUES ('{HumanId}', '{human['FirstName']}', '{human['MiddleName']}', '{human['LastName']}')
-				"""
+				HumanId = "HUM" + str(uuid.uuid4()).replace("-", "")
+				insert_query = (
+					"INSERT into humans (HumanId, FirstName, MiddleName, LastName) "
+					"VALUES ('{HumanId}', '{FirstName}', '{MiddleName}', '{LastName}')"
+				).format(HumanId=HumanId, FirstName=human['FirstName'], MiddleName=human['MiddleName'], LastName=human['LastName'])
 				cursor.execute(insert_query)
 				connection.commit()
+				# Add new entry to the map
+				human_map[key] = HumanId
 			HumanIds.append(HumanId)
-
-			insert_role = f"""
-				INSERT into humanroles (HumanId, RoleId, date_circa, date_accuracy)
-				VALUES ('{HumanId}', '{human['Role']}', 
-						{f"'{human['date_circa']}'" if human['date_circa'] is not None else 'NULL'}, 
-						{f"'{human['date_accuracy']}'" if human['date_accuracy'] is not None else 'NULL'})
-				ON DUPLICATE KEY UPDATE 
-					HumanId=VALUES(HumanId), 
-					RoleId=VALUES(RoleId), 
-					date_circa=VALUES(date_circa), 
-					date_accuracy=VALUES(date_accuracy)
-				"""
-			cursor.execute(insert_role)
-			connection.commit()
-
+			
+			# Do not substitute a default; if date is missing use NULL (or handle differently)
+			date_circa_val = f"'{human['date_circa']}'" if human.get('date_circa') is not None else 'NULL'
+			date_accuracy_val = f"'{human['date_accuracy']}'" if human.get('date_accuracy') is not None else 'NULL'
+			
 			if "ResidenceLocationId" in human:
-				insert_role = f"""
-					INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType)
-					VALUES (
-						'{HumanId}', 
-						{f"'{human['ResidenceLocationId']}'" if human.get('ResidenceLocationId') is not None else 'NULL'}, 
-						{f"'{human['date_circa']}'" if human['date_circa'] is not None else 'NULL'}, 
-						{f"'{human['date_accuracy']}'" if human['date_accuracy'] is not None else 'NULL'}, 
-						'Residence'
-					)
-					ON DUPLICATE KEY UPDATE 
-						HumanId=VALUES(HumanId), 
-						LocationId=VALUES(LocationId), 
-						date_circa=VALUES(date_circa), 
-						date_accuracy=VALUES(date_accuracy), 
-						LocationType=VALUES(LocationType)
-					"""
-				cursor.execute(insert_role)
+				insert_timeline = (
+					"INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId) "
+					"VALUES ('{HumanId}', {residence}, {date_circa}, {date_accuracy}, 'Residence','{role}') "
+					"ON DUPLICATE KEY UPDATE HumanId=VALUES(HumanId), LocationId=VALUES(LocationId), "
+					"date_circa=VALUES(date_circa), date_accuracy=VALUES(date_accuracy), LocationType=VALUES(LocationType)"
+				).format(
+					HumanId=HumanId,
+					residence=(f"'{human['ResidenceLocationId']}'" if human.get('ResidenceLocationId') is not None else 'NULL'),
+					date_circa=(f"'{human['date_circa']}'" if human['date_circa'] is not None else 'NULL'),
+					date_accuracy=(f"'{human['date_accuracy']}'" if human['date_accuracy'] is not None else 'NULL')
+				)
+				cursor.execute(insert_timeline)
 				connection.commit()
-
 			if "OfficeLocationId" in human:
-				insert_role = f"""
-					INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType)
-					VALUES (
-						'{HumanId}', 
-						{f"'{human['OfficeLocationId']}'" if human.get('OfficeLocationId') is not None else 'NULL'}, 
-						{f"'{human['date_circa']}'" if human.get('date_circa') is not None else 'NULL'}, 
-						{f"'{human['date_accuracy']}'" if human.get('date_accuracy') is not None else 'NULL'}, 
-						'Notary Office'
-					)
-					ON DUPLICATE KEY UPDATE 
-						HumanId=VALUES(HumanId), 
-						LocationId=VALUES(LocationId), 
-						date_circa=VALUES(date_circa), 
-						date_accuracy=VALUES(date_accuracy), 
-						LocationType=VALUES(LocationType)
-					"""
-				cursor.execute(insert_role)
+				insert_office = (
+					"INSERT into humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId) "
+					"VALUES ('{HumanId}', {office}, {date_circa}, {date_accuracy}, 'Notary Office','{role}') "
+					"ON DUPLICATE KEY UPDATE HumanId=VALUES(HumanId), LocationId=VALUES(LocationId), "
+					"date_circa=VALUES(date_circa), date_accuracy=VALUES(date_accuracy), LocationType=VALUES(LocationType)"
+				).format(
+					HumanId=HumanId,
+					office=(f"'{human['OfficeLocationId']}'" if human.get('OfficeLocationId') is not None else 'NULL'),
+					date_circa=(f"'{human.get('date_circa')}'" if human.get('date_circa') is not None else 'NULL'),
+					date_accuracy=(f"'{human.get('date_accuracy')}'" if human.get('date_accuracy') is not None else 'NULL')
+				)
+				cursor.execute(insert_office)
 				connection.commit()
-
-
 	return HumanIds
 
 def ParseDate(date_str, NOLA_ID):
@@ -615,15 +581,6 @@ def ParseHumanNames(Name, Role,DateOfTransaction):
 		})
 
 	return parsed_names
-
-
-def getNOLAs(cursor):
-	sql=f"select distinct * from raw_nola"
-	cursor.execute(sql)
-	results=cursor.fetchall()
-	
-	return results
-
 
 
 

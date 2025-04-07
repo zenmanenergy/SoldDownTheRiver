@@ -246,9 +246,9 @@
 		const transactionData = {
 			...transaction,
 		};
-
-		const success = await handleSaveTransaction(Session.SessionId, transactionId, transactionData);
-		if (success) {
+		const result = await handleSaveTransaction(Session.SessionId, transactionId, transactionData);
+		if (result && result.TransactionId) {
+			transactionId = result.TransactionId;
 			window.location.href = `/Transaction?TransactionId=${transactionId}`;
 		} else {
 			alert("Failed to save transaction.");
