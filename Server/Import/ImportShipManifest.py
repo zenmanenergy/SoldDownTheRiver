@@ -738,8 +738,7 @@ def geocode_location(connection, cursor, address):
 		print("Geocode result found.")
 		location_data = geocode_result[0]
 		location = location_data['geometry']['location']
-		# Update: extract longitude correctly instead of 'lng'
-		lat, lng = location['lat'], 'lng'
+		lat, lng = location['lat'], location['lng']  # FIXED: Correctly extract 'lng' instead of using the string 'lng'
 		
 		# Extract more detailed location components
 		address_components = {comp['types'][0]: comp['long_name'] for comp in location_data['address_components']}
@@ -806,7 +805,7 @@ def geocode_location(connection, cursor, address):
 			location_data['state_abbr'],
 			location_data['country_abbr'],
 			location_data['latitude'],
-			location_data['longitude']
+			location_data['longitude']  # FIXED: Correctly pass the longitude value
 		))
 		print("Inserted new location into the database.")
 		connection.commit()

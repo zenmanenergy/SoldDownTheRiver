@@ -91,26 +91,25 @@ def ProcessNOLA():
 				h['Human']['HumanId'] = new_ids[idx]
 		
 		# Insert into humantimeline by checking for a valid ResidenceLocationId and passing parameters
-		date_circa = NOLAs[i]['DateOfTransaction']['parsed_date']
+		Date_Circa = NOLAs[i]['DateOfTransaction']['parsed_date']
 		for human in humans:
-			if human['Human'].get('ResidenceLocationId') and human['Human']['ResidenceLocationId'] != "None":
+			if human['Human'].get('ResidenceLocationId') and human['Human']['ResidenceLocationId'] != "None" and Date_Circa:
 				InsertHumanTimeline(
 					cursor,
 					human['Human']['HumanId'],
 					human['Human']['ResidenceLocationId'],
-					date_circa,
+					Date_Circa,
 					"Residence",
 					human['Human']['Role']
 				)
 		
-		if OfficeLocationId:
+		if OfficeLocationId and Date_Circa:
 			for human in humans:
-			
 				InsertHumanTimeline(
 					cursor,
 					human['Human']['HumanId'],
 					OfficeLocationId,
-					date_circa,
+					Date_Circa,
 					"Notary Office",
 					human['Human']['Role']
 				)
@@ -118,8 +117,8 @@ def ProcessNOLA():
 		# Prepare a transaction dictionary and call InsertTransaction
 		txn = {
 			"NOLA_ID": row['NOLA_ID'],
-			"date_circa": NOLAs[i]['DateOfTransaction']['parsed_date'],
-			"date_accuracy": NOLAs[i]['DateOfTransaction']['DateAccuracy'],
+			"Date_Circa": NOLAs[i]['DateOfTransaction']['parsed_date'] if NOLAs[i]['DateOfTransaction']['parsed_date'] else None,
+			"date_accuracy": NOLAs[i]['DateOfTransaction']['DateAccuracy'] if NOLAs[i]['DateOfTransaction']['DateAccuracy'] in ['D', 'M', 'Y'] else 'D',
 			"TransactionType": NOLAs[i]['TransactionType'],
 			"Notes": NOLAs[i]['Notes'],
 			"Act": NOLAs[i]['Act'],
@@ -138,52 +137,49 @@ def ProcessNOLA():
 			"isApproved": 0,
 			"DataQuestions": ""
 		}
-		# TransactionId=InsertTransaction(connection, cursor, txn)
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
-		print("uncomment!")
+		if "TransactionId" not in txn or not txn["TransactionId"]:
+			txn["TransactionId"] = "TXN" + str(uuid.uuid4()).replace("-", "")
+		TransactionId = InsertTransaction(connection, cursor, txn)
 
-		parsed_data = json.loads(row['Parsed_Notes'])
-		# print(parsed_data)
-		parsed_data=transform_json_packet(parsed_data)
-		process_packet(NOLAs[i],parsed_data)
+		for human in humans:
+			sql = f"""
+				INSERT into transactionhumans (TransactionId, HumanId, RoleId,  DateUpdated)
+				VALUES ('{TransactionId}', '{human['Human']['HumanId']}', '{human['Human']['Role']}', NOW())
+				;
+			"""
+
+			sql=replace_none_to_null(sql)
+			cursor.execute(sql)
+			connection.commit()
+
+
+		try:
+			if row['Parsed_Notes']:
+				# Skip rows with placeholder or invalid Parsed_Notes
+				if "Failed to generate a valid JSON response" in row['Parsed_Notes']:
+					print(f"Skipping invalid Parsed_Notes for NOLA_ID {row['NOLA_ID']}: {row['Parsed_Notes']}")
+					continue
+				
+				try:
+					parsed_data = json.loads(row['Parsed_Notes'])
+					if not isinstance(parsed_data, dict):
+						raise ValueError(f"Parsed_Notes is not a dictionary: {parsed_data}")
+					parsed_data = transform_json_packet(parsed_data)
+					process_packet(connection, cursor, NOLAs[i], parsed_data)
+				except (json.JSONDecodeError, ValueError) as e:
+					print(f"Error processing Parsed_Notes for NOLA_ID {row['NOLA_ID']}: {e}")
+					continue  # Skip this row and proceed with the next one
+			else:
+				pass
+		except Exception as e:
+			print(f"Unexpected error for NOLA_ID {row['NOLA_ID']}: {e}")
+			continue  # Skip this row and proceed with the next one
 		
 		connection.commit()
 		cursor.close()
 		connection.close()
 		print(i)
 
-		if i >=10:
-			print(humans)
-			break
 
 	return str(i+1)
 
@@ -237,7 +233,6 @@ def ParseDate(date_str, NOLA_ID):
 		except ValueError as e:
 			DateOfTransaction['parsed_date'] = None
 			DateOfTransaction['DateAccuracy'] = f"ERROR {e}"
-			print(f"Error parsing year from date '{date_str}': {e}")
 	elif "-xx" in date_str:
 		DateOfTransaction['DateAccuracy'] = "M"  # Indicates that only the year is known
 		# Attempt to parse the year only
@@ -249,7 +244,6 @@ def ParseDate(date_str, NOLA_ID):
 		except ValueError as e:
 			DateOfTransaction['parsed_date'] = None
 			DateOfTransaction['DateAccuracy'] = f"ERROR {e}"
-			print(f"Error parsing year from date '{date_str}': {e}")
 	else:
 		DateOfTransaction['DateAccuracy'] = "D"
 		# List of possible date formats
@@ -272,7 +266,6 @@ def ParseDate(date_str, NOLA_ID):
 			# If none of the formats match, store None
 			DateOfTransaction['parsed_date'] = None
 			DateOfTransaction['DateAccuracy'] = f"ERROR - No matching format"
-			print(f"Error parsing date '{date_str}': No matching format found. {NOLA_ID}")
 
 
 
@@ -319,7 +312,7 @@ def ParseHumanNames(Name, Role,DateOfTransaction):
 					'MiddleName': middle_name,
 					'LastName': last_name,
 					'Role': Role,
-					'date_circa': DateOfTransaction['parsed_date'],
+					'Date_Circa': DateOfTransaction['parsed_date'],
 					'date_accuracy': DateOfTransaction['DateAccuracy'],
 					'originalDate':DateOfTransaction['Original']
 				}
@@ -355,7 +348,7 @@ def ParseHumanNames(Name, Role,DateOfTransaction):
 				'MiddleName': middle_name,
 				'LastName': last_name,
 				'Role': Role,
-				'date_circa': DateOfTransaction['parsed_date'],
+				'Date_Circa': DateOfTransaction['parsed_date'],
 				'date_accuracy': DateOfTransaction['DateAccuracy'],
 				'originalDate':DateOfTransaction['Original']
 			}
@@ -379,14 +372,11 @@ def getLocation(connection, cursor, location_str):
 		return result['LocationId']
 	
 	else:
-		print(location_str)
-		print("geocode lookup")
 		LocationId=geocode_location(connection, cursor,location_str)
 		query = f"insert into locationaddresses(LocationId,Address,DateUpdated) values('{LocationId}','{location_str}',NOW())"
 		cursor.execute(query)
 		connection.commit()
 
-		print("LocationId",LocationId)
 		return LocationId
 
 
@@ -395,6 +385,85 @@ def getLocation(connection, cursor, location_str):
 
 
 	return None
+
+def geocode_location(connection, cursor, address):
+	# Perform geocode lookup
+	geocode_result = gmaps.geocode(address)
+	if geocode_result:
+		location_data = geocode_result[0]
+		location = location_data['geometry']['location']
+		lat, lng = location['lat'], location['lng']  # FIXED: Correctly extract 'lng' instead of using the string 'lng'
+		
+		# Extract more detailed location components
+		address_components = {comp['types'][0]: comp['long_name'] for comp in location_data['address_components']}
+		formatted_address = location_data.get('formatted_address', None)
+		city = address_components.get('locality', None)
+		county = address_components.get('administrative_area_level_2', None)
+		state = address_components.get('administrative_area_level_1', None)
+		country = address_components.get('country', None)
+		
+		# Extract the state abbreviation (short_name)
+		state_abbr = None
+		country_abbr = None
+		for comp in location_data['address_components']:
+			if 'administrative_area_level_1' in comp['types']:
+				state_abbr = comp['short_name']
+			if 'country' in comp['types']:
+				country_abbr = comp['short_name']
+
+		location_data = {
+			"address": formatted_address,
+			"city": city,
+			"county": county,
+			"state": state,
+			"state_abbr": state_abbr,
+			"country": country,
+			"country_abbr": country_abbr,
+			"latitude": lat,
+			"longitude": lng
+		}
+
+		# Step 1: Check if the formatted_address already exists in the locations table
+		check_query = "SELECT LocationId from locations WHERE Address = %s"
+		cursor.execute(check_query, (formatted_address,))
+		result = cursor.fetchone()
+
+		if result:
+			# Formatted address already exists, return the existing LocationId
+			return result['LocationId']
+
+		# Step 2: Insert new location
+		location_id = "LOC" + str(uuid.uuid4()).replace("-", "")
+		insert_query = """
+		INSERT into locations (LocationId, Address, City, County, State, State_abbr, Country, Latitude, Longitude, DateUpdated)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+		ON DUPLICATE KEY UPDATE
+			Address = VALUES(Address),
+			City = VALUES(City),
+			County = VALUES(County),
+			State = VALUES(State),
+			State_abbr = VALUES(State_abbr),
+			Country = VALUES(Country),
+			Latitude = VALUES(Latitude),
+			Longitude = VALUES(Longitude),
+			DateUpdated = NOW()
+		"""
+		cursor.execute(insert_query, (
+			location_id,
+			location_data['address'],
+			location_data['city'],
+			location_data['county'],
+			location_data['state'],
+			location_data['state_abbr'],
+			location_data['country_abbr'],
+			location_data['latitude'],
+			location_data['longitude']  # FIXED: Correctly pass the longitude value
+		))
+		connection.commit()
+		return location_id
+
+	return None
+
 
 def SaveHuman(connection, cursor, humans, human_map):
 	new_ids = []
@@ -412,23 +481,70 @@ def SaveHuman(connection, cursor, humans, human_map):
 		else:
 			HumanId = "HUM" + str(uuid.uuid4()).replace("-", "")
 			query = f"INSERT INTO humans (HumanId,FirstName, MiddleName, LastName, DateUpdated) VALUES ('{HumanId}','{first}', '{middle}', '{last}', NOW())"
-			print(query)
 			cursor.execute(query)
 			connection.commit()
 		human_map[key] = HumanId
 		new_ids.append(HumanId)
 	return new_ids
 
-def InsertHumanTimeline(cursor, human_id, location_id, date_circa, location_type, role):
+def InsertHumanTimeline(cursor, human_id, location_id, Date_Circa, location_type, role):
+	Date_Circa = sanitize_date(Date_Circa)  # Ensure Date_Circa is valid
 	query_tl = (
 		f"INSERT INTO humantimeline (HumanId, LocationId, Date_Circa, Date_Accuracy, LocationType, RoleId, DateUpdated) "
-		f"VALUES ('{human_id}', '{location_id}', '{date_circa}', 'D', '{location_type}', '{role}', NOW()) "
+		f"VALUES ('{human_id}', '{location_id}', {Date_Circa}, 'D', '{location_type}', '{role}', NOW()) "
 		f"ON DUPLICATE KEY UPDATE LocationType = VALUES(LocationType), RoleId = VALUES(RoleId), DateUpdated = NOW()"
 	)
-	print(query_tl)
 	cursor.execute(query_tl)
 
+def InsertTransaction(connection, cursor, txn):
+	"""
+	Inserts or updates a transaction record in the transactions table.
+	"""
+	txn["Date_Circa"] = sanitize_date(txn["Date_Circa"])  # Ensure Date_Circa is valid
+	query = f"""
+		INSERT INTO transactions (
+			TransactionId, date_circa, date_accuracy, TransactionType, Notes, Act, Page, Volume, URL,
+			NeedsReview, Transcriber, NOLA_ID, Parsed_Notes, QuantityOfSlaves, TotalPrice, dataIssue,
+			Issues, LocationId, processedNotes, isApproved, DataQuestions, DateUpdated
+		) VALUES (
+			'{txn["TransactionId"]}', {txn["Date_Circa"]}, '{txn["date_accuracy"]}', '{txn["TransactionType"]}',
+			'{txn["Notes"].replace("'", "''") if txn["Notes"] else ""}', '{txn["Act"]}', '{txn["Page"]}', '{txn["Volume"]}', '{txn["URL"]}',
+			{txn["NeedsReview"]}, '{txn["Transcriber"]}', '{txn["NOLA_ID"]}', '{txn["Parsed_Notes"].replace("'", "''") if txn["Parsed_Notes"] else ""}',
+			{txn["QuantityOfSlaves"]}, {txn["TotalPrice"]}, '{txn["dataIssue"]}', '{txn["Issues"]}',
+			'{txn["LocationId"]}', {txn["processedNotes"]}, {txn["isApproved"]}, '{txn["DataQuestions"]}', NOW()
+		)
+		ON DUPLICATE KEY UPDATE
+			date_circa = VALUES(date_circa),
+			date_accuracy = VALUES(date_accuracy),
+			TransactionType = VALUES(TransactionType),
+			Notes = VALUES(Notes),
+			Act = VALUES(Act),
+			Page = VALUES(Page),
+			Volume = VALUES(Volume),
+			URL = VALUES(URL),
+			NeedsReview = VALUES(NeedsReview),
+			Transcriber = VALUES(Transcriber),
+			Parsed_Notes = VALUES(Parsed_Notes),
+			QuantityOfSlaves = VALUES(QuantityOfSlaves),
+			TotalPrice = VALUES(TotalPrice),
+			dataIssue = VALUES(dataIssue),
+			Issues = VALUES(Issues),
+			LocationId = VALUES(LocationId),
+			processedNotes = VALUES(processedNotes),
+			isApproved = VALUES(isApproved),
+			DataQuestions = VALUES(DataQuestions),
+			DateUpdated = NOW();
+	"""
+	query = replace_none_to_null(query)  # Ensure 'None' values are replaced with 'NULL'
+	cursor.execute(query)
+	connection.commit()
+	return txn["TransactionId"]
+
 def transform_json_packet(packet):
+	# Ensure packet is a dictionary
+	if not isinstance(packet, dict):
+		raise ValueError(f"Expected a dictionary, but got {type(packet).__name__}: {packet}")
+
 	# Initialize the transformed packet
 	transformed_packet = {}
 
@@ -436,7 +552,6 @@ def transform_json_packet(packet):
 	if 'individual' in packet and isinstance(packet['individual'], dict):
 		packet['individuals'] = [packet.pop('individual')]
 
-	# print("packet",packet)
 	# Iterate over the items in the packet
 	for key, value in packet.items():
 		# Handle lists and transform each dictionary within them
@@ -462,12 +577,9 @@ def transform_json_packet(packet):
 	return transformed_packet
 
 
-def process_individual(transaction,packet, individual, index, individualNAME):
-	# print(individual)
-	cursor, connection = Database.ConnectToDatabase()
+def process_individual(connection, cursor, transaction, packet, individual, index, individualNAME):
 	# Set variables for each field, handling synonyms and existence checks
 	name = individual.get('name', {}).get('data') if 'name' in individual else None
-	# aliases = individual.get('aliases', {}).get('data') if 'aliases' in individual else None
 	aliases = ', '.join(individual.get('aliases', [])) if isinstance(individual.get('aliases'), list) else None
 	RacialDescriptor = individual.get('skin_color', {}).get('data') if 'skin_color' in individual else None
 	age_string = individual.get('age', {}).get('data') if 'age' in individual else None
@@ -496,7 +608,6 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	else:  # Handle cases where 'origindata' is None or unexpected
 		origin = None
 	destinationdata = individual.get('destination')
-	print("destinationdata",destinationdata)
 	if isinstance(destinationdata, dict):  # If 'destinationdata' is a dictionary
 		city = destinationdata.get('city',{}).get('data', None)
 		state = destinationdata.get('state',{}).get('data', None)
@@ -520,7 +631,6 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	FirstName=None
 	MiddleName=None
 	LastName=None
-	# print("origin",origin)
 
 	# Handle `status` as either an integer or a dictionary
 	if isinstance(individual.get('status'), dict):
@@ -534,7 +644,6 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	
 	# Process each field and update status if they exist
 	if name is not None:
-		# print(f"Processing individual: {name}")
 		update_status(packet, f"{individualNAME}[{index}].name",0.5)
 		FirstName, MiddleName, LastName = splitName(name)
 	if origin is not None:
@@ -544,7 +653,6 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 		update_status(packet, f"{individualNAME}[{index}].destination",0.5)
 		destinationLocationId=getLocation(connection, cursor, destination)
 	if RacialDescriptor is not None:
-		# print(f" - RacialDescriptor: {RacialDescriptor}")
 		update_status(packet, f"{individualNAME}[{index}].RacialDescriptor",0.5)
 		if RacialDescriptor=="negro":
 			sex="male"
@@ -555,87 +663,61 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 		elif RacialDescriptor=='mulatress':
 			sex="female"
 	if aliases is not None:
-		# print(f" - aliases: {aliases}")
 		update_status(packet, f"{individualNAME}[{index}].aliases",0.5)
 	if year_acquired is not None:
-		# print(f" - year_acquired: {year_acquired}")
 		update_status(packet, f"{individualNAME}[{index}].year_acquired",0.5)
 	if age_string is not None:
-		# print(f" - age_string: {age_string}")
 		update_status(packet, f"{individualNAME}[{index}].age_string",0.5)
 		agematch = re.match(r'(\d+)', str(age_string))
 		if agematch:
 			age=int(agematch.group(1))
 		else:
 			age=None
-		if transaction['date_circa']:
-			BirthDate=calculateBirthDate(transaction['date_circa'], age)
+		if 'Date_Circa' in transaction and transaction['Date_Circa']:
+			BirthDate=calculateBirthDate(transaction['Date_Circa'], age)
 			BirthDateAccuracy="Y"
-		print("BirthDate",BirthDate)
 	if physical_features is not None:
-		# print(f" - physical_features: {physical_features}")
 		update_status(packet, f"{individualNAME}[{index}].physical_features",0.5)
 	if previous_owner is not None:
-		# print(f" - Previous Owner: {previous_owner}")
 		update_status(packet, f"{individualNAME}[{index}].previous_owner",0.5)
 	if previous_owner is not None:
-		# print(f" - Previous Owner: {previous_owner}")
 		update_status(packet, f"{individualNAME}[{index}].previous_owner",0.5)
 	if profession is not None:
-		# print(f" - profession: {profession}")
 		update_status(packet, f"{individualNAME}[{index}].profession",0.5)
 		
 	if age is not None:
-		# print(f" - Age: {age}")
 		update_status(packet, f"{individualNAME}[{index}].age",0.5)
 	if seller is not None:
-		# print(f" - Seller: {seller}")
 		update_status(packet, f"{individualNAME}[{index}].seller",0.5)
 	if seller is not None:
-		# print(f" - Seller: {seller}")
 		update_status(packet, f"{individualNAME}[{index}].seller",0.5)
 	if relationship is not None:
-		# print(f" - relationship: {relationship}")
 		update_status(packet, f"{individualNAME}[{index}].relationship",0.5)
 	
 	if job is not None:
-		# print(f" - Job: {job}")
-		# print(individualNAME[index])
 		pass
-		# Update status directly if it’s an integer, otherwise use the existing path
-		# if isinstance(individual.get('status'), int):
-		# 	print("has status??", individual.get('status'))
-		# 	
-		# else:
-		# 	update_status(packet, f"{individualNAME}[{index}].status",0.5)
 	if 'origin' in individual:
-		# print(f"Processing origin for individual: {name}")
 		process_origin(packet, f"{individualNAME}[{index}].origin")
 	if price is not None:
-		# print(f" - Price: {price}")
-		# Update both "price" and "value" statuses if either exists
 		if 'price' in individual:
 			update_status(packet, f"{individualNAME}[{index}].price",0.5)
 		if 'value' in individual:
 			update_status(packet, f"{individualNAME}[{index}].value",0.5)
 
 		price = str(price)
-		price=re.sub(r'[^0-9.]', '', price)
-	individual['status'] = 0.4
+		price = re.sub(r'[^0-9.]', '', price)
 
-
-
+	# Ensure TransactionId exists in the transaction dictionary
+	if 'TransactionId' not in transaction or not transaction['TransactionId']:
+		transaction['TransactionId'] = "TXN" + str(uuid.uuid4()).replace("-", "")
 
 	sql=f"select transactionhumans.HumanId from transactionhumans join humans on transactionhumans.HumanId=humans.HumanId where TransactionId='{transaction['TransactionId']}' and FirstName='{FirstName}' and LastName='{LastName}'"
 	sql=replace_none_to_null(sql)
-	# print(sql)
 	cursor.execute(sql)
 	result = cursor.fetchall()
 	if not result:
-		print("new!")
 		HumanId = "HUM"+str(uuid.uuid4()).replace("-", "")
 	else:
-		print("old")
 		HumanId=result[0]['HumanId']
 
 	
@@ -656,12 +738,11 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	"""
 
 	sql=replace_none_to_null(sql)
-	# print(sql)
 	cursor.execute(sql)
 	connection.commit()
 	sql = f"""
-		INSERT into transactionhumans (TransactionId, HumanId, Notes, parsedNotes, originLocationId, destinationLocationId, price, DateUpdated)
-		VALUES ('{transaction['TransactionId']}', '{HumanId}', '{transaction['Notes'].replace("'", "''")}', '{transaction['Parsed_Notes'].replace("'", "''")}', '{originLocationId}', '{destinationLocationId}', '{price}', NOW())
+		INSERT into transactionhumans (TransactionId, HumanId, RoleId, Notes, parsedNotes, originLocationId, destinationLocationId, price, DateUpdated)
+		VALUES ('{transaction['TransactionId']}', '{HumanId}', 'Enslaved','{transaction['Notes'].replace("'", "''")}', '{transaction['Parsed_Notes'].replace("'", "''")}', '{originLocationId}', '{destinationLocationId}', '{price}', NOW())
 		ON DUPLICATE KEY UPDATE 
 			price = VALUES(price),
 			originLocationId = VALUES(originLocationId),
@@ -670,7 +751,6 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	"""
 
 	sql=replace_none_to_null(sql)
-	# print(sql)
 	cursor.execute(sql)
 	connection.commit()
 
@@ -679,12 +759,11 @@ def process_individual(transaction,packet, individual, index, individualNAME):
 	"""
 
 	sql=replace_none_to_null(sql)
-	# print(sql)
 	cursor.execute(sql)
 	connection.commit()
 
 
-def process_packet(transaction,packet):
+def process_packet(connection, cursor, transaction, packet):
 	for key, value in packet.items():
 		# Process each individual in the individuals array and pass index
 		if key =='transactions' and isinstance(value, list):
@@ -692,15 +771,15 @@ def process_packet(transaction,packet):
 			break
 		if key == 'individuals' and isinstance(value, list):
 			for index, individual in enumerate(value):
-				process_individual(transaction,packet, individual, index, "individuals")
+				process_individual(connection, cursor, transaction, packet, individual, index, "individuals")
 		elif key == 'individual':
 			# Handle both list and dictionary cases for 'individual'
 			if isinstance(value, list):
 				for index, individual in enumerate(value):
-					process_individual(transaction,packet, individual, index, "individual")
+					process_individual(connection, cursor, transaction, packet, individual, index, "individual")
 			elif isinstance(value, dict):
 				# Process single individual as if it's the first element in a list
-				process_individual(transaction,packet, value, 0, "individual")
+				process_individual(connection, cursor, transaction, packet, value, 0, "individual")
 		elif key == 'quantity_of_slaves':
 			process_quantity_of_slaves(packet)
 		elif key == 'quantity':
@@ -733,60 +812,48 @@ def process_packet(transaction,packet):
 		elif key=='date':
 			process_date(packet)
 		else:
-			# print(f"No specific function to handle key: {key}")
 			pass
 
 def replace_none_to_null(query):
-	# Replace occurrences of 'None' with 'NULL' in the query string
+	# Replace occurrences of 'None' and 'NULL' strings with proper SQL NULL
 	query = query.replace("'None'", "NULL")
 	query = query.replace("=NULL", " IS NULL")
 	query = query.replace("= NULL", " IS NULL")
+	query = query.replace("'NULL'", "NULL")
 	return query
 
-	
+def sanitize_date(value):
+	# Return NULL if the date value is None or invalid
+	return f"'{value}'" if value else "NULL"
 
 def process_quantity_of_slaves(packet):
-	# print(f"Processing quantity of slaves: {packet['quantity_of_slaves']['data']}")
 	update_status(packet, 'quantity_of_slaves',0.5)
 def process_quantity(packet):
-	# print(f"Processing quantity of slaves: {packet['quantity']['data']}")
 	update_status(packet, 'quantity',0.5)
 
 def process_price(packet):
-	# print(f"Processing price: {packet['price']['data']}")
 	update_status(packet, 'price',0.5)
 def process_total_sales_price(packet):
-	# print(f"Processing price: {packet['total_sales_price']['data']}")
 	update_status(packet, 'total_sales_price',0.5)
 def process_total_price(packet):
-	# print(f"Processing total_price: {packet['total_price']['data']}")
 	update_status(packet, 'total_price',0.5)
 def process_buyer(packet):
-	# print(f"Processing buyer: {packet['buyer']['data']}")
 	update_status(packet, 'buyer',0.5)
 def process_buyer_status(packet):
-	# print(f"Processing buyer_status: {packet['buyer_status']['data']}")
 	update_status(packet, 'buyer_status',0.5)
 def process_seller(packet):
-	# print(f"Processing seller: {packet['seller']['data']}")
 	update_status(packet, 'seller', 0.5)
 def process_seller_status(packet):
-	# print(f"Processing seller_status: {packet['seller_status']['data']}")
 	update_status(packet, 'seller_status',0.5)
 def process_previous_owner(packet):
-	# print(f"Processing previous_owner: {packet['previous_owner']['data']}")
 	update_status(packet, 'previous_owner',0.5)
 def process_currency(packet):
-	# print(f"Processing currency: {packet['currency']['data']}")
 	update_status(packet, 'currency',0.5)
 def process_date_of_purchase(packet):
-	# print(f"Processing date_of_purchase: {packet['date_of_purchase']['data']}")
 	update_status(packet, 'date_of_purchase',0.5)
 def process_date(packet):
-	# print(f"Processing process_date: {packet['date']['data']}")
 	update_status(packet, 'date',0.5)
 def process_percentage_accuracy(packet):
-	# print(f"Processing percentage_accuracy: {packet['percentage_accuracy']['data']}")
 	update_status(packet, 'percentage_accuracy',0.5)
 
 	
@@ -796,39 +863,21 @@ def process_location(transaction, packet):
 		location = packet['location']
 		# If 'location' has a 'data' key, treat it as a simple entry
 		if 'data' in location:
-			# print(f"Processing location: {location['data']}")
 			update_status(packet, 'location', 0.5)
 			
 		# Otherwise, handle each subfield in the nested 'location' dictionary
 		else:
 			if 'venue' in location:
-				print(f"Processing venue: {location['venue']['data']}")
 				update_status(packet, 'location.venue', 0.5)
 			
 			if 'address' in location and 'data' in location['address']:
-				print(f"Processing address: {location['address']['data']}")
 				update_status(packet, 'location.address', 0.5)
 			if 'state' in location:
-				print(f"Processing state: {location['state']['data']}")
 				update_status(packet, 'location.state', 0.5)
 			if 'city' in location:
-				print(f"Processing city: {location['city']['data']}")
 				update_status(packet, 'location.city', 0.5)
 	else:
-		print("Location data is missing or not in expected format")
-
-	# print("location.venue",location['venue']['data'])
-	# print("location.address",location['address']['data'])
-	# print("location.state",location['state']['data'])
-	# print("location.city",location['city']['data'])
-	# cursor, connection = Database.ConnectToDatabase()
-	# location=getLocation(connection, cursor, row['LocationFirstParty'])
-	# sql = f"""
-	# 	select * from locationaddresses where transactionId='{transaction['TransactionId']}'
-	# 	VALUES ('{transaction['TransactionId']}', '{HumanId}', '{price}')
-	# 	ON DUPLICATE KEY UPDATE 
-	# 		price = VALUES(price);
-	# """
+		pass
 
 def process_origin(packet, origin_data_path):
 	# Split the path by separating list indices and dictionary keys
@@ -849,13 +898,11 @@ def process_origin(packet, origin_data_path):
 			if isinstance(current, list) and len(current) > segment:
 				current = current[segment]
 			else:
-				print(f"Error: List index '{segment}' out of range in path '{origin_data_path}'")
 				return
 		else:  # Otherwise, treat as a dictionary key
 			if isinstance(current, dict) and segment in current:
 				current = current[segment]
 			else:
-				print(f"Error: Key '{segment}' not found in path '{origin_data_path}'")
 				return
 
 	# At this point, `current` should be the 'origin' dictionary
@@ -863,10 +910,8 @@ def process_origin(packet, origin_data_path):
 
 	# Process fields within 'origin' if they exist
 	if 'city' in origin:
-		# print(f"Processing city: {origin['city']['data']}")
 		update_status(packet, f"{origin_data_path}.city", 0.5)
 	if 'state' in origin:
-		# print(f"Processing state: {origin['state']['data']}")
 		update_status(packet, f"{origin_data_path}.state", 0.5)
 
 
@@ -884,7 +929,6 @@ def update_status(packet, full_path, status):
 					current.append({})
 				current = current[index]
 			else:
-				print(f"Expected list at '{key}', got {type(current).__name__}")
 				return
 		
 		else:  # Handle dictionary keys
@@ -894,7 +938,6 @@ def update_status(packet, full_path, status):
 					current[key] = {}
 				current = current[key]
 			else:
-				print(f"Expected dictionary at '{key}', got {type(current).__name__}")
 				return
 
 		# Set a status field for each nested level along the path
@@ -905,7 +948,7 @@ def update_status(packet, full_path, status):
 	if isinstance(current, dict):
 		current['status'] = status
 	else:
-		print(f"Cannot set status for non-dictionary at path '{full_path}'")
+		pass
 
 def splitName(fullName):
 	# Split the full name by spaces

@@ -26,6 +26,7 @@ def get_transaction(transaction_id):
 			t.isApproved,
 			t.DataQuestions,
 			t.NOLA_ID,
+			t.DateUpdated,
 
 			-- Buyers as a comma-separated JSON-like string
 			COALESCE(
@@ -72,7 +73,6 @@ def get_transaction(transaction_id):
 		GROUP BY t.TransactionId;
 	"""
 
-	print(query)
 	# Execute the query and get the results
 	cursor.execute(query)
 	result = cursor.fetchone()

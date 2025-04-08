@@ -194,10 +194,11 @@ def GetHumans():
 	try:
 		transaction_data = request.args.to_dict()
 
-		# Get the transaction ID from the request
-		TransactionId = transaction_data.get('TransactionId')
+		# Get the optional LastFetchTime from the request
+		LastFetchTime = transaction_data.get('LastFetchTime', None)
 		
-		result = get_Humans(TransactionId)
+		# Call the get_Humans function with LastFetchTime
+		result = get_Humans(LastFetchTime)
 		return result
 	except Exception as e:
 		return Debugger(e)

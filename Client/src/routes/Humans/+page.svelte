@@ -159,13 +159,7 @@
 				</thead>
 				<tbody>
 					{#each displayedHumans as human}
-						<tr on:click={(event) => {
-							if (event.ctrlKey || event.metaKey) {
-								window.open(`/Human?HumanId=${human.HumanId}`, '_blank');
-							} else {
-								window.location.href = `/Human?HumanId=${human.HumanId}`;
-							}
-						}}>
+						<tr on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>

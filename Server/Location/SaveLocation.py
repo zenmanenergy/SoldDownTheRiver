@@ -36,21 +36,29 @@ def save_location(LocationId, Name, Address, City, State, County, Country, Latit
 			Longitude = 0.0
 
 	# Convert Latitude & Longitude to float safely
-	Latitude = float(Latitude)
-	Longitude = float(Longitude)
+	Latitude = float(Latitude) if Latitude else 'NULL'
+	Longitude = float(Longitude) if Longitude else 'NULL'
+
+	# Replace blank values with NULL for other fields
+	Name = f"'{Name}'" if Name else 'NULL'
+	Address = f"'{Address}'" if Address else 'NULL'
+	City = f"'{City}'" if City else 'NULL'
+	County = f"'{County}'" if County else 'NULL'
+	State = f"'{State}'" if State else 'NULL'
+	Country = f"'{Country}'" if Country else 'NULL'
 
 	if LocationId:
 		# Update existing location
 		sql = f"""
 		UPDATE locations 
-		SET Name='{Name}',
-			Address = '{Address}',
-			City = '{City}', 
-			County = '{County}',
-			State = '{State}', 
-			Country = '{Country}', 
-			Latitude = {Latitude:.6f}, 
-			Longitude = {Longitude:.6f}, 
+		SET Name={Name},
+			Address = {Address},
+			City = {City}, 
+			County = {County},
+			State = {State}, 
+			Country = {Country}, 
+			Latitude = {Latitude}, 
+			Longitude = {Longitude}, 
 			DateUpdated = NOW() 
 		WHERE LocationId = '{LocationId}'
 		"""
@@ -60,8 +68,8 @@ def save_location(LocationId, Name, Address, City, State, County, Country, Latit
 
 		# Insert new location
 		sql = f"""
-		INSERT INTO locations (LocationId, Name,Address, City, County, State, Country, Latitude, Longitude, DateUpdated)
-		VALUES ('{LocationId}', '{Name}','{Address}', '{City}', '{County}', '{State}', '{Country}', {Latitude:.6f}, {Longitude:.6f}, NOW())
+		INSERT INTO locations (LocationId, Name, Address, City, County, State, Country, Latitude, Longitude, DateUpdated)
+		VALUES ('{LocationId}', {Name}, {Address}, {City}, {County}, {State}, {Country}, {Latitude}, {Longitude}, NOW())
 		ON DUPLICATE KEY UPDATE 
 			Name = VALUES(Name),
 			Address = VALUES(Address),

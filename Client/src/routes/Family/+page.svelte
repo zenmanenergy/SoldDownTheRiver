@@ -245,11 +245,11 @@
 	}
 
 	function formatBirthDate(date) {
-		if (!date) return 'Unknown';
+		if (!date) return '';
 		try {
 			// Convert the date string into a Date object
 			const dateObj = new Date(date);
-			if (isNaN(dateObj)) return 'Unknown'; // Ensure the date is valid
+			if (isNaN(dateObj)) return ''; // Ensure the date is valid
 
 			// Extract the components
 			const day = dateObj.getUTCDate();
@@ -260,7 +260,7 @@
 			return `${month}/${day}/${year}`;
 		} catch (error) {
 			console.error('Error formatting date:', error);
-			return 'Unknown';
+			return '';
 		}
 	}
 
@@ -295,8 +295,8 @@
 				<h3 class="title is-3">Human Information</h3>
 				<p><strong>Name:</strong> {selectedHumanData.FirstName} {selectedHumanData.LastName}</p>
 				<p><strong>Birth Date:</strong> {formatBirthDate(selectedHumanData.BirthDate)}</p>
-				<p><strong>Racial Descriptor:</strong> {selectedHumanData.RacialDescriptor || 'Unknown'}</p>
-				<p><strong>Sex:</strong> {selectedHumanData.Sex || 'Unknown'}</p>
+				<p><strong>Racial Descriptor:</strong> {selectedHumanData.RacialDescriptor || ''}</p>
+				<p><strong>Sex:</strong> {selectedHumanData.Sex || ''}</p>
 				<p><strong>Roles:</strong> {selectedHumanData.Roles.length > 0 ? selectedHumanData.Roles.join(', ') : 'No Roles'}</p>
 			</div>
 		{/if}
@@ -314,8 +314,8 @@
 					<h4 class="title is-4">Selected Human</h4>
 					<p><strong>Name:</strong> {selectedHuman.FirstName} {selectedHuman.MiddleName} {selectedHuman.LastName}</p>
 					<p><strong>Birth Date:</strong> {formatBirthDate(selectedHuman.BirthDate)}</p>
-					<p><strong>Racial Descriptor:</strong> {selectedHuman.RacialDescriptor || 'Unknown'}</p>
-					<p><strong>Sex:</strong> {selectedHuman.Sex || 'Unknown'}</p>
+					<p><strong>Racial Descriptor:</strong> {selectedHuman.RacialDescriptor || ''}</p>
+					<p><strong>Sex:</strong> {selectedHuman.Sex || ''}</p>
 
 					<div class="field">
 						<label class="label" for="relationshipType">Select Relationship Type</label>
@@ -363,7 +363,7 @@
 							<td>{human.FirstName || ''}</td>
 							<td>{human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>
-							<td>{formatBirthDate(human.BirthDate)}</td>
+							<td>{formatBirthDate(human.BirthDate) || ''}</td>
 							<td>{human.RacialDescriptor || ''}</td>
 							<td>{human.Sex || ''}</td>
 						</tr>

@@ -76,8 +76,13 @@
 	<div class="section">
 		<div class="ActionBox">
 			<form>
-				<h3 class="title is-2">Edit a Location</h3>
-
+				<div class="title-container">
+					<h3 class="title is-2">Add/Edit a Location</h3>
+					{#if LocationId.length}
+						<button class="button is-danger" on:click={() => handleDelete(Session.SessionId, LocationId)}>Delete</button>
+					{/if}
+				</div>
+				
 				<input type="hidden" bind:value={Location.LocationId} />
 
 				<div class="field">
@@ -139,9 +144,7 @@
 				<div class="field">
 					<div class="control">
 						<button class="button is-primary" on:click={() => handleSave(Session.SessionId, Location, formValid)}>Save</button>
-						{#if LocationId.length}
-							<button class="button is-danger" on:click={() => handleDelete(Session.SessionId, LocationId)}>Delete</button>
-						{/if}
+						
 					</div>
 				</div>
 			</form>

@@ -1,0 +1,2 @@
+{"individual":{"name":"Arena","age":23,"skin_color":"tawny","height":"5"1/4","health_status":"wellmadewithagoodsetofteeth"},"price":280,"currency":"$"
+}

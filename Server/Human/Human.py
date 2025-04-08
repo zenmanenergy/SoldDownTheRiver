@@ -317,7 +317,11 @@ def GetVoyages():
 		# Get the human ID from the request
 		HumanId = human_data.get('HumanId', None)
 		# Call the get_human_voyages function
-		result = get_human_voyages(HumanId)
+		try:
+			result = get_human_voyages(HumanId)
+		except Exception as e:
+			print(f"Error fetching voyages for HumanId {HumanId}: {e}")
+			result = {"error": f"Failed to fetch voyages for HumanId {HumanId}"}
 		return result
 	except Exception as e:
 		return Debugger(e)

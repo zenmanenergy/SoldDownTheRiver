@@ -47,7 +47,8 @@
 		RacialDescriptor: '',
 		Sex: '',
 		Height_cm: '',
-		Roles: ''
+		Roles: '',
+		DateUpdated: '' // new field for last update timestamp
 	};
 
 	let originalBirthDate = ''; // new variable to store fetched birth date
@@ -171,6 +172,7 @@
 					locations = timelines.data;
 				}
 			}
+			await handleGetHumans(Session.SessionId, setHumans);
 		}
 
 		if (mergeHumanId) {
@@ -187,7 +189,7 @@
 			}
 		});
 
-		await handleGetHumans(Session.SessionId, setHumans);
+		
 
 		if (Human.Height_cm) {
 			Human.Height_in = (Human.Height_cm / 2.54).toFixed(2);
@@ -230,21 +232,41 @@
 		});
 	}
 
+	// Helper function to generate a timestamp in EST as "YYYY-MM-DD HH:mm:ss"
+	function getESTFormattedTimestamp() {
+		// Get local time in America/New_York from the built-in API
+		const nowEST = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour12: false });
+		// nowEST is in "MM/DD/YYYY, HH:MM:SS" format
+		const [datePart, timePart] = nowEST.split(', ');
+		const [month, day, year] = datePart.split('/');
+		return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${timePart}`;
+	}
+
 	async function submitHuman() {
 		// Set TransactionId and RoleId on the Human object from the URL and UI input
 		const transactionId = getURLVariable('TransactionId') || "";
 		if (transactionId) {
 			Human.TransactionId = transactionId;
-			Human.RoleId = Human.Role;  // assign the selected role as RoleId
+			Human.RoleId = Human.Role; // assign the selected role as RoleId
+
+			// Ensure RoleId is selected
+			if (!Human.RoleId) {
+				alert("Role is required when a transaction is associated.");
+				return;
+			}
 		}
 		const result = await saveHuman(Session.SessionId, HumanId, Human);
 		if (result) {
+			// Update DateUpdated using the EST timestamp
+			// Human.DateUpdated = getESTFormattedTimestamp();
 			const TransactionId = getURLVariable('TransactionId');
-			if (TransactionId) {
-				window.location.href = `/Transaction?TransactionId=${TransactionId}`;
-			} else {
-				window.location.href = returnPath || '/Humans';
-			}
+			console.log(result)
+			// if (TransactionId) {
+			// 	window.location.href = `/Transaction?TransactionId=${TransactionId}`;
+			// } else {
+			// 	window.location.href = returnPath || '/Humans';
+			// }
+			window.location.href = `/Human?HumanId=${HumanId}`;
 		} else {
 			alert("Failed to save human.");
 		}
@@ -327,10 +349,11 @@
 			{#if transactionSummary}
 				<div class="transaction-summary">
 					<h3 class="title is-3">Transaction Summary</h3>
+					<a target="_blank" href="/Transaction?TransactionId={transactionSummary.TransactionId}">View</a>
 					<p><strong>Type:</strong> {transactionSummary.TransactionType}</p>
 					<p><strong>Date:</strong> {formatDate(transactionSummary.date_circa, transactionSummary.date_accuracy)}</p>
-					<p><strong>Buyer:</strong> {transactionSummary.Buyers[0].BuyerFirstName} {transactionSummary.Buyers[0].BuyerLastName}</p>
-					<p><strong>Seller:</strong> {transactionSummary.Sellers[0].SellerFirstName} {transactionSummary.Sellers[0].SellerLastName}</p>
+					<p><strong>Buyer:</strong> {transactionSummary.Buyers[0].BuyerFirstName || ''} {transactionSummary.Buyers[0].BuyerLastName || ''}</p>
+					<p><strong>Seller:</strong> {transactionSummary.Sellers[0].SellerFirstName || ''} {transactionSummary.Sellers[0].SellerLastName || ''}</p>
 				</div>
 			{/if}
 
@@ -433,143 +456,148 @@
 
 				<div class="buttons-container">
 					<button class="button is-primary" type="submit">Save</button>
+					{#if Human.DateUpdated}
+						<span style="margin-left: 1rem;">Last Updated: {Human.DateUpdated}</span>
+					{/if}
 					{#if HumanId} 
 						<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
 					{/if}
 				</div>
 			</form>
 
-			{#if akaNames.length > 0}
-				<h3 class="title is-3">Also Known As (AKA)</h3>
+			{#if HumanId}
+				{#if akaNames.length > 0}
+					<h3 class="title is-3">Also Known As (AKA)</h3>
+					<table class="table is-fullwidth is-striped">
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Middle Name</th>
+								<th>Last Name</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each akaNames as aka}
+								<tr>
+									<td>{aka.AKAFirstName}</td>
+									<td>{aka.AKAMiddleName}</td>
+									<td>{aka.AKALastName}</td>
+									<td>
+										<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				{/if}
+			
+				<h3 class="title is-3">Add New AKA</h3>
+				<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
+					<div class="field">
+						<label for="aka-first-name">First Name:</label>
+						<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
+					</div>
+					<div class="field">
+						<label for="aka-middle-name">Middle Name:</label>
+						<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
+					</div>
+					<div class="field">
+						<label for="aka-last-name">Last Name:</label>
+						<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
+					</div>
+					<button class="button is-primary" type="submit">Add AKA</button>
+				</form>
+
+				{#if families.length > 0}
+					<h3 class="title is-3">Family Tree</h3>
+					<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
+					<FamilyTreeCanvas {families} />
+				{:else}
+					No family relationships defined
+				{/if}
+
+				
+				<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
 				<table class="table is-fullwidth is-striped">
 					<thead>
 						<tr>
-							<th>First Name</th>
-							<th>Middle Name</th>
-							<th>Last Name</th>
+							<th>Type</th>
+							<th>Address</th>
+							<th>Latitude</th>
+							<th>Longitude</th>
+							<th>Date Circa</th>
+							<th>Date Accuracy</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						{#each akaNames as aka}
-							<tr>
-								<td>{aka.AKAFirstName}</td>
-								<td>{aka.AKAMiddleName}</td>
-								<td>{aka.AKALastName}</td>
-								<td>
-									<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			{/if}
-
-			<h3 class="title is-3">Add New AKA</h3>
-			<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
-				<div class="field">
-					<label for="aka-first-name">First Name:</label>
-					<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
-				</div>
-				<div class="field">
-					<label for="aka-middle-name">Middle Name:</label>
-					<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
-				</div>
-				<div class="field">
-					<label for="aka-last-name">Last Name:</label>
-					<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
-				</div>
-				<button class="button is-primary" type="submit">Add AKA</button>
-			</form>
-
-			{#if families.length > 0}
-				<h3 class="title is-3">Family Tree</h3>
-				<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
-				<FamilyTreeCanvas {families} />
-			{:else}
-				No family relationships defined
-			{/if}
-
-			
-			<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
-			<table class="table is-fullwidth is-striped">
-				<thead>
-					<tr>
-						<th>Type</th>
-						<th>Address</th>
-						<th>Latitude</th>
-						<th>Longitude</th>
-						<th>Date Circa</th>
-						<th>Date Accuracy</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#if locations.length > 0}
-						{#each locations as location}
-							<tr>
-								<td>{location.LocationType || ''}</td>
-								<td>{location.Address || ''}</td>
-								<td>{location.Latitude || ''}</td>
-								<td>{location.Longitude || ''}</td>
-								<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
-								<td>{location.Date_Accuracy || 'D'}</td>
-								<td>
-									<button class="button is-danger" on:click={() => deleteTimeline(location.LocationId)}>Delete</button>
-								</td>
-							</tr>
-						{/each}
-					{/if}
-					<tr>
-						<td>
-							<input class="input" type="text" bind:value={newLocation.LocationType} placeholder="Type..." />
-						</td>
-						<td>
-							<input class="input" type="text" bind:value={newLocation.Address} placeholder="Address..." />
-						</td>
-						<td>
-							<input class="input" type="number" bind:value={newLocation.Latitude} placeholder="Latitude..." />
-						</td>
-						<td>
-							<input class="input" type="number" bind:value={newLocation.Longitude} placeholder="Longitude..." />
-						</td>
-						<td>
-							<input class="input" type="date" bind:value={newLocation.Date_Circa} placeholder="Date Circa..." />
-						</td>
-						<td>
-							<select class="input" bind:value={newLocation.Date_Accuracy}>
-								<option value="D">D</option>
-								<option value="M">M</option>
-								<option value="Y">Y</option>
-							</select>
-						</td>
-						<td>
-							<button class="button is-primary" type="button" on:click={addNewLocation}>Save</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
-			{#if voyages.length > 0}
-				<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>
-				<table class="table is-fullwidth is-striped">
-					<thead>
+						{#if locations.length > 0}
+							{#each locations as location}
+								<tr>
+									<td>{location.LocationType || ''}</td>
+									<td>{location.Address || ''}</td>
+									<td>{location.Latitude || ''}</td>
+									<td>{location.Longitude || ''}</td>
+									<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
+									<td>{location.Date_Accuracy || 'D'}</td>
+									<td>
+										<button class="button is-danger" on:click={() => deleteTimeline(location.LocationId)}>Delete</button>
+									</td>
+								</tr>
+							{/each}
+						{/if}
 						<tr>
-							<th>Voyage ID</th>
-							<th>Role ID</th>
-							<th>Notes</th>
+							<td>
+								<input class="input" type="text" bind:value={newLocation.LocationType} placeholder="Type..." />
+							</td>
+							<td>
+								<input class="input" type="text" bind:value={newLocation.Address} placeholder="Address..." />
+							</td>
+							<td>
+								<input class="input" type="number" bind:value={newLocation.Latitude} placeholder="Latitude..." />
+							</td>
+							<td>
+								<input class="input" type="number" bind:value={newLocation.Longitude} placeholder="Longitude..." />
+							</td>
+							<td>
+								<input class="input" type="date" bind:value={newLocation.Date_Circa} placeholder="Date Circa..." />
+							</td>
+							<td>
+								<select class="input" bind:value={newLocation.Date_Accuracy}>
+									<option value="D">D</option>
+									<option value="M">M</option>
+									<option value="Y">Y</option>
+								</select>
+							</td>
+							<td>
+								<button class="button is-primary" type="button" on:click={addNewLocation}>Save</button>
+							</td>
 						</tr>
-					</thead>
-					<tbody>
-						{#each voyages as voyage}
-							<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
-								<td>{voyage.VoyageId}</td>
-								<td>{voyage.RoleId}</td>
-								<td>{voyage.Notes}</td>
-							</tr>
-						{/each}
 					</tbody>
 				</table>
+
+				{#if voyages.length > 0}
+					<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>
+					<table class="table is-fullwidth is-striped">
+						<thead>
+							<tr>
+								<th>Voyage ID</th>
+								<th>Role ID</th>
+								<th>Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each voyages as voyage}
+								<tr on:click={() => window.location.href = `/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor: pointer;">
+									<td>{voyage.VoyageId}</td>
+									<td>{voyage.RoleId}</td>
+									<td>{voyage.Notes}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				{/if}
 			{/if}
 
 		</form>

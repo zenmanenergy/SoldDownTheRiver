@@ -29,6 +29,14 @@
 	.location {
 		white-space: normal;
 	}
+
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 1rem;
+		gap: 1rem;
+	}
 </style>
 
 <script>
@@ -44,6 +52,16 @@
 
 	let sortColumn = 'date_circa';
 	let sortAscending = true;
+
+	let currentPage = 1;
+	let itemsPerPage = 10;
+
+	$: totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+
+	$: paginatedTransactions = filteredTransactions.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
 
 	async function setTransactions(data) {
 		Transactions = [...data]; // Ensure reactivity
@@ -93,14 +111,12 @@
 	$: filteredTransactions = Transactions
 		.filter(transaction => {
 			const fullTransaction = `
-				${transaction.FirstPartyFirstName} 
-				${transaction.FirstPartyLastName} 
-				${transaction.SecondPartyFirstName} 
-				${transaction.SecondPartyLastName} 
-				${transaction.LocationCity} 
-				${transaction.LocationCounty} 
+				${transaction.Sellers} 
+				${transaction.Buyers} 
+				${transaction.Notary} 
 				${transaction.TransactionId} 
 				${transaction.nola_id}
+				${transaction.TransactionType}
 			`.toLowerCase();
 			return fullTransaction.includes(searchQuery.toLowerCase());
 		})
@@ -140,6 +156,12 @@
 	function addTransaction() {
 		window.location.href = '/Transaction?transactionId=';
 	}
+
+	function goToPage(page) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -158,7 +180,7 @@
 			<form>
 				<div class="field">
 					<div class="control">
-						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name or location" />
+						<input class="input" type="text" bind:value={searchQuery} on:input={() => currentPage = 1} placeholder="Search by name or location" />
 					</div>
 				</div>
 			</form>
@@ -167,48 +189,36 @@
 					<tr>
 						<th on:click={() => toggleSort('date_circa')}>Date</th>
 						<th on:click={() => toggleSort('TransactionType')}>Transaction Type</th>
-						<th on:click={() => toggleSort('NotaryFirstName')}>Notary</th>
-						<th on:click={() => toggleSort('FirstPartyFirstName')}>First Party</th>
-						<th on:click={() => toggleSort('SecondPartyFirstName')}>Second Party</th>
-						<th on:click={() => toggleSort('LocationCity')}>Location</th>
-						<th on:click={() => toggleSort('TotalPrice')}>Total Price</th>
-						<th>URL</th>
+						<th on:click={() => toggleSort('Notary')}>Notary</th>
+						<th on:click={() => toggleSort('Sellers')}>Seller</th>
+						<th on:click={() => toggleSort('Buyers')}>Buyer</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredTransactions as transaction}
-						<tr on:click={(event) => {
-							if (event.ctrlKey || event.metaKey) {
-								window.open(`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`, '_blank');
-							} else {
-								location.href=`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`;
-							}
-						}}>
+					{#each paginatedTransactions as transaction}
+						<tr on:click={() => window.open(`/Transaction?TransactionId=${encodeURIComponent(transaction.TransactionId)}`, '_blank')}>
 							
 							<td>{formatTransactionDate(transaction.date_circa, transaction.date_accuracy)}</td>
 							<td>{transaction.TransactionType || ''}</td>
-							<td title={`${transaction.NotaryFirstName || ''} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName || ''}`} >
-								{truncateText(`${transaction.NotaryFirstName || ''} ${transaction.NotaryMiddleName || ''} ${transaction.NotaryLastName || ''}`)}
+							<td title={`${transaction.Notary || ''}`} >
+								{truncateText(`${transaction.Notary || ''}`)}
 							</td>
-							<td title={`${transaction.FirstPartyFirstName || ''} ${transaction.FirstPartyMiddleName || ''} ${transaction.FirstPartyLastName || ''}`} >
-								{truncateText(`${transaction.FirstPartyFirstName || ''} ${transaction.FirstPartyMiddleName || ''} ${transaction.FirstPartyLastName || ''}`)}
+							<td title={`${transaction.Sellers || ''}`} >
+								{truncateText(`${transaction.Sellers || ''}`)}
 							</td>
-							<td title={`${transaction.SecondPartyFirstName || ''} ${transaction.SecondPartyMiddleName || ''} ${transaction.SecondPartyLastName || ''}`} >
-								{truncateText(`${transaction.SecondPartyFirstName || ''} ${transaction.SecondPartyMiddleName || ''} ${transaction.SecondPartyLastName || ''}`)}
+							<td title={`${transaction.Buyers || ''}`} >
+								{truncateText(`${transaction.Buyers || ''}`)}
 							</td>
-							<td class="location">
-								{transaction.LocationAddress || ''}
-							</td>
-							<td>{transaction.TotalPrice ? `$${transaction.TotalPrice.toFixed(2)}` : ''}</td>
-							<td>
-								{#if transaction.URL}
-									<a href={transaction.URL} target="_blank">View</a>
-								{/if}
-							</td>
+							
 						</tr>
 					{/each}
 				</tbody>
 			</table>
+			<div class="pagination">
+				<button class="button" on:click={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
+				<span>Page {currentPage} of {totalPages}</span>
+				<button class="button" on:click={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+			</div>
 		</div>
 	</div>
 {/if}

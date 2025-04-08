@@ -14,9 +14,13 @@ def GetHumans():
 		# Get the human data from the request
 		human_data = request.args.to_dict()
 		Query = human_data.get('Query', None)
+		LastFetchTime = human_data.get('LastFetchTime', None)  # Get LastFetchTime from the request
+		print("LastFetchTime",LastFetchTime)
+		if LastFetchTime == 'null':  # Handle 'null' string explicitly
+			LastFetchTime = None
 
-		# Call the get_humans function from GetHumans.py
-		result = get_humans(Query)
+		# Call the get_humans function with Query and LastFetchTime
+		result = get_humans(Query, LastFetchTime)
 		return result
 	except Exception as e:
 		return Debugger(e)
@@ -25,8 +29,6 @@ def GetHumans():
 @cross_origin()
 def SetTimelines():
 	try:
-		
-
 		# Call the set_timelines function from SetTimelines.py
 		result = set_timelines()
 		return result

@@ -18,7 +18,6 @@ def verify_session(SessionId):
 	"""
 	values = (SessionId,)
 
-	print(query % tuple(map(repr, values)))
 
 	# Execute the query and get the results
 	cursor.execute(query, values)
