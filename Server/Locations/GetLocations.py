@@ -6,7 +6,7 @@ def get_locations():
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *"
+	query = "SELECT distinct *"
 	query +="   from locations order by Address"
 	# query +=" limit 50"
 	values = ()

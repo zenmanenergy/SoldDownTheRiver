@@ -8,7 +8,7 @@
 	import { handleGetShip } from './handleGetShip.js';
 	import { handleGetShipVoyages } from './handleGetShipVoyages.js';
 	import { handleGetCaptains } from './handleGetCaptains.js';
-	import { handleGetLocations } from './handleGetLocations.js';
+	import { handleGetLocations } from '../Locations/handleGetLocations.js';
 	import { handleGetTransactions } from './handleGetTransactions.js';
 	import { Session } from "../Session.js";
 	
@@ -95,7 +95,6 @@
 		console.log("HomePortLocationId changed:", HomePortLocationId);
 	}
 	function handleLocationInput(event) {
-		console.log("Input changed tssso:", event);
 		
 		if (Ship.HomePortLocationId === "add_new") {
 			// Redirect to the desired page
@@ -108,7 +107,6 @@
 		}
 	}
 	function handleLocationSelection(event) {
-		console.log("GOOOOOOO", Ship.HomePortLocationId)
 		if (Ship.HomePortLocationId === "add_new") {
 			// Redirect to the desired page
 			window.location.href = "/path_to_new_page"; // replace "path_to_new_page" with your desired path
@@ -176,14 +174,13 @@
 					<div class="control">
 						
 
-						<div id="svelecteLocation">
 							<svelte:component 
 								this={Svelecte} 
 								bind:value={Ship.HomePortLocationId} 
 								on:input={handleLocationSelection} 
 								options={Locations.map(location => ({
 									value: location.LocationId, 
-									label: `${location.City} ${location.State}`
+									label: `${location.Address}`
 								}))} 
 							/>
 						</div>

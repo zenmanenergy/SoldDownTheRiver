@@ -34,7 +34,6 @@ def get_humans(Search=None, LastFetchTime=None):
 	query += """
 		GROUP BY h.HumanId
 		ORDER BY h.LastName, h.FirstName, h.MiddleName
-		limit 225
 	"""
 
 	# Debugging: Print the query and values for troubleshooting

@@ -88,9 +88,9 @@
 					<tbody>
 						{#each filteredUsers as user}
 							<tr on:click={() => window.location.href = `/User?UserId=${user.UserId}`}>
-								<td>{user.FirstName || 'unknown'} {user.LastName || 'unknown'}</td>
-								<td>{user.Email || 'unknown'}</td>
-								<td>{user.Phone || 'unknown'}</td>
+								<td>{user.FirstName || ''} {user.LastName || ''}</td>
+								<td>{user.Email || ''}</td>
+								<td>{user.Phone || ''}</td>
 							</tr>
 						{/each}
 					</tbody>

@@ -26,6 +26,7 @@
 	import Select from 'svelte-select';
 	import moment from 'moment';
 	let rawNolaRecords = [];
+	let Svelecte; // NEW: variable for Svelecte
 	let transaction = {
 		date_circa: '',
 		date_accuracy: 'D',
@@ -115,6 +116,8 @@ if (typeof window !== 'undefined') {
 
 	onMount(async () => {
 		await Session.handleSession();
+		const module = await import('svelecte');  // NEW: dynamically import Svelecte
+		Svelecte = module.default || module;
 		transactionId = getTransactionIdFromURL();
 
 		if (transactionId) {
@@ -180,12 +183,13 @@ if (typeof window !== 'undefined') {
 	});
 
 	async function addHumanToTransactionFromAvailable(human) {
-		const roleId = selectedRoleForHuman[human.value];
+		// Changed from human.value to human.HumanId
+		const roleId = selectedRoleForHuman[human.HumanId];
 		if (!roleId) {
 			alert("Please select a role for this human before adding.");
 			return;
 		}
-		await handleSaveTransactionHuman(Session.SessionId, transactionId, human.value, roleId);
+		await handleSaveTransactionHuman(Session.SessionId, transactionId, human.HumanId, roleId);
 
 		// Refresh transactionHumans after adding a new human
 		await handleGetTransactionHumans(Session.SessionId, transactionId, (data) => {
@@ -454,18 +458,22 @@ if (typeof window !== 'undefined') {
 				<!-- New Location select box -->
 				<div class="field">
 					<label for="location">Location:</label>
-					<select id="location" class="input" bind:value={transaction.LocationId}>
-						<option value="">Select a Location</option>
-						{#each allLocations as loc}
-							<option value={loc.LocationId}>{loc.Address}</option>
-						{/each}
-					</select>
+					<div id="svelecteLocation">
+						<svelte:component
+							this={Svelecte}
+							bind:value={transaction.LocationId}
+							options={allLocations.map(loc => ({
+								value: loc.LocationId,
+								label: loc.Address
+							}))}
+						/>
+					</div>
 				</div>
 			
 				<!-- Total Price -->
 				<div class="field">
 					<label for="total-price">Total Price:</label>
-					<input id="total-price" class="input" type="number" step="0.01" bind:value={transaction.TotalPrice} placeholder="Enter total price" />
+					<input id="total-price" class="input" type="text" bind:value={transaction.TotalPrice} placeholder="Enter total price" />
 				</div>
 			
 				<!-- Act -->
@@ -477,13 +485,13 @@ if (typeof window !== 'undefined') {
 				<!-- Page -->
 				<div class="field">
 					<label for="page">Page:</label>
-					<input id="page" class="input" type="number" bind:value={transaction.Page} placeholder="Enter page number" />
+					<input id="page" class="input" type="text" bind:value={transaction.Page} placeholder="Enter page number" />
 				</div>
 			
 				<!-- Volume -->
 				<div class="field">
 					<label for="volume">Volume:</label>
-					<input id="volume" class="input" type="number" bind:value={transaction.Volume} placeholder="Enter volume number" />
+					<input id="volume" class="input" type="text" bind:value={transaction.Volume} placeholder="Enter volume number" />
 				</div>
 			
 				<!-- URL -->
@@ -655,6 +663,8 @@ if (typeof window !== 'undefined') {
 												<option value={role.RoleId}>{role.Role}</option>
 											{/each}
 										</select>
+
+										
 									</td>
 									<td>
 										<button class="button is-primary is-small" type="button" on:click={() => addHumanToTransactionFromAvailable(human)}>

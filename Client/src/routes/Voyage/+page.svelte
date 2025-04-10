@@ -163,13 +163,13 @@
 									bind:value={Voyage.StartLocationId} 
 									options={Locations.map(location => ({
 										value: location.LocationId, 
-										label: (location.Name && location.Name.length) ? location.Name : `${location.City} ${location.State}`
+										label: `${location.Address}`
 									}))} 
 								/>
 							</div>
 						</div>
 					</div>
-	
+					
 					
 					<div class="field">
 						<label class="label" for="Size">End Location <a class="AddLink" href="/Location?LocationId=">Add Location</a></label>
@@ -180,9 +180,10 @@
 									bind:value={Voyage.EndLocationId} 
 									options={Locations.map(location => ({
 										value: location.LocationId, 
-										label: (location.Name && location.Name.length) ? location.Name : `${location.City} ${location.State}`
+										label: `${location.Address}`
 									}))} 
 								/>
+
 							</div>
 	
 						</div>
