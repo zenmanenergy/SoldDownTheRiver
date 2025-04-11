@@ -9,6 +9,7 @@
 	import { handleSave } from "./handleSave.js";
 	import { handleDelete } from "./handleDelete.js";
 	import { handleGetLocation } from "./handleGetLocation.js";
+	import { handleGetLocationTimelines } from "./handleGetLocationTimelines.js";
 	import {Session} from "../Session.js";
 
 	let LastModified = '';
@@ -22,6 +23,7 @@
 	let Longitude = "";
 	let formValid = false;
 	let isLoading = true;
+	let timelines=[]
 
 	let Location = {
 		LocationId: "",
@@ -52,6 +54,11 @@
 		formValid = Location.City; // Adjust if Address or County should be required
 	}
 
+	async function setTimelines(_timelines){
+		console.log("data", _timelines?.data);
+		timelines = (_timelines && _timelines.data) || []; // Ensure timelines is always an array
+	}
+
 	onMount(async () => {
 		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
@@ -61,11 +68,56 @@
 			await Promise.all([
 				await handleGetLocation(Session.SessionId, LocationId, setLocation)
 			]);
+			await handleGetLocationTimelines(Session.SessionId, LocationId, setTimelines)
 		}
 
 		console.log("LocationId", LocationId);
 		isLoading = false;
 	});
+	function formatDate(date, accuracy) {
+		const d = new Date(date);
+		if (isNaN(d)) return "";
+		if (accuracy === "M") {
+			return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+		} else if (accuracy === "Y") {
+			return d.getFullYear().toString();
+		} else { // Default "D"
+			return d.toISOString().split('T')[0];
+		}
+	}
+
+	let currentPage = 1;
+	let itemsPerPage = 50;
+	let sortKey = '';
+	let sortDirection = 'asc';
+
+	function sortTable(key) {
+		if (sortKey === key) {
+			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortKey = key;
+			sortDirection = 'asc';
+		}
+		currentPage = 1;
+	}
+
+	$: sortedTimelines = [...timelines].sort((a, b) => {
+		if (!sortKey) return 0;
+		let aValue, bValue;
+		if (sortKey === 'Name') {
+			aValue = (a.FirstName || '') + ' ' + (a.LastName || '');
+			bValue = (b.FirstName || '') + ' ' + (b.LastName || '');
+		} else {
+			aValue = a[sortKey] || '';
+			bValue = b[sortKey] || '';
+		}
+		if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+		if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+		return 0;
+	});
+
+	$: totalPages = Math.ceil(sortedTimelines.length / itemsPerPage);
+	$: paginatedTimelines = sortedTimelines.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 </script>
 
 {#if isLoading}
@@ -154,4 +206,35 @@
 			{/if}
 		</div>
 	</div>
+	{#if LocationId && timelines.length}
+		<div class="section">
+			<table class="table">
+				<thead>
+					<tr>
+							<th on:click={() => sortTable('Name')} style="cursor:pointer;">Name</th>
+							<th on:click={() => sortTable('RoleId')} style="cursor:pointer;">Role</th>
+							<th on:click={() => sortTable('LocationType')} style="cursor:pointer;">Location Type</th>
+							<th on:click={() => sortTable('Date_Circa')} style="cursor:pointer;">Date Circa</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each paginatedTimelines as timeline}
+						<tr on:click={() => window.open(`/Human?HumanId=${timeline.HumanId}`, '_blank')} style="cursor: pointer;">
+							<td>{timeline.FirstName || ''} {timeline.LastName || ''}</td>
+							<td>{timeline.RoleId || ''}</td>
+							<td>{timeline.LocationType || ''}</td>
+							<td>{formatDate(timeline.Date_Circa, timeline.Date_Accuracy)}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+			{#if totalPages > 1}
+				<div class="pagination-controls">
+					<button on:click={() => currentPage = Math.max(1, currentPage - 1)} disabled={currentPage === 1}>Previous</button>
+					<span>Page {currentPage} of {totalPages}</span>
+					<button on:click={() => currentPage = Math.min(totalPages, currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+				</div>
+			{/if}
+		</div>
+	{/if}
 {/if}

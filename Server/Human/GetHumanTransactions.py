@@ -10,38 +10,38 @@ def get_human_transactions(HumanId):
 	# Construct the SQL query
 	query = """
 		SELECT distinct
-			transactions.TransactionId,
-			transactions.date_circa,
-			transactions.date_accuracy,
-			transactions.TransactionType,
-			transactions.Notes,
-			transactions.Act,
-			transactions.Page,
-			transactions.Volume,
-			transactions.URL,
-			transactions.NeedsReview,
-			transactions.Transcriber,
-			transactions.NOLA_ID,
-			transactions.Parsed_Notes,
-			transactions.QuantityOfSlaves,
-			transactions.TotalPrice,
-			transactions.dataIssue,
-			transactions.Issues,
-			transactions.LocationId,
-			transactions.processedNotes,
-			transactions.isApproved,
-			transactions.DataQuestions,
-			transactionhumans.Notes AS TransactionHumanNotes,
-			transactionhumans.ParsedNotes AS TransactionHumanParsedNotes,
-			transactionhumans.Price AS TransactionHumanPrice,
-			transactionhumans.originLocationId,
-			transactionhumans.destinationLocationId
-		FROM transactions
-		
-		LEFT JOIN transactionhumans ON transactions.TransactionId = transactionhumans.TransactionId
-		WHERE fp.HumanId = '{}' OR sp.HumanId = '{}' OR transactionhumans.HumanId = '{}'
-		order by date_circa asc
-	""".format(HumanId, HumanId, HumanId, HumanId)
+			t.TransactionId,
+			t.date_circa,
+			t.date_accuracy,
+			t.TransactionType,
+			n.Notary,
+			s.Sellers,
+			b.Buyers
+		FROM transactions t
+			JOIN transactionhumans ON t.TransactionId = transactionhumans.TransactionId AND transactionhumans.HumanId = '{}'
+			LEFT JOIN (
+				SELECT th1.TransactionId, GROUP_CONCAT(CONCAT(COALESCE(h1.FirstName, th1.HumanId), ' ', COALESCE(h1.LastName, '')) SEPARATOR ', ') AS Notary
+				FROM transactionhumans th1
+				LEFT JOIN humans h1 ON th1.HumanId = h1.HumanId
+				WHERE th1.RoleId = 'Notary'
+				GROUP BY th1.TransactionId
+			) n ON t.TransactionId = n.TransactionId
+			LEFT JOIN (
+				SELECT th2.TransactionId, GROUP_CONCAT(CONCAT(COALESCE(h2.FirstName, th2.HumanId), ' ', COALESCE(h2.LastName, '')) SEPARATOR ', ') AS Sellers
+				FROM transactionhumans th2
+				LEFT JOIN humans h2 ON th2.HumanId = h2.HumanId
+				WHERE th2.RoleId = 'Seller'
+				GROUP BY th2.TransactionId
+			) s ON t.TransactionId = s.TransactionId
+			LEFT JOIN (
+				SELECT th3.TransactionId, GROUP_CONCAT(CONCAT(COALESCE(h3.FirstName, th3.HumanId), ' ', COALESCE(h3.LastName, '')) SEPARATOR ', ') AS Buyers
+				FROM transactionhumans th3
+				LEFT JOIN humans h3 ON th3.HumanId = h3.HumanId
+				WHERE th3.RoleId = 'Buyer'
+				GROUP BY th3.TransactionId
+			) b ON t.TransactionId = b.TransactionId
+		order by t.date_circa asc
+	""".format( HumanId)
 	
 	# Print the SQL query with the actual HumanId value
 	print(query)

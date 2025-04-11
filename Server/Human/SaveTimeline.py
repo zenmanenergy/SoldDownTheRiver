@@ -16,7 +16,7 @@ def save_timeline(timeline_data):
 		location_type = timeline_data.get('LocationType')
 		
 		# Generate a unique LocationId
-		location_id = str(uuid.uuid4())
+		location_id =  timeline_data.get('LocationId')
 		
 		cursor, connection = Database.ConnectToDatabase()
 		query = """
@@ -29,34 +29,7 @@ def save_timeline(timeline_data):
 		"""
 		cursor.execute(query, (human_id, location_id, date_circa, date_accuracy, location_type))
 		
-		# Prepare fields for the locations table
-		name = sanitize(timeline_data.get("Name"))
-		address = sanitize(timeline_data.get("Address"))
-		city = sanitize(timeline_data.get("City"))
-		county = sanitize(timeline_data.get("County"))
-		state = sanitize(timeline_data.get("State"))
-		state_abbr = sanitize(timeline_data.get("State_abbr"))
-		country = sanitize(timeline_data.get("Country"))
-		latitude = timeline_data.get("Latitude")
-		longitude = timeline_data.get("Longitude")
-		# Use same location_type as before
 		
-		insert_query = """
-			INSERT INTO locations (LocationId, Name, Address, City, County, State, State_abbr, Country, Latitude, Longitude, LocationType, DateUpdated)
-			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
-			ON DUPLICATE KEY UPDATE
-				Address = VALUES(Address),
-				City = VALUES(City),
-				County = VALUES(County),
-				State = VALUES(State),
-				State_abbr = VALUES(State_abbr),
-				Country = VALUES(Country),
-				Latitude = VALUES(Latitude),
-				Longitude = VALUES(Longitude),
-				LocationType = VALUES(LocationType),
-				DateUpdated = NOW()
-		"""
-		cursor.execute(insert_query, (location_id, name, address, city, county, state, state_abbr, country, latitude, longitude, location_type))
 		connection.commit()
 		return {"success": True, "TimelineId": location_id}
 	except Exception as e:

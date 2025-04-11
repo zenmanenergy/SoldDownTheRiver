@@ -120,8 +120,15 @@
 	{:else}
 		<div class="section">
 			<div class="ActionBox">
+
+
 				<form>
-					<h3 class="title is-2">Voyage</h3>
+					<div class="title-container">
+						<h3 class="title is-2">Voyage</h3>
+						{#if VoyageId.length}
+							<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, VoyageId)}>Delete</button>
+						{/if}
+					</div>
 					<input type="hidden" bind:value={Voyage.VoyageId} />
 					<div class="field">
 						<label class="label" for="Size">Ship</label>
@@ -213,142 +220,140 @@
 					<div class="field">
 						<div class="control">
 							<button class="button is-primary" type="button" on:click={() =>   handleSave(Session.SessionId,Voyage,formValid   ) }> Save</button>
-							{#if VoyageId.length}
-								<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, VoyageId)}>Delete</button>
-							{/if}
+							
 						</div>
 					</div>
 
 					{#if VoyageId}
-	<div class="ActionBox" style="disabled:true">
-		<!-- Enslaved People Table -->
-		<div class="title-container">
-			<h3 class="title is-2">List of Enslaved People</h3>
-			<button class="button is-primary" on:click={addEnslavedPerson}>Add Enslaved Person</button>
-		</div>
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each VoyageHumans.filter(h => h.Role === 'Enslaved') as Human}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
-						<td>{Human.FirstName}</td>
-						<td>{Human.LastName}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+						<div class="ActionBox" style="disabled:true">
+							<!-- Enslaved People Table -->
+							<div class="title-container">
+								<h3 class="title is-2">List of Enslaved People</h3>
+								<button class="button is-primary" on:click={addEnslavedPerson}>Add Enslaved Person</button>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+									<tr>
+										<th>First Name</th>
+										<th>Last Name</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each VoyageHumans.filter(h => h.Role === 'Enslaved') as Human}
+										<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+											<td>{Human.FirstName || ''}</td>
+											<td>{Human.LastName || ''}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 
-		<!-- Captain Table -->
-		<div class="title-container">
-			<h3 class="title is-2">Captain</h3>
-		</div>
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each VoyageHumans.filter(h => h.Role === 'Captain') as Human}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
-						<td>{Human.FirstName}</td>
-						<td>{Human.LastName}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+							<!-- Captain Table -->
+							<div class="title-container">
+								<h3 class="title is-2">Captain</h3>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+									<tr>
+										<th>First Name</th>
+										<th>Last Name</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each VoyageHumans.filter(h => h.Role === 'Captain') as Human}
+										<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+											<td>{Human.FirstName || ''}</td>
+											<td>{Human.LastName || ''}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 
-		<!-- Owner 1 Table -->
-		<div class="title-container">
-			<h3 class="title is-2">Owner 1</h3>
-		</div>
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each VoyageHumans.filter(h => h.Role === 'Owner 1') as Human}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
-						<td>{Human.FirstName}</td>
-						<td>{Human.LastName}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+							<!-- Owner 1 Table -->
+							<div class="title-container">
+								<h3 class="title is-2">Owner 1</h3>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+									<tr>
+										<th>First Name</th>
+										<th>Last Name</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each VoyageHumans.filter(h => h.Role === 'Owner 1') as Human}
+										<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+											<td>{Human.FirstName || ''}</td>
+											<td>{Human.LastName || ''}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 
-		<!-- Owner 2 Table -->
-		<div class="title-container">
-			<h3 class="title is-2">Owner 2</h3>
-		</div>
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each VoyageHumans.filter(h => h.Role === 'Owner 2') as Human}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
-						<td>{Human.FirstName}</td>
-						<td>{Human.LastName}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+							<!-- Owner 2 Table -->
+							<div class="title-container">
+								<h3 class="title is-2">Owner 2</h3>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+									<tr>
+										<th>First Name</th>
+										<th>Last Name</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each VoyageHumans.filter(h => h.Role === 'Owner 2') as Human}
+										<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+											<td>{Human.FirstName || ''}</td>
+											<td>{Human.LastName || ''}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 
-		<!-- Shipping Agent Table -->
-		<div class="title-container">
-			<h3 class="title is-2">Shipping Agent</h3>
-		</div>
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each VoyageHumans.filter(h => h.Role === 'Shipping Agent') as Human}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
-						<td>{Human.FirstName}</td>
-						<td>{Human.LastName}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+							<!-- Shipping Agent Table -->
+							<div class="title-container">
+								<h3 class="title is-2">Shipping Agent</h3>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+									<tr>
+										<th>First Name</th>
+										<th>Last Name</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each VoyageHumans.filter(h => h.Role === 'Shipping Agent') as Human}
+										<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+											<td>{Human.FirstName || ''}</td>
+											<td>{Human.LastName || ''}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
 
-		<!-- Collector Agent Table -->
-		<div class="title-container">
-			<h3 class="title is-2">Collector Agent</h3>
-		</div>
-		<table class="ClickableTable" width=100%>
-			<thead>
-				<tr>
-					<th>First Name</th>
-					<th>Last Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each VoyageHumans.filter(h => h.Role === 'Collector Agent') as Human}
-					<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
-						<td>{Human.FirstName}</td>
-						<td>{Human.LastName}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-{/if}
+							<!-- Collector Agent Table -->
+							<div class="title-container">
+								<h3 class="title is-2">Collector Agent</h3>
+							</div>
+							<table class="ClickableTable" width=100%>
+								<thead>
+									<tr>
+										<th>First Name</th>
+										<th>Last Name</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each VoyageHumans.filter(h => h.Role === 'Collector Agent') as Human}
+										<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+											<td>{Human.FirstName || ''}</td>
+											<td>{Human.LastName || ''}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{/if}
 				</form>
 			</div>
 		</div>

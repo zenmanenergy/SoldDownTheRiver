@@ -7,7 +7,7 @@ def get_locations():
 
 	# Construct the SQL query
 	query = "SELECT distinct *"
-	query +="   from locations order by Address"
+	query +="   from locations where Address is not null order by Address"
 	# query +=" limit 50"
 	values = ()
 

@@ -1,5 +1,5 @@
 from _Lib.Debugger import Debugger
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from flask_cors import CORS, cross_origin
 from .GetLocations import get_locations
 
@@ -15,3 +15,5 @@ def GetLocations():
 		return result
 	except Exception as e:
 		return Debugger(e)
+	
+	

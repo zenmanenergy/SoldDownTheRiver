@@ -430,7 +430,13 @@ if (typeof window !== 'undefined') {
 {:else}
 	<div class="section">
 		<div class="ActionBox">
-			<h3 class="title is-2">{transactionId ? 'Edit' : 'Add'} Transaction</h3>
+			<div class="title-container">
+				<h3 class="title is-2">{transactionId ? 'Edit' : 'Add'} Transaction</h3>
+				{#if transactionId} 
+					<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
+				{/if}
+			</div>
+			
 			
 			<form on:submit|preventDefault={submitTransaction}>
 				<!-- Transaction Date -->
@@ -705,9 +711,6 @@ if (typeof window !== 'undefined') {
 					<button class="button is-primary" type="submit">Save</button>
 					{#if transaction.DateUpdated}
 						<span style="margin-left: 1rem;">Last Updated: {transaction.DateUpdated}</span>
-					{/if}
-					{#if transactionId} 
-						<button class="button is-danger delete-button" type="button" on:click={deleteTransaction}>Delete</button>
 					{/if}
 				</div>
 			</form>

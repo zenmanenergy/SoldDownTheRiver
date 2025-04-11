@@ -27,17 +27,19 @@
 	import { handleMergeHumans } from '../Merge/Humans/handleMergeHumans.js';
 	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
 	import { handleGetFamilies } from './handleGetFamilies.js';
-	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
 	import { handleGetTimelines } from './handleGetTimelines.js';
 	import { handleGetAKA } from './handleGetAKA.js';
 	import { handleSaveAkaName } from './handleSaveAkaName.js';
 	import { handleDeleteAkaName } from './handleDeleteAkaName.js';
 	import { handleGetTransaction } from '../Transaction/handleGetTransaction.js';
+	import { handleGetHumanTransactions } from './handleGetHumanTransactions.js';
 	import { handleGetRoles } from './handleGetRoles.js';
 	import { handleSaveTimeline } from './handleSaveTimeline.js';
 	import { handleDeleteTimeline } from './handleDeleteTimeline.js';
+	import { handleGetLocations } from '../Locations/handleGetLocations.js';
 
+	let Svelecte;
 	let Human = {
 		FirstName: '',
 		MiddleName: '',
@@ -47,7 +49,6 @@
 		RacialDescriptor: '',
 		Sex: '',
 		Height_cm: '',
-		Roles: '',
 		DateUpdated: '' // new field for last update timestamp
 	};
 
@@ -56,7 +57,7 @@
 	let isLoading = true;
 	let HumanId = null;
 	let mergeHumanId = null;
-	let locations = [];
+	let Locations = [];
 	let voyages = [];
 	let families = [];
 	let returnPath;
@@ -76,8 +77,11 @@
 	let ageYears = '';
 	let ageMonths = '';
 
+	// New variable for storing transactions
+	let transactions = [];
+
 	// New variable for the new location/timeline form
-	let newLocation = {
+	let NewTimeline = {
 		LocationType: '',
 		Address: '',
 		Latitude: '',
@@ -91,19 +95,23 @@
 		State_abbr: '',
 		Country: ''
 	};
-
+	async function setLocations(data) {
+		// Locations = [{HumanId: "add_new", City: "[Add New]", State: ""}, ...data];
+		Locations=data
+	}
 	// Updated function to handle saving a timeline using SuperFetch backend
-	async function addNewLocation() {
+	async function addNewTimeline() {
 		 // Validate required fields
-		if (!newLocation.Latitude || !newLocation.Longitude || !newLocation.Date_Circa) {
-			alert("Please enter Latitude, Longitude, and Date Circa.");
+		if (!NewTimeline.LocationId || !NewTimeline.Date_Circa) {
+			alert("Please enter Location and Date Circa.");
 			return;
 		}
-		newLocation.HumanId = HumanId;
-		const result = await handleSaveTimeline(Session.SessionId, HumanId, newLocation);
+		NewTimeline.HumanId = HumanId;
+		const result = await handleSaveTimeline(Session.SessionId, HumanId, NewTimeline);
 		if(result) {
-			locations = [...locations, { ...newLocation, LocationId: result.TimelineId }];
-			newLocation = { LocationType: '', Address: '', Latitude: '', Longitude: '', Date_Circa: '', Date_Accuracy: 'D', Name: '', City: '', County: '', State: '', State_abbr: '', Country: '' };
+			timelines = [...timelines, { ...NewTimeline, LocationId: result.TimelineId }];
+			NewTimeline = { LocationType: '', LocationId: '', Date_Circa: '', Date_Accuracy: 'D'};
+			window.location.href = `/Human?HumanId=${HumanId}`;
 		} else {
 			alert("Failed to save timeline.");
 		}
@@ -113,7 +121,7 @@
 	async function deleteTimeline(locationId) {
 		const result = await handleDeleteTimeline(Session.SessionId, HumanId, locationId);
 		if(result && result.success) {
-			locations = locations.filter(t => t.LocationId !== locationId);
+			timelines = timelines.filter(t => t.LocationId !== locationId); // changed variable from locations to timelines
 		} else {
 			alert("Failed to delete timeline.");
 		}
@@ -147,7 +155,13 @@
 
 	$: Human.BirthDate = (ageYears === '' && ageMonths === '') ? originalBirthDate : calculateBirthDate();
 	// $: console.log("Updated Human BirthDate:", Human.BirthDate, "ageYears:", ageYears, "ageMonths:", ageMonths, "transaction date:", transactionSummary ? transactionSummary.date_circa : 'N/A');
-
+	
+	function handleLocationSelection(event) {
+		if (event.target.value.length<=1){
+			Query=event.target.value
+			handleGetCaptains(Session.SessionId, Query, setCaptains)
+		}
+	}
 	onMount(async () => {
 		await Session.handleSession();
 		HumanId = getURLVariable('HumanId') || null;
@@ -155,6 +169,18 @@
 		returnPath = getURLVariable('returnPath');
 		transactionDate = getURLVariable('TransactionDate') || null;
 
+		const module = await import('svelecte');
+		Svelecte = module.default || module;
+		
+		Promise.resolve().then(() => {
+			const svelecteLocation = document.querySelector('#svelecteLocation');
+			if (svelecteLocation) {
+				const svelecteLocationSearch = svelecteLocation.querySelector('input');
+				if (svelecteLocationSearch) {
+					svelecteLocationSearch.addEventListener('input', handleLocationInput);
+				}
+			}
+		});
 		if (HumanId) {
 			const data = await handleGetHuman(Session.SessionId, HumanId);
 			if (data) {
@@ -164,15 +190,19 @@
 					FirstName: data.FirstName || '',
 					LastName: data.LastName || '',
 					BirthDate: originalBirthDate, // use originalBirthDate
-					Roles: data.Roles ? data.Roles.join(', ') : ''
 				};
 				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
-				timelines = await handleGetTimelines(Session.SessionId, HumanId);
-				if (timelines && timelines.data) {
-					locations = timelines.data;
+				let _timelines = await handleGetTimelines(Session.SessionId, HumanId);
+				
+				if (_timelines && _timelines.data) {
+					timelines = _timelines.data;
 				}
 			}
-			await handleGetHumans(Session.SessionId, setHumans);
+			const humanTransactions = await handleGetHumanTransactions(Session.SessionId, HumanId);
+			console.log(humanTransactions);
+			if (humanTransactions){
+				transactions = humanTransactions;
+			}
 		}
 
 		if (mergeHumanId) {
@@ -204,7 +234,8 @@
 			transactionSummary = await handleGetTransaction(Session.SessionId, TransactionId);
 			rolesOptions = await handleGetRoles(Session.SessionId);
 		}
-
+		
+		handleGetLocations(Session.SessionId,setLocations),
 		isLoading = false;
 	});
 
@@ -266,7 +297,7 @@
 			// } else {
 			// 	window.location.href = returnPath || '/Humans';
 			// }
-			window.location.href = `/Human?HumanId=${HumanId}`;
+			window.location.href = `/Human?HumanId=${result.HumanId}`;
 		} else {
 			alert("Failed to save human.");
 		}
@@ -344,7 +375,12 @@
 	<div class="section">
 		<div class="ActionBox">
 			<form>
-			<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
+			<div class="title-container">
+				<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
+				{#if HumanId} 
+					<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
+				{/if}
+			</div>
 
 			{#if transactionSummary}
 				<div class="transaction-summary">
@@ -449,66 +485,63 @@
 					<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
 				</div>
 
-				<div class="field">
-					<label for="roles">Roles (comma-separated):</label>
-					<input id="roles" class="input" type="text" bind:value={Human.Roles} placeholder="Role1, Role2, ..." />
-				</div>
-
 				<div class="buttons-container">
 					<button class="button is-primary" type="submit">Save</button>
 					{#if Human.DateUpdated}
 						<span style="margin-left: 1rem;">Last Updated: {Human.DateUpdated}</span>
 					{/if}
-					{#if HumanId} 
-						<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
-					{/if}
+					
 				</div>
 			</form>
 
 			{#if HumanId}
-				{#if akaNames.length > 0}
-					<h3 class="title is-3">Also Known As (AKA)</h3>
-					<table class="table is-fullwidth is-striped">
-						<thead>
-							<tr>
-								<th>First Name</th>
-								<th>Middle Name</th>
-								<th>Last Name</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each akaNames as aka}
+				<br/>
+				<div class="ActionBox">
+					{#if akaNames.length > 0}
+						<h3 class="title is-3">Also Known As (AKA)</h3>
+						<table class="table is-fullwidth is-striped">
+							<thead>
 								<tr>
-									<td>{aka.AKAFirstName}</td>
-									<td>{aka.AKAMiddleName}</td>
-									<td>{aka.AKALastName}</td>
-									<td>
-										<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
-									</td>
+									<th>First Name</th>
+									<th>Middle Name</th>
+									<th>Last Name</th>
+									<th>Actions</th>
 								</tr>
-							{/each}
-						</tbody>
-					</table>
-				{/if}
+							</thead>
+							<tbody>
+								{#each akaNames as aka}
+									<tr>
+										<td>{aka.AKAFirstName}</td>
+										<td>{aka.AKAMiddleName}</td>
+										<td>{aka.AKALastName}</td>
+										<td>
+											<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/if}
 			
-				<h3 class="title is-3">Add New AKA</h3>
-				<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
-					<div class="field">
-						<label for="aka-first-name">First Name:</label>
-						<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
-					</div>
-					<div class="field">
-						<label for="aka-middle-name">Middle Name:</label>
-						<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
-					</div>
-					<div class="field">
-						<label for="aka-last-name">Last Name:</label>
-						<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
-					</div>
-					<button class="button is-primary" type="submit">Add AKA</button>
-				</form>
+					<h3 class="title is-3">Add New AKA</h3>
+					<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
+						<div class="field">
+							<label for="aka-first-name">First Name:</label>
+							<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
+						</div>
+						<div class="field">
+							<label for="aka-middle-name">Middle Name:</label>
+							<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
+						</div>
+						<div class="field">
+							<label for="aka-last-name">Last Name:</label>
+							<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
+						</div>
+						<button class="button is-primary" type="submit">Add AKA</button>
+					</form>
 
+				</div>
+				
 				{#if families.length > 0}
 					<h3 class="title is-3">Family Tree</h3>
 					<a href={`/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
@@ -516,67 +549,77 @@
 				{:else}
 					No family relationships defined
 				{/if}
-
-				
-				<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
-				<table class="table is-fullwidth is-striped">
-					<thead>
-						<tr>
-							<th>Type</th>
-							<th>Address</th>
-							<th>Latitude</th>
-							<th>Longitude</th>
-							<th>Date Circa</th>
-							<th>Date Accuracy</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#if locations.length > 0}
-							{#each locations as location}
+				<br/>
+				<div class="ActionBox">
+					{#if timelines.length > 0}
+						<h3 class="title is-3">{Human.FirstName} {Human.LastName}'s Timeline</h3>
+						<table class="table is-fullwidth is-striped">
+							<thead>
 								<tr>
-									<td>{location.LocationType || ''}</td>
-									<td>{location.Address || ''}</td>
-									<td>{location.Latitude || ''}</td>
-									<td>{location.Longitude || ''}</td>
-									<td>{formatDate(location.Date_Circa, location.Date_Accuracy)}</td>
-									<td>{location.Date_Accuracy || 'D'}</td>
-									<td>
-										<button class="button is-danger" on:click={() => deleteTimeline(location.LocationId)}>Delete</button>
-									</td>
+									<th>Type</th>
+									<th>Location</th>
+									<th>Latitude,Longitude</th>
+									<th>Date Circa</th>
+									<th>Actions</th>
 								</tr>
-							{/each}
-						{/if}
-						<tr>
-							<td>
-								<input class="input" type="text" bind:value={newLocation.LocationType} placeholder="Type..." />
-							</td>
-							<td>
-								<input class="input" type="text" bind:value={newLocation.Address} placeholder="Address..." />
-							</td>
-							<td>
-								<input class="input" type="number" bind:value={newLocation.Latitude} placeholder="Latitude..." />
-							</td>
-							<td>
-								<input class="input" type="number" bind:value={newLocation.Longitude} placeholder="Longitude..." />
-							</td>
-							<td>
-								<input class="input" type="date" bind:value={newLocation.Date_Circa} placeholder="Date Circa..." />
-							</td>
-							<td>
-								<select class="input" bind:value={newLocation.Date_Accuracy}>
-									<option value="D">D</option>
-									<option value="M">M</option>
-									<option value="Y">Y</option>
-								</select>
-							</td>
-							<td>
-								<button class="button is-primary" type="button" on:click={addNewLocation}>Save</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
+							</thead>
+							<tbody>
+							
+								{#each timelines as timeline}
+										<tr on:click={() => window.open(`/Location?LocationId=${timeline.LocationId}`, '_blank')} style="cursor: pointer;">
+										<td>{timeline.LocationType || ''}</td>
+										<td>{timeline.Address || ''}</td>
+										<td>{timeline.Latitude || ''},{timeline.Longitude || ''}</td>
+										<td>{formatDate(timeline.Date_Circa, timeline.Date_Accuracy)}</td>
+										<td>
+											<button class="button is-danger" on:click|stopPropagation={() => deleteTimeline(timeline.LocationId)}>Delete</button>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/if}
+					<form>
+					<h3 class="title is-3">Add a Timeline Event</h3>
+					<div class="field">
+						<label class="label" for="Size">Type</label>
+						<div class="control">
+							<input class="input" type="text" bind:value={NewTimeline.LocationType} placeholder="Type..." />
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="Size">Location</label>
+						<div class="control">
+							<svelte:component 
+								this={Svelecte} 
+								bind:value={NewTimeline.LocationId} 
+								on:input={handleLocationSelection} 
+								options={Locations.map(location => ({
+									value: location.LocationId, 
+									label: `${location.Address}`
+								}))} 
+							/>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="Size">Date Circa</label>
+						<div class="control">
+							<input class="input" type="date" bind:value={NewTimeline.Date_Circa} placeholder="Date Circa..." />
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="Size">Date accuracy</label>
+						<div class="control">
+							<select class="input" bind:value={NewTimeline.Date_Accuracy}>
+								<option value="D">Day</option>
+								<option value="M">Month</option>
+								<option value="Y">Year</option>
+							</select>
+						</div>
+					</div>
+					<button class="button is-primary" type="button" on:click={addNewTimeline}>Save</button>
+				</form>
+				</div>
 				{#if voyages.length > 0}
 					<h3 class="title is-3">Voyages involving {Human.FirstName} {Human.LastName}</h3>
 					<table class="table is-fullwidth is-striped">
@@ -597,6 +640,36 @@
 							{/each}
 						</tbody>
 					</table>
+				{/if}
+
+				<!-- New Transactions List Section -->
+				{#if transactions.length > 0}
+					<div class="ActionBox">
+						<h3 class="title is-3">Transactions</h3>
+						<!-- Replacing old list with a table -->
+						<table class="table is-fullwidth is-striped">
+							<thead>
+								<tr>
+									<th>TransactionType</th>
+									<th>Date Circa</th>
+									<th>Notary</th>
+									<th>Sellers</th>
+									<th>Buyers</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each transactions as txn}
+									<tr on:click={() => window.open(`/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
+										<td>{txn.TransactionType || ''}</td>
+										<td>{formatDate(txn.date_circa, txn.date_accuracy) || ''}</td>
+										<td>{txn.Notary || ''}</td>
+										<td>{txn.Sellers || ''}</td>
+										<td>{txn.Buyers || ''}</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
 				{/if}
 			{/if}
 

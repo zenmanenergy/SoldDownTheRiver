@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 from .SaveLocation import save_location
 from .DeleteLocation import delete_location
 from .GetLocation import get_location
+from .GetTimelines import get_timelines
 
 blueprint = Blueprint('Location', __name__)
 
@@ -63,6 +64,18 @@ def GetLocation():
 		LocationId = location_data.get('LocationId')
 		# Call the get_location function from GetLocation.py
 		result = get_location(LocationId)
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Location/GetTimelines", methods=['GET'])
+@cross_origin()
+def GetTimelines():
+	try:
+		LoginData = request.args.to_dict()
+		LocationId = LoginData.get('LocationId', None)
+		# Call the get_locations function to retrieve location data
+		result = get_timelines(LocationId)
 		return result
 	except Exception as e:
 		return Debugger(e)

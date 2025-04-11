@@ -131,7 +131,12 @@
 	<div class="section">
 		<div class="ActionBox">
 			<form>
-				<h3 class="title is-2">Add/Edit a Ship</h3>
+				<div class="title-container">
+					<h3 class="title is-2">Add/Edit a Ship</h3>
+					{#if Ship.ShipId.length}
+					<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, Ship.ShipId)}>Delete</button>
+					{/if}
+				</div>
 				<input type="hidden" bind:value={Ship.ShipId} />
 		
 				<div class="field">
@@ -186,15 +191,12 @@
 						</div>
 						
 					</div>
-				</div>
 		
 				
 				<div class="field">
 					<div class="control">
 						<button class="button is-primary" type="button" on:click={() => handleSave(Session.SessionId, Ship, formValid)}>Save</button>
-						{#if Ship.ShipId.length}
-						<button class="button is-danger" type="button" on:click={() => handleDelete(Session.SessionId, Ship.ShipId)}>Delete</button>
-						{/if}
+						
 					</div>
 				</div>
 			</form>
@@ -231,4 +233,3 @@
 		</div>
 	</div>
 	{/if}
-		

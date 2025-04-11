@@ -34,6 +34,7 @@ $: filteredLocations = Locations.filter(location => {
 		: location.City || location.County || '';
 	// Create a single searchable string including Name, Latitude and Longitude.
 	const searchableText = [
+		location.LocationId || '',
 		location.Name || '',
 		cityCounty,
 		location.State || '',
