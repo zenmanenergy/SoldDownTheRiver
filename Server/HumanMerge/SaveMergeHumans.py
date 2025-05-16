@@ -71,18 +71,18 @@ def save_mergehumans(HumanId, MergeHumanId):
 		# Special handling for voyagehumans table
 		voyagehumans_columns = [
 			"SellingSlaveTraderHumanId", "BuyingSlaveTraderHumanId", 
-			"ShippingAgentHumanId", "CollectingAgentHumanId"
+			"ShippingAgentHumanId", "collectoragentHumanId"
 		]
 		for column in voyagehumans_columns:
 			copy_query = f"""
-			INSERT INTO voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, DateUpdated)
-			SELECT VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, NOW()
+			INSERT INTO voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, collectoragentHumanId, Notes, DateUpdated)
+			SELECT VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, collectoragentHumanId, Notes, NOW()
 			FROM voyagehumans WHERE {column} = '{HumanId}'
 			"""
 			cursor.execute(copy_query)
 			copy_query = f"""
-			INSERT INTO voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, DateUpdated)
-			SELECT VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, CollectingAgentHumanId, Notes, NOW()
+			INSERT INTO voyagehumans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, collectoragentHumanId, Notes, DateUpdated)
+			SELECT VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId, BuyingSlaveTraderHumanId, ShippingAgentHumanId, collectoragentHumanId, Notes, NOW()
 			FROM voyagehumans WHERE {column} = '{MergeHumanId}'
 			"""
 			cursor.execute(copy_query)

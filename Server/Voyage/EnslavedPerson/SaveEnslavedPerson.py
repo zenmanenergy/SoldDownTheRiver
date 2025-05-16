@@ -7,11 +7,11 @@ def save_EnslavedPerson(HumanId, RoleId, FirstName, MiddleName, LastName):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 	
-	query = "INSERT into humans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes, DateUpdated)"
-	query += f" VALUES ('{VoyageId}', '{HumanId}','{RoleId}','{SellingSlaveTraderHumanId}', '{BuyingSlaveTraderHumanId}','{ShippingAgentHumanId}', '{CollectingAgentHumanId}','{Notes}', NOW())"
+	query = "INSERT into humans (VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,collectoragentHumanId,Notes, DateUpdated)"
+	query += f" VALUES ('{VoyageId}', '{HumanId}','{RoleId}','{SellingSlaveTraderHumanId}', '{BuyingSlaveTraderHumanId}','{ShippingAgentHumanId}', '{collectoragentHumanId}','{Notes}', NOW())"
 	query +=" ON DUPLICATE KEY update voyageId=values(VoyageId),HumanId=values(HumanId) ,RoleId=values(RoleId), "
 	query += "SellingSlaveTraderHumanId=values(SellingSlaveTraderHumanId),BuyingSlaveTraderHumanId=values(BuyingSlaveTraderHumanId),"
-	query += "ShippingAgentHumanId=values(ShippingAgentHumanId),CollectingAgentHumanId=values(CollectingAgentHumanId),"
+	query += "ShippingAgentHumanId=values(ShippingAgentHumanId),collectoragentHumanId=values(collectoragentHumanId),"
 	query += "Notes=values(Notes), DateUpdated=NOW()"
 		
 	print(query )

@@ -3,6 +3,7 @@
 	import { Session } from '../Session.js';
 	import { handleGetFamily } from './handleGetFamily.js';
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
+	import { handleGetHuman } from '../Human/handleGetHuman.js';
 	import { handleAddFamilyMember } from './handleAddFamilyMember.js';
 	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
 	import { handleRemoveFamilyMember } from './handleRemoveFamilyMember.js';
@@ -17,7 +18,7 @@
 	let searchQuery = '';
 	let selectedHumanId = null;
 	let relationshipType = '';
-	let relationshipOptions = ['husband', 'wife', 'son', 'daughter', 'father', 'mother', 'brother', 'sister'];
+	let relationshipOptions = [];
 	let isLoading = true;
 	let selectedHuman = null;
 	let selectedHumanData = null;
@@ -150,6 +151,17 @@
 		HumanId = getURLVariable('HumanId') || null;
 
 		if (HumanId) {
+			const Human = await handleGetHuman(Session.SessionId, HumanId);
+			console.log(Human)
+			if (Human.isCompany==="1"){
+				console.log("YES!")
+				relationshipOptions = ['owner', 'employee'];
+	
+			} else{
+				console.log("naw dog!")
+				relationshipOptions = ['husband', 'wife', 'son', 'daughter', 'father', 'mother', 'brother', 'sister'];
+	
+			}
 			await handleGetFamily(Session.SessionId, HumanId, setFamilies);
 		}
 
@@ -238,7 +250,7 @@
 
 		if (success) {
 			alert('Relationship added successfully!');
-			window.location.reload();
+			// window.location.reload();
 		} else {
 			alert('Failed to add relationship.');
 		}

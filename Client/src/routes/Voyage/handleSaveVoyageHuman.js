@@ -1,13 +1,17 @@
-
 import { baseURL } from '../Settings';
-export async function handleSaveVoyageHuman(SessionId,VoyageId, HumanId, VoyageHumanRoleId, VoyageHumanNotes, callback) {
+import { SuperFetch } from '../SuperFetch';
 
-	const Data = {
-		SessionId:SessionId,
+export async function handleSaveVoyageHuman(VoyageId, Human,callback) {
+
+	const Data= {
 		VoyageId:VoyageId,
-		HumanId:HumanId,
-		VoyageHumanRoleId:VoyageHumanRoleId,
-		VoyageHumanNotes:VoyageHumanNotes
+		HumanId: Human.HumanId,
+		RoleId: Human.RoleId,
+		owner_humanid: Human.owner_humanid || '',
+		owner2_humanid: Human.owner2_humanid || '',
+		shippingagent_humanid: Human.shippingagent_humanid || '',
+		collectoragent_HumanId: Human.collectoragent_humanid || '',
+		Notes: Human.Notes || ''
 	};
 	const url = baseURL + '/Voyage/SaveVoyageHuman?'; 
 	const FormValid=true

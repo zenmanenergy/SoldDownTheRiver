@@ -26,9 +26,6 @@ def delete_human(HumanId):
 	cursor.execute(query)
 	connection.commit()
 
-	query = f"DELETE FROM partyhumans WHERE HumanId = '{HumanId}'"
-	cursor.execute(query)
-	connection.commit()
 	
 	query = f"DELETE FROM transactionhumans WHERE HumanId = '{HumanId}'"
 	cursor.execute(query)

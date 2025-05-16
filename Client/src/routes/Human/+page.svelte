@@ -38,12 +38,14 @@
 	import { handleSaveTimeline } from './handleSaveTimeline.js';
 	import { handleDeleteTimeline } from './handleDeleteTimeline.js';
 	import { handleGetLocations } from '../Locations/handleGetLocations.js';
+	import { handleGetRacialDescriptors } from './handleGetRacialDescriptors.js';
 
 	let Svelecte;
 	let Human = {
 		FirstName: '',
 		MiddleName: '',
 		LastName: '',
+		isCompany: '',
 		BirthDate: '',
 		BirthDateAccuracy: 'd',
 		RacialDescriptor: '',
@@ -162,6 +164,8 @@
 			handleGetCaptains(Session.SessionId, Query, setCaptains)
 		}
 	}
+	let racialDescriptors = []; // New variable to store racial descriptors
+
 	onMount(async () => {
 		await Session.handleSession();
 		HumanId = getURLVariable('HumanId') || null;
@@ -236,6 +240,7 @@
 		}
 		
 		handleGetLocations(Session.SessionId,setLocations),
+		racialDescriptors = await handleGetRacialDescriptors(Session.SessionId);
 		isLoading = false;
 	});
 
@@ -376,7 +381,7 @@
 		<div class="ActionBox">
 			<form>
 			<div class="title-container">
-				<h3 class="title is-2">{HumanId ? 'Edit' : 'Add'} Human</h3>
+				<h3 class="title is-3">{HumanId ? 'Edit' : 'Add'} Human</h3>
 				{#if HumanId} 
 					<button class="button is-danger delete-button" type="button" on:click={deleteHuman}>Delete</button>
 				{/if}
@@ -416,74 +421,92 @@
 			
 			<form on:submit|preventDefault={submitHuman}>
 				<div class="field">
-					<label for="first-name">First Name:</label>
+					<label for="isCompany">Individual or Company?</label>
+					<select id="isCompany" class="input" bind:value={Human.isCompany}>
+						<option value="">Individual</option>
+						<option value="1">Company</option> <!-- Ensure value is a string -->
+					</select>
+				</div>
+
+				<div class="field">
+					{#if Human.isCompany == ""} <!-- Use loose equality to handle potential type mismatches -->
+						<label for="first-name">First Name:</label>
+					{:else}
+						<label for="first-name">Company Name:</label>
+					{/if}
 					<input id="first-name" class="input" type="text" bind:value={Human.FirstName} />
 				</div>
 
-				<div class="field">
-					<label for="middle-name">Middle Name:</label>
-					<input id="middle-name" class="input" type="text" bind:value={Human.MiddleName} />
-				</div>
-
-				<div class="field">
-					<label for="last-name">Last Name:</label>
-					<input id="last-name" class="input" type="text" bind:value={Human.LastName} />
-				</div>
-
-				{#if transactionSummary}
+				{#if Human.isCompany == ""}
 					<div class="field">
-						<label for="role-select">Role:</label>
-						<select id="role-select" class="input" bind:value={Human.Role}>
-							<option value=""></option>
-							{#each rolesOptions as role}
-								<option value={role.RoleId}>{role.Role}</option>
+						<label for="middle-name">Middle Name:</label>
+						<input id="middle-name" class="input" type="text" bind:value={Human.MiddleName} />
+					</div>
+
+					<div class="field">
+						<label for="last-name">Last Name:</label>
+						<input id="last-name" class="input" type="text" bind:value={Human.LastName} />
+					</div>
+
+					{#if transactionSummary}
+						<div class="field">
+							<label for="role-select">Role:</label>
+							<select id="role-select" class="input" bind:value={Human.Role}>
+								<option value=""></option>
+								{#each rolesOptions as role}
+									<option value={role.RoleId}>{role.Role}</option>
+								{/each}
+							</select>
+						</div>
+						<div class="field">
+							<label for="age-years">Age (years):</label>
+							<input id="age-years" class="input" type="number" bind:value={ageYears} min="0" />
+						</div>
+						<div class="field">
+							<label for="age-months">Age (months):</label>
+							<input id="age-months" class="input" type="number" bind:value={ageMonths} min="0" max="11" />
+						</div>
+					{/if}
+
+					<div class="field">
+						<label for="birth-date">Birth Date:</label>
+						<input id="birth-date" class="input" type="date" bind:value={Human.BirthDate} />
+					</div>
+
+					<div class="field">
+						<label for="birth-accuracy">Birth Date Accuracy:</label>
+						<select id="birth-accuracy" class="input" bind:value={Human.BirthDateAccuracy}>
+							<option value="d">Day</option>
+							<option value="m">Month</option>
+							<option value="y">Year</option>
+						</select>
+					</div>
+
+					<div class="field">
+						<label for="racial-descriptor">Racial Descriptor:</label>
+						<select id="racial-descriptor" class="input" bind:value={Human.RacialDescriptor}>
+							<option value="">Select</option>
+							{#each racialDescriptors as descriptor}
+								<option value={descriptor}>{descriptor}</option>
 							{/each}
 						</select>
 					</div>
+
 					<div class="field">
-						<label for="age-years">Age (years):</label>
-						<input id="age-years" class="input" type="number" bind:value={ageYears} min="0" />
+						<label for="sex">Sex:</label>
+						<select id="sex" class="input" bind:value={Human.Sex}>
+							<option value="">Select</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Unknown">Unknown</option>
+						</select>
 					</div>
+
 					<div class="field">
-						<label for="age-months">Age (months):</label>
-						<input id="age-months" class="input" type="number" bind:value={ageMonths} min="0" max="11" />
+						<label for="height-inches">Height (inches):</label>
+						<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
 					</div>
 				{/if}
-
-				<div class="field">
-					<label for="birth-date">Birth Date:</label>
-					<input id="birth-date" class="input" type="date" bind:value={Human.BirthDate} />
-				</div>
-
-				<div class="field">
-					<label for="birth-accuracy">Birth Date Accuracy:</label>
-					<select id="birth-accuracy" class="input" bind:value={Human.BirthDateAccuracy}>
-						<option value="d">Day</option>
-						<option value="m">Month</option>
-						<option value="y">Year</option>
-					</select>
-				</div>
-
-				<div class="field">
-					<label for="racial-descriptor">Racial Descriptor:</label>
-					<input id="racial-descriptor" class="input" type="text" bind:value={Human.RacialDescriptor} />
-				</div>
-
-				<div class="field">
-					<label for="sex">Sex:</label>
-					<select id="sex" class="input" bind:value={Human.Sex}>
-						<option value="">Select</option>
-						<option value="Male">Male</option>
-						<option value="Female">Female</option>
-					</select>
-				</div>
-
-				
-
-				<div class="field">
-					<label for="height-inches">Height (inches):</label>
-					<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
-				</div>
 
 				<div class="buttons-container">
 					<button class="button is-primary" type="submit">Save</button>
@@ -502,18 +525,26 @@
 						<table class="table is-fullwidth is-striped">
 							<thead>
 								<tr>
-									<th>First Name</th>
-									<th>Middle Name</th>
-									<th>Last Name</th>
+									{#if Human.isCompany == ""}
+										<th>First Name</th>
+										<th>Middle Name</th>
+										<th>Last Name</th>
+									{:else}
+										<th>Company</th>
+									{/if}
 									<th>Actions</th>
 								</tr>
 							</thead>
 							<tbody>
 								{#each akaNames as aka}
 									<tr>
-										<td>{aka.AKAFirstName}</td>
-										<td>{aka.AKAMiddleName}</td>
-										<td>{aka.AKALastName}</td>
+										{#if Human.isCompany == ""}
+											<td>{aka.AKAFirstName}</td>
+											<td>{aka.AKAMiddleName}</td>
+											<td>{aka.AKALastName}</td>
+										{:else}
+											<td>{aka.AKAFirstName}</td>
+										{/if}
 										<td>
 											<button class="button is-danger" on:click={() => handleDeleteAkaName(Session.SessionId, aka.AKAHumanId, HumanId)}>Delete</button>
 										</td>
@@ -523,20 +554,27 @@
 						</table>
 					{/if}
 			
-					<h3 class="title is-3">Add New AKA</h3>
+					<h3 class="title is-3">Add New AKA (Also Known As)</h3>
 					<form on:submit|preventDefault={() => handleSaveAkaName(Session.SessionId, null, HumanId, newAKA.AKAFirstName, newAKA.AKAMiddleName, newAKA.AKALastName, true)}>
-						<div class="field">
-							<label for="aka-first-name">First Name:</label>
-							<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
-						</div>
-						<div class="field">
-							<label for="aka-middle-name">Middle Name:</label>
-							<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
-						</div>
-						<div class="field">
-							<label for="aka-last-name">Last Name:</label>
-							<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
-						</div>
+						{#if Human.isCompany == ""}
+							<div class="field">
+								<label for="aka-first-name">First Name:</label>
+								<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
+							</div>
+							<div class="field">
+								<label for="aka-middle-name">Middle Name:</label>
+								<input id="aka-middle-name" class="input" type="text" bind:value={newAKA.AKAMiddleName} />
+							</div>
+							<div class="field">
+								<label for="aka-last-name">Last Name:</label>
+								<input id="aka-last-name" class="input" type="text" bind:value={newAKA.AKALastName} />
+							</div>
+						{:else}
+							<div class="field">
+								<label for="aka-first-name">Company:</label>
+								<input id="aka-first-name" class="input" type="text" bind:value={newAKA.AKAFirstName} />
+							</div>
+						{/if}
 						<button class="button is-primary" type="submit">Add AKA</button>
 					</form>
 

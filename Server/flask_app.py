@@ -21,6 +21,7 @@ from Notary import Notary
 from Transactions import Transactions
 from Users import Users
 from User import User
+from References import References
 from Roles import Roles
 from Role import Role
 from Transactions import Transactions
@@ -50,6 +51,7 @@ app.register_blueprint(Locations.blueprint)
 app.register_blueprint(Location.blueprint)
 app.register_blueprint(Users.blueprint)
 app.register_blueprint(User.blueprint)
+app.register_blueprint(References.blueprint)
 app.register_blueprint(Roles.blueprint)
 app.register_blueprint(Role.blueprint)
 app.register_blueprint(Transactions.blueprint)

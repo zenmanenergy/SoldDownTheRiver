@@ -1,0 +1,196 @@
+# Python Server Code Style Guide for StockTrader Project
+
+## General Guidelines
+1. **Indentation**: Always use tabs for indentation.
+2. **File Organization**: 
+   - Each subfolder in the `Server` folder must contain a file with the same name as the folder (e.g., `/Users` contains `Users.py`).
+   - The purpose of these files is to define routes for the application.
+3. **Imports**: 
+   - Group imports logically: standard library imports, third-party imports, and project-specific imports.
+   - Use absolute imports for project-specific modules.
+
+## `app.py` Guidelines
+1. **Purpose**: The `app.py` file is responsible for registering blueprints from subfolders in the `Server` folder.
+2. **Blueprint Registration**:
+   - Import blueprints from subfolders.
+   - Register each blueprint with the Flask app.
+3. **Routes**:
+   - Define a root route (`/`) that serves as a health check or basic response (e.g., "it works").
+   - Use `@cross_origin()` for all routes to enable CORS.
+
+## Route File Guidelines (e.g., `Users.py`)
+1. **Purpose**: Each route file defines routes for a specific module (e.g., `Users.py` for `/Users` routes).
+2. **Route Structure**:
+   - Use the `Blueprint` object to define routes.
+   - Every route must use the `GET` method.
+   - Wrap all route logic in a `try` block with an `except` block that returns `Debugger(e)` for error handling.
+   - Routes should contain minimal logic. They should call a function from another file and return the result.
+3. **Cross-Origin Resource Sharing (CORS)**:
+   - Use `@cross_origin()` for all routes to enable CORS.
+4. **Function Calls**:
+   - Routes should call functions from other files in the same folder to handle business logic or database interactions.
+
+## Function File Guidelines (e.g., `GetUsers.py`)
+1. **Purpose**: These files contain the logic for functions called by routes.
+2. **Database Interactions**:
+   - All database requests must go through the `ConnectToDatabase()` method.
+   - Use parameterized queries to prevent SQL injection.
+   - Close the database connection after executing queries.
+3. **Function Design**:
+   - Functions should be modular and reusable.
+   - Return data in a format that can be directly used by the route.
+4. Using Postgresql for the database
+
+## Example Code Structure
+
+### `app.py`
+```python
+# filepath: c:\Apache24\htdocs\personalProjects\StockTrader\Server\app.py
+# ...existing code...
+from Users import Users
+# ...existing code...
+app.register_blueprint(Users.blueprint)
+# ...existing code...
+```
+
+### `Users.py`
+```python
+# filepath: c:\Apache24\htdocs\personalProjects\StockTrader\Server\Users\Users.py
+from _Lib import Database
+from _Lib.Debugger import Debugger
+from flask import Blueprint, request
+from flask_cors import cross_origin
+from .GetUsers import get_users
+
+blueprint = Blueprint('Users', __name__)
+
+@blueprint.route("/Users/GetUsers", methods=['GET'])
+@cross_origin()
+def GetUsers():
+    try:
+        result = get_users()
+        return result
+    except Exception as e:
+        return Debugger(e)
+```
+
+### `GetUsers.py`
+```python
+# filepath: c:\Apache24\htdocs\personalProjects\StockTrader\Server\Users\GetUsers.py
+from _Lib.Database import ConnectToDatabase
+
+def get_users():
+    # Connect to the database
+    cursor, connection = ConnectToDatabase()
+
+    # Construct and execute the SQL query
+    query = "SELECT * FROM users ORDER BY LastName, FirstName"
+    cursor.execute(query)
+    result = cursor.fetchall() or []
+
+    # Close the database connection
+    connection.close()
+
+    # Return the result
+    return result
+```
+
+## Additional Notes
+1. **Error Handling**: Always use the `Debugger` module for consistent error handling across the project.
+2. **CORS**: Ensure all routes are CORS-enabled using `@cross_origin()`.
+3. **Consistency**: Maintain consistent naming conventions and structure across all files and folders.
+4. **Security**: Use parameterized queries for all database interactions to prevent SQL injection.
+5. **Readability**: Keep routes simple and delegate logic to separate function files.
+
+
+
+Client Code
+Code Style Guide for Svelte Files:
+
+1) File Structure:
+	- All Svelte files must be placed in the directory: `/Client/src/routes/[SOME FOLDER]/+page.svelte`
+	- Replace `[SOME FOLDER]` with the appropriate section name for the page.
+
+2) Indentation:
+	- Use tabs for all code indentation.
+
+3) Loading State:
+	- Wrap the body of the page in an `#if isLoading` block.
+	- Set `isLoading = false` at the end of the `onMount()` function.
+
+	Example:
+	```svelte
+	{#if isLoading}
+		<div class="loading-screen">
+			<div class="spinner"></div>
+		</div>
+	{:else}
+		<!-- Page content goes here -->
+	{/if}
+	```
+
+4) Function Separation:
+	- All JavaScript functions must be stored in separate files.
+	- The `+page.svelte` file should only call these functions.
+
+	Example:
+	```svelte
+	<script>
+		import { someFunction } from './someFunction.js';
+
+		function handleAction() {
+			someFunction();
+		}
+	</script>
+	```
+
+5) Import Statements:
+	- Import all external functions and modules at the top of the file.
+
+	Example:
+	```svelte
+	<script>
+		import { saveSettings } from './saveSettings.js';
+		import { getSettings } from './getSettings.js';
+		import { onMount } from 'svelte';
+	</script>
+	```
+
+6) Server Data Access:
+	- Use `SuperFetch` and `baseURL` for all server data access.
+	- Construct the URL using `baseURL`.
+	- Fetch data using `SuperFetch()` and handle errors appropriately.
+
+	Example:
+	```javascript
+	import { SuperFetch } from '../SuperFetch.js';
+	import { baseURL } from '../Settings';
+
+	export async function fetchData() {
+		try {
+			const url = baseURL + '/endpoint';
+			const result = await SuperFetch(url, {}, true);
+			return result; // Return the fetched data
+		} catch (error) {
+			console.error('Error fetching data:', error);
+			throw error; // Re-throw the error for further handling
+		}
+	}
+	```
+
+7) Data Return:
+	- Always return the data fetched from the server back to the `+page.svelte` file.
+
+	Example:
+	```svelte
+	<script>
+		import { fetchData } from './fetchData.js';
+		import { onMount } from 'svelte';
+
+		let data;
+
+		onMount(async () => {
+			data = await fetchData();
+		});
+	</script>
+	```

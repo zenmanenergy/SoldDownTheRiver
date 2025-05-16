@@ -34,6 +34,7 @@ def SaveHuman():
 		HumanId = human_data.get('HumanId', None)
 		FirstName = human_data.get('FirstName', None)
 		MiddleName = human_data.get('MiddleName', None)
+		isCompany = human_data.get('isCompany', None)
 		LastName = human_data.get('LastName', None)
 		BirthDate = human_data.get('BirthDate', None)
 		BirthDateAccuracy = human_data.get('BirthDateAccuracy', None)
@@ -51,7 +52,7 @@ def SaveHuman():
 
 		# Call the save_human function with the extracted data
 		result = save_human(
-			HumanId, FirstName, MiddleName, LastName, BirthDate, BirthDateAccuracy,
+			HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, BirthDateAccuracy,
 			RacialDescriptor, Sex, Height_cm, Notes, age_string, BirthPlace,
 			originCity, physical_features, profession, mergedHumanId, spouseHumanId
 		)
@@ -89,7 +90,6 @@ def DeleteHuman():
 		HumanId = human_data.get('HumanId')
 		# Call the delete_human function from DeleteHuman.py
 		result = delete_human(HumanId)
-		History.SaveHistory(human_data, "humans", "HumanId", HumanId)
 
 		return result
 	except Exception as e:

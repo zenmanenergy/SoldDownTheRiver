@@ -7,7 +7,7 @@ def get_humans(Search=None, LastFetchTime=None):
 
 	# Construct the SQL query
 	query = """
-		SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.BirthDate, h.BirthDateAccuracy,
+		SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.isCompany, h.BirthDate, h.BirthDateAccuracy,
 		       h.RacialDescriptor, h.Sex, h.Height_cm,
 		       GROUP_CONCAT(CONCAT_WS(' ', ha.AKAFirstName, ha.AKAMiddleName, ha.AKALastName) ORDER BY ha.AKAHumanId SEPARATOR ', ') AS AlsoKnownAs
 		FROM humans h

@@ -278,7 +278,7 @@ CREATE TABLE `voyagehumans` (
   `SellingSlaveTraderHumanId` char(39) DEFAULT NULL,
   `BuyingSlaveTraderHumanId` char(39) DEFAULT NULL,
   `ShippingAgentHumanId` char(39) DEFAULT NULL,
-  `CollectingAgentHumanId` char(39) DEFAULT NULL,
+  `collectoragentHumanId` char(39) DEFAULT NULL,
   PRIMARY KEY (`VoyageId`,`HumanId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

@@ -1,13 +1,13 @@
 
 from _Lib import Database
 
-def get_SlaveCollectingAgents():
+def get_SlaveCollectorAgents():
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL sql
 	sql = f"SELECT * "
-	sql += f"  from humans join humanroles on humans.HumanId=humanroles.HumanId where humanroles.RoleId='SlaveCollectingAgent'"
+	sql += f"  from humans join humanroles on humans.HumanId=humanroles.HumanId where humanroles.RoleId='Slavecollectoragent'"
 	sql += f" ORDER BY FirstName, LastName"
 	print(sql)
 	# Execute the sql and get the results

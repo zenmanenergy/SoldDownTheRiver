@@ -148,7 +148,6 @@
 				<thead>
 					<tr>
 						<th on:click={() => toggleSort('FirstName')}>First Name</th>
-						<th on:click={() => toggleSort('MiddleName')}>Middle Name</th>
 						<th on:click={() => toggleSort('LastName')}>Last Name</th>
 						<th on:click={() => toggleSort('BirthDate')}>Birth Date</th>
 						<th on:click={() => toggleSort('RacialDescriptor')}>Racial Descriptor</th>
@@ -160,8 +159,7 @@
 				<tbody>
 					{#each displayedHumans as human}
 						<tr on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
-							<td>{human.FirstName || ''}</td>
-							<td>{human.MiddleName || ''}</td>
+							<td>{human.FirstName || ''}{' ' & human.MiddleName || ''}</td>
 							<td>{human.LastName || ''}</td>
 							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy) || ''}</td>
 							<td>{human.RacialDescriptor || ''}</td>

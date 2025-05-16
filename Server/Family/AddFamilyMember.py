@@ -56,7 +56,8 @@ def add_family_member(HumanId, RelatedHumanId, RelationshipType):
 		cursor.execute(sql_insert_transitive_relationships)
 		connection.commit()
 
-	if RelationshipType.lower() in ['son', 'daughter']:
+	print("RelationshipType",RelationshipType)
+	if RelationshipType.lower() in ['son', 'daughter', 'owner', 'employee']:
 		insert_parent_child(HumanId, RelatedHumanId)
 
 	elif RelationshipType.lower() in ['father', 'mother']:

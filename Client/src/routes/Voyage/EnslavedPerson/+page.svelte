@@ -9,7 +9,7 @@
 	import { handleGetVoyageHuman} from './handleGetVoyageHuman.js';
 	import { handleGetSlaveTraders} from './handleGetSlaveTraders.js';
 	import { handleGetSlaveShippingAgents} from './handleGetSlaveShippingAgents.js';
-	import { handleGetSlaveCollectingAgents} from './handleGetSlaveCollectingAgents.js';
+	import { handleGetSlaveCollectorAgents} from './handleGetSlaveCollectorAgents.js';
 	import { handleSaveEnslavedPerson} from './handleSaveEnslavedPerson.js';
 	import {Session} from "../../Session.js";
 	
@@ -19,7 +19,7 @@
 	let VoyageHuman=[];
 	let SlaveTraders=[];
 	let SlaveShippingAgents=[];
-	let SlaveCollectingAgents=[];
+	let SlaveCollectorAgents=[];
 	let isLoading=true;
 
 	
@@ -34,8 +34,8 @@
 	async function setSlaveShippingAgents(data) {
 		SlaveShippingAgents = data;
 	}
-	async function setSlaveCollectingAgents(data) {
-		SlaveCollectingAgents = data;
+	async function setSlaveCollectorAgents(data) {
+		SlaveCollectorAgents = data;
 	}
 	onMount(async () => {
 		await Session.handleSession();
@@ -46,7 +46,7 @@
 			handleGetVoyageHuman(Session.SessionId,VoyageId, HumanId, setVoyageHuman),
 			handleGetSlaveTraders(Session.SessionId,setSlaveTraders),
 			handleGetSlaveShippingAgents(Session.SessionId,setSlaveShippingAgents),
-			handleGetSlaveCollectingAgents(Session.SessionId,setSlaveCollectingAgents)
+			handleGetSlaveCollectorAgents(Session.SessionId,setSlaveCollectorAgents)
 		]);
 	 
 		const module = await import('svelecte');
@@ -133,15 +133,15 @@
 			</div>
 		</div>
 		<div class="field">
-			<label class="label" for="Size">Collecting Agent <a class="AddLink" href="/Human/SlaveCollectingAgent">Add Collecting Agent</a></label>
+			<label class="label" for="Size">Collecting Agent <a class="AddLink" href="/Human/Slavecollectoragent">Add Collecting Agent</a></label>
 			<div class="control">
 				<div id="svelecteEndLocation">
 					<svelte:component 
 						this={Svelecte} 
-						bind:value={VoyageHuman.CollectingAgentHumanId} 
-						options={SlaveCollectingAgents.map(SlaveCollectingAgent => ({
-							value: SlaveCollectingAgent.HumanId, 
-							label: SlaveCollectingAgent.FirstName + " " + SlaveCollectingAgent.LastName
+						bind:value={VoyageHuman.collectoragentHumanId} 
+						options={SlaveCollectorAgents.map(Slavecollectoragent => ({
+							value: Slavecollectoragent.HumanId, 
+							label: Slavecollectoragent.FirstName + " " + Slavecollectoragent.LastName
 						}))} 
 					/>
 				</div>

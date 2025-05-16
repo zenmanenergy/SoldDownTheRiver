@@ -21,6 +21,7 @@ export async function handleGetHumans(SessionId, callback) {
 		FirstName: human.FirstName || '',
 		MiddleName: human.MiddleName || '',
 		LastName: human.LastName || '',
+		isCompany: human.isCompany || '',
 		BirthDate: human.BirthDate || '',
 		BirthDateAccuracy: human.BirthDateAccuracy || '',
 		RacialDescriptor: human.RacialDescriptor || '',

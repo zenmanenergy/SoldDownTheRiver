@@ -43,13 +43,13 @@ def SaveEnslavedPerson():
 		SellingSlaveTraderHumanId = Voyage_data.get('SellingSlaveTraderHumanId', None)
 		BuyingSlaveTraderHumanId = Voyage_data.get('BuyingSlaveTraderHumanId', None)
 		ShippingAgentHumanId = Voyage_data.get('ShippingAgentHumanId', None)
-		CollectingAgentHumanId = Voyage_data.get('CollectingAgentHumanId', None)
+		collectoragentHumanId = Voyage_data.get('collectoragentHumanId', None)
 		Notes = Voyage_data.get('Notes', None)
 
 		# Call the get_Ships function from GetShips.py
 		result = save_human(HumanId, FirstName, MiddleName, LastName, Notes)
 		HumanId=result['HumanId']
-		result = save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,CollectingAgentHumanId,Notes)
+		result = save_VoyageHuman(VoyageId, HumanId, RoleId, SellingSlaveTraderHumanId,BuyingSlaveTraderHumanId,ShippingAgentHumanId,collectoragentHumanId,Notes)
 		History.SaveHistory(Voyage_data, "voyagehumans", "VoyageId:HumanId", VoyageId+": "+HumanId)
 		return result
 	except Exception as e:

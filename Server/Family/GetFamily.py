@@ -7,7 +7,7 @@ def get_family(HumanId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	cursor.execute(f"""
-		SELECT HumanId, FirstName, LastName, Sex, spouseHumanId
+		SELECT HumanId, FirstName, LastName, Sex, spouseHumanId,isCompany
 		FROM humans
 		WHERE HumanId = '{HumanId}'
 	""")
@@ -23,13 +23,13 @@ def get_family(HumanId):
 		'Relationship': 'self',
 		'Depth': 0
 	}]
-
-	cursor.execute(f"""
+	sql=f"""
 		SELECT 
 			h.HumanId,
 			h.FirstName,
 			h.LastName,
 			h.Sex,
+			h.isCompany,
 			c.Depth,
 			'ancestor' AS RelationType
 		FROM humanclosure c
@@ -43,6 +43,7 @@ def get_family(HumanId):
 			h.FirstName,
 			h.LastName,
 			h.Sex,
+			h.isCompany,
 			c.Depth,
 			'descendant' AS RelationType
 		FROM humanclosure c
@@ -50,7 +51,8 @@ def get_family(HumanId):
 		WHERE c.AncestorHumanId = '{HumanId}' AND c.Depth > 0
 
 		ORDER BY RelationType DESC, Depth ASC, LastName, FirstName;
-	""")
+	"""
+	cursor.execute(sql)
 
 	relatives = list(cursor.fetchall())
 
@@ -79,8 +81,12 @@ def get_family(HumanId):
 		sex = member['Sex']
 		relation = member['RelationType']
 		depth = member['Depth']
+		isCompany = member['isCompany']
+		print("isCompany",isCompany)
 
-		if relation == 'ancestor':
+		if human.get('isCompany'):
+			relation_label = 'employee'
+		elif relation == 'ancestor':
 			if depth == 1:
 				relation_label = 'father' if sex == 'Male' else 'mother'
 			elif depth == 2:
