@@ -38,8 +38,8 @@ def SaveVoyage():
 
 		# Call the save_Voyage function from SaveVoyage.py with the extracted data
 		result = save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId, StartDate, EndDate, Notes)
-		History.SaveHistory(Voyage_data, "voyages", "VoyageId", result["VoyageId"])
-
+		
+		
 		return result
 	except Exception as e:
 		return Debugger(e)

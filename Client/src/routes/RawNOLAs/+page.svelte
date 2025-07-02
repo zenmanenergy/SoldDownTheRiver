@@ -67,7 +67,7 @@
 	// Format DateOfTransaction to display only the date component
 	function formatDateOfTransaction(date) {
 		if (!date) return '';
-		const parsed = moment(date);
+		const parsed = moment.utc(date);
 		return parsed.isValid() ? parsed.format('YYYY-MM-DD') : 'Invalid Date';
 	}
 

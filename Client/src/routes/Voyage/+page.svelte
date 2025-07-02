@@ -69,10 +69,12 @@
 			Voyage.CaptainHumanId=data.CaptainHumanId
 			Voyage.EndLocationId = data.EndLocationId || "";
 			if (data.StartDate){
-				Voyage.StartDate = moment(data.StartDate).format("YYYY-MM-DD")||"";
+				// Use moment with UTC to avoid timezone issues
+				Voyage.StartDate = moment.utc(data.StartDate).format("YYYY-MM-DD")||"";
 			}
 			if (data.EndDate){
-				Voyage.EndDate = moment(data.EndDate).format("YYYY-MM-DD")||"";
+				// Use moment with UTC to avoid timezone issues
+				Voyage.EndDate = moment.utc(data.EndDate).format("YYYY-MM-DD")||"";
 			}
 			Voyage.Notes = data.Notes || "";
 		}

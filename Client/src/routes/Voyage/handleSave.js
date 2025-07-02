@@ -23,5 +23,5 @@ export async function handleSave(SessionId,Data,FormValid) {
 	let data = await SuperFetch(url, Data, FormValid)
 
 	// callback(data);
-	window.location.href = '/Voyages';
+	// window.location.href = '/Voyages';
 }

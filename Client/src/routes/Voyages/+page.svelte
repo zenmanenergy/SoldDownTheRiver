@@ -89,8 +89,8 @@
 							}
 						}}>
 							<td>{Voyage.ShipName}</td>
-							<td>{Voyage.StartCity} {Voyage.StartState} {moment(Voyage.StartDate).format('MMMM D, YYYY')}</td>
-							<td>{Voyage.EndCity} {Voyage.EndState} {moment(Voyage.EndDate).format('MMMM D, YYYY')}</td>
+							<td>{Voyage.StartCity} {Voyage.StartState} {moment.utc(Voyage.StartDate).format('MMMM D, YYYY')}</td>
+							<td>{Voyage.EndCity} {Voyage.EndState} {moment.utc(Voyage.EndDate).format('MMMM D, YYYY')}</td>
 						</tr>
 					{/each}
 

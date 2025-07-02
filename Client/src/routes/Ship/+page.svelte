@@ -10,6 +10,8 @@
 	import { handleGetCaptains } from './handleGetCaptains.js';
 	import { handleGetLocations } from '../Locations/handleGetLocations.js';
 	import { handleGetTransactions } from './handleGetTransactions.js';
+	import { handleSaveReferenceLink } from '../Reference/handleSaveReferenceLink.js';
+	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	import { Session } from "../Session.js";
 	
 	let ShipId = "";
@@ -22,6 +24,8 @@
 	let Voyages = [];
 	let Locations = [];
 	let Transactions=[]
+	let shipReferences = [];
+	let isReferencesLoading = true;
 	let Svelecte;
 	let HomePortLocationId;
 	let AgentHumanId;
@@ -34,7 +38,7 @@
 		Ship.ShipId = data.ShipId || "";
 		Ship.ShipName = data.ShipName || "";
 		if (data.BuildDate){
-			Ship.BuildDate = moment(data.BuildDate).format("YYYY-MM-DD")||"";
+			Ship.BuildDate = moment.utc(data.BuildDate).format("YYYY-MM-DD")||"";
 			
 		}
 		Ship.Notes = data.Notes || "";
@@ -75,20 +79,15 @@
 			handleGetCaptains(Session.SessionId,Query, setCaptains),
 			handleGetTransactions(Session.SessionId,ShipId, setTransactions)
 		]);
+
+		// Fetch references linked to this ship if ShipId exists
+		if (ShipId) {
+			await handleGetLinkReferences(ShipId, 'ship', setShipReferences);
+		}
+		isReferencesLoading = false;
 		const module = await import('svelecte');
 		Svelecte = module.default || module;
 		
-		Promise.resolve().then(() => {
-			const svelecteLocation = document.querySelector('#svelecteLocation');
-			const svelecteLocationSearch = svelecteLocation.querySelector('input');
-			if (svelecteLocationSearch) {
-				svelecteLocationSearch.addEventListener('input', handleLocationInput);
-			}
-
-		});
-
-		
-	
 		isLoading = false;
 	});
 	$: if (HomePortLocationId) {
@@ -118,6 +117,38 @@
 	
 	function addVoyage(){
 		location.href="/Voyage?VoyageId=&ShipId="+Ship.ShipId
+	}
+
+	// Reference-related variables and functions
+	let referenceURL = '';
+	let referenceNotes = '';
+	let referenceMessage = '';
+
+	async function setShipReferences(data) {
+		shipReferences = data;
+	}
+
+	async function saveReferenceForShip() {
+		referenceMessage = '';
+		if (!referenceURL.trim()) {
+			referenceMessage = 'URL is required.';
+			return;
+		}
+		const result = await handleSaveReferenceLink({
+			LinkId: ShipId,
+			TargetType: 'ship',
+			URL: referenceURL,
+			Notes: referenceNotes
+		});
+		if (result && result.success) {
+			referenceMessage = 'Reference added!';
+			referenceURL = '';
+			referenceNotes = '';
+			// Refresh the references list
+			await handleGetLinkReferences(ShipId, 'ship', setShipReferences);
+		} else {
+			referenceMessage = result && result.error ? result.error : 'Error adding reference.';
+		}
 	}
 	</script>
 	
@@ -220,8 +251,8 @@
 					<tbody>
 						{#each Voyages as Voyage}
 							<tr on:click={() => window.location.href = `/Voyage?VoyageId=${Voyage.VoyageId}`}>
-								<td>{Voyage.StartCity} {Voyage.StartState} {moment(Voyage.StartDate).format('MMMM D, YYYY')}</td>
-								<td>{Voyage.EndCity} {Voyage.EndState} {moment(Voyage.EndDate).format('MMMM D, YYYY')}</td>
+								<td>{Voyage.StartCity} {Voyage.StartState} {moment.utc(Voyage.StartDate).format('MMMM D, YYYY')}</td>
+								<td>{Voyage.EndCity} {Voyage.EndState} {moment.utc(Voyage.EndDate).format('MMMM D, YYYY')}</td>
 							</tr>
 						{/each}
 
@@ -230,6 +261,66 @@
 				</table>
 				
 			</div>
+
+			{#if ShipId}
+				<!-- Add Reference Section -->
+				<div class="ActionBox">
+					<div class="title-container">
+						<h3 class="title is-4">Add Reference to this Ship</h3>
+					</div>
+					<div class="field">
+						<label class="label">Reference URL</label>
+						<div class="control">
+							<input class="input" type="text" bind:value={referenceURL} placeholder="Enter reference URL" />
+						</div>
+					</div>
+					<div class="field">
+						<label class="label">Notes</label>
+						<div class="control">
+							<input class="input" type="text" bind:value={referenceNotes} placeholder="Enter notes" />
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<button class="button is-primary" type="button" on:click={saveReferenceForShip}>Add Reference</button>
+						</div>
+					</div>
+					{#if referenceMessage}
+						<div class="notification is-info">{referenceMessage}</div>
+					{/if}
+				</div>
+
+				<!-- References Table for this Ship -->
+				<div class="ActionBox">
+					<div class="title-container">
+						<h3 class="title is-4">References Linked to this Ship</h3>
+					</div>
+					{#if isReferencesLoading}
+						<div>Loading references...</div>
+					{:else if shipReferences.length === 0}
+						<div>No references linked to this ship.</div>
+					{:else}
+						<table class="table is-striped is-hoverable is-fullwidth">
+							<thead>
+								<tr>
+									<th>URL</th>
+									<th>Notes</th>
+									<th>Date Updated</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each shipReferences as reference}
+									<tr on:click={() => window.location.href = `/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
+										<td>{reference.URL}</td>
+										<td>{reference.Notes}</td>
+										<td>{reference.dateUpdated}</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/if}
+				</div>
+			{/if}
 		</div>
 	</div>
 	{/if}

@@ -29,4 +29,4 @@ def save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId,
 	connection.close()
 
 	# Return the VoyageId as a JSON response
-	return {'success': True, 'VoyageId': VoyageId}
+	return {'success': True, 'VoyageId': VoyageId, 'EndDate': EndDate}

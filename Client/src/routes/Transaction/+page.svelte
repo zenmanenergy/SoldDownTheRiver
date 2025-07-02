@@ -784,7 +784,7 @@ if (typeof window !== 'undefined') {
 										}} 
 										tabindex="0">
 										<td>
-											{moment(record.DateOfTransaction).format('YYYY-MM-DD')}
+											{moment.utc(record.DateOfTransaction).format('YYYY-MM-DD')}
 											
 										</td>
 									<td>{record.FirstParty || ''}</td>
