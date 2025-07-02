@@ -2,7 +2,7 @@ from _Lib import Database
 from _Lib.Debugger import Debugger
 from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
-from .GetHumans import get_humans
+from .GetHumans import get_humans, search_humans
 from .SetTimelines import set_timelines
 from .GetRacialDescriptors import get_racial_descriptors
 from .ImportOwners import import_owners
@@ -119,4 +119,16 @@ def resolve_duplicate_enslaved_human():
 		return result
 	except Exception as e:
 		return Debugger(e)
-	
+
+@blueprint.route("/Humans/SearchHumans", methods=['GET'])
+@cross_origin()
+def SearchHumans():
+	try:
+		search_data = request.args.to_dict()
+		Query = search_data.get('Query', None)
+		LastFetchTime = search_data.get('LastFetchTime', None)
+		result = search_humans(Query, LastFetchTime)
+		return result
+	except Exception as e:
+		return Debugger(e)
+

@@ -51,3 +51,54 @@ def get_humans(Search=None, LastFetchTime=None):
 
 	# Return the result as a dictionary
 	return result
+
+def search_humans(Query=None, LastFetchTime=None):
+	cursor, connection = Database.ConnectToDatabase()
+	query = """
+		SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.isCompany, h.BirthDate, h.BirthDateAccuracy,
+		       h.RacialDescriptor, h.Sex, h.Height_cm,
+		       GROUP_CONCAT(CONCAT_WS(' ', ha.AKAFirstName, ha.AKAMiddleName, ha.AKALastName) ORDER BY ha.AKAHumanId SEPARATOR ', ') AS AlsoKnownAs
+		FROM humans h
+		LEFT JOIN humansaka ha ON h.HumanId = ha.HumanId
+		WHERE 1=1
+	"""
+	values = []
+
+	if Query:
+		like = f"%{Query}%"
+		query += """
+			AND (
+				h.FirstName LIKE %s OR
+				h.LastName LIKE %s OR
+				h.HumanId LIKE %s OR
+				h.RacialDescriptor LIKE %s OR
+				h.Sex LIKE %s OR
+				h.BirthDate LIKE %s OR
+				h.BirthDateAccuracy LIKE %s
+			)
+		"""
+		values.extend([like, like, like, like, like, like, like])
+
+	if LastFetchTime:
+		try:
+			LastFetchTime = datetime.fromisoformat(LastFetchTime.replace("Z", "+00:00")).strftime('%Y-%m-%d %H:%M:%S')
+			query += " AND h.DateUpdated > %s"
+			values.append(LastFetchTime)
+		except ValueError:
+			print("Invalid LastFetchTime format. Skipping filter.")
+
+	query += """
+		GROUP BY h.HumanId
+		ORDER BY h.LastName, h.FirstName, h.MiddleName
+	"""
+
+	print("Executing search query:", query)
+	print("With values:", values)
+
+	cursor.execute(query, values)
+	result = cursor.fetchall()
+	if not result:
+		result = []
+
+	connection.close()
+	return result

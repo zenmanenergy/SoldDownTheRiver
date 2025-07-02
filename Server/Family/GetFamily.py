@@ -62,6 +62,7 @@ def get_family(HumanId):
 			h.FirstName,
 			h.LastName,
 			h.Sex,
+			h.isCompany,
 			0 AS Depth,
 			'sibling' AS RelationType
 		FROM humanrelationships r1
@@ -81,8 +82,8 @@ def get_family(HumanId):
 		sex = member['Sex']
 		relation = member['RelationType']
 		depth = member['Depth']
-		isCompany = member['isCompany']
-		print("isCompany",isCompany)
+		isCompany = member.get('isCompany')  # safer access
+		print("isCompany", isCompany)
 
 		if human.get('isCompany'):
 			relation_label = 'employee'

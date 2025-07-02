@@ -13,7 +13,7 @@
 	import { onMount } from 'svelte';
 	import { Session } from '../Session.js';
 	import { handleGetTransaction } from './handleGetTransaction.js';
-	import { handleGetHumans } from '../Humans/handleGetHumans.js';
+	import { handleSearchHumans } from '../Humans/handleSearchHumans.js';
 	import { handleSaveTransaction } from './handleSaveTransaction.js';
 	import { handleDeleteTransaction } from './handleDeleteTransaction.js';
 	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
@@ -22,9 +22,13 @@
 	import { handleGetRawNolas } from './handleGetRawNolas.js';
 	import { handleGetLocations } from '../Locations/handleGetLocations.js';
 	import { handleGetRoles } from '../Roles/handleGetRoles.js';
-
-	import Select from 'svelte-select';
+	import { handleSaveReferenceLink } from '../Reference/handleSaveReferenceLink.js';
+	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	import moment from 'moment';
+
+	let transactionReferences = [];
+	let isReferencesLoading = true;
+
 	let rawNolaRecords = [];
 	let Svelecte; // NEW: variable for Svelecte
 	let transaction = {
@@ -48,38 +52,34 @@
 
 	// New variables for available humans filtering and sorting
 	let searchQuery = '';
+	let availableHumans = []; // Will hold server-side search results
 	let sortColumnSearch = '';
 	let sortDirectionSearch = 1;
-	$: filteredHumans = allHumans
-		.filter(h => 
-			((h.FirstName || "").toLowerCase().includes(searchQuery.toLowerCase())) ||
-			((h.LastName || "").toLowerCase().includes(searchQuery.toLowerCase())) ||
-			(String(h.HumanId || "").toLowerCase().includes(searchQuery.toLowerCase())) ||
-			((Array.isArray(h.Roles) ? h.Roles.join(' ').toLowerCase() : String(h.Roles || "").toLowerCase()).includes(searchQuery.toLowerCase())) ||
-			((String(h.RacialDescriptor || "").toLowerCase()).includes(searchQuery.toLowerCase()))
-		);
-	if(sortColumnSearch) {
-		filteredHumans.sort((a, b) => {
-			let aVal = a[sortColumnSearch] || '';
-			let bVal = b[sortColumnSearch] || '';
-			// If field is an array, join; otherwise cast to string
-			aVal = Array.isArray(aVal) ? aVal.join(' ').toLowerCase() : String(aVal).toLowerCase();
-			bVal = Array.isArray(bVal) ? bVal.join(' ').toLowerCase() : String(bVal).toLowerCase();
-			return aVal > bVal ? sortDirectionSearch : aVal < bVal ? -sortDirectionSearch : 0;
-		});
+	let searchTimeout;
+
+	// Debounced search function
+	function onSearchInput(event) {
+		const value = event.target.value;
+		searchQuery = value;
+		clearTimeout(searchTimeout);
+		searchTimeout = setTimeout(async () => {
+			if (searchQuery.trim().length < 1) {
+				availableHumans = [];
+			} else {
+				await handleSearchHumans(Session.SessionId, searchQuery, (results) => {
+					availableHumans = results;
+					currentPageAvailable = 1; // Reset to first page on new search
+				});
+			}
+		}, 300); // 300ms debounce
 	}
-
-	// NEW: Pagination variables for available humans
-	let currentPageAvailable = 1;
-	let itemsPerPageAvailable = 10;
-	let totalPagesAvailable = 1;
-	$: totalPagesAvailable = Math.max(1, Math.ceil(filteredHumans.length / itemsPerPageAvailable));
-	$: displayedAvailableHumans = filteredHumans.slice(
-		(currentPageAvailable - 1) * itemsPerPageAvailable,
-		currentPageAvailable * itemsPerPageAvailable
-	);
-
-	// New function to sort available humans
+	async function setSaveTransactionHuman(data) {
+		console.log("saved",data)
+	}
+	async function setTransactionReferences(data) {
+		transactionReferences = data;
+	}
+	// Sorting for availableHumans
 	function sortAvailableHumans(column) {
 		if(sortColumnSearch === column) {
 			sortDirectionSearch *= -1;
@@ -87,7 +87,23 @@
 			sortColumnSearch = column;
 			sortDirectionSearch = 1;
 		}
+		availableHumans = [...availableHumans].sort((a, b) => {
+			let aVal = a[column] || '';
+			let bVal = b[column] || '';
+			aVal = Array.isArray(aVal) ? aVal.join(' ').toLowerCase() : String(aVal).toLowerCase();
+			bVal = Array.isArray(bVal) ? bVal.join(' ').toLowerCase() : String(bVal).toLowerCase();
+			return aVal > bVal ? sortDirectionSearch : aVal < bVal ? -sortDirectionSearch : 0;
+		});
 	}
+
+	// Pagination for availableHumans
+	let currentPageAvailable = 1;
+	let itemsPerPageAvailable = 10;
+	$: totalPagesAvailable = Math.max(1, Math.ceil((availableHumans || []).length / itemsPerPageAvailable));
+	$: displayedAvailableHumans = (availableHumans || []).slice(
+		(currentPageAvailable - 1) * itemsPerPageAvailable,
+		currentPageAvailable * itemsPerPageAvailable
+	);
 
 	function getTransactionIdFromURL() {
 		const params = new URLSearchParams(window.location.search);
@@ -107,12 +123,6 @@
 if (typeof window !== 'undefined') {
 	lastFetchTime = localStorage.getItem('lastFetchTime') || null; // Retrieve from local storage
 }
-
-	async function fetchHumans() {
-		await handleGetHumans(Session.SessionId, (formattedHumans) => {
-			allHumans = formattedHumans;
-		});
-	}
 
 	onMount(async () => {
 		await Session.handleSession();
@@ -146,9 +156,6 @@ if (typeof window !== 'undefined') {
 			}
 		}
 
-		// Fetch humans and format correctly for `svelte-select`
-		await fetchHumans();
-
 		// Fetch roles
 		await handleGetRoles(Session.SessionId, (data) => {
 			if (Array.isArray(data)) {
@@ -178,6 +185,10 @@ if (typeof window !== 'undefined') {
 				transactionHumans = [];
 			}
 		});
+
+		// Fetch references linked to this transaction
+		await handleGetLinkReferences(transactionId, 'transaction', setTransactionReferences);
+		isReferencesLoading = false;
 
 		isLoading = false;
 	});
@@ -227,7 +238,26 @@ if (typeof window !== 'undefined') {
 			return valA > valB ? sortDirection : valA < valB ? -sortDirection : 0;
 		});
 	}
-
+	async function saveReferenceForTransaction() {
+		referenceMessage = '';
+		if (!referenceURL.trim()) {
+			referenceMessage = 'URL is required.';
+			return;
+		}
+		const result = await handleSaveReferenceLink({
+			LinkId: TransactionId,
+			TargetType: 'Transaction',
+			URL: referenceURL,
+			Notes: referenceNotes
+		});
+		if (result && result.success) {
+			referenceMessage = 'Reference added!';
+			referenceURL = '';
+			referenceNotes = '';
+		} else {
+			referenceMessage = result && result.error ? result.error : 'Error adding reference.';
+		}
+	}
 	function formatDateOfTransaction(date) {
 		return date ? new Date(date).toLocaleDateString() : '';
 	}
@@ -420,6 +450,9 @@ if (typeof window !== 'undefined') {
 	// Ensure Birthdate updates when Age or Date changes
 	$: updateNewHumanBirthDate();
 
+	let referenceURL = '';
+	let referenceNotes = '';
+	let referenceMessage = '';
 
 </script>
 
@@ -626,7 +659,15 @@ if (typeof window !== 'undefined') {
 					<!-- Search Box -->
 					<div class="field">
 						<label for="human-search">Search:</label>
-						<input id="human-search" class="input" type="text" placeholder="Search Humans" bind:value={searchQuery} />
+						<input
+							id="human-search"
+							class="input"
+							type="text"
+							placeholder="Search Humans"
+							value={searchQuery}
+							on:input={onSearchInput}
+							autocomplete="off"
+						/>
 					</div>
 					<table>
 						<thead>
@@ -746,10 +787,9 @@ if (typeof window !== 'undefined') {
 											{moment(record.DateOfTransaction).format('YYYY-MM-DD')}
 											
 										</td>
-									<td>{record.TypeOfTransaction || ''}</td>
-									
 									<td>{record.FirstParty || ''}</td>
 									<td>{record.SecondParty || ''}</td>
+									<td>{record.TypeOfTransaction || ''}</td>
 									<td>
 										{#if record.ReferenceURL}
 											<a href={record.ReferenceURL} target="_blank">View</a>
@@ -764,7 +804,62 @@ if (typeof window !== 'undefined') {
 				{/if}
 			
 			{/if}
-		</div>
+		
+						<div class="title-container">
+							<h3 class="title is-4">Add Reference to this Transaction</h3>
+						</div>
+						<div class="field">
+							<label class="label">Reference URL</label>
+							<div class="control">
+								<input class="input" type="text" bind:value={referenceURL} placeholder="Enter reference URL" />
+							</div>
+						</div>
+						<div class="field">
+							<label class="label">Notes</label>
+							<div class="control">
+								<input class="input" type="text" bind:value={referenceNotes} placeholder="Enter notes" />
+							</div>
+						</div>
+						<div class="field">
+							<div class="control">
+								<button class="button is-primary" type="button" on:click={saveReferenceForTransaction}>Add Reference</button>
+							</div>
+						</div>
+						{#if referenceMessage}
+							<div class="notification is-info">{referenceMessage}</div>
+						{/if}
+					</div>
+
+					<!-- References Table for this Transaction -->
+					<div class="ActionBox">
+						<div class="title-container">
+							<h3 class="title is-4">References Linked to this Transaction</h3>
+						</div>
+						{#if isReferencesLoading}
+							<div>Loading references...</div>
+						{:else if transactionReferences.length === 0}
+							<div>No references linked to this transaction.</div>
+						{:else}
+							<table class="table is-striped is-hoverable is-fullwidth">
+								<thead>
+									<tr>
+										<th>URL</th>
+										<th>Notes</th>
+										<th>Date Updated</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each transactionReferences as reference}
+										<tr on:click={() => window.location.href = `/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
+											<td>{reference.URL}</td>
+											<td>{reference.Notes}</td>
+											<td>{reference.dateUpdated}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						{/if}
+					</div>
 	</div>
 
 	

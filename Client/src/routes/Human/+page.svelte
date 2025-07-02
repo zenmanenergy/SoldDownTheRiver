@@ -194,6 +194,7 @@
 					FirstName: data.FirstName || '',
 					LastName: data.LastName || '',
 					BirthDate: originalBirthDate, // use originalBirthDate
+					isCompany: data.isCompany || ''
 				};
 				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
 				let _timelines = await handleGetTimelines(Session.SessionId, HumanId);
@@ -423,8 +424,8 @@
 				<div class="field">
 					<label for="isCompany">Individual or Company?</label>
 					<select id="isCompany" class="input" bind:value={Human.isCompany}>
-						<option value="">Individual</option>
 						<option value="1">Company</option> <!-- Ensure value is a string -->
+						<option value="">Individual</option>
 					</select>
 				</div>
 
