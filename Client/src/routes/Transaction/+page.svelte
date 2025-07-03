@@ -672,11 +672,17 @@ if (typeof window !== 'undefined') {
 					<table>
 						<thead>
 							<tr>
+								<th on:click={() => sortAvailableHumans('HumanId')}>
+									Human ID {sortColumnSearch==='HumanId' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}
+								</th>
 								<th on:click={() => sortAvailableHumans('FirstName')}>
 									First Name {sortColumnSearch==='FirstName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}
 								</th>
 								<th on:click={() => sortAvailableHumans('LastName')}>
 									Last Name {sortColumnSearch==='LastName' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}
+								</th>
+								<th on:click={() => sortAvailableHumans('BirthDate')}>
+									Birth Date {sortColumnSearch==='BirthDate' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}
 								</th>
 								<th on:click={() => sortAvailableHumans('Roles')}>
 									Role {sortColumnSearch==='Roles' ? (sortDirectionSearch>0 ? '▲' : '▼') : ''}
@@ -692,10 +698,18 @@ if (typeof window !== 'undefined') {
 							{#each displayedAvailableHumans as human}
 								<tr>
 									<td on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
+										<span title={human.HumanId}>
+											{human.HumanId ? (human.HumanId.length > 10 ? human.HumanId.substring(0, 15) + '...' : human.HumanId) : ''}
+										</span>
+									</td>
+									<td on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
 										{human.FirstName}
 									</td>
 									<td on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
 										{human.LastName}
+									</td>
+									<td on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
+										{human.BirthDate ? formatBirthDate(human.BirthDate, human.BirthDateAccuracy) : ''}
 									</td>
 									<td on:click={() => window.open(`/Human?HumanId=${human.HumanId}`, '_blank')}>
 										{Array.isArray(human.Roles) && human.Roles.length > 0 ? human.Roles[0] : ''}

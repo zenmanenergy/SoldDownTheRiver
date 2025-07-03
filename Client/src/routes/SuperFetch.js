@@ -1,6 +1,6 @@
 
 
-export async function SuperFetch(url, Data, FormValid){
+export async function SuperFetch(url, Data, FormValid,debug=false){
 	console.log(Data)
 	if (!FormValid) {
 		console.log("Form not valid");
@@ -21,6 +21,10 @@ export async function SuperFetch(url, Data, FormValid){
 
 	url += queryString
 	console.log(url)
+	if (debug){
+		console.log("DEBUG MODE! DID NOT SEND TO SERVER")
+		return false
+	}
 	let results;
 	try {
 		const response = await fetch(url);

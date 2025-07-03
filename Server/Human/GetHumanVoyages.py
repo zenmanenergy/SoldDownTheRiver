@@ -12,13 +12,14 @@ def get_human_voyages(HumanId):
         SELECT 
             voyagehumans.VoyageId,
             voyagehumans.HumanId,
-            voyagehumans.Role,
-            voyages.Date,
-            voyages.Location
+            voyagehumans.RoleId,
+            voyages.StartDate,
+            locations.city, locations.State
         FROM 
             voyagehumans
-        INNER JOIN 
+        JOIN 
             voyages ON voyagehumans.VoyageId = voyages.VoyageId
+        join locations on locations.LocationId=voyages.startLocationid    
         WHERE 
             voyagehumans.HumanId = %s
     """

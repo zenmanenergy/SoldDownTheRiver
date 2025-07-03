@@ -129,13 +129,7 @@
 			const win1 = window.open(`/Human?HumanId=${human1.HumanId}&mergeHumanId=${human2.HumanId}`, '_blank1');
 			setTimeout(() => {
 				const win2 = window.open(`/Human?HumanId=${human2.HumanId}&mergeHumanId=${human1.HumanId}`, '_blank2');
-				if (!win2) {
-					alert("Please allow pop-ups for this website to compare humans.");
-				}
 			}, 500);
-			if (!win1) {
-				alert("Please allow pop-ups for this website to compare humans.");
-			}
 		} else {
 			alert("Please select exactly 2 humans to compare.");
 		}
@@ -153,24 +147,25 @@
 
 			<h3 class="title is-3">Selected Humans for merging </h3>
 			{#if selectedHumans.length > 0}
-				<table class="table is-fullwidth is-striped">
-					<thead>
-						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Actions</th>
+				Now select the 'primary' human. When two values are in conflict, the primary human's data will be used.
+				<table class="table is-fullwidth is-striped">				<thead>
+					<tr>
+						<th>Human ID</th>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+					<tbody>					{#each selectedHumans as human}
+						<tr on:click={() => openHumanInNewTab(human.HumanId)} style="cursor: pointer;">
+							<td>{human.HumanId}</td>
+							<td>{human.FirstName}</td>
+							<td>{human.LastName}</td>
+							<td>
+								<button class="button is-danger" on:click={() => removeSelectedHuman(human.HumanId)}>Remove</button>
+							</td>
 						</tr>
-					</thead>
-					<tbody>
-						{#each selectedHumans as human}
-							<tr on:click={() => openHumanInNewTab(human.HumanId)} style="cursor: pointer;">
-								<td>{human.FirstName}</td>
-								<td>{human.LastName}</td>
-								<td>
-									<button class="button is-danger" on:click={() => removeSelectedHuman(human.HumanId)}>Remove</button>
-								</td>
-							</tr>
-						{/each}
+					{/each}
 					</tbody>
 				</table>
 			{:else}
@@ -191,6 +186,7 @@
 			<table class="ClickableTable">
 				<thead>
 					<tr>
+						<th on:click={() => toggleSort('HumanId')} style="cursor: pointer;">Human ID</th>
 						<th on:click={() => toggleSort('FirstName')} style="cursor: pointer;">First Name</th>
 						<th on:click={() => toggleSort('MiddleName')} style="cursor: pointer;">Middle Name</th>
 						<th on:click={() => toggleSort('LastName')} style="cursor: pointer;">Last Name</th>
@@ -201,19 +197,19 @@
 						<th on:click={() => toggleSort('Roles')} style="cursor: pointer;">Roles</th>
 					</tr>
 				</thead>
-				<tbody>
-					{#each displayedHumans as human}
-						<tr on:click={() => selectHuman(human)} style="cursor: pointer;">
-							<td>{human.FirstName || ''}</td>
-							<td>{human.MiddleName || ''}</td>
-							<td>{human.LastName || ''}</td>
-							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
-							<td>{human.RacialDescriptor || ''}</td>
-							<td>{human.Sex || ''}</td>
-							<td>{human.Height_in ? `${human.Height_in} in` : ''}</td>
-							<td>{human.Roles.length > 0 ? human.Roles.join(', ') : 'No Roles'}</td>
-						</tr>
-					{/each}
+				<tbody>				{#each displayedHumans as human}
+					<tr on:click={() => selectHuman(human)} style="cursor: pointer;">
+						<td>{human.HumanId || ''}</td>
+						<td>{human.FirstName || ''}</td>
+						<td>{human.MiddleName || ''}</td>
+						<td>{human.LastName || ''}</td>
+						<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy)}</td>
+						<td>{human.RacialDescriptor || ''}</td>
+						<td>{human.Sex || ''}</td>
+						<td>{human.Height_in ? `${human.Height_in} in` : ''}</td>
+						<td>{human.Roles.length > 0 ? human.Roles.join(', ') : 'No Roles'}</td>
+					</tr>
+				{/each}
 				</tbody>
 			</table>
 			

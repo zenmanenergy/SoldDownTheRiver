@@ -17,6 +17,38 @@
 		margin-bottom: 20px;
 		background-color: #f9f9f9;
 	}
+	.merge-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.7);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 9999;
+	}
+	.merge-message {
+		background-color: white;
+		padding: 30px;
+		border-radius: 10px;
+		text-align: center;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+	.merge-spinner {
+		border: 4px solid #f3f3f3;
+		border-top: 4px solid #3498db;
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		animation: spin 1s linear infinite;
+		margin: 0 auto 15px;
+	}
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
 </style>
 <script>
 	import { onMount } from 'svelte';
@@ -78,6 +110,7 @@
 	let transactionDate = null;
 	let ageYears = '';
 	let ageMonths = '';
+	let isMerging = false; // Loading state for merge operation
 
 	// New variable for storing transactions
 	let transactions = [];
@@ -95,7 +128,8 @@
 		County: '',
 		State: '',
 		State_abbr: '',
-		Country: ''
+		Country: '',
+		RoleId: ''
 	};
 	async function setLocations(data) {
 		// Locations = [{HumanId: "add_new", City: "[Add New]", State: ""}, ...data];
@@ -110,9 +144,9 @@
 		}
 		NewTimeline.HumanId = HumanId;
 		const result = await handleSaveTimeline(Session.SessionId, HumanId, NewTimeline);
-		if(result) {
+		if (result) {
 			timelines = [...timelines, { ...NewTimeline, LocationId: result.TimelineId }];
-			NewTimeline = { LocationType: '', LocationId: '', Date_Circa: '', Date_Accuracy: 'D'};
+			NewTimeline = { LocationType: '', LocationId: '', Date_Circa: '', Date_Accuracy: 'D', RoleId: ''};
 			window.location.href = `/Human?HumanId=${HumanId}`;
 		} else {
 			alert("Failed to save timeline.");
@@ -237,8 +271,10 @@
 		const TransactionId = getURLVariable('TransactionId');
 		if (TransactionId) {
 			transactionSummary = await handleGetTransaction(Session.SessionId, TransactionId);
-			rolesOptions = await handleGetRoles(Session.SessionId);
 		}
+		
+		// Always fetch roles for timeline functionality
+		rolesOptions = await handleGetRoles(Session.SessionId);
 		
 		handleGetLocations(Session.SessionId,setLocations),
 		racialDescriptors = await handleGetRacialDescriptors(Session.SessionId);
@@ -357,7 +393,9 @@
 
 	async function mergeHumans() {
 		if (HumanId && mergeHumanId) {
+			isMerging = true; // Show loading overlay
 			await handleMergeHumans(Session.SessionId, HumanId, mergeHumanId, (result) => {
+				isMerging = false; // Hide loading overlay
 				if (result) {
 					alert("Humans merged successfully!");
 					window.location.href = `/Human?HumanId=${result.HumanId}`;
@@ -595,10 +633,11 @@
 						<table class="table is-fullwidth is-striped">
 							<thead>
 								<tr>
-									<th>Type</th>
+									<th>Location Type/Name</th>
 									<th>Location</th>
 									<th>Latitude,Longitude</th>
 									<th>Date Circa</th>
+									<th>Role</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
@@ -610,6 +649,7 @@
 										<td>{timeline.Address || ''}</td>
 										<td>{timeline.Latitude || ''},{timeline.Longitude || ''}</td>
 										<td>{formatDate(timeline.Date_Circa, timeline.Date_Accuracy)}</td>
+										<td>{rolesOptions.find(role => role.RoleId === timeline.RoleId)?.Role || ''}</td>
 										<td>
 											<button class="button is-danger" on:click|stopPropagation={() => deleteTimeline(timeline.LocationId)}>Delete</button>
 										</td>
@@ -621,7 +661,7 @@
 					<form>
 					<h3 class="title is-3">Add a Timeline Event</h3>
 					<div class="field">
-						<label class="label" for="Size">Type</label>
+						<label class="label" for="Size">Location Type/Name</label>
 						<div class="control">
 							<input class="input" type="text" bind:value={NewTimeline.LocationType} placeholder="Type..." />
 						</div>
@@ -653,6 +693,17 @@
 								<option value="D">Day</option>
 								<option value="M">Month</option>
 								<option value="Y">Year</option>
+							</select>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="role-select">Role</label>
+						<div class="control">
+							<select class="input" bind:value={NewTimeline.RoleId}>
+								<option value="">Select Role</option>
+								{#each rolesOptions as role}
+									<option value={role.RoleId}>{role.Role}</option>
+								{/each}
 							</select>
 						</div>
 					</div>
@@ -713,6 +764,17 @@
 			{/if}
 
 		</form>
+		</div>
+	</div>
+{/if}
+
+<!-- Merge Loading Overlay -->
+{#if isMerging}
+	<div class="merge-overlay">
+		<div class="merge-message">
+			<div class="merge-spinner"></div>
+			<h3>Merging Humans...</h3>
+			<p>Please wait while we merge the selected humans. This may take a moment.</p>
 		</div>
 	</div>
 {/if}

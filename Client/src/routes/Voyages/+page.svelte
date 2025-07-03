@@ -9,7 +9,9 @@
 	import { Session } from "../Session.js";
 
 	export let Voyages = [];
+	let filteredVoyages = [];
 	let isLoading = true;
+	let searchQuery = '';
 	let sortColumn = 'ShipName';
 	let sortAscending = true;
 
@@ -17,7 +19,13 @@
 		Voyages = data;
 	} 
 
+	function getSearchQueryFromURL() {
+		const params = new URLSearchParams(window.location.search);
+		return params.get("search") || ''; // Default to empty string if missing
+	} 
+
 	onMount(async () => {
+		searchQuery = getSearchQueryFromURL();
 		await Session.handleSession();
 		await Promise.all([
 			handleGetVoyages(Session.SessionId, setVoyages),
@@ -39,24 +47,46 @@
 		}
 	}
 
-	$: Voyages = [...Voyages].sort((a, b) => {
-		let valueA = a[sortColumn] ?? '';
-		let valueB = b[sortColumn] ?? '';
+	$: {
+		filteredVoyages = Voyages.filter(voyage => {
+			const search = searchQuery.toLowerCase();
+			const values = [
+				voyage.ShipName,
+				voyage.StartCity,
+				voyage.StartState,
+				voyage.EndCity,
+				voyage.EndState,
+				voyage.VoyageId,
+				// Add formatted dates to search
+				voyage.StartDate ? moment.utc(voyage.StartDate).format('MMMM D, YYYY') : '',
+				voyage.EndDate ? moment.utc(voyage.EndDate).format('MMMM D, YYYY') : '',
+				// Also add raw date strings for ISO format searches
+				voyage.StartDate,
+				voyage.EndDate
+			];
+			return values.some(value => value && value.toLowerCase().includes(search));
+		});
 
-		// Handle date sorting separately
-		if (sortColumn === 'StartDate' || sortColumn === 'EndDate') {
-			valueA = a[sortColumn] ? new Date(a[sortColumn]) : new Date(0);
-			valueB = b[sortColumn] ? new Date(a[sortColumn]) : new Date(0);
-		}
+		// Sort the filtered voyages
+		filteredVoyages.sort((a, b) => {
+			let valueA = a[sortColumn] ?? '';
+			let valueB = b[sortColumn] ?? '';
 
-		// Convert to lowercase for case-insensitive sorting
-		if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-		if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+			// Handle date sorting separately
+			if (sortColumn === 'StartDate' || sortColumn === 'EndDate') {
+				valueA = a[sortColumn] ? new Date(a[sortColumn]) : new Date(0);
+				valueB = b[sortColumn] ? new Date(b[sortColumn]) : new Date(0);
+			}
 
-		if (valueA < valueB) return sortAscending ? -1 : 1;
-		if (valueA > valueB) return sortAscending ? 1 : -1;
-		return 0;
-	});
+			// Convert to lowercase for case-insensitive sorting
+			if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+			if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+			if (valueA < valueB) return sortAscending ? -1 : 1;
+			if (valueA > valueB) return sortAscending ? 1 : -1;
+			return 0;
+		});
+	}
 </script>
 
 <div class="section">
@@ -71,6 +101,13 @@
 				<h3 class="title is-2">List of Voyages</h3>
 				<button class="button is-primary"   on:click={addVoyage}>Add Voyage</button>
 			</div>
+			<form>
+				<div class="field">
+					<div class="control">
+						<input class="input" type="text" bind:value={searchQuery} placeholder="Search voyages by ship name, cities, or voyage ID" />
+					</div>
+				</div>
+			</form>
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>
@@ -80,7 +117,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each Voyages as Voyage}
+					{#each filteredVoyages as Voyage, index (Voyage.VoyageId || index)}
 						<tr on:click={(event) => {
 							if (event.ctrlKey || event.metaKey) {
 								window.open(`/Voyage?VoyageId=${encodeURIComponent(Voyage.VoyageId)}`, '_blank');

@@ -14,20 +14,23 @@ def save_timeline(timeline_data):
 		# Check for both 'date_accuracy' (lowercase) and 'Date_Accuracy' (uppercase); default to "D"
 		date_accuracy = timeline_data.get('date_accuracy') or timeline_data.get('Date_Accuracy') or "D"
 		location_type = timeline_data.get('LocationType')
+		role_id = timeline_data.get('RoleId')  # Extract RoleId from request data
 		
 		# Generate a unique LocationId
 		location_id =  timeline_data.get('LocationId')
 		
 		cursor, connection = Database.ConnectToDatabase()
 		query = """
-			INSERT INTO humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, DateUpdated)
-			VALUES (%s, %s, %s, %s, %s, NOW())
+			INSERT INTO humantimeline (HumanId, LocationId, date_circa, date_accuracy, LocationType, RoleId, DateUpdated)
+			VALUES (%s, %s, %s, %s, %s, %s, NOW())
 			ON DUPLICATE KEY UPDATE 
 				date_circa = VALUES(date_circa),
 				date_accuracy = VALUES(date_accuracy),
+				LocationType = VALUES(LocationType),
+				RoleId = VALUES(RoleId),
 				DateUpdated = NOW()
 		"""
-		cursor.execute(query, (human_id, location_id, date_circa, date_accuracy, location_type))
+		cursor.execute(query, (human_id, location_id, date_circa, date_accuracy, location_type, role_id))
 		
 		
 		connection.commit()
