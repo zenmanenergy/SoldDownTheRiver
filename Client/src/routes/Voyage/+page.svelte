@@ -6,7 +6,6 @@
 	import { handleSave } from './handleSave.js';
 	import { handleDelete } from './handleDelete.js';
 	import { handleGetVoyage } from './handleGetVoyage.js';
-	import { handleGetCaptains } from './handleGetCaptains.js';
 	import { handleGetShips } from './handleGetShips.js';
 	// import { handleGetHumans } from './handleGetHumans.js';
 	import { handleSaveVoyageHuman } from './handleSaveVoyageHuman.js';
@@ -15,10 +14,6 @@
 	// import { handleGetRoles } from './handleGetRoles.js';
 	import { Session } from '../Session.js';
 	import {handleGetLocations} from './handleGetLocations.js';
-	import { handleGetSellers } from './handleGetSellers.js';
-	import { handleGetBuyers } from './handleGetBuyers.js';
-	import { handleGetShippingAgents } from './handleGetShippingAgents.js';
-	import { handleGetCollectorAgents } from './handleGetCollectorAgents.js';
 	import { handleSaveReferenceLink } from '../Reference/handleSaveReferenceLink.js';
 	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	import { handleSearchHumans } from '../Humans/handleSearchHumans.js';
@@ -57,6 +52,7 @@
 
 	// Define voyage-specific roles
 	const voyageRoles = [
+		{ id: 'Enslaved', name: 'Enslaved' },
 		{ id: 'Captain', name: 'Captain' },
 		{ id: 'Owner 1', name: 'Owner 1' },
 		{ id: 'Owner 2', name: 'Owner 2' },
@@ -221,12 +217,7 @@
 			handleGetVoyage(Session.SessionId, VoyageId, setVoyage),
 			handleGetShips(Session.SessionId, setShips),
 			handleGetVoyageHumans(Session.SessionId,VoyageId,setVoyageHumans),
-			handleGetLocations(Session.SessionId,setLocations),
-			handleGetCaptains(Session.SessionId,setCaptains),
-			handleGetSellers(Session.SessionId, setSellers),
-			handleGetBuyers(Session.SessionId, setBuyers),
-			handleGetShippingAgents(Session.SessionId, setShippingAgents),
-			handleGetCollectorAgents(Session.SessionId, setCollectorAgents)
+			handleGetLocations(Session.SessionId,setLocations)
 		]);
 		const module = await import('svelecte');
 		Svelecte = module.default || module;
@@ -237,9 +228,6 @@
 		isLoading = false;
 	});
 
-	function addEnslavedPerson() {
-		window.location.href = '/Voyage/EnslavedPerson?VoyageId='+VoyageId+'&HumanId=';
-	}
 
 	async function saveReferenceForVoyage() {
 		referenceMessage = '';
@@ -339,26 +327,6 @@
 									}))} 
 							/>
 						</div>
-					</div>
-				</div>
-				<div class="field">
-					<label class="label" for="Size">Ship Captain <a class="AddLink" href="/Human?returnPath=/Voyage?VoyageId={Voyage.VoyageId}">Add Captain</a></label>
-					<div class="control">
-						<div id="svelecteEndLocation">
-							<svelte:component 
-								this={Svelecte} 
-								bind:value={Voyage.CaptainHumanId} 
-								options={Captains
-									.filter((captain, index, self) => 
-										index === self.findIndex(c => c.HumanId === captain.HumanId)
-									)
-									.map(Captain => ({
-										value: Captain.HumanId, 
-										label: `${Captain.FirstName || ''} ${Captain.LastName || ''}`
-									}))} 
-							/>
-						</div>
-
 					</div>
 				</div>
 				<div class="field">
@@ -517,7 +485,6 @@
 									{/each}
 								</tbody>
 							</table>
-
 							<!-- Pagination controls for available humans -->
 							<div class="pagination">
 								<button type="button" on:click={() => currentPageAvailable = Math.max(currentPageAvailable - 1, 1)} disabled={currentPageAvailable === 1}>
@@ -538,8 +505,37 @@
 						<!-- Enslaved People Table -->
 						<div class="title-container">
 							<h3 class="title is-2">List of Enslaved People</h3>
-							<button class="button is-primary" on:click={addEnslavedPerson}>Add Enslaved Person</button>
+							
 						</div>
+						<table class="ClickableTable" width=100%>
+							<thead>
+								<tr>
+									<th>First Name</th>
+									<th>Last Name</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each VoyageHumans.filter(h => h.Role === 'Enslaved') as Human}
+									<tr on:click={() => window.location.href = `/Human?HumanId=${Human.HumanId}`}>
+										<td>{Human.FirstName || ''}</td>
+										<td>{Human.LastName || ''}</td>
+										<td>
+											<button class="button is-danger is-small" 
+												type="button" 
+												style="background-color: #ff3860; color: white; border-color: #ff3860;"
+												on:click|stopPropagation={() => {
+													if (confirm('Are you sure you want to remove this enslaved person from the voyage?')) {
+														handleDeleteVoyageHuman(Session.SessionId, Voyage.VoyageId, Human.HumanId);
+													}
+												}}>
+												🗑️ Remove
+											</button>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
 						
 
 						<!-- Captain Table -->
