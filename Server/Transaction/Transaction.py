@@ -8,7 +8,6 @@ from flask_cors import CORS, cross_origin
 from .SaveTransaction import save_transaction
 from .DeleteTransaction import delete_transaction
 from .GetTransaction import get_transaction
-from .GetNotaryHumans import get_notary_humans
 from .GetBusinesses import get_businesses
 from .GetTransactionHumans import get_transactionHumans
 from .SaveTransactionHuman import save_transactionhuman
