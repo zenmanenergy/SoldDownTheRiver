@@ -4,7 +4,7 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { Session } from "../Session.js";
+	import { Session } from "../../Session.js";
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 
 	let searchType = 'People';
@@ -174,7 +174,7 @@
 					</thead>
 					<tbody>
 						{#each displayedHumans as human}
-							<tr on:click={() => window.location.href = `/Reports/Human?HumanId=${human.HumanId}`}>
+							<tr on:click={() => window.location.href = `/Admin/Reports/Human?HumanId=${human.HumanId}`}>
 								<td>{human.FirstName || ''}{' ' & human.MiddleName || ''}</td>
 								<td>{human.LastName || ''}</td>
 								<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy) || ''}</td>

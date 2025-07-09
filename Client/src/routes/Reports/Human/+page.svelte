@@ -384,7 +384,7 @@
 						</thead>
 						<tbody>
 							{#each timelines as timeline}
-								<tr on:click={() => window.open(`/Reports/Location?LocationId=${timeline.LocationId}`, '_blank')} style="cursor: pointer;">
+								<tr on:click={() => window.open(`/Admin/Reports/Location?LocationId=${timeline.LocationId}`, '_blank')} style="cursor: pointer;">
 									<td>{timeline.LocationType || ''}</td>
 									<td>{timeline.Address || ''}</td>
 									<td>{timeline.City || ''}{timeline.State ? ', ' + timeline.State : ''}</td>
@@ -411,7 +411,7 @@
 						</thead>
 						<tbody>
 							{#each voyages as voyage}
-								<tr on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
+								<tr on:click={() => window.open(`/Admin/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
 									<td>{voyage.VoyageId}</td>
 									<td>{voyage.RoleId}</td>
 									<td>{voyage.Notes || ''}</td>
@@ -437,7 +437,7 @@
 						</thead>
 						<tbody>
 							{#each transactions as txn}
-								<tr on:click={() => window.open(`/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
+								<tr on:click={() => window.open(`/Admin/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
 									<td>{txn.TransactionType || ''}</td>
 									<td>{formatDate(txn.date_circa, txn.date_accuracy)}</td>
 									<td>{txn.Notary || ''}</td>

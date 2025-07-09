@@ -5,5 +5,5 @@ export function handleLogout() {
 	Cookies.remove("SessionId");
 	Cookies.remove("UserRole");
 	console.log("logout")
-	window.location.href = '/Login?s=1';
+	window.location.href = '/Admin/Login?s=1';
 }

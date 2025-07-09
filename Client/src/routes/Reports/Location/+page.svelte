@@ -573,7 +573,7 @@
 					</thead>
 					<tbody>
 						{#each paginatedTimelines as timeline}
-							<tr on:click={() => window.open(`/Human?HumanId=${timeline.HumanId}`, '_blank')} style="cursor: pointer;">
+							<tr on:click={() => window.open(`/Admin/Human?HumanId=${timeline.HumanId}`, '_blank')} style="cursor: pointer;">
 								<td>{timeline.FirstName || ''} {timeline.LastName || ''}</td>
 								<td>{timeline.RoleId || ''}</td>
 								<td>{timeline.LocationType || ''}</td>
@@ -648,7 +648,7 @@
 					</thead>
 					<tbody>
 						{#each paginatedTransactions as transaction}
-							<tr on:click={() => window.open(`/Transaction?TransactionId=${transaction.TransactionId}`, '_blank')} style="cursor: pointer;">
+							<tr on:click={() => window.open(`/Admin/Transaction?TransactionId=${transaction.TransactionId}`, '_blank')} style="cursor: pointer;">
 								<td>{formatDate(transaction.date_circa, transaction.date_accuracy)}</td>
 								<td>{transaction.TransactionType || ''}</td>
 								<td>{transaction.Sellers || ''}</td>
@@ -725,7 +725,7 @@
 					</thead>
 					<tbody>
 						{#each paginatedVoyages as voyage}
-							<tr on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
+							<tr on:click={() => window.open(`/Admin/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
 								<td>{formatDate(voyage.StartDate, 'D')}</td>
 								<td>{formatDate(voyage.EndDate, 'D')}</td>
 								<td>{voyage.ShipName || ''}</td>

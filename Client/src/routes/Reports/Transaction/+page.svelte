@@ -365,7 +365,7 @@
 						</thead>
 						<tbody>
 							{#each humans as human}
-								<tr on:click={() => window.location.href = `/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Admin/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
 									<td>{human.FirstName || ''}</td>
 									<td>{human.LastName || ''}</td>
 									{#if roleId === "Enslaved"}
@@ -468,7 +468,7 @@
 					</thead>
 					<tbody>
 						{#each rawNolaRecords as record}
-							<tr on:click={() => window.location.href = `/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} style="cursor:pointer;">
+							<tr on:click={() => window.location.href = `/Admin/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} style="cursor:pointer;">
 								<td>{moment.utc(record.DateOfTransaction).format('YYYY-MM-DD')}</td>
 								<td>{record.FirstParty || ''}</td>
 								<td>{record.SecondParty || ''}</td>
@@ -514,7 +514,7 @@
 						</thead>
 						<tbody>
 							{#each transactionReferences as reference}
-								<tr on:click={() => window.location.href = `/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Admin/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
 									<td>
 										<a href={reference.URL} target="_blank" rel="noopener noreferrer" on:click|stopPropagation>
 											{reference.URL}

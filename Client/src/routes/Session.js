@@ -8,7 +8,7 @@ class session {
 		console.log("Handling logout...");
 		Cookies.remove("SessionId");
 		Cookies.remove("UserType");
-		window.location.href = '/Login?s=1';
+		window.location.href = '/Admin/Login?s=1';
 	}
 
 	async handleSession() {
@@ -62,7 +62,7 @@ class session {
 		} else {
 			this.SessionId = "";
 			Cookies.set("previousLocation", location.href);
-			location.href = "/Login?s=1";
+			location.href = "/Admin/Login?s=1";
 		}
 		return true;
 	}

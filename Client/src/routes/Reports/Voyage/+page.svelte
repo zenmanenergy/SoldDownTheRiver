@@ -229,7 +229,7 @@
 						</thead>
 						<tbody>
 							{#each roleHumans as human}
-								<tr on:click={() => window.location.href = `/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Admin/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
 									<td>{human.FirstName || ''}</td>
 									<td>{human.LastName || ''}</td>
 									<td>{human.BirthDate ? formatBirthDate(human.BirthDate, human.BirthDateAccuracy) : ''}</td>
@@ -265,7 +265,7 @@
 					</thead>
 					<tbody>
 						{#each VoyageHumans as human}
-							<tr on:click={() => window.location.href = `/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
+							<tr on:click={() => window.location.href = `/Admin/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
 								<td>{human.FirstName || ''}</td>
 								<td>{human.LastName || ''}</td>
 								<td><span class="tag is-info">{human.Role || ''}</span></td>
@@ -310,7 +310,7 @@
 						</thead>
 						<tbody>
 							{#each voyageReferences as reference}
-								<tr on:click={() => window.location.href = `/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Admin/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
 									<td>
 										<a href={reference.URL} target="_blank" rel="noopener noreferrer" on:click|stopPropagation>
 											{reference.URL}

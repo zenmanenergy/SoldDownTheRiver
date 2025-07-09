@@ -140,7 +140,7 @@
 			onRemove(pos.node.HumanId);
 			}
 		} else {
-			window.location.href = `/Human?HumanId=${pos.node.HumanId}`;
+			window.location.href = `/Admin/Human?HumanId=${pos.node.HumanId}`;
 		}
 		return;
 		}
