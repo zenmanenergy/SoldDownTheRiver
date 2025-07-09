@@ -1,6 +1,6 @@
 
-import { baseURL } from '../Settings';
-import { SuperFetch } from '../SuperFetch';
+import { baseURL } from '../../Settings';
+import { SuperFetch } from '../../SuperFetch';
 export async function handleGetTransactionHumans(SessionId,TransactionId, callback) {
 
 	const Data = {

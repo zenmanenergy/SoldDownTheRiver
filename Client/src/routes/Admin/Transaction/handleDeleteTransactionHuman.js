@@ -1,6 +1,6 @@
 
-import { baseURL } from '../Settings';
-import { SuperFetch } from '../SuperFetch';
+import { baseURL } from '../../Settings';
+import { SuperFetch } from '../../SuperFetch';
 export async function handleDeleteTransactionHuman(SessionId,TransactionId,HumanId) {
 	
 
@@ -13,5 +13,5 @@ export async function handleDeleteTransactionHuman(SessionId,TransactionId,Human
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 
-	window.location.href = `/Transaction?TransactionId=${TransactionId}`;
+	window.location.href = `/Admin/Transaction?TransactionId=${TransactionId}`;
 }
