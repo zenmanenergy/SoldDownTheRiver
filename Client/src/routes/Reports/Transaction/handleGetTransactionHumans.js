@@ -1,14 +1,14 @@
+
 import { baseURL } from '../../Settings';
 import { SuperFetch } from '../../SuperFetch';
-
-export async function handleGetVoyages(SessionId, callback) {
+export async function handleGetTransactionHumans(TransactionId, callback) {
 
 	const Data = {
-		SessionId:SessionId
+		TransactionId:TransactionId
 	};
-	const url = baseURL + '/Voyages/GetVoyages?'; 
+	const url = baseURL + '/Transaction/GetTransactionHumans?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
-	console.log(data)
+
 	callback(data);
 }

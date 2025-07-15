@@ -5,7 +5,7 @@
 	import { handleGetHumans } from '../Humans/handleGetHumans.js';
 	import { handleGetHuman } from '../Human/handleGetHuman.js';
 	import { handleAddFamilyMember } from './handleAddFamilyMember.js';
-	import FamilyTreeCanvas from '../../components/FamilyTreeCanvas.svelte';
+	import FamilyTreeCanvas from '../../../components/FamilyTreeCanvas.svelte';
 	import { handleRemoveFamilyMember } from './handleRemoveFamilyMember.js';
 
 	let humanId = ''; // Input for the HumanId to fetch the tree

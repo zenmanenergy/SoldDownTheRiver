@@ -1,4 +1,4 @@
-import { baseURL } from '../Settings';
+import { baseURL } from '../../Settings';
 
 export function handleImport(SessionId,SpreadsheetName, SpreadsheetData) {
   

@@ -6,7 +6,7 @@ export async function handleGetShips(SessionId, callback) {
 	const Data = {
 		SessionId:SessionId
 	};
-	const url = baseURL + '/Ships/GetShips?SessionId?'; 
+	const url = baseURL + '/Ships/GetShips?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

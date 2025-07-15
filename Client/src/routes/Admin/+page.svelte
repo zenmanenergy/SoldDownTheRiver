@@ -14,7 +14,7 @@
 </style>
 <script>
 	import { onMount } from "svelte";
-	import {Session} from "../../Session.js";
+	import {Session} from "../Session.js";
 	import { handleLogout } from '../handleLogout.js';
 	
 	

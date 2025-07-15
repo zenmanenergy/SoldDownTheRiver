@@ -1,5 +1,5 @@
-import { baseURL } from '../Settings.js';
-import { SuperFetch } from '../SuperFetch.js'; // Ensure the correct relative path and file extension
+import { baseURL } from '../../Settings.js';
+import { SuperFetch } from '../../SuperFetch.js'; // Ensure the correct relative path and file extension
 
 export async function handleGetFamily(SessionId,HumanId, callback) {
 	const Data = {

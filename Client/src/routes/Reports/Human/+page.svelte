@@ -85,15 +85,14 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { Session } from '../../Session.js';
-	import { handleGetHuman } from '../../Human/handleGetHuman.js';
-	import { handleGetHumanVoyages } from '../../Human/handleGetHumanVoyages.js';
-	import { handleGetTimelines } from '../../Human/handleGetTimelines.js';
-	import { handleGetAKA } from '../../Human/handleGetAKA.js';
-	import { handleGetTransaction } from '../../Transaction/handleGetTransaction.js';
-	import { handleGetHumanTransactions } from '../../Human/handleGetHumanTransactions.js';
-	import { handleGetRoles } from '../../Human/handleGetRoles.js';
-	import { handleGetRacialDescriptors } from '../../Human/handleGetRacialDescriptors.js';
+	import { handleGetHuman } from './handleGetHuman.js';
+	import { handleGetHumanVoyages } from './handleGetHumanVoyages.js';
+	import { handleGetTimelines } from './handleGetTimelines.js';
+	import { handleGetAKA } from './handleGetAKA.js';
+	import { handleGetTransaction } from './handleGetTransaction.js';
+	import { handleGetHumanTransactions } from './handleGetHumanTransactions.js';
+	import { handleGetRoles } from './handleGetRoles.js';
+	import { handleGetRacialDescriptors } from './handleGetRacialDescriptors.js';
 
 	let Human = {
 		FirstName: '',
@@ -170,13 +169,12 @@
 	}
 
 	onMount(async () => {
-		await Session.handleSession();
 		HumanId = getURLVariable('HumanId') || null;
 		const TransactionId = getURLVariable('TransactionId');
 
 		if (HumanId) {
 			// Load human data
-			const data = await handleGetHuman(Session.SessionId, HumanId);
+			const data = await handleGetHuman(HumanId);
 			if (data) {
 				Human = {
 					...data,
@@ -194,34 +192,34 @@
 			}
 
 			// Load voyages
-			voyages = await handleGetHumanVoyages(Session.SessionId, HumanId) || [];
+			voyages = await handleGetHumanVoyages( HumanId) || [];
 
 			// Load timelines
-			let _timelines = await handleGetTimelines(Session.SessionId, HumanId);
+			let _timelines = await handleGetTimelines( HumanId);
 			if (_timelines && _timelines.data) {
 				timelines = _timelines.data;
 			}
 
 			// Load transactions
-			const humanTransactions = await handleGetHumanTransactions(Session.SessionId, HumanId);
+			const humanTransactions = await handleGetHumanTransactions( HumanId);
 			if (humanTransactions) {
 				transactions = humanTransactions;
 			}
 
 			// Load AKA names
-			await handleGetAKA(Session.SessionId, HumanId, (data) => {
+			await handleGetAKA( HumanId, (data) => {
 				akaNames = data || [];
 			});
 		}
 
 		// Load transaction summary if TransactionId is provided
 		if (TransactionId) {
-			transactionSummary = await handleGetTransaction(Session.SessionId, TransactionId);
+			transactionSummary = await handleGetTransaction( TransactionId);
 		}
 
 		// Load roles and racial descriptors for display
-		rolesOptions = await handleGetRoles(Session.SessionId) || [];
-		racialDescriptors = await handleGetRacialDescriptors(Session.SessionId) || [];
+		rolesOptions = await handleGetRoles() || [];
+		racialDescriptors = await handleGetRacialDescriptors() || [];
 
 		isLoading = false;
 	});

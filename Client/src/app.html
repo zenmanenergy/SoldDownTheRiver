@@ -257,58 +257,9 @@ input:required:invalid {
 </head>
 
 <body>
-	<!-- Wrap navbar in a container -->
-	<div class="navmargin">
-		<nav class="navbar is-link" role="navigation" aria-label="main navigation">
-			<div class="navbar-brand">
-				
-				<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-					<span aria-hidden="true"></span>
-					<span aria-hidden="true"></span>
-					<span aria-hidden="true"></span>
-				</a>
-			</div>
-
-			<div id="navbarBasicExample" class="navbar-menu">
-				<div class="navbar-start">
-					
-					<a class="navbar-item" href="/Admin/Humans">Humans</a>
-					<a class="navbar-item" href="/Admin/Transactions">Transactions</a>
-					<a class="navbar-item" href="/Admin/Locations">Locations</a>
-					<a class="navbar-item" href="/Admin/Roles">Roles</a>
-					<a class="navbar-item" href="/Admin/Voyages">Voyages</a>
-					<a class="navbar-item" href="/Admin/Ships">Ships</a>
-					<a class="navbar-item" href="/Admin/References">References</a>
-					<div class="navbar-item has-dropdown is-hoverable">
-						<a class="navbar-link">Merge</a>
-						<div class="navbar-dropdown">
-							<a class="navbar-item" href="/Admin/Merge/Humans">Humans</a>
-						</div>
-					</div>
-					<!-- Conditionally render the Users menu -->
-					
-				</div>
-				<div class="navbar-end">
-					<script>
-						if (Cookies.get("UserType") === "Administrator") {
-							document.write('<a class="navbar-item" href="/Users">Users</a>');
-						}
-					</script>
-					<a class="navbar-item" href="#" onclick="handleLogout()">Logout</a>
-				</div>
-			</div>
-		</nav>
+	<div style="display: contents">
+		%sveltekit.body%
 	</div>
-	<div id="bodycontents" style="display: block">
-	%sveltekit.body%
-	</div>
-	<footer class="footer">
-		<div class="content has-text-centered">
-			<p>
-				Copyright 2025, Sold Down River Project. All rights reserved.
-			</p>
-		</div>
-	</footer>
 	<script>
 		// Dynamically set navbar width to match #bodycontents width
 		function adjustNavbarWidth() {
@@ -321,17 +272,6 @@ input:required:invalid {
 		}
 		window.addEventListener('load', adjustNavbarWidth);
 		window.addEventListener('resize', adjustNavbarWidth);
-
-		function handleLogout() {
-			Cookies.remove("SessionId");
-			Cookies.remove("UserType");
-			window.location.href = '/Admin/Login?s=1';
-		}
-
-		// Check if a specific cookie variable exists
-		function isUserMenuVisible() {
-			return Cookies.get("UserType") !== undefined; // Replace "UserType" with your cookie variable name
-		}
 	</script>
 </body>
 </html>

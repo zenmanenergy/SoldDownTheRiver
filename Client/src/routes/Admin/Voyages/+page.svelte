@@ -54,9 +54,12 @@
 				voyage.ShipName,
 				voyage.StartCity,
 				voyage.StartState,
+				voyage.StartAddress,
 				voyage.EndCity,
 				voyage.EndState,
+				voyage.EndAddress,
 				voyage.VoyageId,
+				voyage.Notes,
 				// Add formatted dates to search
 				voyage.StartDate ? moment.utc(voyage.StartDate).format('MMMM D, YYYY') : '',
 				voyage.EndDate ? moment.utc(voyage.EndDate).format('MMMM D, YYYY') : '',
@@ -126,8 +129,8 @@
 							}
 						}}>
 							<td>{Voyage.ShipName}</td>
-							<td>{Voyage.StartCity} {Voyage.StartState} {moment.utc(Voyage.StartDate).format('MMMM D, YYYY')}</td>
-							<td>{Voyage.EndCity} {Voyage.EndState} {moment.utc(Voyage.EndDate).format('MMMM D, YYYY')}</td>
+							<td>{Voyage.StartAddress} {moment.utc(Voyage.StartDate).format('MMMM D, YYYY')}</td>
+							<td>{Voyage.EndAddress}  {moment.utc(Voyage.EndDate).format('MMMM D, YYYY')}</td>
 						</tr>
 					{/each}
 

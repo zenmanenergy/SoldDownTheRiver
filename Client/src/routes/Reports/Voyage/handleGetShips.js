@@ -1,14 +1,12 @@
 import { baseURL } from '../../Settings';
 import { SuperFetch } from '../../SuperFetch';
 
-export async function handleGetHumans(SessionId,RoleId, Query,callback) {
+export async function handleGetShips(SessionId, callback) {
 
 	const Data = {
-		SessionId:SessionId,
-		Query:Query,
-		RoleId:RoleId
-	}
-	const url = baseURL + '/Role/GetHumans?'
+		SessionId:SessionId
+	};
+	const url = baseURL + '/Voyage/GetShips?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
 

@@ -1,0 +1,22 @@
+import { baseURL } from '../../Settings';
+import { SuperFetch } from '../../SuperFetch';
+
+export async function handleGetTransaction(TransactionId) {
+	const Data = { TransactionId };
+	const url = baseURL + '/Transaction/GetTransaction?';
+	const FormValid = true;
+
+	try {
+		let data = await SuperFetch(url, Data, FormValid);
+
+		if (!data || data.error) {
+			console.error("Error fetching transaction:", data?.error || "Unknown error");
+			return null;
+		}
+		console.log(data)
+		return data;
+	} catch (error) {
+		console.error("handleGetTransaction error:", error);
+		return null;
+	}
+}

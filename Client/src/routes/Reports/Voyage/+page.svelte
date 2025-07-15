@@ -4,11 +4,11 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { handleGetVoyage } from '../../Voyage/handleGetVoyage.js';
-	import { handleGetShips } from '../../Voyage/handleGetShips.js';
-	import { handleGetVoyageHumans } from '../../Voyage/handleGetVoyageHumans.js';
-	import { handleGetLocations } from '../../Voyage/handleGetLocations.js';
-	import { handleGetLinkReferences } from '../../References/handleGetLinkReferences.js';
+	import { handleGetVoyage } from './handleGetVoyage.js';
+	import { handleGetShips } from './handleGetShips.js';
+	import { handleGetVoyageHumans } from './handleGetVoyageHumans.js';
+	import { handleGetLocations } from './handleGetLocations.js';
+	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	import { Session } from "../../Session.js";
 	
 	let VoyageId = '';

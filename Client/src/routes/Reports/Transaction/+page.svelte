@@ -4,13 +4,11 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { Session } from '../../Session.js';
-	import { handleGetTransaction } from '../../Transaction/handleGetTransaction.js';
-	import { handleGetTransactionHumans } from '../../Transaction/handleGetTransactionHumans.js';
-	import { handleGetRawNolas } from '../../Transaction/handleGetRawNolas.js';
-	import { handleGetLocations } from '../../Locations/handleGetLocations.js';
-	import { handleGetRoles } from '../../Roles/handleGetRoles.js';
-	import { handleGetLinkReferences } from '../../References/handleGetLinkReferences.js';
+	import { handleGetTransaction } from './handleGetTransaction.js';
+	import { handleGetTransactionHumans } from './handleGetTransactionHumans.js';
+	import { handleGetLocations } from './handleGetLocations.js';
+	import { handleGetRoles } from './handleGetRoles.js';
+	import { handleGetLinkReferences } from './handleGetLinkReferences.js';
 
 	let transaction = {
 		TransactionId: '',
@@ -150,7 +148,6 @@
 	}
 
 	onMount(async () => {
-		await Session.handleSession();
 		transactionId = getTransactionIdFromURL();
 
 		if (!transactionId) {
@@ -160,7 +157,7 @@
 		}
 
 		// Fetch transaction data
-		const data = await handleGetTransaction(Session.SessionId, transactionId);
+		const data = await handleGetTransaction(transactionId);
 		if (data) {
 			transaction = mapNullToEmpty({ ...data });
 
@@ -172,26 +169,21 @@
 				}
 			}
 
-			// Fetch NOLA records if available
-			if (transaction.NOLA_ID) {
-				await handleGetRawNolas(Session.SessionId, [transaction.NOLA_ID], (records) => {
-					rawNolaRecords = records;
-				});
-			}
+			
 		}
 
 		// Fetch related data
 		await Promise.all([
 			// Fetch roles
-			handleGetRoles(Session.SessionId, (data) => {
+			handleGetRoles((data) => {
 				allRoles = Array.isArray(data) ? data : [];
 			}),
 			// Fetch locations
-			handleGetLocations(Session.SessionId, (data) => {
+			handleGetLocations( (data) => {
 				allLocations = Array.isArray(data) ? data : [];
 			}),
 			// Fetch humans associated with this transaction
-			handleGetTransactionHumans(Session.SessionId, transactionId, (data) => {
+			handleGetTransactionHumans(transactionId, (data) => {
 				transactionHumans = Array.isArray(data) ? data : [];
 			})
 		]);

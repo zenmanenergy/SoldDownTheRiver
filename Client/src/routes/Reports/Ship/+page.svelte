@@ -4,12 +4,11 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
-	import { handleGetShip } from '../../Ship/handleGetShip.js';
-	import { handleGetShipVoyages } from '../../Ship/handleGetShipVoyages.js';
-	import { handleGetLocations } from '../../Locations/handleGetLocations.js';
-	import { handleGetTransactions } from '../../Ship/handleGetTransactions.js';
-	import { handleGetLinkReferences } from '../../References/handleGetLinkReferences.js';
-	import { Session } from "../../Session.js";
+	import { handleGetShip } from './handleGetShip.js';
+	import { handleGetShipVoyages } from './handleGetShipVoyages.js';
+	import { handleGetLocations } from './handleGetLocations.js';
+	import { handleGetTransactions } from './handleGetTransactions.js';
+	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	
 	let ShipId = "";
 	let Ship = {
@@ -137,7 +136,6 @@
 	}
 	
 	onMount(async () => {
-		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		ShipId = urlParams.get("ShipId") || "";
 		
@@ -148,10 +146,10 @@
 		}
 
 		await Promise.all([
-			handleGetShip(Session.SessionId, ShipId, setShip),
-			handleGetShipVoyages(Session.SessionId, ShipId, setVoyages),
-			handleGetLocations(Session.SessionId, setLocations),
-			handleGetTransactions(Session.SessionId, ShipId, setTransactions)
+			handleGetShip( ShipId, setShip),
+			handleGetShipVoyages( ShipId, setVoyages),
+			handleGetLocations( setLocations),
+			handleGetTransactions( ShipId, setTransactions)
 		]);
 
 		// Fetch references linked to this ship

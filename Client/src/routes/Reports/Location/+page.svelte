@@ -149,8 +149,8 @@
 <script>
 	import moment from 'moment';
 	import { onMount } from "svelte";
-	import { handleGetLocation } from "../../Location/handleGetLocation.js";
-	import { handleGetLocationTimelines } from "../../Location/handleGetLocationTimelines.js";
+	import { handleGetLocation } from "./handleGetLocation.js";
+	import { handleGetLocationTimelines } from "./handleGetLocationTimelines.js";
 	import { handleGetTransactionsByLocationId } from "./handleGetTransactionsByLocationId.js";
 	import { handleGetVoyagesByLocationId } from "./handleGetVoyagesByLocationId.js";
 	import { Session } from "../../Session.js";

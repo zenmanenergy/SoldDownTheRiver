@@ -10,6 +10,7 @@ def get_locations():
 	query +="   from locations order by City"
 	values = ()
 
+	# print(query)
 
 	# Execute the query and get the results
 	cursor.execute(query, values)

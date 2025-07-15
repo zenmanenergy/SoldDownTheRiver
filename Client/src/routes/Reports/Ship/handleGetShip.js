@@ -1,14 +1,15 @@
+// src/routes/Ships/handleGet.js
 import { baseURL } from '../../Settings';
 import { SuperFetch } from '../../SuperFetch';
 
-export async function handleGetVoyages(SessionId, callback) {
+export async function handleGetShip( ShipId, callback) {
 
 	const Data = {
-		SessionId:SessionId
+		ShipId:ShipId
 	};
-	const url = baseURL + '/Voyages/GetVoyages?'; 
+	const url = baseURL + '/Ship/GetShip?'; 
 	const FormValid=true
 	let data = await SuperFetch(url, Data, FormValid)
-	console.log(data)
+
 	callback(data);
 }
