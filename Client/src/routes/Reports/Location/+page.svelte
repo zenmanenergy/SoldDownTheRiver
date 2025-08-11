@@ -573,7 +573,7 @@
 					</thead>
 					<tbody>
 						{#each paginatedTimelines as timeline}
-							<tr on:click={() => window.open(`/Admin/Human?HumanId=${timeline.HumanId}`, '_blank')} style="cursor: pointer;">
+							<tr on:click={() => window.open(`/Human?HumanId=${timeline.HumanId}`, '_blank')} style="cursor: pointer;">
 								<td>{timeline.FirstName || ''} {timeline.LastName || ''}</td>
 								<td>{timeline.RoleId || ''}</td>
 								<td>{timeline.LocationType || ''}</td>

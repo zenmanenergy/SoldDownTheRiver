@@ -1,5 +1,3 @@
-
-
 export async function SuperFetch(url, Data, FormValid,debug=false){
 	console.log(Data)
 	if (!FormValid) {
@@ -34,11 +32,13 @@ export async function SuperFetch(url, Data, FormValid,debug=false){
 			throw(results.ErrorMessage+"\n\n"+results.StackTrace)
 		}
 	} catch (error) {
-		document.getElementById("ServerURL").innerHTML="<a target='_blank' href='"+url+"'>"+url+"</a>"
-		document.getElementById("ServerErrorMessage").innerHTML="<xmp>"+error+"</xmp>"
-		document.getElementById("ServerError").style.visibility="";
-		document.getElementById("ServerError").style.display="block";
-		return False
+		if (typeof document !== 'undefined') {
+			document.getElementById("ServerURL").innerHTML="<a target='_blank' href='"+url+"'>"+url+"</a>"
+			document.getElementById("ServerErrorMessage").innerHTML="<xmp>"+error+"</xmp>"
+			document.getElementById("ServerError").style.visibility="";
+			document.getElementById("ServerError").style.display="block";
+		}
+		return false
 	}
 	return results
 }

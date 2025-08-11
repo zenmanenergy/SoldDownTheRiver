@@ -88,6 +88,7 @@
 								<a class="navbar-item" href="/Admin/Merge/Humans">Humans</a>
 							</div>
 						</div>
+						<a class="navbar-item" href="/Search">Search</a>
 					</div>
 					<div class="navbar-end">
 						{#if userType === "Administrator"}

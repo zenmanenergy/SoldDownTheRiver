@@ -80,6 +80,13 @@
 		background-color: #f9f9f9;
 		border-radius: 4px;
 	}
+
+	/* Only wrap the description column */
+	.combined-timeline-description {
+		word-break: break-word;
+		white-space: normal;
+		max-width: 400px; /* Optional: set a max width for better wrapping */
+	}
 </style>
 
 <script>
@@ -93,6 +100,10 @@
 	import { handleGetHumanTransactions } from './handleGetHumanTransactions.js';
 	import { handleGetRoles } from './handleGetRoles.js';
 	import { handleGetRacialDescriptors } from './handleGetRacialDescriptors.js';
+	import { handleGetCombinedTimeline } from './handleGetCombinedTimeline.js';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { get } from 'svelte/store';
 
 	let Human = {
 		FirstName: '',
@@ -112,6 +123,7 @@
 	let HumanId = null;
 	let voyages = [];
 	let timelines = [];
+	let combinedTimeline = [];
 	let akaNames = [];
 	let transactionSummary = null;
 	let rolesOptions = [];
@@ -168,12 +180,19 @@
 		return role ? role.Role : roleId;
 	}
 
-	onMount(async () => {
-		HumanId = getURLVariable('HumanId') || null;
-		const TransactionId = getURLVariable('TransactionId');
+	function handleCombinedTimelineClick(event) {
+		const anchor = event.target.closest('a');
+		if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').startsWith('/Reports/Human')) {
+			event.preventDefault();
+			goto(anchor.getAttribute('href'));
+		}
+	}
+
+	// Move the data loading logic into a function
+	async function loadHumanPageData(HumanId, TransactionId) {
+		isLoading = true;
 
 		if (HumanId) {
-			// Load human data
 			const data = await handleGetHuman(HumanId);
 			if (data) {
 				Human = {
@@ -185,43 +204,55 @@
 					isCompany: data.isCompany || ''
 				};
 
-				// Calculate height in inches if cm is available
 				if (Human.Height_cm) {
 					Human.Height_in = (Human.Height_cm / 2.54).toFixed(2);
 				}
 			}
 
-			// Load voyages
-			voyages = await handleGetHumanVoyages( HumanId) || [];
+			voyages = await handleGetHumanVoyages(HumanId) || [];
 
-			// Load timelines
-			let _timelines = await handleGetTimelines( HumanId);
+			let _timelines = await handleGetTimelines(HumanId);
 			if (_timelines && _timelines.data) {
 				timelines = _timelines.data;
 			}
 
-			// Load transactions
-			const humanTransactions = await handleGetHumanTransactions( HumanId);
+			combinedTimeline = await handleGetCombinedTimeline(HumanId) || [];
+
+			const humanTransactions = await handleGetHumanTransactions(HumanId);
 			if (humanTransactions) {
 				transactions = humanTransactions;
 			}
 
-			// Load AKA names
-			await handleGetAKA( HumanId, (data) => {
+			await handleGetAKA(HumanId, (data) => {
 				akaNames = data || [];
 			});
 		}
 
-		// Load transaction summary if TransactionId is provided
 		if (TransactionId) {
-			transactionSummary = await handleGetTransaction( TransactionId);
+			transactionSummary = await handleGetTransaction(TransactionId);
 		}
 
-		// Load roles and racial descriptors for display
 		rolesOptions = await handleGetRoles() || [];
 		racialDescriptors = await handleGetRacialDescriptors() || [];
 
 		isLoading = false;
+	}
+
+	// Reactively reload data when HumanId changes in the URL
+	$: {
+		const currentHumanId = $page.url.searchParams.get('HumanId');
+		const currentTransactionId = $page.url.searchParams.get('TransactionId');
+		if (currentHumanId !== HumanId) {
+			HumanId = currentHumanId;
+			loadHumanPageData(HumanId, currentTransactionId);
+		}
+	}
+
+	onMount(async () => {
+		const currentHumanId = get(page).url.searchParams.get('HumanId');
+		const currentTransactionId = get(page).url.searchParams.get('TransactionId');
+		HumanId = currentHumanId;
+		await loadHumanPageData(HumanId, currentTransactionId);
 	});
 </script>
 
@@ -366,6 +397,34 @@
 				</div>
 			{/if}
 
+			{#if combinedTimeline && combinedTimeline.data && combinedTimeline.data.combinedTimeLine && combinedTimeline.data.combinedTimeLine.length > 0}
+				<div class="table-wrapper">
+					<h3 class="section-title">Combined Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
+					<table class="table is-fullwidth is-striped" on:click={handleCombinedTimelineClick}>
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Description</th>
+								<th>Lat/Lng</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each combinedTimeline.data.combinedTimeLine as event}
+								<tr>
+									<td>{formatDate(event.DateCirca, event.DateAccuracy)}</td>
+									<td class="combined-timeline-description">{@html event.Description}</td>
+									<td>
+										{#if event.Latitude && event.Longitude}
+											{event.Latitude}, {event.Longitude}
+										{/if}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
+
 			{#if timelines.length > 0}
 				<div class="table-wrapper">
 					<h3 class="section-title">Timeline Events ({timelines.length} records)</h3>
@@ -382,7 +441,7 @@
 						</thead>
 						<tbody>
 							{#each timelines as timeline}
-								<tr on:click={() => window.open(`/Admin/Reports/Location?LocationId=${timeline.LocationId}`, '_blank')} style="cursor: pointer;">
+								<tr on:click={() => window.open(`/Reports/Location?LocationId=${timeline.LocationId}`, '_blank')} style="cursor: pointer;">
 									<td>{timeline.LocationType || ''}</td>
 									<td>{timeline.Address || ''}</td>
 									<td>{timeline.City || ''}{timeline.State ? ', ' + timeline.State : ''}</td>
@@ -409,7 +468,7 @@
 						</thead>
 						<tbody>
 							{#each voyages as voyage}
-								<tr on:click={() => window.open(`/Admin/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
+								<tr on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
 									<td>{voyage.VoyageId}</td>
 									<td>{voyage.RoleId}</td>
 									<td>{voyage.Notes || ''}</td>
@@ -435,7 +494,7 @@
 						</thead>
 						<tbody>
 							{#each transactions as txn}
-								<tr on:click={() => window.open(`/Admin/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
+								<tr on:click={() => window.open(`/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
 									<td>{txn.TransactionType || ''}</td>
 									<td>{formatDate(txn.date_circa, txn.date_accuracy)}</td>
 									<td>{txn.Notary || ''}</td>

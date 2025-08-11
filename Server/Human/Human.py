@@ -21,6 +21,8 @@ from .GetHumanVoyages import get_human_voyages
 from .GetTimelines import get_timelines
 from .SaveTimeline import save_timeline  # new import for saving timeline
 from .DeleteTimeline import delete_timeline  # new import for deleting timeline
+from .GetCombinedTimelines import get_combinedtimelines
+
 
 blueprint = Blueprint('Human', __name__)
 
@@ -322,6 +324,21 @@ def GetVoyages():
 		except Exception as e:
 			print(f"Error fetching voyages for HumanId {HumanId}: {e}")
 			result = {"error": f"Failed to fetch voyages for HumanId {HumanId}"}
+		return result
+	except Exception as e:
+		return Debugger(e)
+
+@blueprint.route("/Human/GetCombinedTimeline", methods=['GET'])
+@cross_origin()
+def GetCombinedTimeline():
+	try:
+		# Get the human data from the request
+		human_data = request.args.to_dict()
+
+		# Get the human ID from the request
+		HumanId = human_data.get('HumanId', None)
+		# Call the get_timelines function from GetTimelines.py
+		result = get_combinedtimelines(HumanId)
 		return result
 	except Exception as e:
 		return Debugger(e)
