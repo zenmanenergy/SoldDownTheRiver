@@ -204,6 +204,11 @@
 					isCompany: data.isCompany || ''
 				};
 
+				// Set FirstName to "Unnamed" if all name fields are empty
+				if (!Human.FirstName && !Human.MiddleName && !Human.LastName) {
+					Human.FirstName = "Unnamed";
+				}
+
 				if (Human.Height_cm) {
 					Human.Height_in = (Human.Height_cm / 2.54).toFixed(2);
 				}

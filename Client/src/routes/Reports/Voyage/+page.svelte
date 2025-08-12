@@ -10,7 +10,9 @@
 	import { handleGetLocations } from './handleGetLocations.js';
 	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	import { Session } from "../../Session.js";
-	
+	import * as voyageMap from './voyageMap.js';
+	import usaOutlineGeoJson from './usa_continental_outline.js';
+
 	let VoyageId = '';
 	let Voyage = {
 		VoyageId: "", 
@@ -94,16 +96,36 @@
 		return location ? location.Address : "Unknown";
 	}
 
-	function getHumansByRole(role) {
-		return VoyageHumans.filter(h => h.Role === role);
+	function getLocationLatLng(locationId) {
+		const location = Locations.find(l => l.LocationId === locationId);
+		if (location && location.Latitude && location.Longitude) {
+			return `${location.Latitude}, ${location.Longitude}`;
+		}
+		return "";
 	}
 
-	// Utility function to get a URL parameter by name
-	function getURLVariable(name) {
-		return new URLSearchParams(window.location.search).get(name);
+	// Helper to get date for a location type
+	function getVoyageDate(type) {
+		if (type === 'Start') return Voyage.StartDate;
+		if (type === 'End') return Voyage.EndDate;
+		// Add logic for customs date if available in data
+		return "";
 	}
 
-	onMount(async () => {
+	// Helper to get locationId for a location type
+	function getVoyageLocationId(type) {
+		if (type === 'Start') return Voyage.StartLocationId;
+		if (type === 'End') return Voyage.EndLocationId;
+		if (type === 'Customs') return Voyage.CustomsLocationId;
+		return "";
+	}
+
+	// Helper function to determine if a location is present
+	function isLocationPresent(locationId) {
+		return !!Locations.find(l => l.LocationId === locationId);
+	}
+
+	async function fetchData() {
 		await Session.handleSession();
 		VoyageId = getURLVariable('VoyageId') || '';
 		
@@ -124,6 +146,69 @@
 		isReferencesLoading = false;
 
 		isLoading = false;
+	}
+
+	// Utility function to get a URL parameter by name
+	function getURLVariable(name) {
+		return new URLSearchParams(window.location.search).get(name);
+	}
+
+	function getHumansByRole(role) {
+		return VoyageHumans.filter(h => h.Role === role);
+	}
+
+	let mapContainer;
+	let mapInitialized = false;
+	let captureMode = false;
+
+	function enableCaptureMode() {
+		captureMode = true;
+		if (window.L && voyageMap.getMap()) {
+			const map = voyageMap.getMap();
+			map.on('click', onMapClick);
+		}
+	}
+
+	function disableCaptureMode() {
+		captureMode = false;
+		if (window.L && voyageMap.getMap()) {
+			const map = voyageMap.getMap();
+			map.off('click', onMapClick);
+		}
+	}
+
+	function onMapClick(e) {
+		const { lat, lng } = e.latlng;
+		console.log(`[${lng}, ${lat}],`);
+	}
+
+	$: if (!isLoading && mapInitialized && Locations.length > 0) {
+		voyageMap.addMapMarkers(Voyage, Locations);
+	}
+
+	onMount(async () => {
+		await fetchData();
+		await voyageMap.loadLeaflet();
+
+		mapInitialized = true;
+		setTimeout(() => {
+			voyageMap.initMap(mapContainer, Voyage, Locations, usaOutlineGeoJson);
+			voyageMap.showUsaOutline(usaOutlineGeoJson);
+
+			// Draw a path from start to end location, avoiding the polygon if needed
+			const startLoc = Locations.find(l => l.LocationId === Voyage.StartLocationId);
+			const endLoc = Locations.find(l => l.LocationId === Voyage.EndLocationId);
+			if (startLoc && endLoc && startLoc.Latitude && startLoc.Longitude && endLoc.Latitude && endLoc.Longitude) {
+				const start = [parseFloat(startLoc.Latitude), parseFloat(startLoc.Longitude)];
+				const end = [parseFloat(endLoc.Latitude), parseFloat(endLoc.Longitude)];
+				voyageMap.drawPathOutsidePolygon(start, end, usaOutlineGeoJson);
+			}
+
+			if (captureMode && window.L && voyageMap.getMap()) {
+				const map = voyageMap.getMap();
+				map.on('click', onMapClick);
+			}
+		}, 0);
 	});
 </script>
 
@@ -145,65 +230,82 @@
 
 		<!-- Voyage Information -->
 		<div class="content">
-			<div class="columns">
-				<div class="column is-half">
-					<table class="table is-borderless">
+			<table class="table is-borderless">
+				<tbody>
+					<tr>
+						<td><strong>Voyage ID:</strong></td>
+						<td>{Voyage.VoyageId}</td>
+					</tr>
+					<tr>
+						<td><strong>Ship:</strong></td>
+						<td>
+							<a href="/Reports/Ship?ShipId={Voyage.ShipId}" target="_blank">
+								{getShipName()}
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Dates & Locations Section with OSM Map -->
+	<div class="ActionBox">
+		<div class="title-container">
+			<h3 class="title is-4">Voyage Dates & Locations</h3>
+		</div>
+		<div class="columns">
+			<div class="column is-half">
+				<div class="table-container">
+					<table class="table is-fullwidth is-striped">
+						<thead>
+							<tr>
+								<th>Type</th>
+								<th>Date</th>
+								<th>Location</th>
+								<th>Lat/Lng</th>
+							</tr>
+						</thead>
 						<tbody>
 							<tr>
-								<td><strong>Voyage ID:</strong></td>
-								<td>{Voyage.VoyageId}</td>
-							</tr>
-							<tr>
-								<td><strong>Ship:</strong></td>
-								<td>
-									<a href="/Reports/Ship?ShipId={Voyage.ShipId}" target="_blank">
-										{getShipName()}
-									</a>
-								</td>
-							</tr>
-							<tr>
-								<td><strong>Start Location:</strong></td>
+								<td>Start</td>
+								<td>{Voyage.StartDate ? moment.utc(Voyage.StartDate).format('MMMM D, YYYY') : "N/A"}</td>
 								<td>
 									<a href="/Reports/Location?LocationId={Voyage.StartLocationId}" target="_blank">
 										{getLocationName(Voyage.StartLocationId)}
 									</a>
 								</td>
+								<td>{getLocationLatLng(Voyage.StartLocationId)}</td>
 							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="column is-half">
-					<table class="table is-borderless">
-						<tbody>
+							{#if Voyage.CustomsLocationId}
 							<tr>
-								<td><strong>Start Date:</strong></td>
-								<td>{Voyage.StartDate ? moment.utc(Voyage.StartDate).format('MMMM D, YYYY') : "N/A"}</td>
+								<td>Customs</td>
+								<td>N/A</td>
+								<td>
+									<a href="/Reports/Location?LocationId={Voyage.CustomsLocationId}" target="_blank">
+										{getLocationName(Voyage.CustomsLocationId)}
+									</a>
+								</td>
+								<td>{getLocationLatLng(Voyage.CustomsLocationId)}</td>
 							</tr>
+							{/if}
 							<tr>
-								<td><strong>End Date:</strong></td>
+								<td>End</td>
 								<td>{Voyage.EndDate ? moment.utc(Voyage.EndDate).format('MMMM D, YYYY') : "N/A"}</td>
-							</tr>
-							<tr>
-								<td><strong>End Location:</strong></td>
 								<td>
 									<a href="/Reports/Location?LocationId={Voyage.EndLocationId}" target="_blank">
 										{getLocationName(Voyage.EndLocationId)}
 									</a>
 								</td>
+								<td>{getLocationLatLng(Voyage.EndLocationId)}</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
-
-			{#if Voyage.Notes}
-			<div class="field">
-				<label class="label">Notes:</label>
-				<div class="content">
-					<p>{Voyage.Notes}</p>
-				</div>
+			<div class="column is-half">
+				<div bind:this={mapContainer} id="osm-map" style="height:350px;width:100%;border-radius:8px;border:1px solid #e9ecef;"></div>
 			</div>
-			{/if}
 		</div>
 	</div>
 
@@ -229,7 +331,7 @@
 						</thead>
 						<tbody>
 							{#each roleHumans as human}
-								<tr on:click={() => window.location.href = `/Admin/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
 									<td>{human.FirstName || ''}</td>
 									<td>{human.LastName || ''}</td>
 									<td>{human.BirthDate ? formatBirthDate(human.BirthDate, human.BirthDateAccuracy) : ''}</td>
@@ -265,7 +367,7 @@
 					</thead>
 					<tbody>
 						{#each VoyageHumans as human}
-							<tr on:click={() => window.location.href = `/Admin/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
+							<tr on:click={() => window.location.href = `/Reports/Human?HumanId=${human.HumanId}`} style="cursor:pointer;">
 								<td>{human.FirstName || ''}</td>
 								<td>{human.LastName || ''}</td>
 								<td><span class="tag is-info">{human.Role || ''}</span></td>
@@ -310,7 +412,7 @@
 						</thead>
 						<tbody>
 							{#each voyageReferences as reference}
-								<tr on:click={() => window.location.href = `/Admin/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
 									<td>
 										<a href={reference.URL} target="_blank" rel="noopener noreferrer" on:click|stopPropagation>
 											{reference.URL}
@@ -366,6 +468,15 @@
 				<strong>Voyage Duration:</strong> {duration} days
 				({moment(Voyage.StartDate).format('MMMM D, YYYY')} to {moment(Voyage.EndDate).format('MMMM D, YYYY')})
 			</div>
+		{/if}
+	</div>
+
+	<div style="margin-bottom:1rem;">
+		{#if !captureMode}
+			<button class="button is-small is-info" on:click={enableCaptureMode}>Enable Polygon Capture Mode</button>
+		{:else}
+			<button class="button is-small is-danger" on:click={disableCaptureMode}>Disable Polygon Capture Mode</button>
+			<span style="margin-left:1rem;color:#d32f2f;">Click on the map to capture [lng, lat] points (see console)</span>
 		{/if}
 	</div>
 </div>

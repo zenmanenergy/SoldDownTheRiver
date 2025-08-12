@@ -460,7 +460,7 @@ def ShippingAgentDescription(voyage, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Get start location
 	start_city = voyage.get('startCity', '')
 	start_state = voyage.get('startState', '')
@@ -477,7 +477,7 @@ def CollectorAgentDescription(voyage, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Get end location
 	end_city = voyage.get('endCity', '')
 	end_state = voyage.get('endState', '')
@@ -495,7 +495,7 @@ def BuyerDescription(voyage, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Build seller string
 	sellers = []
 	for seller in voyage.get('Seller', []):
@@ -524,7 +524,7 @@ def CaptainDescription(voyage, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Get start and end locations
 	start_city = voyage.get('startCity', '')
 	start_state = voyage.get('startState', '')
@@ -557,7 +557,7 @@ def NotaryPublicDescription(transaction, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 
 	# Build sellers string
 	sellers = []
@@ -605,7 +605,7 @@ def SellerDescription(transaction, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Make "sold" a link to the transaction report
 	transaction_id = transaction.get('TransactionId')
 	sold_link = f'<a href="/Reports/Transaction?TransactionId={transaction_id}">sold</a>: '
@@ -650,7 +650,7 @@ def BuyerDescription(transaction, name_parts):
 		)
 		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
 		enslaved.append(link)
-	enslaved_str = ", ".join(enslaved) if enslaved else "Unknown Enslaved Person"
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Make "bought" a link to the transaction report
 	transaction_id = transaction.get('TransactionId')
 	bought_link = f'<a href="/Reports/Transaction?TransactionId={transaction_id}">bought</a>:'

@@ -269,7 +269,7 @@
 					</thead>
 					<tbody>
 						{#each paginatedVoyages as voyage}
-							<tr on:click={() => window.location.href = `/Admin/Reports/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor:pointer;">
+							<tr on:click={() => window.location.href = `/Reports/Voyage?VoyageId=${voyage.VoyageId}`} style="cursor:pointer;">
 								<td>{voyage.StartDate ? moment.utc(voyage.StartDate).format('MMMM D, YYYY') : "N/A"}</td>
 								<td>{voyage.StartCity} {voyage.StartState}</td>
 								<td>{voyage.EndDate ? moment.utc(voyage.EndDate).format('MMMM D, YYYY') : "N/A"}</td>
@@ -387,7 +387,7 @@
 					</thead>
 					<tbody>
 						{#each paginatedTransactions as transaction}
-							<tr on:click={() => window.location.href = `/Admin/Reports/Transaction?TransactionId=${transaction.TransactionId}`} style="cursor:pointer;">
+							<tr on:click={() => window.location.href = `/Reports/Transaction?TransactionId=${transaction.TransactionId}`} style="cursor:pointer;">
 								<td>{transaction.TransactionDate ? moment.utc(transaction.TransactionDate).format('MMMM D, YYYY') : "N/A"}</td>
 								<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
 								<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
@@ -461,7 +461,7 @@
 						</thead>
 						<tbody>
 							{#each shipReferences as reference}
-								<tr on:click={() => window.location.href = `/Admin/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
+								<tr on:click={() => window.location.href = `/Reports/Reference?ReferenceId=${reference.ReferenceId}`} style="cursor:pointer;">
 									<td>
 										<a href={reference.URL} target="_blank" rel="noopener noreferrer" on:click|stopPropagation>
 											{reference.URL}

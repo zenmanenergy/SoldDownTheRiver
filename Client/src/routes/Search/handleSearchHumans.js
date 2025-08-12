@@ -16,20 +16,23 @@ export async function handleSearchHumans(callback) {
 	}
 
 	// Format the roles and also known as values, replace null values with empty strings
-	const formattedData = data.map(human => ({
-		...human, // Spread original human data
-		FirstName: human.FirstName || '',
-		MiddleName: human.MiddleName || '',
-		LastName: human.LastName || '',
-		isCompany: human.isCompany || '',
-		BirthDate: human.BirthDate || '',
-		BirthDateAccuracy: human.BirthDateAccuracy || '',
-		RacialDescriptor: human.RacialDescriptor || '',
-		Sex: human.Sex || '',
-		Height_in: human.Height_in || '',
-		Roles: human.Roles ? human.Roles.split(', ') : [],
-		AlsoKnownAs: human.AlsoKnownAs ? human.AlsoKnownAs.split(', ') : []
-	}));
+	const formattedData = data.map(human => {
+		const hasNoName = !human.FirstName && !human.MiddleName && !human.LastName;
+		return {
+			...human, // Spread original human data
+			FirstName: hasNoName ? 'Unnamed' : (human.FirstName || ''),
+			MiddleName: human.MiddleName || '',
+			LastName: human.LastName || '',
+			isCompany: human.isCompany || '',
+			BirthDate: human.BirthDate || '',
+			BirthDateAccuracy: human.BirthDateAccuracy || '',
+			RacialDescriptor: human.RacialDescriptor || '',
+			Sex: human.Sex || '',
+			Height_in: human.Height_in || '',
+			Roles: human.Roles ? human.Roles.split(', ') : [],
+			AlsoKnownAs: human.AlsoKnownAs ? human.AlsoKnownAs.split(', ') : []
+		};
+	});
 
 	callback(formattedData);
 }

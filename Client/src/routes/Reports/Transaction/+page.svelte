@@ -460,7 +460,7 @@
 					</thead>
 					<tbody>
 						{#each rawNolaRecords as record}
-							<tr on:click={() => window.location.href = `/Admin/RawNOLA?NOLA_ID=${encodeURIComponent(record.NOLA_ID)}`} style="cursor:pointer;">
+							<tr>
 								<td>{moment.utc(record.DateOfTransaction).format('YYYY-MM-DD')}</td>
 								<td>{record.FirstParty || ''}</td>
 								<td>{record.SecondParty || ''}</td>
