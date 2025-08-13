@@ -9,7 +9,6 @@
 	import { handleGetVoyageHumans } from './handleGetVoyageHumans.js';
 	import { handleGetLocations } from './handleGetLocations.js';
 	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
-	import { Session } from "../../Session.js";
 	import * as voyageMap from './voyageMap.js';
 	import usaOutlineGeoJson from './usa_continental_outline.js';
 
@@ -29,6 +28,8 @@
 	let voyageReferences = [];
 	let isLoading = true;
 	let isReferencesLoading = true;
+	let Session={};
+	Session.SessionId="";
 
 	// Define voyage-specific roles for display
 	const voyageRoles = [
@@ -126,7 +127,6 @@
 	}
 
 	async function fetchData() {
-		await Session.handleSession();
 		VoyageId = getURLVariable('VoyageId') || '';
 		
 		if (!VoyageId) {
@@ -471,14 +471,14 @@
 		{/if}
 	</div>
 
-	<div style="margin-bottom:1rem;">
+	<!-- <div style="margin-bottom:1rem;">
 		{#if !captureMode}
 			<button class="button is-small is-info" on:click={enableCaptureMode}>Enable Polygon Capture Mode</button>
 		{:else}
 			<button class="button is-small is-danger" on:click={disableCaptureMode}>Disable Polygon Capture Mode</button>
 			<span style="margin-left:1rem;color:#d32f2f;">Click on the map to capture [lng, lat] points (see console)</span>
 		{/if}
-	</div>
+	</div> -->
 </div>
 {/if}
 
