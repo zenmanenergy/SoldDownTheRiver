@@ -3,10 +3,11 @@
 </style>
 <script>
 	import moment from 'moment';
-	import { onMount } from 'svelte';
+	import { onMount, afterUpdate } from 'svelte';
 	import { handleSearchHumans } from './handleSearchHumans.js';
 	import { handleSearchShips } from './handleSearchShips.js';
 	import { handleSearchTransactions } from './handleSearchTransactions.js';
+	import { handleSearchLocations } from './handleSearchLocations.js';
 
 	let searchType = 'People';
 	let searchQuery = '';
@@ -15,7 +16,9 @@
 	let Transactions = [];
 	let filteredHumans = [];
 	let filteredShips = [];
+	let Locations = [];
 	let filteredTransactions = [];
+	let filteredLocations = [];
 	let isLoading = true;
 
 	let currentPage = 1;
@@ -25,12 +28,32 @@
 	let sortColumn = 'LastName';
 	let sortAscending = true;
 
-	const searchTypes = ['People', 'Transactions', 'Ships'];
+	const searchTypes = ['People', 'Transactions', 'Ships', 'Locations'];
 
+	// Helper to update the URL query params
+	function updateUrlParams() {
+		const params = new URLSearchParams(window.location.search);
+		params.set('type', searchType.toLowerCase());
+		params.set('q', searchQuery);
+		const newUrl = `${window.location.pathname}?${params.toString()}`;
+		window.history.replaceState({}, '', newUrl);
+	}
+
+	// On mount, read params and set initial state
 	onMount(async () => {
+		const params = new URLSearchParams(window.location.search);
+		const typeParam = params.get('type');
+		const qParam = params.get('q');
+		if (typeParam && searchTypes.map(t => t.toLowerCase()).includes(typeParam)) {
+			searchType = searchTypes.find(t => t.toLowerCase() === typeParam);
+		}
+		if (qParam !== null) {
+			searchQuery = qParam;
+		}
 		await handleSearchHumans(setHumans);
 		await handleSearchShips(setShips);
 		await handleSearchTransactions(setTransactions);
+		await handleSearchLocations(setLocations);
 		isLoading = false;
 	});
 
@@ -42,6 +65,9 @@
 	}
 	function setTransactions(data) {
 		Transactions = data;
+	}
+	function setLocations(data) {
+		Locations = data;
 	}
 
 	function formatBirthDate(date, accuracy) {
@@ -141,12 +167,7 @@
 			const values = [
 				ship.ShipName,
 				ship.ShipType,
-				ship.Flag,
-				ship.Captain,
-				ship.Owner,
-				ship.Builder,
-				ship.BuildYear ? ship.BuildYear.toString() : '',
-				ship.Tonnage ? ship.Tonnage.toString() : '',
+				ship.Captains,
 				ship.Description
 			];
 			
@@ -249,9 +270,55 @@
 		}
 	}
 
+	// Reactive statement for filtering locations
+	$: {
+		filteredLocations = Locations.filter(location => {
+			const search = searchQuery.toLowerCase();
+			const searchWords = search.trim().split(/\s+/).filter(word => word.length > 0);
+
+			// If no search words, show all locations
+			if (searchWords.length === 0) {
+				return true;
+			}
+
+			const values = [
+				location.LocationType,
+				location.Address,
+				location.City,
+				location.County,
+				location.State,
+				location.StateAbbr,
+				location.Description
+			];
+
+			const searchableText = values.join(' ').toLowerCase();
+
+			return searchWords.every(word => searchableText.includes(word));
+		});
+
+		// Sort the filtered locations
+		filteredLocations.sort((a, b) => {
+			let valueA = a[sortColumn] ?? '';
+			let valueB = b[sortColumn] ?? '';
+
+			// Convert to lowercase for case-insensitive sorting
+			if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+			if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+			if (valueA < valueB) return sortAscending ? -1 : 1;
+			if (valueA > valueB) return sortAscending ? 1 : -1;
+			return 0;
+		});
+
+		if (searchType === 'Locations') {
+			totalPages = Math.max(1, Math.ceil(filteredLocations.length / itemsPerPage));
+		}
+	}
+
 	$: displayedHumans = filteredHumans.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 	$: displayedShips = filteredShips.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 	$: displayedTransactions = filteredTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+	$: displayedLocations = filteredLocations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 	function toggleSort(column) {
 		if (sortColumn === column) {
@@ -269,15 +336,31 @@
 			handleSearchHumans(setHumans).then(() => {
 				isLoading = false;
 			});
+		} else if (searchType === 'Ships' && Ships.length === 0 && !isLoading) {
+			isLoading = true;
+			handleSearchShips(setShips).then(() => {
+				isLoading = false;
+			});
+		} else if (searchType === 'Transactions' && Transactions.length === 0 && !isLoading) {
+			isLoading = true;
+			handleSearchTransactions(setTransactions).then(() => {
+				isLoading = false;
+			});
+		} else if (searchType === 'Locations' && Locations.length === 0 && !isLoading) {
+			isLoading = true;
+			handleSearchLocations(setLocations).then(() => {
+				isLoading = false;
+			});
 		}
 	}
 
 	// Clear search query when search type changes
-	$: {
-		if (searchType) {
-			searchQuery = '';
-		}
-	}
+	// $: {
+	// 	if (searchType) {
+	// 		searchQuery = '';
+	// 		console.log("SEARCH TYPE")
+	// 	}
+	// }
 </script>
 
 {#if isLoading}
@@ -296,7 +379,7 @@
 					<label class="label" for="searchType">Search Type:</label>
 					<div class="control">
 						<div class="select">
-							<select id="searchType" bind:value={searchType}>
+							<select id="searchType" bind:value={searchType} on:change={updateUrlParams}>
 								{#each searchTypes as type}
 									<option value={type}>{type}</option>
 								{/each}
@@ -306,7 +389,7 @@
 				</div>
 				<div class="field">
 					<div class="control">
-						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" />
+						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" on:input={updateUrlParams} />
 					</div>
 				</div>
 			</form>
@@ -320,7 +403,6 @@
 							<th on:click={() => toggleSort('BirthDate')}>Birth Date</th>
 							<th on:click={() => toggleSort('RacialDescriptor')}>Racial Descriptor</th>
 							<th on:click={() => toggleSort('Sex')}>Sex</th>
-							<th on:click={() => toggleSort('Height_in')}>Height (inches)</th>
 							<th on:click={() => toggleSort('Roles')}>Roles</th>
 						</tr>
 					</thead>
@@ -332,7 +414,6 @@
 								<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy) || ''}</td>
 								<td>{human.RacialDescriptor || ''}</td>
 								<td>{human.Sex || ''}</td>
-								<td>{human.Height_in ? `${human.Height_in} in` : ''}</td>
 								<td>{human.Roles.length > 0 ? human.Roles.join(', ') : ''}</td>
 							</tr>
 						{/each}
@@ -354,11 +435,7 @@
 						<tr>
 							<th on:click={() => toggleSort('ShipName')}>Ship Name</th>
 							<th on:click={() => toggleSort('ShipType')}>Ship Type</th>
-							<th on:click={() => toggleSort('Flag')}>Flag</th>
-							<th on:click={() => toggleSort('Captain')}>Captain</th>
-							<th on:click={() => toggleSort('Owner')}>Owner</th>
-							<th on:click={() => toggleSort('BuildYear')}>Build Year</th>
-							<th on:click={() => toggleSort('Tonnage')}>Tonnage</th>
+							<th on:click={() => toggleSort('Captains')}>Captains</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -366,11 +443,7 @@
 							<tr on:click={() => window.location.href = `/Reports/Ship?ShipId=${ship.ShipId}`}>
 								<td>{ship.ShipName || ''}</td>
 								<td>{ship.ShipType || ''}</td>
-								<td>{ship.Flag || ''}</td>
-								<td>{ship.Captain || ''}</td>
-								<td>{ship.Owner || ''}</td>
-								<td>{ship.BuildYear || ''}</td>
-								<td>{ship.Tonnage || ''}</td>
+								<td>{ship.Captains || ''}</td>
 							</tr>
 						{/each}
 					</tbody>
@@ -391,7 +464,6 @@
 						<tr>
 							<th on:click={() => toggleSort('TransactionType')}>Type</th>
 							<th on:click={() => toggleSort('date_circa')}>Date</th>
-							<th on:click={() => toggleSort('TotalPrice')}>Total Price</th>
 							<th on:click={() => toggleSort('LocationCity')}>City</th>
 							<th on:click={() => toggleSort('LocationStateAbbr')}>State</th>
 							<th on:click={() => toggleSort('Buyers')}>Buyers</th>
@@ -404,12 +476,44 @@
 							<tr on:click={() => window.location.href = `/Reports/Transaction?TransactionId=${transaction.TransactionId}`}>
 								<td>{transaction.TransactionType || ''}</td>
 								<td>{formatTransactionDate(transaction.date_circa, transaction.date_accuracy)}</td>
-								<td>{transaction.TotalPrice || ''}</td>
 								<td>{transaction.LocationCity || ''}</td>
 								<td>{transaction.LocationStateAbbr || ''}</td>
 								<td>{transaction.Buyers || ''}</td>
 								<td>{transaction.Sellers || ''}</td>
 								<td>{transaction.Notary || ''}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				
+				<div class="pagination">
+					<button on:click={() => currentPage = Math.max(currentPage - 1, 1)} disabled={currentPage === 1}>
+						Previous
+					</button>
+					<span>{currentPage} / {totalPages}</span>
+					<button on:click={() => currentPage = Math.min(currentPage + 1, totalPages)} disabled={currentPage === totalPages}>
+						Next
+					</button>
+				</div>
+			{:else if searchType === 'Locations'}
+				<table class="table is-striped is-hoverable is-fullwidth">
+					<thead>
+						<tr>
+							<th on:click={() => toggleSort('Name')}>Location Name</th>
+							<th on:click={() => toggleSort('LocationType')}>Location Type</th>
+							<th on:click={() => toggleSort('Address')}>Address</th>
+							<th on:click={() => toggleSort('City')}>City</th>
+							<th on:click={() => toggleSort('State')}>State</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each displayedLocations as location}
+							<tr on:click={() => window.location.href = `/Reports/Location?LocationId=${location.LocationId}`}>
+								<td>{location.Name || ''}</td>
+								<td>{location.LocationType || ''}</td>
+								<td>{location.Address || ''}</td>
+								<td>{location.City || ''}</td>
+								<td>{location.State || ''}</td>
 							</tr>
 						{/each}
 					</tbody>

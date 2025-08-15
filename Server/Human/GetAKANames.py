@@ -10,7 +10,7 @@ def get_aka(HumanId):
 	# Construct the SQL query
 	query = "SELECT * from humansaka WHERE HumanId = %s"
 	values = (HumanId,)
-	print(query, values)
+	# print(query, values)
 	# Execute the query and get the results
 	cursor.execute(query, values)
 	result = cursor.fetchall()

@@ -54,7 +54,7 @@ def get_transactions_by_location_id(location_id):
 		ORDER BY t.date_circa DESC
 	"""
 
-	print(query)  # Debugging SQL query before execution
+	# print(query)  # Debugging SQL query before execution
 	# Execute the query and get the results
 	cursor.execute(query)
 	result = cursor.fetchall()

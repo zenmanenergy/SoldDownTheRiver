@@ -3,7 +3,7 @@ import { SuperFetch } from '../SuperFetch';
 
 export async function handleSearchHumans(callback) {
 	const Data = {  };
-	const url = baseURL + '/Humans/GetHumans?'; 
+	const url = baseURL + '/Humans/GetSearchHumans?'; 
 	const FormValid = true;
 
 	let data = await SuperFetch(url, Data, FormValid);

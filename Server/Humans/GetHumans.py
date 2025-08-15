@@ -37,8 +37,8 @@ def get_humans(Search=None, LastFetchTime=None):
 	"""
 
 	# Debugging: Print the query and values for troubleshooting
-	print("Executing query:", query)
-	print("With values:", values)
+	# print("Executing query:", query)
+	# print("With values:", values)
 
 	# Execute the query
 	cursor.execute(query, values)
@@ -92,8 +92,8 @@ def search_humans(Query=None, LastFetchTime=None):
 		ORDER BY h.LastName, h.FirstName, h.MiddleName
 	"""
 
-	print("Executing search query:", query)
-	print("With values:", values)
+	# print("Executing search query:", query)
+	# print("With values:", values)
 
 	cursor.execute(query, values)
 	result = cursor.fetchall()

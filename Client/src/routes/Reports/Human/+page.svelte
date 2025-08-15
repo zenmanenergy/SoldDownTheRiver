@@ -1,92 +1,9 @@
 <!-- src/routes/Reports/Human/+page.svelte -->
+
+
 <style>
 	@import "/static/FormPages.css";
 	
-	.info-field {
-		display: flex;
-		margin-bottom: 1rem;
-	}
-	
-	.info-label {
-		font-weight: bold;
-		min-width: 120px;
-		margin-right: 1rem;
-	}
-	
-	.info-value {
-		flex: 1;
-	}
-	
-	.human-info {
-		background-color: #f8f9fa;
-		padding: 1.5rem;
-		border-radius: 8px;
-		margin-bottom: 2rem;
-	}
-	
-	.report-title {
-		color: #363636;
-		margin-bottom: 1.5rem;
-	}
-	
-	.section-title {
-		color: #363636;
-		margin-bottom: 1rem;
-		border-bottom: 2px solid #dbdbdb;
-		padding-bottom: 0.5rem;
-	}
-	
-	.table-wrapper {
-		margin-top: 1rem;
-		margin-bottom: 2rem;
-	}
-	
-	.loading-screen {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 50vh;
-	}
-	
-	.spinner {
-		border: 4px solid #f3f3f3;
-		border-top: 4px solid #3498db;
-		border-radius: 50%;
-		width: 40px;
-		height: 40px;
-		animation: spin 2s linear infinite;
-	}
-	
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-
-	.aka-list {
-		background-color: #f9f9f9;
-		padding: 1rem;
-		border-radius: 4px;
-		margin-bottom: 1rem;
-	}
-
-	.aka-item {
-		margin-bottom: 0.5rem;
-	}
-
-	.transaction-summary {
-		border: 1px solid #ccc;
-		padding: 15px;
-		margin-bottom: 20px;
-		background-color: #f9f9f9;
-		border-radius: 4px;
-	}
-
-	/* Only wrap the description column */
-	.combined-timeline-description {
-		word-break: break-word;
-		white-space: normal;
-		max-width: 400px; /* Optional: set a max width for better wrapping */
-	}
 </style>
 
 <script>
@@ -266,257 +183,240 @@
 		<div class="spinner" />
 	</div>
 {:else}
+
+	
 	<div class="section">
-		<h2 class="report-title">Human Report</h2>
+		
 		
 		{#if Human.HumanId || HumanId}
-			{#if transactionSummary}
-				<div class="transaction-summary">
-					<h3 class="section-title">Transaction Context</h3>
-					<div class="info-field">
-						<div class="info-label">Transaction:</div>
-						<div class="info-value">
-							<a target="_blank" href="/Transaction?TransactionId={transactionSummary.TransactionId}">
-								View Transaction Details
-							</a>
-						</div>
-					</div>
-					<div class="info-field">
-						<div class="info-label">Type:</div>
-						<div class="info-value">{transactionSummary.TransactionType}</div>
-					</div>
-					<div class="info-field">
-						<div class="info-label">Date:</div>
-						<div class="info-value">{formatDate(transactionSummary.date_circa, transactionSummary.date_accuracy)}</div>
-					</div>
-					{#if transactionSummary.Buyers && transactionSummary.Buyers.length > 0}
-						<div class="info-field">
-							<div class="info-label">Buyer:</div>
-							<div class="info-value">{transactionSummary.Buyers[0].BuyerFirstName || ''} {transactionSummary.Buyers[0].BuyerLastName || ''}</div>
-						</div>
-					{/if}
-					{#if transactionSummary.Sellers && transactionSummary.Sellers.length > 0}
-						<div class="info-field">
-							<div class="info-label">Seller:</div>
-							<div class="info-value">{transactionSummary.Sellers[0].SellerFirstName || ''} {transactionSummary.Sellers[0].SellerLastName || ''}</div>
-						</div>
-					{/if}
+			<div class="ActionBox">
+				<div class="title-container">
+					<h3 class="title is-2">Human Report</h3>
 				</div>
-			{/if}
-
-			<div class="human-info">
-				<h3 class="section-title">
-					{Human.isCompany ? 'Company' : 'Person'} Information
-				</h3>
-				
-				{#if Human.isCompany}
-					<div class="info-field">
-						<div class="info-label">Company Name:</div>
-						<div class="info-value">{Human.FirstName}</div>
-					</div>
-				{:else}
-					{#if Human.FirstName}
+				{#if transactionSummary}
+					<div class="transaction-summary">
+						<h3 class="section-title">Transaction Context</h3>
 						<div class="info-field">
-							<div class="info-label">First Name:</div>
+							<div class="info-label">Transaction:</div>
+							<div class="info-value">
+								<a target="_blank" href="/Transaction?TransactionId={transactionSummary.TransactionId}">
+									View Transaction Details
+								</a>
+							</div>
+						</div>
+						<div class="info-field">
+							<div class="info-label">Type:</div>
+							<div class="info-value">{transactionSummary.TransactionType}</div>
+						</div>
+						<div class="info-field">
+							<div class="info-label">Date:</div>
+							<div class="info-value">{formatDate(transactionSummary.date_circa, transactionSummary.date_accuracy)}</div>
+						</div>
+						{#if transactionSummary.Buyers && transactionSummary.Buyers.length > 0}
+							<div class="info-field">
+								<div class="info-label">Buyer:</div>
+								<div class="info-value">{transactionSummary.Buyers[0].BuyerFirstName || ''} {transactionSummary.Buyers[0].BuyerLastName || ''}</div>
+							</div>
+						{/if}
+						{#if transactionSummary.Sellers && transactionSummary.Sellers.length > 0}
+							<div class="info-field">
+								<div class="info-label">Seller:</div>
+								<div class="info-value">{transactionSummary.Sellers[0].SellerFirstName || ''} {transactionSummary.Sellers[0].SellerLastName || ''}</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
+				<div class="human-info">
+					<h3 class="section-title">
+						{Human.isCompany ? 'Company' : 'Person'} Information
+					</h3>
+					
+					{#if Human.isCompany}
+						<div class="info-field">
+							<div class="info-label">Company Name:</div>
 							<div class="info-value">{Human.FirstName}</div>
 						</div>
-					{/if}
-					
-					{#if Human.MiddleName}
-						<div class="info-field">
-							<div class="info-label">Middle Name:</div>
-							<div class="info-value">{Human.MiddleName}</div>
-						</div>
-					{/if}
-					
-					{#if Human.LastName}
-						<div class="info-field">
-							<div class="info-label">Last Name:</div>
-							<div class="info-value">{Human.LastName}</div>
-						</div>
-					{/if}
-
-					{#if Human.BirthDate}
-						<div class="info-field">
-							<div class="info-label">Birth Date:</div>
-							<div class="info-value">
-								{formatDateForDisplay(Human.BirthDate, Human.BirthDateAccuracy)}
-								<span style="color: #666; font-size: 0.9em;">
-									(Accuracy: {getAccuracyLabel(Human.BirthDateAccuracy)})
-								</span>
+					{:else}
+						{#if Human.FirstName}
+							<div class="info-field">
+								<div class="info-label">First Name:</div>
+								<div class="info-value">{Human.FirstName}</div>
 							</div>
-						</div>
-					{/if}
-
-					{#if Human.RacialDescriptor}
-						<div class="info-field">
-							<div class="info-label">Racial Descriptor:</div>
-							<div class="info-value">{Human.RacialDescriptor}</div>
-						</div>
-					{/if}
-
-					{#if Human.Sex}
-						<div class="info-field">
-							<div class="info-label">Sex:</div>
-							<div class="info-value">{Human.Sex}</div>
-						</div>
-					{/if}
-
-					{#if Human.Height_cm || Human.Height_in}
-						<div class="info-field">
-							<div class="info-label">Height:</div>
-							<div class="info-value">
-								{#if Human.Height_in}
-									{Human.Height_in} inches
-								{/if}
-								{#if Human.Height_cm}
-									({Human.Height_cm} cm)
-								{/if}
+						{/if}
+						
+						{#if Human.MiddleName}
+							<div class="info-field">
+								<div class="info-label">Middle Name:</div>
+								<div class="info-value">{Human.MiddleName}</div>
 							</div>
-						</div>
-					{/if}
-				{/if}
+						{/if}
+						
+						{#if Human.LastName}
+							<div class="info-field">
+								<div class="info-label">Last Name:</div>
+								<div class="info-value">{Human.LastName}</div>
+							</div>
+						{/if}
 
-				{#if Human.DateUpdated}
-					<div class="info-field">
-						<div class="info-label">Last Modified:</div>
-						<div class="info-value">{moment.utc(Human.DateUpdated).local().format('MMMM Do YYYY, h:mm a')}</div>
-					</div>
-				{/if}
+						{#if Human.BirthDate}
+							<div class="info-field">
+								<div class="info-label">Birth Date:</div>
+								<div class="info-value">
+									{formatDateForDisplay(Human.BirthDate, Human.BirthDateAccuracy)}
+									<span style="color: #666; font-size: 0.9em;">
+										(Accuracy: {getAccuracyLabel(Human.BirthDateAccuracy)})
+									</span>
+								</div>
+							</div>
+						{/if}
+
+						{#if Human.RacialDescriptor}
+							<div class="info-field">
+								<div class="info-label">Racial Descriptor:</div>
+								<div class="info-value">{Human.RacialDescriptor}</div>
+							</div>
+						{/if}
+
+						{#if Human.Sex}
+							<div class="info-field">
+								<div class="info-label">Sex:</div>
+								<div class="info-value">{Human.Sex}</div>
+							</div>
+						{/if}
+
+						{#if Human.Height_cm || Human.Height_in}
+							<div class="info-field">
+								<div class="info-label">Height:</div>
+								<div class="info-value">
+									{#if Human.Height_in}
+										{Human.Height_in} inches
+									{/if}
+									{#if Human.Height_cm}
+										({Human.Height_cm} cm)
+									{/if}
+								</div>
+							</div>
+						{/if}
+					{/if}
+				</div>
 			</div>
-
 			{#if akaNames.length > 0}
-				<div class="table-wrapper">
-					<h3 class="section-title">Also Known As (AKA)</h3>
-					<div class="aka-list">
-						{#each akaNames as aka}
-							<div class="aka-item">
-								{#if Human.isCompany}
-									<strong>{aka.AKAFirstName}</strong>
-								{:else}
-									<strong>{aka.AKAFirstName} {aka.AKAMiddleName || ''} {aka.AKALastName}</strong>
-								{/if}
-							</div>
-						{/each}
+				<div class="ActionBox">
+					<div class="title-container">
+						<h3 class="title is-4">Human Report</h3>
+					</div>
+					<div class="table-wrapper">
+						<h3 class="section-title">Also Known As (AKA)</h3>
+						<div class="aka-list">
+							{#each akaNames as aka}
+								<div class="aka-item">
+									{#if Human.isCompany}
+										<strong>{aka.AKAFirstName}</strong>
+									{:else}
+										<strong>{aka.AKAFirstName} {aka.AKAMiddleName || ''} {aka.AKALastName}</strong>
+									{/if}
+								</div>
+							{/each}
+						</div>
 					</div>
 				</div>
 			{/if}
 
 			{#if combinedTimeline && combinedTimeline.data && combinedTimeline.data.combinedTimeLine && combinedTimeline.data.combinedTimeLine.length > 0}
-				<div class="table-wrapper">
-					<h3 class="section-title">Combined Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
-					<table class="table is-fullwidth is-striped" on:click={handleCombinedTimelineClick}>
-						<thead>
-							<tr>
-								<th>Date</th>
-								<th>Description</th>
-								<th>Lat/Lng</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each combinedTimeline.data.combinedTimeLine as event}
+				<div class="ActionBox">
+				<div class="title-container">
+					<h3 class="title is-4">Combined Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
+				</div>
+					<div class="table-wrapper">
+						<table class="table is-fullwidth is-striped" on:click={handleCombinedTimelineClick}>
+							<thead>
 								<tr>
-									<td>{formatDate(event.DateCirca, event.DateAccuracy)}</td>
-									<td class="combined-timeline-description">{@html event.Description}</td>
-									<td>
-										{#if event.Latitude && event.Longitude}
-											{event.Latitude}, {event.Longitude}
-										{/if}
-									</td>
+									<th>Date</th>
+									<th>Description</th>
+									<th>Lat/Lng</th>
 								</tr>
-							{/each}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{#each combinedTimeline.data.combinedTimeLine as event}
+									<tr>
+										<td>{formatDate(event.DateCirca, event.DateAccuracy)}</td>
+										<td class="combined-timeline-description">{@html event.Description}</td>
+										<td>
+											{#if event.Latitude && event.Longitude}
+												{event.Latitude}, {event.Longitude}
+											{/if}
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			{/if}
 
-			{#if timelines.length > 0}
-				<div class="table-wrapper">
-					<h3 class="section-title">Timeline Events ({timelines.length} records)</h3>
-					<table class="table is-fullwidth is-striped">
-						<thead>
-							<tr>
-								<th>Location Type</th>
-								<th>Address</th>
-								<th>City/State</th>
-								<th>Coordinates</th>
-								<th>Date</th>
-								<th>Role</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each timelines as timeline}
-								<tr on:click={() => window.open(`/Reports/Location?LocationId=${timeline.LocationId}`, '_blank')} style="cursor: pointer;">
-									<td>{timeline.LocationType || ''}</td>
-									<td>{timeline.Address || ''}</td>
-									<td>{timeline.City || ''}{timeline.State ? ', ' + timeline.State : ''}</td>
-									<td>{timeline.Latitude || ''},{timeline.Longitude || ''}</td>
-									<td>{formatDate(timeline.Date_Circa, timeline.Date_Accuracy)}</td>
-									<td>{getRoleLabel(timeline.RoleId)}</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			{/if}
+			
 
 			{#if voyages.length > 0}
-				<div class="table-wrapper">
-					<h3 class="section-title">Voyages ({voyages.length} records)</h3>
-					<table class="table is-fullwidth is-striped">
-						<thead>
-							<tr>
-								<th>Voyage ID</th>
-								<th>Role</th>
-								<th>Notes</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each voyages as voyage}
-								<tr on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
-									<td>{voyage.VoyageId}</td>
-									<td>{voyage.RoleId}</td>
-									<td>{voyage.Notes || ''}</td>
+				<div class="ActionBox">
+					<div class="title-container">
+						<h3 class="title is-4">Voyages ({voyages.length} records)</h3>
+					</div>
+					<div class="table-wrapper">
+						<table class="table is-fullwidth is-striped">
+							<thead>
+								<tr>
+									<th>Voyage ID</th>
+									<th>Role</th>
+									<th>Notes</th>
 								</tr>
-							{/each}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{#each voyages as voyage}
+									<tr on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
+										<td>{voyage.VoyageId}</td>
+										<td>{voyage.RoleId}</td>
+										<td>{voyage.Notes || ''}</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			{/if}
 
 			{#if transactions.length > 0}
-				<div class="table-wrapper">
-					<h3 class="section-title">Transactions ({transactions.length} records)</h3>
-					<table class="table is-fullwidth is-striped">
-						<thead>
-							<tr>
-								<th>Type</th>
-								<th>Date</th>
-								<th>Notary</th>
-								<th>Sellers</th>
-								<th>Buyers</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each transactions as txn}
-								<tr on:click={() => window.open(`/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
-									<td>{txn.TransactionType || ''}</td>
-									<td>{formatDate(txn.date_circa, txn.date_accuracy)}</td>
-									<td>{txn.Notary || ''}</td>
-									<td>{txn.Sellers || ''}</td>
-									<td>{txn.Buyers || ''}</td>
+				<div class="ActionBox">
+					<div class="title-container">
+						<h3 class="title is-4">Transactions ({transactions.length} records)</h3>
+					</div>
+					<div class="table-wrapper">
+						<table class="table is-fullwidth is-striped">
+							<thead>
+								<tr>
+									<th>Type</th>
+									<th>Date</th>
+									<th>Notary</th>
+									<th>Sellers</th>
+									<th>Buyers</th>
 								</tr>
-							{/each}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{#each transactions as txn}
+									<tr on:click={() => window.open(`/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
+										<td>{txn.TransactionType || ''}</td>
+										<td>{formatDate(txn.date_circa, txn.date_accuracy)}</td>
+										<td>{txn.Notary || ''}</td>
+										<td>{txn.Sellers || ''}</td>
+										<td>{txn.Buyers || ''}</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			{/if}
 
-			{#if !timelines.length && !voyages.length && !transactions.length && !akaNames.length}
-				<div class="notification is-info">
-					No additional records found for this person.
-				</div>
-			{/if}
 
 		{:else}
 			<div class="notification is-warning">

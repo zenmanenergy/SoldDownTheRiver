@@ -1,6 +1,11 @@
 <!-- src/routes/Reports/Transaction/+page.svelte -->
 <!-- Read-only Transaction Report View -->
 
+<style>
+	@import "/static/FormPages.css";
+	
+</style>
+
 <script>
 	import moment from 'moment';
 	import { onMount } from 'svelte';
@@ -539,98 +544,3 @@
 	{/if}
 </div>
 {/if}
-
-<style>
-	.loading-screen {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 50vh;
-	}
-
-	.spinner {
-		border: 4px solid #f3f3f3;
-		border-top: 4px solid #3498db;
-		border-radius: 50%;
-		width: 40px;
-		height: 40px;
-		animation: spin 2s linear infinite;
-	}
-
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-
-	.title-container {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 1rem;
-	}
-
-	.ActionBox {
-		background-color: #f8f9fa;
-		border: 1px solid #e9ecef;
-		border-radius: 8px;
-		padding: 1.5rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.table-container {
-		overflow-x: auto;
-	}
-
-	tr:hover {
-		background-color: #f5f5f5;
-	}
-
-	.table.is-borderless td {
-		border: none;
-		padding: 0.5rem 0.75rem;
-	}
-
-	.table.is-borderless tbody tr:last-child td {
-		border-bottom: none;
-	}
-
-	.box {
-		margin-bottom: 0;
-	}
-
-	.tag.is-info {
-		background-color: #3298dc;
-		color: white;
-		font-weight: 500;
-	}
-
-	.tag.is-success {
-		background-color: #48c774;
-		color: white;
-		font-weight: 500;
-	}
-
-	.tag.is-warning {
-		background-color: #ffdd57;
-		color: rgba(0, 0, 0, 0.7);
-		font-weight: 500;
-	}
-
-	.notification.is-info {
-		margin-top: 1rem;
-		text-align: center;
-	}
-
-	.notification.is-warning {
-		margin-top: 1rem;
-	}
-
-	a {
-		color: #3273dc;
-		text-decoration: none;
-	}
-
-	a:hover {
-		text-decoration: underline;
-	}
-</style>

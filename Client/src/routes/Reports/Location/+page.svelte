@@ -153,7 +153,6 @@
 	import { handleGetLocationTimelines } from "./handleGetLocationTimelines.js";
 	import { handleGetTransactionsByLocationId } from "./handleGetTransactionsByLocationId.js";
 	import { handleGetVoyagesByLocationId } from "./handleGetVoyagesByLocationId.js";
-	import { Session } from "../../Session.js";
 
 	let LocationId = "";
 	let isLoading = true;
@@ -163,6 +162,8 @@
 	let mapDiv;
 	let leafletMap;
 	let marker;
+	let Session={};
+	Session.SessionId="";
 
 	let Location = {
 		LocationId: "",
@@ -284,7 +285,6 @@
 	}
 
 	onMount(async () => {
-		await Session.handleSession();
 		const urlParams = new URLSearchParams(window.location.search);
 		LocationId = urlParams.get("LocationId") || "";
 

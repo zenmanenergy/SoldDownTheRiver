@@ -57,7 +57,6 @@ def get_transactions():
 
 	values = ()
 
-	print(query % values)  # Debugging SQL query before execution
 	# Execute the query and get the results
 	cursor.execute(query, values)
 	result = cursor.fetchall()

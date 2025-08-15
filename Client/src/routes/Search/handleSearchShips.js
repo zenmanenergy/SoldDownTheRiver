@@ -21,7 +21,7 @@ export async function handleSearchShips(callback) {
 		ShipName: ship.ShipName || '',
 		ShipType: ship.ShipType || '',
 		Flag: ship.Flag || '',
-		Captain: ship.Captain || '',
+		Captains: ship.Captains || '', // Add this line
 		Owner: ship.Owner || '',
 		Builder: ship.Builder || '',
 		BuildYear: ship.BuildYear || '',
