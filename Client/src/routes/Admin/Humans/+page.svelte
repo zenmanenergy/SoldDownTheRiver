@@ -13,7 +13,7 @@
 	let searchQuery = '';
 
 	let currentPage = 1;
-	let itemsPerPage = 50;
+	let itemsPerPage = 100;
 	let totalPages = 1;
 
 	let sortColumn = 'LastName';

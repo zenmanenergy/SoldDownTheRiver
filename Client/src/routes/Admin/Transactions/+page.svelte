@@ -54,7 +54,7 @@
 	let sortAscending = true;
 
 	let currentPage = 1;
-	let itemsPerPage = 10;
+	let itemsPerPage = 100;
 
 	$: totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
 
