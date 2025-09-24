@@ -52,7 +52,6 @@ def get_transactions():
 			GROUP BY th3.TransactionId
 		) b ON t.TransactionId = b.TransactionId
 
-		where t.TransactionId='TXN7ade55d0674c4613815c83e8f297bc8c'
 		ORDER BY t.date_circa DESC
 	"""
 
