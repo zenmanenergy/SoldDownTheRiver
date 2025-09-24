@@ -1,5 +1,5 @@
-import { baseURL } from '../../Settings';
-import { SuperFetch } from '../../SuperFetch';
+import { baseURL } from '../routes/Settings.js';
+import { SuperFetch } from '../routes/SuperFetch.js';
 
 let map = null;
 let usaOutlineLayer = null;
@@ -24,7 +24,6 @@ export function initMap(mapContainer, Voyage, Locations, usaOutlineGeoJson) {
 	}
 }
 
-// Remove sanitizeUsaGeoJson and use the raw geojson
 export function showUsaOutline(geojson) {
 	if (!map || !window.L || !geojson) return;
 	if (usaOutlineLayer) {
@@ -41,18 +40,14 @@ export function showUsaOutline(geojson) {
 		}
 	}).addTo(map);
 
-	// Fit map to polygon bounds
 	try {
 		map.fitBounds(usaOutlineLayer.getBounds());
-	} catch (e) {
-		// If there is an error, do nothing
-	}
+	} catch (e) {}
 }
 
 export function addMapMarkers(Voyage, Locations) {
 	if (!map || !window.L) return;
 	const L = window.L;
-	// Remove existing markers and polylines
 	if (map._markerLayer) {
 		map.removeLayer(map._markerLayer);
 		map._markerLayer = null;
@@ -62,38 +57,59 @@ export function addMapMarkers(Voyage, Locations) {
 		map._routeLine = null;
 	}
 	const markers = [];
-	const types = [
-		{ type: 'Start', id: Voyage.StartLocationId, color: 'blue' },
-		{ type: 'Customs', id: Voyage.CustomsLocationId, color: 'orange' },
-		{ type: 'End', id: Voyage.EndLocationId, color: 'red' }
-	];
-	const points = [];
-	for (const t of types) {
-		const pos = getLocationLatLngObj(t.id, Locations);
-		if (pos) {
-			const marker = L.marker([pos.lat, pos.lng], {
-				icon: L.icon({
-					iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${t.color}.png`,
-					iconSize: [25, 41],
-					iconAnchor: [12, 41],
-					popupAnchor: [1, -34],
-					shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png'
-				})
-			}).bindPopup(`${t.type} Location`);
-			markers.push(marker);
-			points.push([pos.lat, pos.lng]);
+	// If Voyage has any of the special IDs, only add those markers (voyage mode)
+	if (Voyage && (Voyage.StartLocationId || Voyage.CustomsLocationId || Voyage.EndLocationId)) {
+		const types = [
+			{ type: 'Start', id: Voyage.StartLocationId, color: 'blue' },
+			{ type: 'Customs', id: Voyage.CustomsLocationId, color: 'orange' },
+			{ type: 'End', id: Voyage.EndLocationId, color: 'red' }
+		];
+		for (const t of types) {
+			const pos = getLocationLatLngObj(t.id, Locations);
+			if (pos) {
+				const marker = L.marker([pos.lat, pos.lng], {
+					icon: L.icon({
+						iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${t.color}.png`,
+						iconSize: [25, 41],
+						iconAnchor: [12, 41],
+						popupAnchor: [1, -34],
+						shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png'
+					})
+				}).bindPopup(`${t.type} Location`);
+				markers.push(marker);
+			}
+		}
+	} else {
+		// Otherwise, add a marker for every valid location (timeline/general mode)
+		for (const loc of Locations) {
+			if (
+				(typeof loc.Latitude === 'number' || (typeof loc.Latitude === 'string' && loc.Latitude !== '')) &&
+				(typeof loc.Longitude === 'number' || (typeof loc.Longitude === 'string' && loc.Longitude !== ''))
+			) {
+				const lat = parseFloat(loc.Latitude);
+				const lng = parseFloat(loc.Longitude);
+				if (!isNaN(lat) && !isNaN(lng)) {
+					const marker = L.marker([lat, lng], {
+						icon: L.icon({
+							iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png`,
+							iconSize: [25, 41],
+							iconAnchor: [12, 41],
+							popupAnchor: [1, -34],
+							shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png'
+						})
+					}).bindPopup(loc.Description ? loc.Description : 'Timeline Event');
+					markers.push(marker);
+				}
+			}
 		}
 	}
 	if (markers.length) {
 		const group = window.L.featureGroup(markers).addTo(map);
 		map._markerLayer = group;
 		map.fitBounds(group.getBounds().pad(0.3));
+	} else {
+		console.warn('timelineMap.js: No markers were added.');
 	}
-	// Remove this block to prevent drawing the default black dotted line
-	// if (points.length >= 2) {
-	// 	const polyline = L.polyline(points, { color: 'navy', weight: 3, dashArray: '6, 8' }).addTo(map);
-	// 	map._routeLine = polyline;
-	// }
 }
 
 function getFirstLatLng(Voyage, Locations) {
@@ -122,7 +138,6 @@ export async function loadLeaflet() {
 	if (typeof window === 'undefined') return;
 	if (window.L) return;
 
-	// Load Leaflet CSS
 	if (!document.querySelector('link[href*="leaflet.css"]')) {
 		const leafletCss = document.createElement('link');
 		leafletCss.rel = 'stylesheet';
@@ -130,7 +145,6 @@ export async function loadLeaflet() {
 		document.head.appendChild(leafletCss);
 	}
 
-	// Load Leaflet JS
 	if (!document.querySelector('script[src*="leaflet.js"]')) {
 		await new Promise((resolve) => {
 			const leafletScript = document.createElement('script');
@@ -145,14 +159,9 @@ export function getMap() {
 	return map;
 }
 
-/**
- * Animate a ship icon along the given path.
- * @param {Array<[number, number]>} pathPoints Array of [lat, lng]
- */
 export function animateShipAlongPath(pathPoints) {
 	if (!map || !window.L || !Array.isArray(pathPoints) || pathPoints.length < 2) return;
 
-	// Remove previous ship marker and animation
 	if (shipMarker) {
 		map.removeLayer(shipMarker);
 		shipMarker = null;
@@ -162,7 +171,6 @@ export function animateShipAlongPath(pathPoints) {
 		shipAnimationFrame = null;
 	}
 
-	// Use an 1800s schooner icon (public domain or open-licensed)
 	const shipIcon = window.L.icon({
 		iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Sail_plan_barque.svg/1920px-Sail_plan_barque.svg.png',
 		iconSize: [48, 48],
@@ -170,7 +178,7 @@ export function animateShipAlongPath(pathPoints) {
 	});
 
 	let progress = 0;
-	const steps = 500; // Number of animation steps
+	const steps = 500;
 	let segment = 0;
 	let segProgress = 0;
 
@@ -189,7 +197,6 @@ export function animateShipAlongPath(pathPoints) {
 		segProgress = (t - segment * segLen) / segLen;
 
 		if (segment >= totalSegments) {
-			// End of path
 			if (shipMarker) {
 				shipMarker.setLatLng(pathPoints[pathPoints.length - 1]);
 			}
@@ -213,27 +220,15 @@ export function animateShipAlongPath(pathPoints) {
 	animate();
 }
 
-/**
- * Draw a path from start to end that leaves the polygon at the closest edge, 
- * travels outside the polygon, then re-enters at the closest edge to the end.
- * Both start and end may be inside the polygon.
- * @param {[number, number]} start [lat, lng]
- * @param {[number, number]} end [lat, lng]
- * @param {object} polygonGeoJson GeoJSON Polygon
- */
 export function drawPathOutsidePolygon(start, end, polygonGeoJson) {
 	if (!map || !window.L || !polygonGeoJson) return;
 
 	const polygon = polygonGeoJson.features[0].geometry;
 	const coords = polygon.coordinates[0];
 
-	// Helper: convert [lng, lat] to [lat, lng]
 	const toLatLng = ([lng, lat]) => [lat, lng];
-
-	// Helper: convert [lat, lng] to [lng, lat]
 	const toLngLat = ([lat, lng]) => [lng, lat];
 
-	// Find nearest polygon edge point to start and end
 	let minStartDist = Infinity, minEndDist = Infinity;
 	let nearestStart, nearestEnd;
 	for (const pt of coords) {
@@ -248,7 +243,6 @@ export function drawPathOutsidePolygon(start, end, polygonGeoJson) {
 			nearestEnd = toLatLng(pt);
 		}
 	}
-	// Get the polygon path between nearestStart and nearestEnd (shortest direction)
 	const idxStart = coords.findIndex(pt => distanceLatLng(start, toLatLng(pt)) === minStartDist);
 	const idxEnd = coords.findIndex(pt => distanceLatLng(end, toLatLng(pt)) === minEndDist);
 
@@ -260,7 +254,6 @@ export function drawPathOutsidePolygon(start, end, polygonGeoJson) {
 		path1 = coords.slice(idxEnd, idxStart + 1).reverse();
 		path2 = coords.slice(idxStart).concat(coords.slice(0, idxEnd + 1)).reverse();
 	}
-	// Choose the shorter path
 	const len1 = path1.length;
 	const len2 = path2.length;
 	const bestPath = len1 <= len2 ? path1 : path2;
@@ -273,7 +266,6 @@ export function drawPathOutsidePolygon(start, end, polygonGeoJson) {
 		end
 	];
 
-	// Remove any previous path polylines if needed (optional)
 	if (map._voyagePathLine) {
 		map.removeLayer(map._voyagePathLine);
 		map._voyagePathLine = null;
@@ -285,14 +277,12 @@ export function drawPathOutsidePolygon(start, end, polygonGeoJson) {
 		dashArray: '10, 10'
 	}).addTo(map);
 
-	// Animate the ship along the path
 	animateShipAlongPath(pathPoints);
 }
 
-// Helper: Haversine distance between [lat, lng]
 function distanceLatLng(a, b) {
 	const toRad = x => x * Math.PI / 180;
-	const R = 6371; // km
+	const R = 6371;
 	const dLat = toRad(b[0] - a[0]);
 	const dLng = toRad(b[1] - a[1]);
 	const lat1 = toRad(a[0]);

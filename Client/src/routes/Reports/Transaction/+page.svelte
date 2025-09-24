@@ -223,10 +223,7 @@
 				<div class="column is-half">
 					<table class="table is-borderless">
 						<tbody>
-							<tr>
-								<td><strong>Transaction ID:</strong></td>
-								<td>{transaction.TransactionId || transactionId}</td>
-							</tr>
+							
 							<tr>
 								<td><strong>Date:</strong></td>
 								<td>
@@ -254,52 +251,19 @@
 									{/if}
 								</td>
 							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="column is-half">
-					<table class="table is-borderless">
-						<tbody>
 							<tr>
 								<td><strong>Total Price:</strong></td>
 								<td>{transaction.TotalPrice ? `$${transaction.TotalPrice}` : "N/A"}</td>
 							</tr>
-							<tr>
-								<td><strong>Act:</strong></td>
-								<td>{transaction.Act || "N/A"}</td>
-							</tr>
-							<tr>
-								<td><strong>Page:</strong></td>
-								<td>{transaction.Page || "N/A"}</td>
-							</tr>
-							<tr>
-								<td><strong>Volume:</strong></td>
-								<td>{transaction.Volume || "N/A"}</td>
-							</tr>
 						</tbody>
 					</table>
 				</div>
+				
 			</div>
 
-			{#if transaction.URL}
-				<div class="field">
-					<label class="label">Source URL:</label>
-					<div class="content">
-						<a href={transaction.URL} target="_blank" rel="noopener noreferrer">
-							{transaction.URL}
-						</a>
-					</div>
-				</div>
-			{/if}
+			
 
-			{#if transaction.Transcriber}
-				<div class="field">
-					<label class="label">Transcriber:</label>
-					<div class="content">
-						<p>{transaction.Transcriber}</p>
-					</div>
-				</div>
-			{/if}
+			
 
 			{#if transaction.Notes}
 				<div class="field">
@@ -310,25 +274,7 @@
 				</div>
 			{/if}
 
-			{#if transaction.isApproved !== null}
-				<div class="field">
-					<label class="label">Status:</label>
-					<div class="content">
-						<span class="tag {transaction.isApproved ? 'is-success' : 'is-warning'}">
-							{transaction.isApproved ? 'Approved' : 'Pending Review'}
-						</span>
-					</div>
-				</div>
-			{/if}
-
-			{#if transaction.DateUpdated}
-				<div class="field">
-					<label class="label">Last Updated:</label>
-					<div class="content">
-						<p>{moment.utc(transaction.DateUpdated).local().format('MMMM Do YYYY, h:mm a')}</p>
-					</div>
-				</div>
-			{/if}
+			
 		</div>
 	</div>
 

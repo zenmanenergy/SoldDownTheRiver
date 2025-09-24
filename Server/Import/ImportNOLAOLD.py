@@ -59,7 +59,7 @@ def import_NOLA(data,SessionId):
 			rowData['TransactionDate'] = TransactionDate_str.replace("'", "`")  # Convert back to string if needed
 			rowData['act'] = str(row[8]).replace("'", "`")
 			rowData['page'] = str(row[9]).replace("'", "`")
-			rowData['NotaryPublic'] = row[10].replace("'", "`")
+			rowData['Notary'] = row[10].replace("'", "`")
 			rowData['volume'] = str(row[12]).replace("'", "`")
 			rowData['notes'] = str(row[13]).replace("'", "`")
 			rowData['url'] = str(row[14]).replace("'", "`")
@@ -101,9 +101,9 @@ def ProcessNOLA():
 		# NOLAs[i]['SecondParty'] = SecondParty
 		# NOLAs[i]['SecondParty'][0]['Human']['ResidenceLocationId'] = getLocation(connection, cursor, row['LocationSecondParty'])
 		
-		# NotaryPublic = ParseHumanNames(row['NotaryPublic'], 'NotaryPublic', NOLAs[i]['DateOfTransaction'])
-		# NOLAs[i]['NotaryPublic'] = NotaryPublic
-		# NOLAs[i]['NotaryPublic'][0]['Human']['OfficeLocationId'] = getLocation(connection, cursor, 'New Orleans, Louisiana')
+		# Notary = ParseHumanNames(row['Notary'], 'Notary', NOLAs[i]['DateOfTransaction'])
+		# NOLAs[i]['Notary'] = Notary
+		# NOLAs[i]['Notary'][0]['Human']['OfficeLocationId'] = getLocation(connection, cursor, 'New Orleans, Louisiana')
 		
 	
 		
@@ -112,9 +112,9 @@ def ProcessNOLA():
 		# for count, HumanId in enumerate(HumanIds):
 		# 	NOLAs[i]['SecondParty'][count]['Human']['HumanId'] = HumanId
 		
-		# HumanIds = SaveHuman(connection, cursor, NOLAs[i]['NotaryPublic'], human_map)
+		# HumanIds = SaveHuman(connection, cursor, NOLAs[i]['Notary'], human_map)
 		# for count, HumanId in enumerate(HumanIds):
-		# 	NOLAs[i]['NotaryPublic'][count]['Human']['HumanId'] = HumanId
+		# 	NOLAs[i]['Notary'][count]['Human']['HumanId'] = HumanId
 		# try:
 		# 	SaveTransaction(connection, cursor, NOLAs[i])
 		# except Exception as e:
@@ -133,7 +133,7 @@ def ProcessNOLA():
 	return str(i+1)
 
 def SaveTransaction(connection, cursor, Transaction):
-	NotaryHumanId = Transaction['NotaryPublic'][0]['Human']['HumanId']
+	NotaryHumanId = Transaction['Notary'][0]['Human']['HumanId']
 	date_circa = Transaction['DateOfTransaction']['parsed_date']
 	date_accuracy = Transaction['DateOfTransaction']['DateAccuracy']
 	Notes = Transaction['Notes']
@@ -640,7 +640,7 @@ def SaveNOLA(data):
 	try:
 		insert_query = f"""
 			INSERT INTO raw_nola 
-			(NOLA_ID, Timestamp, FirstParty, LocationFirstParty, SecondParty, LocationSecondParty, TypeOfTransaction, DateOfTransaction, Act, Page, NotaryPublic, Volume, Notes, ReferenceURL, NameOfTranscriber)
+			(NOLA_ID, Timestamp, FirstParty, LocationFirstParty, SecondParty, LocationSecondParty, TypeOfTransaction, DateOfTransaction, Act, Page, Notary, Volume, Notes, ReferenceURL, NameOfTranscriber)
 			VALUES (
 				'{data['NOLA_ID']}', 
 				'{data['Timestamp']}', 
@@ -652,7 +652,7 @@ def SaveNOLA(data):
 				'{data['TransactionDate']}', 
 				'{data['act']}', 
 				'{data['page']}', 
-				'{data['NotaryPublic']}', 
+				'{data['Notary']}', 
 				'{data['volume']}', 
 				'{data['notes']}', 
 				'{data['url']}', 
@@ -668,7 +668,7 @@ def SaveNOLA(data):
 				DateOfTransaction = VALUES(DateOfTransaction),
 				Act = VALUES(Act),
 				Page = VALUES(Page),
-				NotaryPublic = VALUES(NotaryPublic),
+				Notary = VALUES(Notary),
 				Volume = VALUES(Volume),
 				Notes = VALUES(Notes),
 				ReferenceURL = VALUES(ReferenceURL),

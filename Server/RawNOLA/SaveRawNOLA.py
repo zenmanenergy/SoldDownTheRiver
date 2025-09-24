@@ -28,27 +28,27 @@ def save_RawNOLA(SessionId, NOLA):
 			UPDATE raw_nola
 			SET FirstParty = %s, LocationFirstParty = %s, SecondParty = %s, LocationSecondParty = %s,
 				TypeOfTransaction = %s, DateOfTransaction = %s, Act = %s, Page = %s,
-				NotaryPublic = %s, Volume = %s, NameOfTranscriber = %s, ReferenceURL = %s
+				Notary = %s, Volume = %s, NameOfTranscriber = %s, ReferenceURL = %s
 			WHERE NOLA_ID = %s
 		"""
 		values = (
 			NOLA["FirstParty"], NOLA["LocationFirstParty"], NOLA["SecondParty"], NOLA["LocationSecondParty"],
 			NOLA["TypeOfTransaction"], NOLA["DateOfTransaction"], NOLA["Act"], NOLA["Page"],
-			NOLA["NotaryPublic"], NOLA["Volume"], NOLA["NameOfTranscriber"], NOLA["ReferenceURL"],
+			NOLA["Notary"], NOLA["Volume"], NOLA["NameOfTranscriber"], NOLA["ReferenceURL"],
 			NOLA_ID
 		)
 	else:
 		# Insert new record
 		query = """
 			INSERT INTO raw_nola (NOLA_ID, FirstParty, LocationFirstParty, SecondParty, LocationSecondParty,
-				TypeOfTransaction, DateOfTransaction, Act, Page, NotaryPublic, Volume,
+				TypeOfTransaction, DateOfTransaction, Act, Page, Notary, Volume,
 				NameOfTranscriber, ReferenceURL)
 			VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		"""
 		values = (
 			NOLA_ID, NOLA["FirstParty"], NOLA["LocationFirstParty"], NOLA["SecondParty"], NOLA["LocationSecondParty"],
 			NOLA["TypeOfTransaction"], NOLA["DateOfTransaction"], NOLA["Act"], NOLA["Page"],
-			NOLA["NotaryPublic"], NOLA["Volume"], NOLA["NameOfTranscriber"], NOLA["ReferenceURL"]
+			NOLA["Notary"], NOLA["Volume"], NOLA["NameOfTranscriber"], NOLA["ReferenceURL"]
 		)
 
 	cursor.execute(query, values)

@@ -7,6 +7,17 @@
 </style>
 
 <script>
+// Compute timelineLocations for TimelineMap
+$: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTimeline.data.combinedTimeLine)
+	? combinedTimeline.data.combinedTimeLine
+		.filter(e => e.Latitude && e.Longitude)
+		.map((e, i) => ({
+			...e,
+			LocationId: e.LocationId || `timeline-${i}`,
+			Latitude: parseFloat(e.Latitude),
+			Longitude: parseFloat(e.Longitude)
+		}))
+	: [];
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { handleGetHuman } from './handleGetHuman.js';
@@ -21,6 +32,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
+	import FamilyTreeCanvas from '../../../components/FamilyTreeCanvas.svelte';
+	import { handleGetFamilies } from './handleGetFamilies.js';
+	import TimelineMap from '../../../components/TimelineMap.svelte';
 
 	let Human = {
 		FirstName: '',
@@ -46,6 +60,7 @@
 	let rolesOptions = [];
 	let transactions = [];
 	let racialDescriptors = [];
+	let families = [];
 
 	function getURLVariable(name) {
 		return new URLSearchParams(window.location.search).get(name);
@@ -88,6 +103,9 @@
 			case 'D': return 'Day';
 			case 'M': return 'Month';
 			case 'Y': return 'Year';
+			case 'd': return 'Day';
+			case 'm': return 'Month';
+			case 'y': return 'Year';
 			default: return accuracy;
 		}
 	}
@@ -139,7 +157,7 @@
 			}
 
 			combinedTimeline = await handleGetCombinedTimeline(HumanId) || [];
-
+			console.log("combinedTimelinecombinedTimeline",combinedTimeline)
 			const humanTransactions = await handleGetHumanTransactions(HumanId);
 			if (humanTransactions) {
 				transactions = humanTransactions;
@@ -147,6 +165,10 @@
 
 			await handleGetAKA(HumanId, (data) => {
 				akaNames = data || [];
+			});
+
+			await handleGetFamilies(null, HumanId, (data) => {
+				families = data || [];
 			});
 		}
 
@@ -176,6 +198,14 @@
 		HumanId = currentHumanId;
 		await loadHumanPageData(HumanId, currentTransactionId);
 	});
+
+	// Add keyboard event handlers for accessibility
+	function handleKeyDown(event) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			handleClick(event);
+		}
+	}
 </script>
 
 {#if isLoading}
@@ -183,15 +213,13 @@
 		<div class="spinner" />
 	</div>
 {:else}
-
-	
 	<div class="section">
 		
 		
 		{#if Human.HumanId || HumanId}
 			<div class="ActionBox">
 				<div class="title-container">
-					<h3 class="title is-2">Human Report</h3>
+					<h3 class="title is-2">{Human.isCompany ? 'Company' : 'Human'} Report</h3>
 				</div>
 				{#if transactionSummary}
 					<div class="transaction-summary">
@@ -228,9 +256,7 @@
 				{/if}
 
 				<div class="human-info">
-					<h3 class="section-title">
-						{Human.isCompany ? 'Company' : 'Person'} Information
-					</h3>
+					
 					
 					{#if Human.isCompany}
 						<div class="info-field">
@@ -238,26 +264,27 @@
 							<div class="info-value">{Human.FirstName}</div>
 						</div>
 					{:else}
-						{#if Human.FirstName}
+						{#if Human.FirstName || Human.MiddleName || Human.LastName}
 							<div class="info-field">
-								<div class="info-label">First Name:</div>
-								<div class="info-value">{Human.FirstName}</div>
+								<div class="info-label">Name:</div>
+								<div class="info-value">{Human.FirstName} {Human.MiddleName} {Human.LastName}
+
+									{#if akaNames.length > 0}
+										<div class="aka-item">
+											Also known as:
+											{#each akaNames as aka, index}
+												{#if Human.isCompany}
+													{aka.AKAFirstName}{index < akaNames.length - 1 ? ', ' : ''}
+												{:else}
+													{aka.AKAFirstName} {aka.AKAMiddleName || ''} {aka.AKALastName}{index < akaNames.length - 1 ? ', ' : ''}
+												{/if}
+											{/each}
+										</div>
+									{/if}
+								</div> 
 							</div>
 						{/if}
 						
-						{#if Human.MiddleName}
-							<div class="info-field">
-								<div class="info-label">Middle Name:</div>
-								<div class="info-value">{Human.MiddleName}</div>
-							</div>
-						{/if}
-						
-						{#if Human.LastName}
-							<div class="info-field">
-								<div class="info-label">Last Name:</div>
-								<div class="info-value">{Human.LastName}</div>
-							</div>
-						{/if}
 
 						{#if Human.BirthDate}
 							<div class="info-field">
@@ -284,7 +311,6 @@
 								<div class="info-value">{Human.Sex}</div>
 							</div>
 						{/if}
-
 						{#if Human.Height_cm || Human.Height_in}
 							<div class="info-field">
 								<div class="info-label">Height:</div>
@@ -295,62 +321,49 @@
 									{#if Human.Height_cm}
 										({Human.Height_cm} cm)
 									{/if}
-								</div>
+								</div>b
 							</div>
 						{/if}
 					{/if}
 				</div>
 			</div>
-			{#if akaNames.length > 0}
-				<div class="ActionBox">
-					<div class="title-container">
-						<h3 class="title is-4">Human Report</h3>
-					</div>
-					<div class="table-wrapper">
-						<h3 class="section-title">Also Known As (AKA)</h3>
-						<div class="aka-list">
-							{#each akaNames as aka}
-								<div class="aka-item">
-									{#if Human.isCompany}
-										<strong>{aka.AKAFirstName}</strong>
-									{:else}
-										<strong>{aka.AKAFirstName} {aka.AKAMiddleName || ''} {aka.AKALastName}</strong>
-									{/if}
-								</div>
-							{/each}
-						</div>
-					</div>
-				</div>
-			{/if}
+			
 
 			{#if combinedTimeline && combinedTimeline.data && combinedTimeline.data.combinedTimeLine && combinedTimeline.data.combinedTimeLine.length > 0}
 				<div class="ActionBox">
-				<div class="title-container">
-					<h3 class="title is-4">Combined Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
-				</div>
-					<div class="table-wrapper">
-						<table class="table is-fullwidth is-striped" on:click={handleCombinedTimelineClick}>
-							<thead>
-								<tr>
-									<th>Date</th>
-									<th>Description</th>
-									<th>Lat/Lng</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each combinedTimeline.data.combinedTimeLine as event}
-									<tr>
-										<td>{formatDate(event.DateCirca, event.DateAccuracy)}</td>
-										<td class="combined-timeline-description">{@html event.Description}</td>
-										<td>
-											{#if event.Latitude && event.Longitude}
-												{event.Latitude}, {event.Longitude}
-											{/if}
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
+					<div class="title-container">
+						<h3 class="title is-4">Combined Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
+					</div>
+					<div class="columns">
+						<div class="column is-half">
+							<div class="table-container">
+								<table class="table is-fullwidth is-striped" on:click={handleCombinedTimelineClick}>
+									<thead>
+										<tr>
+											<th>Date</th>
+											<th>Description</th>
+											<th>Lat/Lng</th>
+										</tr>
+									</thead>
+									<tbody>
+										{#each combinedTimeline.data.combinedTimeLine as event}
+											<tr>
+												<td>{formatDate(event.DateCirca, event.DateAccuracy)}</td>
+												<td class="combined-timeline-description">{@html event.Description}</td>
+												<td>
+													{#if event.Latitude && event.Longitude}
+														{event.Latitude}, {event.Longitude}
+													{/if}
+												</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="column is-half">
+							<TimelineMap Voyage={{}} Locations={timelineLocations} />
+						</div>
 					</div>
 				</div>
 			{/if}
@@ -373,14 +386,19 @@
 							</thead>
 							<tbody>
 								{#each voyages as voyage}
-									<tr on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} style="cursor: pointer;">
+									<tr 
+										on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} 
+										on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank'); }}
+										tabindex="0"
+										style="cursor: pointer;"
+									>
 										<td>{voyage.VoyageId}</td>
 										<td>{voyage.RoleId}</td>
 										<td>{voyage.Notes || ''}</td>
 									</tr>
 								{/each}
 							</tbody>
-						</table>
+						</table> 
 					</div>
 				</div>
 			{/if}
@@ -417,6 +435,14 @@
 				</div>
 			{/if}
 
+			{#if families.length > 0}
+				<h3 class="title is-3">Family Tree</h3>
+				<FamilyTreeCanvas {families} BaseHref="/Reports/Human" />
+			{:else}
+				<div class="notification is-warning">
+					No family relationships defined.
+				</div>
+			{/if}
 
 		{:else}
 			<div class="notification is-warning">

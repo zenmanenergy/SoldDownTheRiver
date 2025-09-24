@@ -56,7 +56,7 @@ def ProcessNOLA():
 		NOLAs[i]['TotalPrice'] = row.get('TotalPrice', 0.0)
 		
 		# Parse the humans with proper roles
-		Notary = ParseHumanNames(row['NotaryPublic'], 'Notary', NOLAs[i]['DateOfTransaction'])
+		Notary = ParseHumanNames(row['Notary'], 'Notary', NOLAs[i]['DateOfTransaction'])
 		Sellers = ParseHumanNames(row['FirstParty'], 'Seller', NOLAs[i]['DateOfTransaction'])
 		Buyers = ParseHumanNames(row['SecondParty'], 'Buyer', NOLAs[i]['DateOfTransaction'])
 		# Merge all humans into a single list

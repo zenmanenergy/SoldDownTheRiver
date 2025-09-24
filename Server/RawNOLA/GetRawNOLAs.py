@@ -18,7 +18,7 @@ def get_RawNOLAs(NOLA_ID_list=None):
 				DateOfTransaction, 
 				Act, 
 				Page, 
-				NotaryPublic, 
+				Notary, 
 				Volume, 
 				Notes,
 				NameOfTranscriber, 
@@ -39,7 +39,7 @@ def get_RawNOLAs(NOLA_ID_list=None):
 				DateOfTransaction, 
 				Act, 
 				Page, 
-				NotaryPublic, 
+				Notary, 
 				Volume, 
 				NameOfTranscriber, 
 				ReferenceURL

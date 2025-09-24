@@ -128,12 +128,12 @@ def get_combinedtimelines(HumanId):
 				
 			FROM transactionhumans th 
 			join humans h ON h.HumanId = th.HumanId AND th.TransactionId = %s and h.HumanId <> %s
-			where th.RoleId = 'NotaryPublic'
+			where th.RoleId = 'Notary'
 			order by h.FirstName, h.LastName
 				
 		# 	"""
 			cursor.execute(query, (transaction['TransactionId'], human['HumanId']))
-			transaction['NotaryPublic'] = cursor.fetchall()
+			transaction['Notary'] = cursor.fetchall()
 
 		response['transactions']=transactions
 
@@ -381,8 +381,8 @@ def get_combinedtimelines(HumanId):
 					BuyerDescription(transaction,name_parts)
 				elif role == "Seller":
 					SellerDescription(transaction,name_parts)
-				elif role == "NotaryPublic":
-					NotaryPublicDescription(transaction,name_parts)
+				elif role == "Notary":
+					NotaryDescription(transaction,name_parts)
 
 			row['Description'] = " ".join(name_parts)
 			response['combinedTimeLine'].append(row)
@@ -538,10 +538,10 @@ def CaptainDescription(voyage, name_parts):
 	name_parts.append(desc)
 	return name_parts
 
-def NotaryPublicDescription(transaction, name_parts):
+def NotaryDescription(transaction, name_parts):
 	# Build notary string
 	notaries = []
-	for notary in transaction.get('NotaryPublic', []):
+	for notary in transaction.get('Notary', []):
 		notary_name = " ".join(
 			filter(None, [notary.get('FirstName'), notary.get('LastName')])
 		)
@@ -612,7 +612,7 @@ def SellerDescription(transaction, name_parts):
 	desc = f"{sold_link} {enslaved_str} to: {buyers_str}"
 	# Add notary if present
 	notaries = []
-	for notary in transaction.get('NotaryPublic', []):
+	for notary in transaction.get('Notary', []):
 		notary_name = " ".join(
 			filter(None, [notary.get('FirstName'), notary.get('LastName')])
 		)
@@ -657,7 +657,7 @@ def BuyerDescription(transaction, name_parts):
 	desc = f"{bought_link} {enslaved_str} from: {sellers_str}"
 	# Add notary if present
 	notaries = []
-	for notary in transaction.get('NotaryPublic', []):
+	for notary in transaction.get('Notary', []):
 		notary_name = " ".join(
 			filter(None, [notary.get('FirstName'), notary.get('LastName')])
 		)
@@ -693,7 +693,7 @@ def EnslavedDescription(transaction, name_parts):
 	desc = f"was sold by: {sellers_str} to: {buyers_str}"
 	# Add notary if present
 	notaries = []
-	for notary in transaction.get('NotaryPublic', []):
+	for notary in transaction.get('Notary', []):
 		notary_name = " ".join(
 			filter(None, [notary.get('FirstName'), notary.get('LastName')])
 		)

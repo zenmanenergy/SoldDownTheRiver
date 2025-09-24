@@ -83,7 +83,7 @@
 				${record.DateOfTransaction}
 				${record.Act}
 				${record.Page}
-				${record.NotaryPublic}
+				${record.Notary}
 				${record.Volume}
 				${record.NameOfTranscriber}
 				${record.Notes}
@@ -151,7 +151,7 @@
 						<th on:click={() => toggleSort('DateOfTransaction')}>Date of Transaction</th>
 						<th on:click={() => toggleSort('Act')}>Act</th>
 						<th on:click={() => toggleSort('Page')}>Page</th>
-						<th on:click={() => toggleSort('NotaryPublic')}>Notary Public</th>
+						<th on:click={() => toggleSort('Notary')}>Notary Public</th>
 						<th on:click={() => toggleSort('Volume')}>Volume</th>
 						<th on:click={() => toggleSort('NameOfTranscriber')}>Transcriber</th>
 						<th on:click={() => toggleSort('ReferenceURL')}>Reference URL</th>
@@ -168,7 +168,7 @@
 							<td>{formatDateOfTransaction(record.DateOfTransaction)}</td>
 							<td>{record.Act || ''}</td>
 							<td>{record.Page || ''}</td>
-							<td>{record.NotaryPublic || ''}</td>
+							<td>{record.Notary || ''}</td>
 							<td>{record.Volume || ''}</td>
 							<td>{record.NameOfTranscriber || ''}</td>
 							<td>

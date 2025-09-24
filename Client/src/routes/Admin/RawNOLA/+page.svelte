@@ -21,7 +21,7 @@
 		DateOfTransaction: "",
 		Act: "",
 		Page: "",
-		NotaryPublic: "",
+		Notary: "",
 		Volume: "",
 		Notes: "",
 		NameOfTranscriber: "",
@@ -39,7 +39,7 @@
 			DateOfTransaction: data.DateOfTransaction || "",
 			Act: data.Act || "",
 			Page: data.Page || "",
-			NotaryPublic: data.NotaryPublic || "",
+			Notary: data.Notary || "",
 			Volume: data.Volume || "",
 			Notes: data.Notes || "",
 			NameOfTranscriber: data.NameOfTranscriber || "",
@@ -162,9 +162,9 @@
 
 				<!-- Notary Public -->
 				<div class="control">
-					<label class="label" for="NotaryPublic">Notary Public</label>
+					<label class="label" for="Notary">Notary Public</label>
 					<div class="field">
-						<input class="input" type="text" id="NotaryPublic" bind:value={NOLA.NotaryPublic} />
+						<input class="input" type="text" id="Notary" bind:value={NOLA.Notary} />
 					</div>
 				</div>
 

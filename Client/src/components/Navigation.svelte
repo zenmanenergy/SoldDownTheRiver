@@ -57,8 +57,7 @@
 </script>
 
 {#if !isLoading}
-	<div class="navmargin">
-		<nav class="navbar is-link" aria-label="main navigation">
+	   <nav class="navbar is-link" aria-label="main navigation">
 			<div class="navbar-brand">
 				<button 
 				   class="navbar-burger {isMobileMenuOpen ? 'is-active' : ''}" 
@@ -101,6 +100,14 @@
 					<div class="navbar-start">
 						<a class="navbar-item" href="/">Home</a>
 						<a class="navbar-item" href="/Search">Search</a>
+	
+					<style>
+						   /* Remove .navmargin, widen navbar */
+						   :global(.navbar) {
+							   width: 100vw;
+							   max-width: none;
+						   }
+					</style>
 					</div>
 					<div class="navbar-end">
 						<a class="navbar-item" href="/Admin/Login">Login</a>
@@ -108,5 +115,4 @@
 				{/if}
 			</div>
 		</nav>
-	</div>
 {/if}

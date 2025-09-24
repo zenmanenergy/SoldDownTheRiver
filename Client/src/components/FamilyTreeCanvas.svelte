@@ -5,6 +5,7 @@
 	export let height = 600;
 	// Callback when a remove is requested for a node.
 	export let onRemove = null; 
+	export let BaseHref = "/Admin/Human"; // Default value
 
 	let canvas;
 	let nodePositions = []; // used for click detection
@@ -127,24 +128,23 @@
 	const clickX = event.clientX - rect.left;
 	const clickY = event.clientY - rect.top;
 	for (const pos of nodePositions) {
-		const { x, y } = pos;
-		// if click is within the node rectangle...
-		if (clickX >= x && clickX <= x + nodeWidth &&
-			clickY >= y && clickY <= y + nodeHeight) {
-		// ...check if it's inside the removal "X" area (top-right corner)
-		if (clickX >= x + nodeWidth - removeBoxSize && clickX <= x + nodeWidth &&
-			clickY >= y && clickY <= y + removeBoxSize) {
-			console.log("onRemove")
-				if (onRemove) {
-
-			onRemove(pos.node.HumanId);
+			const { x, y } = pos;
+			// if click is within the node rectangle...
+			if (clickX >= x && clickX <= x + nodeWidth &&
+				clickY >= y && clickY <= y + nodeHeight) {
+				// ...check if it's inside the removal "X" area (top-right corner)
+				if (clickX >= x + nodeWidth - removeBoxSize && clickX <= x + nodeWidth &&
+					clickY >= y && clickY <= y + removeBoxSize) {
+					console.log("onRemove")
+					if (onRemove) {
+						onRemove(pos.node.HumanId);
+					}
+				} else {
+					window.location.href = `${BaseHref}?HumanId=${pos.node.HumanId}`;
+				}
+				return;
 			}
-		} else {
-			window.location.href = `/Admin/Human?HumanId=${pos.node.HumanId}`;
 		}
-		return;
-		}
-	}
 	}
 
 	onMount(() => {

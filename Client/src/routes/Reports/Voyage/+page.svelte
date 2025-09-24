@@ -9,8 +9,7 @@
 	import { handleGetVoyageHumans } from './handleGetVoyageHumans.js';
 	import { handleGetLocations } from './handleGetLocations.js';
 	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
-	import * as voyageMap from './voyageMap.js';
-	import usaOutlineGeoJson from './usa_continental_outline.js';
+	import TimelineMap from '../../../components/TimelineMap.svelte';
 
 	let VoyageId = '';
 	let Voyage = {
@@ -25,6 +24,8 @@
 	let Ships = [];
 	let VoyageHumans = [];
 	let Locations = [];
+$: markerLocationIds = [Voyage.StartLocationId, Voyage.CustomsLocationId, Voyage.EndLocationId].filter(Boolean);
+$: markerLocations = Locations.filter(l => markerLocationIds.includes(l.LocationId));
 	let voyageReferences = [];
 	let isLoading = true;
 	let isReferencesLoading = true;
@@ -157,58 +158,8 @@
 		return VoyageHumans.filter(h => h.Role === role);
 	}
 
-	let mapContainer;
-	let mapInitialized = false;
-	let captureMode = false;
-
-	function enableCaptureMode() {
-		captureMode = true;
-		if (window.L && voyageMap.getMap()) {
-			const map = voyageMap.getMap();
-			map.on('click', onMapClick);
-		}
-	}
-
-	function disableCaptureMode() {
-		captureMode = false;
-		if (window.L && voyageMap.getMap()) {
-			const map = voyageMap.getMap();
-			map.off('click', onMapClick);
-		}
-	}
-
-	function onMapClick(e) {
-		const { lat, lng } = e.latlng;
-		console.log(`[${lng}, ${lat}],`);
-	}
-
-	$: if (!isLoading && mapInitialized && Locations.length > 0) {
-		voyageMap.addMapMarkers(Voyage, Locations);
-	}
-
 	onMount(async () => {
 		await fetchData();
-		await voyageMap.loadLeaflet();
-
-		mapInitialized = true;
-		setTimeout(() => {
-			voyageMap.initMap(mapContainer, Voyage, Locations, usaOutlineGeoJson);
-			voyageMap.showUsaOutline(usaOutlineGeoJson);
-
-			// Draw a path from start to end location, avoiding the polygon if needed
-			const startLoc = Locations.find(l => l.LocationId === Voyage.StartLocationId);
-			const endLoc = Locations.find(l => l.LocationId === Voyage.EndLocationId);
-			if (startLoc && endLoc && startLoc.Latitude && startLoc.Longitude && endLoc.Latitude && endLoc.Longitude) {
-				const start = [parseFloat(startLoc.Latitude), parseFloat(startLoc.Longitude)];
-				const end = [parseFloat(endLoc.Latitude), parseFloat(endLoc.Longitude)];
-				voyageMap.drawPathOutsidePolygon(start, end, usaOutlineGeoJson);
-			}
-
-			if (captureMode && window.L && voyageMap.getMap()) {
-				const map = voyageMap.getMap();
-				map.on('click', onMapClick);
-			}
-		}, 0);
 	});
 </script>
 
@@ -223,31 +174,53 @@
 {:else}
 
 <div class="section">
-	<div class="ActionBox">
-		<div class="title-container">
-			<h3 class="title is-2">Voyage Report</h3>
-		</div>
+   <div class="ActionBox">
+	   <div class="title-container">
+		   <h3 class="title is-2">Voyage Report</h3>
+	   </div>
 
-		<!-- Voyage Information -->
-		<div class="content">
-			<table class="table is-borderless">
-				<tbody>
-					<tr>
-						<td><strong>Voyage ID:</strong></td>
-						<td>{Voyage.VoyageId}</td>
-					</tr>
-					<tr>
-						<td><strong>Ship:</strong></td>
-						<td>
-							<a href="/Reports/Ship?ShipId={Voyage.ShipId}" target="_blank">
-								{getShipName()}
-							</a>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
+	   <!-- Voyage Information -->
+	   <div class="content">
+		   <table class="table is-borderless">
+			   <tbody>
+				   <tr>
+					   <td><strong>Ship:</strong></td>
+					   <td>
+						   <a href="/Reports/Ship?ShipId={Voyage.ShipId}" target="_blank">
+							   {getShipName()}
+						   </a>
+					   </td>
+				   </tr>
+				   {#if Voyage.StartDate}
+				   <tr>
+					   <td><strong>Start Date:</strong></td>
+					   <td>{moment.utc(Voyage.StartDate).format('MMMM D, YYYY')}</td>
+				   </tr>
+				   {/if}
+				   {#if Voyage.EndDate}
+				   <tr>
+					   <td><strong>End Date:</strong></td>
+					   <td>{moment.utc(Voyage.EndDate).format('MMMM D, YYYY')}</td>
+				   </tr>
+				   {/if}
+				   {#if Voyage.CaptainHumanId}
+				   <tr>
+					   <td><strong>Captain:</strong></td>
+					   <td>
+						   {#if VoyageHumans.length > 0}
+							   {#each VoyageHumans.filter(h => h.HumanId === Voyage.CaptainHumanId) as captain}
+								   <a href="/Reports/Human?HumanId={captain.HumanId}" target="_blank">{captain.FirstName} {captain.LastName}</a>
+							   {/each}
+						   {:else}
+							   <a href="/Reports/Human?HumanId={Voyage.CaptainHumanId}" target="_blank">{Voyage.CaptainHumanId}</a>
+						   {/if}
+					   </td>
+				   </tr>
+				   {/if}
+			   </tbody>
+		   </table>
+	   </div>
+   </div>
 
 	<!-- Dates & Locations Section with OSM Map -->
 	<div class="ActionBox">
@@ -304,7 +277,7 @@
 				</div>
 			</div>
 			<div class="column is-half">
-				<div bind:this={mapContainer} id="osm-map" style="height:350px;width:100%;border-radius:8px;border:1px solid #e9ecef;"></div>
+				<TimelineMap {Voyage} Locations={markerLocations} />
 			</div>
 		</div>
 	</div>

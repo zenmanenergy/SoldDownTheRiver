@@ -14,7 +14,7 @@ export async function handleSaveNOLA(SessionId, NOLA, formValid) {
 		DateOfTransaction: NOLA.DateOfTransaction,
 		Act: NOLA.Act,
 		Page: NOLA.Page,
-		NotaryPublic: NOLA.NotaryPublic,
+		Notary: NOLA.Notary,
 		Volume: NOLA.Volume,
 		NameOfTranscriber: NOLA.NameOfTranscriber,
 		ReferenceURL: NOLA.ReferenceURL

@@ -230,7 +230,7 @@ CREATE TABLE `raw_nola` (
   `DateOfTransaction` varchar(100) DEFAULT NULL,
   `Act` varchar(100) DEFAULT NULL,
   `Page` varchar(100) DEFAULT NULL,
-  `NotaryPublic` varchar(100) DEFAULT NULL,
+  `Notary` varchar(100) DEFAULT NULL,
   `Volume` varchar(100) DEFAULT NULL,
   `Notes` text,
   `Parsed_Notes` text,

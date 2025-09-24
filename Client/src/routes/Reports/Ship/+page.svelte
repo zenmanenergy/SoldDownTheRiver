@@ -179,42 +179,48 @@
 		<!-- Ship Information -->
 		<div class="content">
 			<div class="columns">
-				<div class="column is-half">
-					<table class="table is-borderless">
-						<tbody>
-							<tr>
-								<td><strong>Ship Name:</strong></td>
-								<td>{Ship.ShipName || "N/A"}</td>
-							</tr>
-							<tr>
-								<td><strong>Ship Type:</strong></td>
-								<td>{Ship.ShipType || "N/A"}</td>
-							</tr>
-							<tr>
-								<td><strong>Size:</strong></td>
-								<td>{Ship.Size || "N/A"}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="column is-half">
-					<table class="table is-borderless">
-						<tbody>
-							<tr>
-								<td><strong>Build Date:</strong></td>
-								<td>{Ship.BuildDate ? moment.utc(Ship.BuildDate).format('MMMM D, YYYY') : "N/A"}</td>
-							</tr>
-							<tr>
-								<td><strong>Home Port:</strong></td>
-								<td>{getHomePortDisplay()}</td>
-							</tr>
-							<tr>
-								<td><strong>Ship ID:</strong></td>
-								<td>{Ship.ShipId}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+			   <div class="column is-half">
+				   <table class="table is-borderless">
+					   <tbody>
+						   {#if Ship.ShipName}
+						   <tr>
+							   <td><strong>Ship Name:</strong></td>
+							   <td>{Ship.ShipName}</td>
+						   </tr>
+						   {/if}
+						   {#if Ship.ShipType}
+						   <tr>
+							   <td><strong>Ship Type:</strong></td>
+							   <td>{Ship.ShipType}</td>
+						   </tr>
+						   {/if}
+						   {#if Ship.Size}
+						   <tr>
+							   <td><strong>Size:</strong></td>
+							   <td>{Ship.Size}</td>
+						   </tr>
+						   {/if}
+					   </tbody>
+				   </table>
+			   </div>
+			   <div class="column is-half">
+				   <table class="table is-borderless">
+					   <tbody>
+						   {#if Ship.BuildDate}
+						   <tr>
+							   <td><strong>Build Date:</strong></td>
+							   <td>{moment.utc(Ship.BuildDate).format('MMMM D, YYYY')}</td>
+						   </tr>
+						   {/if}
+						   {#if getHomePortDisplay() && getHomePortDisplay() !== 'Unknown'}
+						   <tr>
+							   <td><strong>Home Port:</strong></td>
+							   <td>{getHomePortDisplay()}</td>
+						   </tr>
+						   {/if}
+					   </tbody>
+				   </table>
+			   </div>
 			</div>
 
 			{#if Ship.Notes}

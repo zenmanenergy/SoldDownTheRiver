@@ -52,11 +52,12 @@ def get_family(HumanId):
 
 		ORDER BY RelationType DESC, Depth ASC, LastName, FirstName;
 	"""
+	print(sql)
 	cursor.execute(sql)
 
 	relatives = list(cursor.fetchall())
 
-	cursor.execute(f"""
+	sql=f"""
 		SELECT DISTINCT
 			h.HumanId,
 			h.FirstName,
@@ -70,7 +71,9 @@ def get_family(HumanId):
 		JOIN humans h ON r2.ChildHumanId = h.HumanId
 		WHERE r1.ChildHumanId = '{HumanId}'
 		AND r2.ChildHumanId != '{HumanId}';
-	""")
+		"""
+	cursor.execute(sql)
+	print(sql)
 
 	siblings = list(cursor.fetchall())
 
@@ -83,7 +86,6 @@ def get_family(HumanId):
 		relation = member['RelationType']
 		depth = member['Depth']
 		isCompany = member.get('isCompany')  # safer access
-		print("isCompany", isCompany)
 
 		if human.get('isCompany'):
 			relation_label = 'employee'

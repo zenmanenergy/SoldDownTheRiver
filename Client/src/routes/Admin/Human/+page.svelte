@@ -618,7 +618,7 @@
 				{#if families.length > 0}
 					<h3 class="title is-3">Family Tree</h3>
 					<a href={`/Admin/Family?HumanId=${HumanId}`} class="button is-link">Edit Family Tree</a><br/>
-					<FamilyTreeCanvas {families} />
+					<FamilyTreeCanvas {families} BaseHref="/Admin/Human" />
 				{:else}
 					No family relationships defined
 				{/if}

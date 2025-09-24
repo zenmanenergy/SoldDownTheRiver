@@ -1,7 +1,48 @@
+
+
+
+
+
 <style>
-	@import '/static/FormPages.css';
+   @import '/static/FormPages.css';
+
+   .loading-overlay {
+	   position: fixed;
+	   top: 0;
+	   left: 0;
+	   width: 100vw;
+	   height: 100vh;
+	   background: rgba(0,0,0,0.3);
+	   z-index: 1000;
+	   display: flex;
+	   align-items: center;
+	   justify-content: center;
+   }
+   .loading-modal {
+	   background: #fff;
+	   border-radius: 12px;
+	   box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+	   padding: 2.5em 2.5em 2em 2.5em;
+	   min-width: 260px;
+	   min-height: 120px;
+	   display: flex;
+	   flex-direction: column;
+	   align-items: center;
+   }
+   .loading-progress {
+	   margin-top: 1.5em;
+	   font-size: 1.2em;
+	   color: #333;
+   }
 </style>
+
 <script>
+let searchType = 'People';
+let searchQuery = '';
+let prevSearchType = searchType;
+let prevSearchQuery = searchQuery;
+let justLoaded = true;
+
 	import moment from 'moment';
 	import { onMount, afterUpdate } from 'svelte';
 	import { handleSearchHumans } from './handleSearchHumans.js';
@@ -9,8 +50,6 @@
 	import { handleSearchTransactions } from './handleSearchTransactions.js';
 	import { handleSearchLocations } from './handleSearchLocations.js';
 
-	let searchType = 'People';
-	let searchQuery = '';
 	let Humans = [];
 	let Ships = [];
 	let Transactions = [];
@@ -19,9 +58,41 @@
 	let Locations = [];
 	let filteredTransactions = [];
 	let filteredLocations = [];
+
 	let isLoading = true;
+	let loadingPercent = 0;
+	let loadingInterval;
+	let lastIsLoading = undefined;
+
+	import { onDestroy } from 'svelte';
+
+	// Watch isLoading and manage the interval
+	$: if (isLoading !== lastIsLoading) {
+		if (isLoading) {
+			loadingPercent = 0;
+			clearInterval(loadingInterval);
+			loadingInterval = setInterval(() => {
+				loadingPercent = Math.round(loadingPercent + 100 / (15 * 10)); // 15 seconds, update every 100ms
+				if (loadingPercent >= 99) {
+					loadingPercent = 99;
+				}
+			}, 100);
+		} else {
+			loadingPercent = 100;
+			clearInterval(loadingInterval);
+		}
+		lastIsLoading = isLoading;
+	}
+
+	onDestroy(() => {
+		clearInterval(loadingInterval);
+	});
+
 
 	let currentPage = 1;
+	let initialPageFromUrl = 1;
+	let initialPageHandled = false;
+	let isInitialLoad = true;
 	let itemsPerPage = 50;
 	let totalPages = 1;
 
@@ -30,31 +101,67 @@
 
 	const searchTypes = ['People', 'Transactions', 'Ships', 'Locations'];
 
-	// Helper to update the URL query params
-	function updateUrlParams() {
+
+	// Helper to update the URL query params, including page
+       function updateUrlParams() {
+	       justLoaded = false;
+	       const params = new URLSearchParams(window.location.search);
+	       params.set('type', searchType.toLowerCase());
+	       params.set('q', searchQuery);
+	       params.set('page', currentPage);
+	       const newUrl = `${window.location.pathname}?${params.toString()}`;
+	       window.history.replaceState({}, '', newUrl);
+       }
+
+	// Update only the page param in the URL
+	function updatePageParam() {
 		const params = new URLSearchParams(window.location.search);
-		params.set('type', searchType.toLowerCase());
-		params.set('q', searchQuery);
+		params.set('page', currentPage);
 		const newUrl = `${window.location.pathname}?${params.toString()}`;
 		window.history.replaceState({}, '', newUrl);
 	}
 
-	// On mount, read params and set initial state
+	// On mount, read params and set initial state (including page)
 	onMount(async () => {
-		const params = new URLSearchParams(window.location.search);
-		const typeParam = params.get('type');
-		const qParam = params.get('q');
-		if (typeParam && searchTypes.map(t => t.toLowerCase()).includes(typeParam)) {
-			searchType = searchTypes.find(t => t.toLowerCase() === typeParam);
+		function syncFromUrl() {
+			const params = new URLSearchParams(window.location.search);
+			const typeParam = params.get('type');
+			const qParam = params.get('q');
+			const pageParam = params.get('page');
+			if (typeParam && searchTypes.map(t => t.toLowerCase()).includes(typeParam)) {
+				searchType = searchTypes.find(t => t.toLowerCase() === typeParam);
+			}
+			if (qParam !== null) {
+				searchQuery = qParam;
+			}
+			if (pageParam !== null && !isNaN(parseInt(pageParam))) {
+				initialPageFromUrl = Math.max(1, parseInt(pageParam));
+				currentPage = initialPageFromUrl;
+			} else {
+				initialPageFromUrl = 1;
+				currentPage = 1;
+			}
+			initialPageHandled = false;
+			isInitialLoad = true;
 		}
-		if (qParam !== null) {
-			searchQuery = qParam;
-		}
+
+		syncFromUrl();
 		await handleSearchHumans(setHumans);
 		await handleSearchShips(setShips);
 		await handleSearchTransactions(setTransactions);
 		await handleSearchLocations(setLocations);
 		isLoading = false;
+
+		// Listen for browser navigation (back/forward)
+		const popHandler = () => {
+			syncFromUrl();
+		};
+		window.addEventListener('popstate', popHandler);
+
+		// Cleanup
+		return () => {
+			window.removeEventListener('popstate', popHandler);
+		};
 	});
 
 	function setHumans(data) {
@@ -149,9 +256,14 @@
 			return 0;
 		});
 
-		currentPage = 1; 
 		totalPages = Math.max(1, Math.ceil(filteredHumans.length / itemsPerPage));
+	
 	}
+
+
+
+	// SSR-safe: Remove all window usage from reactive blocks. All URL reading is handled in onMount and event handlers only.
+	
 
 	// Reactive statement for filtering ships
 	$: {
@@ -200,6 +312,7 @@
 
 		if (searchType === 'Ships') {
 			totalPages = Math.max(1, Math.ceil(filteredShips.length / itemsPerPage));
+			if (currentPage > totalPages) currentPage = totalPages;
 		}
 	}
 
@@ -267,6 +380,7 @@
 
 		if (searchType === 'Transactions') {
 			totalPages = Math.max(1, Math.ceil(filteredTransactions.length / itemsPerPage));
+			if (currentPage > totalPages) currentPage = totalPages;
 		}
 	}
 
@@ -312,6 +426,7 @@
 
 		if (searchType === 'Locations') {
 			totalPages = Math.max(1, Math.ceil(filteredLocations.length / itemsPerPage));
+			if (currentPage > totalPages) currentPage = totalPages;
 		}
 	}
 
@@ -331,11 +446,33 @@
 
 	// Watch for searchType changes to load appropriate data
 	$: {
-		if (searchType === 'People' && Humans.length === 0 && !isLoading) {
-			isLoading = true;
-			handleSearchHumans(setHumans).then(() => {
-				isLoading = false;
-			});
+		   // Reset page to 1 if searchType or searchQuery changes (and not justLoaded)
+		   if (!justLoaded && (searchType !== prevSearchType || searchQuery !== prevSearchQuery)) {
+			   console.log('[debug] Resetting currentPage to 1 and updating URL to page=1. justLoaded:', justLoaded, 'searchType:', searchType, 'prevSearchType:', prevSearchType, 'searchQuery:', searchQuery, 'prevSearchQuery:', prevSearchQuery);
+			   currentPage = 1;
+			   // Force page=1 in URL
+			   const params = new URLSearchParams(window.location.search);
+			   params.set('page', '1');
+			   const newUrl = `${window.location.pathname}?${params.toString()}`;
+			   window.history.replaceState({}, '', newUrl);
+			   prevSearchType = searchType;
+			   prevSearchQuery = searchQuery;
+		   }
+
+		   if (searchType === 'People' && Humans.length === 0 && !isLoading) {
+			   isLoading = true;
+			   handleSearchHumans(setHumans).then(() => {
+				   isLoading = false;
+				   // Now that totalPages is known, clamp currentPage if needed
+				   syncFromUrl();
+				   // Mark as loaded after sync
+				   setTimeout(() => {
+					   justLoaded = false;
+					   prevSearchType = searchType;
+					   prevSearchQuery = searchQuery;
+					   console.log('[debug] justLoaded set to false, prevSearchType:', prevSearchType, 'prevSearchQuery:', prevSearchQuery);
+				   }, 0);
+			   });
 		} else if (searchType === 'Ships' && Ships.length === 0 && !isLoading) {
 			isLoading = true;
 			handleSearchShips(setShips).then(() => {
@@ -364,9 +501,14 @@
 </script>
 
 {#if isLoading}
-	<div class="loading-screen">
-		<div class="spinner"></div>
-	</div>
+   <div class="loading-overlay">
+	   <div class="loading-modal">
+		   <div class="spinner"></div>
+		   <div class="loading-progress">
+			   Loading... {loadingPercent}%
+		   </div>
+	   </div>
+   </div>
 {:else}
 	<div class="section">
 		<div class="ActionBox">
@@ -421,11 +563,11 @@
 				</table>
 				
 				<div class="pagination">
-					<button on:click={() => currentPage = Math.max(currentPage - 1, 1)} disabled={currentPage === 1}>
+					<button on:click={() => { currentPage = Math.max(currentPage - 1, 1); updatePageParam(); }} disabled={currentPage === 1}>
 						Previous
 					</button>
 					<span>{currentPage} / {totalPages}</span>
-					<button on:click={() => currentPage = Math.min(currentPage + 1, totalPages)} disabled={currentPage === totalPages}>
+					<button on:click={() => { currentPage = Math.min(currentPage + 1, totalPages); updatePageParam(); }} disabled={currentPage === totalPages}>
 						Next
 					</button>
 				</div>
@@ -499,21 +641,20 @@
 				<table class="table is-striped is-hoverable is-fullwidth">
 					<thead>
 						<tr>
-							<th on:click={() => toggleSort('Name')}>Location Name</th>
-							<th on:click={() => toggleSort('LocationType')}>Location Type</th>
 							<th on:click={() => toggleSort('Address')}>Address</th>
 							<th on:click={() => toggleSort('City')}>City</th>
 							<th on:click={() => toggleSort('State')}>State</th>
+							<th on:click={() => toggleSort('LocationType')}>Location Type</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#each displayedLocations as location}
 							<tr on:click={() => window.location.href = `/Reports/Location?LocationId=${location.LocationId}`}>
-								<td>{location.Name || ''}</td>
-								<td>{location.LocationType || ''}</td>
 								<td>{location.Address || ''}</td>
 								<td>{location.City || ''}</td>
 								<td>{location.State || ''}</td>
+								<td>{location.LocationType || ''}</td>
+								
 							</tr>
 						{/each}
 					</tbody>

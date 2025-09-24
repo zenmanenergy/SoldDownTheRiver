@@ -59,7 +59,7 @@ def SaveRawNOLA():
 		DateOfTransaction = request.args.get("DateOfTransaction", "")
 		Act = request.args.get("Act", "")
 		Page = request.args.get("Page", "")
-		NotaryPublic = request.args.get("NotaryPublic", "")
+		Notary = request.args.get("Notary", "")
 		Volume = request.args.get("Volume", "")
 		NameOfTranscriber = request.args.get("NameOfTranscriber", "")
 		ReferenceURL = request.args.get("ReferenceURL", "")
@@ -75,7 +75,7 @@ def SaveRawNOLA():
 			"DateOfTransaction": DateOfTransaction,
 			"Act": Act,
 			"Page": Page,
-			"NotaryPublic": NotaryPublic,
+			"Notary": Notary,
 			"Volume": Volume,
 			"NameOfTranscriber": NameOfTranscriber,
 			"ReferenceURL": ReferenceURL
