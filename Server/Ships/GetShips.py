@@ -8,7 +8,7 @@ def get_ships():
 	query = """
 		SELECT ships.*,
 			(select max(dateAdded) from history where history.KeyValue=ships.ShipId and history.TableName='ships' and history.KeyName='ShipId') LastModified,
-			GROUP_CONCAT(DISTINCT CONCAT(h.FirstName, ' ', h.LastName) ORDER BY h.FirstName, h.LastName SEPARATOR ', ') AS Captains
+			GROUP_CONCAT(DISTINCT CONCAT_WS(h.FirstName, ' ', h.LastName) ORDER BY h.FirstName, h.LastName SEPARATOR ', ') AS Captains
 		FROM ships
 		LEFT JOIN voyages v ON ships.ShipId = v.ShipId
 		LEFT JOIN voyagehumans vh ON v.VoyageId = vh.VoyageId AND vh.RoleId = 'Captain'

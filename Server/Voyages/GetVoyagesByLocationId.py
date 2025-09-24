@@ -43,7 +43,7 @@ def get_voyages_by_location_id(location_id):
 		LEFT JOIN locations endloc ON v.EndLocationId = endloc.LocationId
 		
 		LEFT JOIN (
-			SELECT vh1.VoyageId, GROUP_CONCAT(CONCAT(h1.FirstName, ' ', h1.LastName) SEPARATOR ', ') AS Captains
+			SELECT vh1.VoyageId, GROUP_CONCAT(CONCAT_WS(h1.FirstName, ' ', h1.LastName) SEPARATOR ', ') AS Captains
 			FROM voyagehumans vh1
 			LEFT JOIN humans h1 ON vh1.HumanId = h1.HumanId
 			WHERE vh1.RoleId = 'Captain'
@@ -51,7 +51,7 @@ def get_voyages_by_location_id(location_id):
 		) captains ON v.VoyageId = captains.VoyageId
 		
 		LEFT JOIN (
-			SELECT vh2.VoyageId, GROUP_CONCAT(CONCAT(h2.FirstName, ' ', h2.LastName) SEPARATOR ', ') AS Agents
+			SELECT vh2.VoyageId, GROUP_CONCAT(CONCAT_WS(h2.FirstName, ' ', h2.LastName) SEPARATOR ', ') AS Agents
 			FROM voyagehumans vh2
 			LEFT JOIN humans h2 ON vh2.HumanId = h2.HumanId
 			WHERE vh2.RoleId LIKE '%Agent%'
@@ -59,7 +59,7 @@ def get_voyages_by_location_id(location_id):
 		) agents ON v.VoyageId = agents.VoyageId
 		
 		LEFT JOIN (
-			SELECT vh3.VoyageId, GROUP_CONCAT(CONCAT(h3.FirstName, ' ', h3.LastName) SEPARATOR ', ') AS Traders
+			SELECT vh3.VoyageId, GROUP_CONCAT(CONCAT_WS(h3.FirstName, ' ', h3.LastName) SEPARATOR ', ') AS Traders
 			FROM voyagehumans vh3
 			LEFT JOIN humans h3 ON vh3.HumanId = h3.HumanId
 			WHERE vh3.RoleId LIKE '%Trader%'
