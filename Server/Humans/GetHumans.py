@@ -8,10 +8,16 @@ def get_humans(Search=None, LastFetchTime=None):
 	# Construct the SQL query
 	query = """
 		SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.isCompany, h.BirthDate, h.BirthDateAccuracy,
-		       h.RacialDescriptor, h.Sex, h.Height_cm,
-		       GROUP_CONCAT(CONCAT_WS(' ', ha.AKAFirstName, ha.AKAMiddleName, ha.AKALastName) ORDER BY ha.AKAHumanId SEPARATOR ', ') AS AlsoKnownAs
+			   h.RacialDescriptor, h.Sex, 
+			   GROUP_CONCAT(CONCAT_WS(' ', ha.AKAFirstName, ha.AKAMiddleName, ha.AKALastName) ORDER BY ha.AKAHumanId SEPARATOR ', ') AS AlsoKnownAs,
+			   GROUP_CONCAT(DISTINCT AllRoles.RoleId) AS Roles
 		FROM humans h
 		LEFT JOIN humansaka ha ON h.HumanId = ha.HumanId
+		LEFT JOIN (
+			SELECT HumanId, RoleId FROM transactionhumans
+			UNION
+			SELECT HumanId, RoleId FROM voyagehumans
+		) AllRoles ON h.HumanId = AllRoles.HumanId
 		WHERE 1=1
 	"""
 	values = []
@@ -20,6 +26,14 @@ def get_humans(Search=None, LastFetchTime=None):
 	if Search:
 		query += " AND h.FirstName = %s"
 		values.append(Search)
+
+
+
+
+
+
+
+
 
 	# Add LastFetchTime filter if provided and valid
 	if LastFetchTime:
@@ -34,8 +48,9 @@ def get_humans(Search=None, LastFetchTime=None):
 	query += """
 		GROUP BY h.HumanId
 		ORDER BY h.LastName, h.FirstName, h.MiddleName
+		
 	"""
-
+	print(query)
 	# Debugging: Print the query and values for troubleshooting
 	# print("Executing query:", query)
 	# print("With values:", values)
@@ -61,6 +76,7 @@ def search_humans(Query=None, LastFetchTime=None):
 		FROM humans h
 		LEFT JOIN humansaka ha ON h.HumanId = ha.HumanId
 		WHERE 1=1
+		
 	"""
 	values = []
 

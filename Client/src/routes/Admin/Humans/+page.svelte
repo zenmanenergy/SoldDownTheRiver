@@ -2,6 +2,11 @@
 	@import '/static/FormPages.css';
 </style>
 <script>
+// Helper to clip long text and add ellipsis
+function clipText(text, maxLength = 40) {
+	if (!text) return '';
+	return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+}
 	import moment from 'moment';
 	import { onMount } from 'svelte';
 	import { Session } from "../../Session.js";
@@ -71,7 +76,6 @@
 				formatBirthDate(human.BirthDate, human.BirthDateAccuracy),
 				human.RacialDescriptor,
 				human.Sex,
-				human.Height_in ? human.Height_in.toString() : '',
 				human.Roles ? human.Roles.join(', ') : '',
 				human.HumanId, // Include HumanId in the search,
 				human.AlsoKnownAs ? human.AlsoKnownAs.join(', ') : ''
@@ -152,20 +156,18 @@
 						<th on:click={() => toggleSort('BirthDate')}>Birth Date</th>
 						<th on:click={() => toggleSort('RacialDescriptor')}>Racial Descriptor</th>
 						<th on:click={() => toggleSort('Sex')}>Sex</th>
-						<th on:click={() => toggleSort('Height_in')}>Height (inches)</th>
 						<th on:click={() => toggleSort('Roles')}>Roles</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each displayedHumans as human}
 						<tr on:click={() => window.open(`/Admin/Human?HumanId=${human.HumanId}`, '_blank')}>
-							<td>{human.FirstName || ''}{' ' & human.MiddleName || ''}</td>
-							<td>{human.LastName || ''}</td>
-							<td>{formatBirthDate(human.BirthDate, human.BirthDateAccuracy) || ''}</td>
-							<td>{human.RacialDescriptor || ''}</td>
-							<td>{human.Sex || ''}</td>
-							<td>{human.Height_in ? `${human.Height_in} in` : ''}</td>
-							<td>{human.Roles.length > 0 ? human.Roles.join(', ') : ''}</td>
+							<td>{clipText((human.FirstName || '') + (human.MiddleName ? ' ' + human.MiddleName : ''))}</td>
+							<td>{clipText(human.LastName || '')}</td>
+							<td>{clipText(formatBirthDate(human.BirthDate, human.BirthDateAccuracy) || '')}</td>
+							<td>{clipText(human.RacialDescriptor || '')}</td>
+							<td>{clipText(human.Sex || '')}</td>
+							<td>{clipText(human.Roles && human.Roles.length > 0 ? human.Roles.join(', ') : '')}</td>
 						</tr>
 					{/each}
 				</tbody>

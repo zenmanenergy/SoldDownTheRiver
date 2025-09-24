@@ -26,7 +26,6 @@ export async function handleGetHumans(SessionId, callback) {
 		BirthDateAccuracy: human.BirthDateAccuracy || '',
 		RacialDescriptor: human.RacialDescriptor || '',
 		Sex: human.Sex || '',
-		Height_in: human.Height_in || '',
 		Roles: human.Roles ? human.Roles.split(', ') : [],
 		AlsoKnownAs: human.AlsoKnownAs ? human.AlsoKnownAs.split(', ') : []
 	}));
