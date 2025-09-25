@@ -74,17 +74,30 @@ def save_mergehumans(HumanId, MergeHumanId):
 		]
 		
 		# Update all references to point to the new merged human
+	
 		for table, column in tables:
-			update_query = f"""
+			update_query_1 = f"""
 			UPDATE {table} SET {column} = '{NewHumanId}', DateUpdated = NOW()
 			WHERE {column} = '{HumanId}'
 			"""
-			cursor.execute(update_query)
-			update_query = f"""
+			update_query_2 = f"""
 			UPDATE {table} SET {column} = '{NewHumanId}', DateUpdated = NOW()
 			WHERE {column} = '{MergeHumanId}'
 			"""
-			cursor.execute(update_query)
+			try:
+				cursor.execute(update_query_1)
+			except Exception as e:
+				if hasattr(e, 'args') and e.args and '1062' in str(e.args[0]):
+					pass  # Ignore duplicate entry error
+				else:
+					raise
+			try:
+				cursor.execute(update_query_2)
+			except Exception as e:
+				if hasattr(e, 'args') and e.args and '1062' in str(e.args[0]):
+					pass  # Ignore duplicate entry error
+				else:
+					raise
 		
 		# Update voyages table where humans are captains
 		update_query = f"""

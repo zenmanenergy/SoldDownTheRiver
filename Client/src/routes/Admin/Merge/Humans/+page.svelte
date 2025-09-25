@@ -56,6 +56,7 @@
 		filteredHumans = Humans.filter(human => {
 			const search = searchQuery.toLowerCase();
 			const values = [
+				human.HumanId,
 				human.FirstName,
 				human.MiddleName,
 				human.LastName,

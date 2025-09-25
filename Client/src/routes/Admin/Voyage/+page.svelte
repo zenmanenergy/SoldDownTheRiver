@@ -532,7 +532,7 @@
 							</thead>
 							<tbody>
 								{#each VoyageHumans.filter(h => h.Role === 'Enslaved') as Human}
-									<tr on:click={() => window.location.href = `/Admin/Human?HumanId=${Human.HumanId}`}>
+									<tr on:click={() => window.open(`/Admin/Human?HumanId=${Human.HumanId}`, '_blank')}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
 										<td>
