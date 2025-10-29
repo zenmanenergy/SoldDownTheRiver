@@ -446,6 +446,8 @@ def get_combinedtimelines(HumanId):
 			row['Description'] = " ".join(name_parts)
 			response['combinedTimeLine'].append(row)
 
+		# Sort the combined timeline by date
+		response['combinedTimeLine'].sort(key=lambda x: x.get('DateCirca') or '1900-01-01')
 
 		return {"success": True, "data": response}
 	except Exception as e:

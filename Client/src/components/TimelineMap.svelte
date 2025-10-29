@@ -55,7 +55,7 @@
 
     // Redraw path and markers when Voyage or Locations change
     $: if (mapInitialized && Locations.length > 0) {
-        console.log('TimelineMap: Locations passed to map:', Locations);
+        // console.log('TimelineMap: Locations passed to map:', Locations);
         timelineMap.addMapMarkers(Voyage, Locations);
         const latlng = getStartEndLatLng();
         if (latlng) {

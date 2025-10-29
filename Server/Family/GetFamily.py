@@ -52,7 +52,6 @@ def get_family(HumanId):
 
 		ORDER BY RelationType DESC, Depth ASC, LastName, FirstName;
 	"""
-	print(sql)
 	cursor.execute(sql)
 
 	relatives = list(cursor.fetchall())
@@ -73,7 +72,6 @@ def get_family(HumanId):
 		AND r2.ChildHumanId != '{HumanId}';
 		"""
 	cursor.execute(sql)
-	print(sql)
 
 	siblings = list(cursor.fetchall())
 

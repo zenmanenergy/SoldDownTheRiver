@@ -25,7 +25,7 @@ def get_human_voyages(HumanId):
     """
 
     # Print the SQL query with the actual HumanId value
-    print(query)
+    # print(query)
 
     # Execute the query and get the results
     cursor.execute(query, (HumanId,))

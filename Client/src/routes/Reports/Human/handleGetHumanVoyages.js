@@ -10,7 +10,7 @@ export async function handleGetHumanVoyages(HumanId) {
 
 	try {
 		const response = await SuperFetch(url, Data, FormValid);
-		console.log('Full Response:', response); // Debugging information
+		// console.log('Full Response:', response); // Debugging information
 		if (response) {
 			return response; // Return the response directly
 		} else {
