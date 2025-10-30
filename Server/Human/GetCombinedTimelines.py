@@ -35,36 +35,43 @@ def get_combinedtimelines(HumanId):
 			ORDER BY ht.Date_Circa ASC
 		"""
 		cursor.execute(query, (HumanId,))
-		# response['knowntimelines'] = cursor.fetchall() 
+		response['knowntimelines'] = cursor.fetchall() 
 		
-		# for timelinerow in knowntimelines:
-		# 	row={}
-		# 	row['DateCirca']=timelinerow['Date_Circa']
-		# 	row['DateAccuracy']=timelinerow['Date_Accuracy']
-		# 	if timelinerow['LocationType']=="Voyage Start":
-		# 		row['Description']="Starte"
-
-		# 	Date_Circa=row['Date_Circa']
-		# 	if row['RoleId'] == "Buyer":
-		# 		description=row['FirstName'] + ' ' + row['LastName']
-		# 	else:
-		# 		description=''
-		# 	entry = {
-		# 		'LocationId': row['LocationId'],
-		# 		'Date_Accuracy': row['Date_Accuracy'],
-		# 		'LocationType': row['LocationType'],
-		# 		'RoleId': row['RoleId'],
-		# 		'Address': row['Address'],
-		# 		'City': row['City'],
-		# 		'County': row['County'],
-		# 		'State': row['State'],
-		# 		'State_abbr': row['State_abbr'],
-		# 		'Country': row['Country'],
-		# 		'Latitude': row['Latitude'],
-		# 		'Longitude': row['Longitude']
-		# 	}
-
-		# combined.append(entry)
+		# Process known timelines and add them to the combined timeline
+		for timelinerow in response['knowntimelines']:
+			row = {}
+			row['DateCirca'] = timelinerow['Date_Circa']
+			row['DateAccuracy'] = timelinerow['Date_Accuracy']
+			row['Latitude'] = timelinerow['Latitude']
+			row['Longitude'] = timelinerow['Longitude']
+			
+			# Build description based on location type and role
+			description_parts = []
+			
+			if timelinerow['LocationType']:
+				description_parts.append(f"Location Type: {timelinerow['LocationType']}")
+			
+			if timelinerow['RoleId']:
+				description_parts.append(f"Role: {timelinerow['RoleId']}")
+			
+			# Add location information
+			location_parts = []
+			if timelinerow['Address']:
+				location_parts.append(timelinerow['Address'])
+			if timelinerow['City']:
+				location_parts.append(timelinerow['City'])
+			if timelinerow['County']:
+				location_parts.append(timelinerow['County'])
+			if timelinerow['State']:
+				location_parts.append(timelinerow['State'])
+			if timelinerow['Country']:
+				location_parts.append(timelinerow['Country'])
+			
+			if location_parts:
+				description_parts.append(f"Location: {', '.join(location_parts)}")
+			
+			row['Description'] = " - ".join(description_parts) if description_parts else "Timeline entry"
+			response['combinedTimeLine'].append(row)
 		query = """
 			SELECT distinct
 			t.TransactionId,
@@ -447,7 +454,17 @@ def get_combinedtimelines(HumanId):
 			response['combinedTimeLine'].append(row)
 
 		# Sort the combined timeline by date
-		response['combinedTimeLine'].sort(key=lambda x: x.get('DateCirca') or '1900-01-01')
+		def get_sort_key(item):
+			date_value = item.get('DateCirca')
+			if not date_value:
+				return '1900-01-01'
+			# Convert to string for consistent comparison
+			if hasattr(date_value, 'strftime'):
+				return date_value.strftime('%Y-%m-%d')
+			return str(date_value)
+		
+		response['combinedTimeLine'].sort(key=get_sort_key)
+
 
 		return {"success": True, "data": response}
 	except Exception as e:
@@ -565,7 +582,7 @@ def NotaryDescription(transaction, name_parts):
 	sellers = []
 	for seller in transaction.get('Seller', []):
 		seller_name = " ".join(
-			filter(None, [seller.get('FirstName'), seller.get('LastName')])
+			filter(None, [seller.get('FirstName'), "" ,seller.get('LastName')])
 		)
 		link = f'<a href="/Reports/Human?HumanId={seller.get("HumanId")}">{seller_name}</a>'
 		sellers.append(link)
