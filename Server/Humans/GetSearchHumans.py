@@ -28,6 +28,7 @@ def get_search_humans(Search=None, LastFetchTime=None):
 				SELECT HumanId, RoleId AS RoleIdAll FROM voyagehumans
 			) roles_all ON h.HumanId = roles_all.HumanId
 		WHERE 1=1
+		and h.isApproved=1
 	"""
 	values = []
 

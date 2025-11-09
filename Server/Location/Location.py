@@ -26,9 +26,10 @@ def SaveLocation():
 		Country = location_data.get('Country', None)
 		Latitude = location_data.get('Latitude', None)
 		Longitude = location_data.get('Longitude', None)
+		isApproved = location_data.get('isApproved', False)
 
 		# Call the save_location function from SaveLocation.py with the extracted data
-		result = save_location(LocationId, Name,Address,City, State, County, Country, Latitude, Longitude)
+		result = save_location(LocationId, Name,Address,City, State, County, Country, Latitude, Longitude, isApproved)
 		
 
 		return result

@@ -3,7 +3,7 @@ import { SuperFetch } from '../SuperFetch';
 
 export async function handleSearchLocations(callback) {
 	const Data = {};
-	const url = baseURL + '/Locations/GetLocations?';
+	const url = baseURL + '/Locations/GetSearchLocations?';
 	const FormValid = true;
 
 	let data = await SuperFetch(url, Data, FormValid);

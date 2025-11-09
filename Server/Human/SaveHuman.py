@@ -7,7 +7,7 @@ def convert_empty_to_none(val):
 def save_human(HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, BirthDateAccuracy, 
 			   RacialDescriptor, Sex, Height_cm, Notes, age_string=None, 
 			   BirthPlace=None, originCity=None, physical_features=None, 
-			   profession=None, mergedHumanId=None, spouseHumanId=None):
+			   profession=None, mergedHumanId=None, spouseHumanId=None, isApproved=False):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
@@ -30,6 +30,9 @@ def save_human(HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, B
 	profession = convert_empty_to_none(profession)
 	mergedHumanId = convert_empty_to_none(mergedHumanId)
 	spouseHumanId = convert_empty_to_none(spouseHumanId)
+	
+	# Convert isApproved to boolean (ensure it's either 0 or 1)
+	isApproved = 1 if str(isApproved).lower() in ["true", "1", "yes"] else 0
 
 	if HumanId:
 		query = """
@@ -37,18 +40,18 @@ def save_human(HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, B
 			SET FirstName = %s, MiddleName = %s, LastName = %s, isCompany=%s, BirthDate = %s, BirthDateAccuracy = %s, 
 				RacialDescriptor = %s, Sex = %s, Height_cm = %s, Notes = %s, 
 				age_string = %s, BirthPlace = %s, originCity = %s, physical_features = %s, 
-				profession = %s, mergedHumanId = %s, spouseHumanId = %s, DateUpdated = NOW() 
+				profession = %s, mergedHumanId = %s, spouseHumanId = %s, isApproved = %s, DateUpdated = NOW() 
 			WHERE HumanId = %s
 		"""
 		values = (FirstName, MiddleName, LastName, isCompany, BirthDate, BirthDateAccuracy, RacialDescriptor, Sex, Height_cm, 
-				  Notes, age_string, BirthPlace, originCity, physical_features, profession, mergedHumanId, spouseHumanId, HumanId)
+				  Notes, age_string, BirthPlace, originCity, physical_features, profession, mergedHumanId, spouseHumanId, isApproved, HumanId)
 	else:
 		HumanId = "HUM" + str(uuid.uuid4())
 		query = """
 			INSERT INTO humans (HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, BirthDateAccuracy, 
 				RacialDescriptor, Sex, Height_cm, Notes, age_string, BirthPlace, originCity, 
-				physical_features, profession, mergedHumanId, spouseHumanId, DateUpdated) 
-			VALUES (%s, %s, %s, %s, %s, %s, %s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+				physical_features, profession, mergedHumanId, spouseHumanId, isApproved, DateUpdated) 
+			VALUES (%s, %s, %s, %s, %s, %s, %s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
 			ON DUPLICATE KEY UPDATE 
 				FirstName = VALUES(FirstName), MiddleName = VALUES(MiddleName), LastName = VALUES(LastName), isCompany = VALUES(isCompany), 
 				BirthDate = VALUES(BirthDate), BirthDateAccuracy = VALUES(BirthDateAccuracy), 
@@ -56,10 +59,10 @@ def save_human(HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, B
 				Height_cm = VALUES(Height_cm), Notes = VALUES(Notes), 
 				age_string = VALUES(age_string), BirthPlace = VALUES(BirthPlace), originCity = VALUES(originCity), 
 				physical_features = VALUES(physical_features), profession = VALUES(profession), 
-				mergedHumanId = VALUES(mergedHumanId), spouseHumanId = VALUES(spouseHumanId), DateUpdated = NOW()
+				mergedHumanId = VALUES(mergedHumanId), spouseHumanId = VALUES(spouseHumanId), isApproved = VALUES(isApproved), DateUpdated = NOW()
 		"""
 		values = (HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, BirthDateAccuracy, RacialDescriptor, Sex, Height_cm, 
-				  Notes, age_string, BirthPlace, originCity, physical_features, profession, mergedHumanId, spouseHumanId)
+				  Notes, age_string, BirthPlace, originCity, physical_features, profession, mergedHumanId, spouseHumanId, isApproved)
 
 	cursor.execute(query, values)
 	connection.commit()

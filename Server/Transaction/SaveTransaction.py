@@ -74,6 +74,24 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 	# Print and execute the query
 	print("Executing SQL:\n" + query + "\nWith params:\n" + str(params) + "\n")
 	cursor.execute(query, params)
+	
+	# Update the isApproved status for the associated location
+	if LocationId:
+		location_query = "UPDATE locations SET isApproved=%s WHERE LocationId=%s"
+		location_params = (1 if isApproved else 0, LocationId)
+		print("Executing Location SQL:\n" + location_query + "\nWith params:\n" + str(location_params) + "\n")
+		cursor.execute(location_query, location_params)
+	
+	# Update the isApproved status for humans associated with this transaction
+	human_query = """UPDATE humans SET isApproved=%s 
+					WHERE HumanId IN (
+						SELECT HumanId FROM transactionhumans 
+						WHERE TransactionId=%s
+					)"""
+	human_params = (1 if isApproved else 0, TransactionId)
+	print("Executing Human SQL:\n" + human_query + "\nWith params:\n" + str(human_params) + "\n")
+	cursor.execute(human_query, human_params)
+	
 	connection.commit()
 	
 	connection.close()

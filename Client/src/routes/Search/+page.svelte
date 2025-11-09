@@ -531,10 +531,23 @@ let justLoaded = true;
 				</div>
 				<div class="field">
 					<div class="control">
-						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" on:input={updateUrlParams} />
+						<input class="input" type="text" bind:value={searchQuery} placeholder="Search" on:input={updateUrlParams} />
 					</div>
 				</div>
 			</form>
+			
+			<!-- Results count display -->
+			<div class="results-count" style="margin: 1rem 0; font-weight: bold; color: #363636;">
+				{#if searchType === 'People'}
+					Showing {filteredHumans.length} result{filteredHumans.length !== 1 ? 's' : ''}
+				{:else if searchType === 'Ships'}
+					Showing {filteredShips.length} result{filteredShips.length !== 1 ? 's' : ''}
+				{:else if searchType === 'Transactions'}
+					Showing {filteredTransactions.length} result{filteredTransactions.length !== 1 ? 's' : ''}
+				{:else if searchType === 'Locations'}
+					Showing {filteredLocations.length} result{filteredLocations.length !== 1 ? 's' : ''}
+				{/if}
+			</div>
 			
 			{#if searchType === 'People'}
 				<table class="table is-striped is-hoverable is-fullwidth">

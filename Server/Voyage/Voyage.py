@@ -35,9 +35,10 @@ def SaveVoyage():
 		StartDate = Voyage_data.get('StartDate', None)
 		EndDate = Voyage_data.get('EndDate', None)
 		Notes = Voyage_data.get('Notes', None)
+		isApproved = Voyage_data.get('isApproved', False)
 
 		# Call the save_Voyage function from SaveVoyage.py with the extracted data
-		result = save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId, StartDate, EndDate, Notes)
+		result = save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId, StartDate, EndDate, Notes, isApproved)
 		
 		
 		return result

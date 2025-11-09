@@ -1,6 +1,6 @@
 from _Lib import Database
 
-def get_transactions():
+def get_searchtransactions():
 	
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
@@ -18,7 +18,6 @@ def get_transactions():
 			t.URL,
 			t.TotalPrice,
 			t.LocationId,
-			t.isApproved,
 
 			l.Address AS LocationAddress,
 			l.City AS LocationCity,
@@ -53,6 +52,7 @@ def get_transactions():
 			GROUP BY th3.TransactionId
 		) b ON t.TransactionId = b.TransactionId
 
+		where t.isApproved=1
 		ORDER BY t.date_circa DESC
 	"""
 

@@ -37,6 +37,31 @@
 		margin-top: 1rem;
 		gap: 1rem;
 	}
+
+	.field.is-grouped {
+		display: flex;
+		align-items: flex-end;
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.field.is-grouped .control.is-expanded {
+		flex: 1;
+	}
+
+	.field.is-grouped .control {
+		margin-bottom: 0;
+	}
+
+	.field.is-grouped .input,
+	.field.is-grouped .select select {
+		height: 2.5rem;
+		box-sizing: border-box;
+	}
+
+	.field.is-grouped .select {
+		height: 2.5rem;
+	}
 </style>
 
 <script>
@@ -49,6 +74,7 @@
 	let filteredTransactions = [];
 	let isLoading = true;
 	let searchQuery = '';
+	let filterOption = 'all';
 
 	let sortColumn = 'date_circa';
 	let sortAscending = true;
@@ -110,6 +136,12 @@
 	// Updated filteredTransactions to include transactionId and nola_id in the search string
 	$: filteredTransactions = Transactions
 		.filter(transaction => {
+			// Filter by approval status
+			if (filterOption === 'unapproved' && transaction.isApproved !== 0) {
+				return false;
+			}
+			
+			// Filter by search query
 			const fullTransaction = `
 				${transaction.Sellers} 
 				${transaction.Buyers} 
@@ -178,9 +210,17 @@
 			</div>
 			
 			<form>
-				<div class="field">
-					<div class="control">
+				<div class="field is-grouped">
+					<div class="control is-expanded">
 						<input class="input" type="text" bind:value={searchQuery} on:input={() => currentPage = 1} placeholder="Search by name or location" />
+					</div>
+					<div class="control">
+						<div class="select">
+							<select bind:value={filterOption} on:change={() => currentPage = 1}>
+								<option value="all">Show all</option>
+								<option value="unapproved">Unapproved</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			</form>

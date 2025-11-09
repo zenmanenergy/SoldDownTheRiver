@@ -1,19 +1,15 @@
 from _Lib import Database
 
-def get_transactions(TransactionId, TransactionDate):
-	
+def get_search_locations():
 	
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = "SELECT *"
-	query += " from transactions WHERE TransactionId like %s and TransactionDate like %s and isApproved=1"
-	values = (TransactionId + '%', TransactionDate + '%')
-
-
-	#Business isn't there??? So fix this later probably
-
+	query = "SELECT distinct *"
+	query +="   from locations where isApproved =1 order by Address"
+	# query +=" limit 50"
+	values = ()
 
 
 	# Execute the query and get the results
@@ -25,5 +21,5 @@ def get_transactions(TransactionId, TransactionDate):
 	# Close the database connection
 	connection.close()
 	
-	# Return the result as a dictionary
+	
 	return result

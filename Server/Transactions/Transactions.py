@@ -4,6 +4,7 @@ from flask import Blueprint, request
 from flask_cors import CORS, cross_origin
 from .GetTransactions import get_transactions
 from .GetTransactionsByLocationId import get_transactions_by_location_id
+from .GetSearchTransactions import get_searchtransactions
 
 blueprint = Blueprint('Transactions', __name__)
 
@@ -20,7 +21,18 @@ def GetTransactions():
 		return result
 	except Exception as e:
 		return Debugger(e)
+@blueprint.route("/Transactions/GetSearchTransactions", methods=['GET'])
+@cross_origin()
+def GetSearchTransactions():
+	try:
+		# Get the transaction data from the request
+		transaction_data = request.args.to_dict()
 
+		# Call the get_transactions function from GetTransactions.py
+		result = get_searchtransactions()
+		return result
+	except Exception as e:
+		return Debugger(e)
 
 @blueprint.route("/Transactions/GetTransactionsByLocationId", methods=['GET'])
 @cross_origin()

@@ -6,7 +6,7 @@ def get_voyages():
 
 	# Construct the SQL query for voyages
 	
-	sql = f"SELECT voyages.VoyageId, voyages.Notes, voyages.StartDate, voyages.EndDate, ships.ShipName,"
+	sql = f"SELECT voyages.VoyageId, voyages.Notes, voyages.StartDate, voyages.EndDate, voyages.isApproved, ships.ShipName,"
 	sql += f" startlocation.Address StartAddress, startlocation.City StartCity, startlocation.State StartState, endlocation.Address EndAddress, endlocation.City EndCity, endlocation.State EndState,"
 	sql += f" (select max(dateAdded) from history where history.KeyValue=voyages.VoyageId and history.TableName='voyages' and history.KeyName='VoyageId') LastModified "
 	sql += f" from voyages join ships on voyages.shipId=ships.ShipId "

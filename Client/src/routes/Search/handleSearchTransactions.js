@@ -3,7 +3,7 @@ import { SuperFetch } from '../SuperFetch';
 
 export async function handleSearchTransactions(callback) {
 	const Data = {};
-	const url = baseURL + '/Transactions/GetTransactions?'; 
+	const url = baseURL + '/Transactions/GetSearchTransactions?'; 
 	const FormValid = true;
 
 	let data = await SuperFetch(url, Data, FormValid);

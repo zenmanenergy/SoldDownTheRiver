@@ -51,12 +51,13 @@ def SaveHuman():
 		profession = human_data.get('profession', None)
 		mergedHumanId = human_data.get('mergedHumanId', None)
 		spouseHumanId = human_data.get('spouseHumanId', None)
+		isApproved = human_data.get('isApproved', False)
 
 		# Call the save_human function with the extracted data
 		result = save_human(
 			HumanId, FirstName, MiddleName, LastName, isCompany, BirthDate, BirthDateAccuracy,
 			RacialDescriptor, Sex, Height_cm, Notes, age_string, BirthPlace,
-			originCity, physical_features, profession, mergedHumanId, spouseHumanId
+			originCity, physical_features, profession, mergedHumanId, spouseHumanId, isApproved
 		)
 		HumanId = result['HumanId']
 		History.SaveHistory(human_data, "humans", "HumanId", result["HumanId"])

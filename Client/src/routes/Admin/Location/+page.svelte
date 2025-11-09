@@ -34,7 +34,8 @@
 		Country: "",
 		Latitude: "",
 		Longitude: "",
-		LastModified: ""
+		LastModified: "",
+		isApproved: false
 	};
 
 	async function setLocation(data) {
@@ -48,6 +49,7 @@
 		Location.Latitude = data.Latitude || "";
 		Location.Longitude = data.Longitude || "";
 		Location.LastModified = data.LastModified || "";
+		Location.isApproved = data.isApproved || false;
 	}
 
 	$: {
@@ -191,6 +193,15 @@
 					<div class="control">
 						<input class="input" type="number" id="Longitude" placeholder="Enter Longitude" bind:value={Location.Longitude}  step="any" />
 					</div>
+				</div>
+
+				<h4 class="title is-4">Reviewer ONLY:</h4>
+				<!-- isApproved Checkbox -->
+				<div class="field">
+					<label class="checkbox">
+						<input type="checkbox" bind:checked={Location.isApproved} />
+						Approved
+					</label>
 				</div>
 
 				<div class="field">

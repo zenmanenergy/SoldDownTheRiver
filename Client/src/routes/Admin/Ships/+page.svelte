@@ -1,5 +1,38 @@
 <style>
 	@import '/static/FormPages.css';
+
+	.field.is-grouped {
+		display: flex;
+		align-items: flex-end;
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.field.is-grouped .control.is-expanded {
+		flex: 1;
+	}
+
+	.field.is-grouped .control {
+		margin-bottom: 0;
+	}
+
+	.field.is-grouped .input,
+	.field.is-grouped .select select {
+		height: 2.5rem;
+		box-sizing: border-box;
+	}
+
+	.field.is-grouped .select {
+		height: 2.5rem;
+	}
+
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
 </style>
 
 <script>
@@ -12,6 +45,7 @@
 	let filteredShips = [];
 	let isLoading = true;
 	let searchQuery = '';
+	let filterOption = 'all';
 
 	let currentPage = 1;
 	let itemsPerPage = 50;
@@ -32,6 +66,11 @@
 
 	$: {
 		filteredShips = Ships.filter(ship => {
+			// Filter by approval status
+			if (filterOption === 'unapproved' && ship.isApproved !== 0) {
+				return false;
+			}
+			
 			const search = searchQuery.toLowerCase();
 			const values = [
 				ship.ShipName,
@@ -87,9 +126,17 @@
 				<button class="button is-primary" on:click={addShip}>Add Ship</button>
 			</div>
 			<form>
-				<div class="field">
-					<div class="control">
+				<div class="field is-grouped">
+					<div class="control is-expanded">
 						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" />
+					</div>
+					<div class="control">
+						<div class="select">
+							<select bind:value={filterOption}>
+								<option value="all">Show all</option>
+								<option value="unapproved">Unapproved</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			</form>

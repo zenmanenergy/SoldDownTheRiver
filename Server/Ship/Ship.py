@@ -28,9 +28,10 @@ def SaveShip():
 		ShipType = ship_data.get('ShipType', None)
 		Size = ship_data.get('Size', None)
 		HomePortLocationId = ship_data.get('HomePortLocationId', None)
+		isApproved = ship_data.get('isApproved', False)
 
 		# Call the save_ship function from SaveShip.py with the extracted data
-		result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId)
+		result = save_ship(ShipId, ShipName, BuildDate, Notes, ShipType, Size, HomePortLocationId, isApproved)
 		History.SaveHistory(ship_data, "ships", "ShipId", result["ShipId"])
 
 		return result

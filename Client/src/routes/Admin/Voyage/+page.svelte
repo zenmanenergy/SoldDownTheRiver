@@ -29,7 +29,7 @@
 	// let VoyageHumanId="";
 	// let VoyageHumanRoleId="";
 	// let VoyageHumanNotes="";
-	let Voyage={VoyageId:"", ShipId:ShipId, StartLocationId:"", EndLocationId:"", StartDate:null, EndDate:null, Notes:""};
+	let Voyage={VoyageId:"", ShipId:ShipId, StartLocationId:"", EndLocationId:"", StartDate:null, EndDate:null, Notes:"", isApproved:false};
 	let Ships=[]
 	let Humans = [];
 	let VoyageHumans=[];
@@ -165,6 +165,7 @@
 				Voyage.EndDate = moment.utc(data.EndDate).format("YYYY-MM-DD")||"";
 			}
 			Voyage.Notes = data.Notes || "";
+			Voyage.isApproved = data.isApproved || false;
 		}
 	}
 	async function setShips(data) {
@@ -406,7 +407,14 @@
 					</div>
 				</div>
 				
-				
+				<h4 class="title is-4">Reviewer ONLY:</h4>
+				<!-- isApproved Checkbox -->
+				<div class="field">
+					<label class="checkbox">
+						<input type="checkbox" bind:checked={Voyage.isApproved} />
+						Approved
+					</label>
+				</div>
 					
 				<div class="field">
 					<div class="control">

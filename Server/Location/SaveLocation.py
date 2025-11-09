@@ -5,7 +5,7 @@ import googlemaps
 # Initialize Google Maps client
 gmaps = googlemaps.Client(key='AIzaSyB_a1_JJZBF0g43m9KeKVrSlr7ik6_AN_Y')
 
-def save_location(LocationId, Name, Address, City, State, County, Country, Latitude, Longitude):
+def save_location(LocationId, Name, Address, City, State, County, Country, Latitude, Longitude, isApproved=False):
 	# Connect to the database
 	cursor, connection = Database.ConnectToDatabase()
 
@@ -46,6 +46,9 @@ def save_location(LocationId, Name, Address, City, State, County, Country, Latit
 	County = f"'{County}'" if County else 'NULL'
 	State = f"'{State}'" if State else 'NULL'
 	Country = f"'{Country}'" if Country else 'NULL'
+	
+	# Convert isApproved to boolean (ensure it's either 0 or 1)
+	isApproved = 1 if str(isApproved).lower() in ["true", "1", "yes"] else 0
 
 	if LocationId:
 		# Update existing location
@@ -59,6 +62,7 @@ def save_location(LocationId, Name, Address, City, State, County, Country, Latit
 			Country = {Country}, 
 			Latitude = {Latitude}, 
 			Longitude = {Longitude}, 
+			isApproved = {isApproved},
 			DateUpdated = NOW() 
 		WHERE LocationId = '{LocationId}'
 		"""
@@ -68,8 +72,8 @@ def save_location(LocationId, Name, Address, City, State, County, Country, Latit
 
 		# Insert new location
 		sql = f"""
-		INSERT INTO locations (LocationId, Name, Address, City, County, State, Country, Latitude, Longitude, DateUpdated)
-		VALUES ('{LocationId}', {Name}, {Address}, {City}, {County}, {State}, {Country}, {Latitude}, {Longitude}, NOW())
+		INSERT INTO locations (LocationId, Name, Address, City, County, State, Country, Latitude, Longitude, isApproved, DateUpdated)
+		VALUES ('{LocationId}', {Name}, {Address}, {City}, {County}, {State}, {Country}, {Latitude}, {Longitude}, {isApproved}, NOW())
 		ON DUPLICATE KEY UPDATE 
 			Name = VALUES(Name),
 			Address = VALUES(Address),
@@ -79,6 +83,7 @@ def save_location(LocationId, Name, Address, City, State, County, Country, Latit
 			Country = VALUES(Country), 
 			Latitude = VALUES(Latitude), 
 			Longitude = VALUES(Longitude), 
+			isApproved = VALUES(isApproved),
 			DateUpdated = NOW()
 		"""
 

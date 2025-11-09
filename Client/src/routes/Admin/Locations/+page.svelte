@@ -1,5 +1,30 @@
 <style>
 	@import '/static/FormPages.css';
+
+	.field.is-grouped {
+		display: flex;
+		align-items: flex-end;
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.field.is-grouped .control.is-expanded {
+		flex: 1;
+	}
+
+	.field.is-grouped .control {
+		margin-bottom: 0;
+	}
+
+	.field.is-grouped .input,
+	.field.is-grouped .select select {
+		height: 2.5rem;
+		box-sizing: border-box;
+	}
+
+	.field.is-grouped .select {
+		height: 2.5rem;
+	}
 </style>
 <script>
 import moment from 'moment';
@@ -11,6 +36,7 @@ let Locations = [];
 let filteredLocations = [];
 let isLoading = true;
 let searchQuery = '';
+let filterOption = 'all';
 
 let sortColumn = 'City';
 let sortAscending = true;
@@ -28,6 +54,11 @@ onMount(async () => {
 	isLoading = false;
 });
 $: filteredLocations = Locations.filter(location => {
+	// Filter by approval status
+	if (filterOption === 'unapproved' && location.isApproved !== 0) {
+		return false;
+	}
+	
 	// Build the City/County string as before.
 	const cityCounty = location.City && location.County 
 		? `${location.City} ${location.County}` 
@@ -88,11 +119,18 @@ function go(LocationId) {
 				<button class="button is-primary" on:click={addLocation}>Add Location</button>
 			</div>
 			<form>
-				<div class="field">
-					<div class="control">
+				<div class="field is-grouped">
+					<div class="control is-expanded">
 						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by city, state, or country" />
 					</div>
-			
+					<div class="control">
+						<div class="select">
+							<select bind:value={filterOption}>
+								<option value="all">Show all</option>
+								<option value="unapproved">Unapproved</option>
+							</select>
+						</div>
+					</div>
 				</div>
 			</form>
 				<table class="table is-striped is-hoverable is-fullwidth">

@@ -19,7 +19,7 @@
 	let Notes = "";
 	let ShipType = "";
 	let Size = "";
-	let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:"", HomePortLocationId:"",AgentHumanId:""};
+	let Ship={ShipId:"", ShipName:"", BuildDate:null, Notes:"", ShipType:"", Size:"", HomePortLocationId:"",AgentHumanId:"", isApproved:false};
 	let Captains = [];
 	let Voyages = [];
 	let Locations = [];
@@ -46,6 +46,7 @@
 		Ship.Size = data.Size || "";
 		Ship.HomePortLocationId = data.HomePortLocationId || "";
 		Ship.AgentHumanId = data.AgentHumanId || "";
+		Ship.isApproved = data.isApproved || false;
 		
 		console.log("Ship", Ship)
 		// console.log("Ship.ShipId.length", Ship.ShipId.length)
@@ -223,6 +224,14 @@
 						
 					</div>
 		
+				<h4 class="title is-4">Reviewer ONLY:</h4>
+				<!-- isApproved Checkbox -->
+				<div class="field">
+					<label class="checkbox">
+						<input type="checkbox" bind:checked={Ship.isApproved} />
+						Approved
+					</label>
+				</div>
 				
 				<div class="field">
 					<div class="control">

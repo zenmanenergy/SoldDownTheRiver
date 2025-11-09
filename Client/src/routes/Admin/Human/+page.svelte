@@ -83,7 +83,8 @@
 		RacialDescriptor: '',
 		Sex: '',
 		Height_cm: '',
-		DateUpdated: '' // new field for last update timestamp
+		DateUpdated: '', // new field for last update timestamp
+		isApproved: false
 	};
 
 	let originalBirthDate = ''; // new variable to store fetched birth date
@@ -228,7 +229,8 @@
 					FirstName: data.FirstName || '',
 					LastName: data.LastName || '',
 					BirthDate: originalBirthDate, // use originalBirthDate
-					isCompany: data.isCompany || ''
+					isCompany: data.isCompany || '',
+					isApproved: data.isApproved || false
 				};
 				voyages = await handleGetHumanVoyages(Session.SessionId, HumanId);
 				let _timelines = await handleGetTimelines(Session.SessionId, HumanId);
@@ -542,6 +544,15 @@
 						<input id="height-inches" class="input" type="number" step="0.01" bind:value={Human.Height_in} min="0" />
 					</div>
 				{/if}
+
+				<h4 class="title is-4">Reviewer ONLY:</h4>
+				<!-- isApproved Checkbox -->
+				<div class="field">
+					<label class="checkbox">
+						<input type="checkbox" bind:checked={Human.isApproved} />
+						Approved
+					</label>
+				</div>
 
 				<div class="buttons-container">
 					<button class="button is-primary" type="submit">Save</button>
