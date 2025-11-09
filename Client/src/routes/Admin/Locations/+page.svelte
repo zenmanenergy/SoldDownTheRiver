@@ -133,7 +133,13 @@ function go(LocationId) {
 					</div>
 				</div>
 			</form>
-				<table class="table is-striped is-hoverable is-fullwidth">
+			
+			<!-- Record count display -->
+			<div class="record-count" style="margin: 1rem 0; font-weight: bold; color: #363636;">
+				Showing {filteredLocations.length} record{filteredLocations.length !== 1 ? 's' : ''}
+			</div>
+			
+			<table class="table is-striped is-hoverable is-fullwidth">
 					<thead>
 						<tr>
 							<th on:click={() => toggleSort('Address')}>Address</th>

@@ -150,6 +150,12 @@
 					</div>
 				</div>
 			</form>
+			
+			<!-- Record count display -->
+			<div class="record-count" style="margin: 1rem 0; font-weight: bold; color: #363636;">
+				Showing {filteredVoyages.length} record{filteredVoyages.length !== 1 ? 's' : ''}
+			</div>
+			
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>

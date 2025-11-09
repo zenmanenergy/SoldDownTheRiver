@@ -58,6 +58,19 @@ def save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId,
 	print("Executing Human SQL:\n" + human_query + "\nWith params:\n" + str(human_params) + "\n")
 	cursor.execute(human_query, human_params)
 	
+	# Update locations based on humantimeline table for humans associated with this voyage
+	timeline_location_query = """UPDATE locations 
+								SET isApproved=%s 
+								WHERE LocationId IN (
+									SELECT t.LocationId FROM humantimeline t 
+									JOIN humans h ON h.HumanId = t.HumanId 
+									JOIN voyagehumans vh ON vh.HumanId = h.HumanId
+									WHERE vh.VoyageId=%s
+								)"""
+	timeline_location_params = (isApproved, VoyageId)
+	print("Executing Timeline Location SQL:\n" + timeline_location_query + "\nWith params:\n" + str(timeline_location_params) + "\n")
+	cursor.execute(timeline_location_query, timeline_location_params)
+	
 	connection.commit()
 
 	# Close the database connection

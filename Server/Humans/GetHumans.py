@@ -8,7 +8,7 @@ def get_humans(Search=None, LastFetchTime=None):
 	# Construct the SQL query
 	query = """
 		SELECT h.HumanId, h.FirstName, h.MiddleName, h.LastName, h.isCompany, h.BirthDate, h.BirthDateAccuracy,
-			   h.RacialDescriptor, h.Sex, 
+			   h.RacialDescriptor, h.Sex, h.isApproved,
 			   GROUP_CONCAT(CONCAT_WS(' ', ha.AKAFirstName, ha.AKAMiddleName, ha.AKALastName) ORDER BY ha.AKAHumanId SEPARATOR ', ') AS AlsoKnownAs,
 			   GROUP_CONCAT(DISTINCT AllRoles.RoleId) AS Roles
 		FROM humans h

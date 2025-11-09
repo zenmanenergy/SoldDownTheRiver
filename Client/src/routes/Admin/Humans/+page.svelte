@@ -1,5 +1,30 @@
 <style>
 	@import '/static/FormPages.css';
+
+	.field.is-grouped {
+		display: flex;
+		align-items: flex-end;
+		gap: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.field.is-grouped .control.is-expanded {
+		flex: 1;
+	}
+
+	.field.is-grouped .control {
+		margin-bottom: 0;
+	}
+
+	.field.is-grouped .input,
+	.field.is-grouped .select select {
+		height: 2.5rem;
+		box-sizing: border-box;
+	}
+
+	.field.is-grouped .select {
+		height: 2.5rem;
+	}
 </style>
 <script>
 // Helper to clip long text and add ellipsis
@@ -16,6 +41,7 @@ function clipText(text, maxLength = 40) {
 	let filteredHumans = [];
 	let isLoading = true;
 	let searchQuery = '';
+	let filterOption = 'all'; // 'all' or 'unapproved'
 
 	let currentPage = 1;
 	let itemsPerPage = 100;
@@ -68,6 +94,15 @@ function clipText(text, maxLength = 40) {
 
 	$: {
 		filteredHumans = Humans.filter(human => {
+			// Apply approval status filter
+			if (filterOption === 'unapproved') {
+				// Only show records where isApproved is exactly 0
+				if (human.isApproved !== 0) {
+					return false;
+				}
+			}
+			// filterOption === 'all' shows everything regardless of isApproved value
+			
 			const search = searchQuery.toLowerCase();
 			const values = [
 				human.FirstName,
@@ -142,12 +177,26 @@ function clipText(text, maxLength = 40) {
 				<button class="button is-primary" on:click={addHuman}>Add Human</button>
 			</div>
 			<form>
-				<div class="field">
-					<div class="control">
+				<div class="field is-grouped">
+					<div class="control is-expanded">
 						<input class="input" type="text" bind:value={searchQuery} placeholder="Search by name" />
+					</div>
+					<div class="control">
+						<div class="select">
+							<select bind:value={filterOption}>
+								<option value="all">Show all</option>
+								<option value="unapproved">Unapproved</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			</form>
+			
+			<!-- Record count display -->
+			<div class="record-count" style="margin: 1rem 0; font-weight: bold; color: #363636;">
+				Showing {filteredHumans.length} record{filteredHumans.length !== 1 ? 's' : ''}
+			</div>
+			
 			<table class="table is-striped is-hoverable is-fullwidth">
 				<thead>
 					<tr>

@@ -92,6 +92,19 @@ def save_transaction(TransactionId, date_circa, date_accuracy, TransactionType, 
 	print("Executing Human SQL:\n" + human_query + "\nWith params:\n" + str(human_params) + "\n")
 	cursor.execute(human_query, human_params)
 	
+	# Update locations based on humantimeline table for humans associated with this transaction
+	timeline_location_query = """UPDATE locations 
+								SET isApproved=%s 
+								WHERE LocationId IN (
+									SELECT t.LocationId FROM humantimeline t 
+									JOIN humans h ON h.HumanId = t.HumanId 
+									JOIN transactionhumans th ON th.HumanId = h.HumanId
+									WHERE th.TransactionId=%s
+								)"""
+	timeline_location_params = (1 if isApproved else 0, TransactionId)
+	print("Executing Timeline Location SQL:\n" + timeline_location_query + "\nWith params:\n" + str(timeline_location_params) + "\n")
+	cursor.execute(timeline_location_query, timeline_location_params)
+	
 	connection.commit()
 	
 	connection.close()
