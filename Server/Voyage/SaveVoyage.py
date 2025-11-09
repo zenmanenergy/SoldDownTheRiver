@@ -26,6 +26,38 @@ def save_Voyage(VoyageId, ShipId, CaptainHumanId,StartLocationId, EndLocationId,
 	# Execute the query and commit the changes
 	print(query, values)
 	cursor.execute(query, values)
+	
+	# Update the isApproved status for the start location
+	if StartLocationId:
+		start_location_query = "UPDATE locations SET isApproved=%s WHERE LocationId=%s"
+		start_location_params = (isApproved, StartLocationId)
+		print("Executing Start Location SQL:\n" + start_location_query + "\nWith params:\n" + str(start_location_params) + "\n")
+		cursor.execute(start_location_query, start_location_params)
+	
+	# Update the isApproved status for the end location
+	if EndLocationId:
+		end_location_query = "UPDATE locations SET isApproved=%s WHERE LocationId=%s"
+		end_location_params = (isApproved, EndLocationId)
+		print("Executing End Location SQL:\n" + end_location_query + "\nWith params:\n" + str(end_location_params) + "\n")
+		cursor.execute(end_location_query, end_location_params)
+	
+	# Update the isApproved status for the ship
+	if ShipId:
+		ship_query = "UPDATE ships SET isApproved=%s WHERE ShipId=%s"
+		ship_params = (isApproved, ShipId)
+		print("Executing Ship SQL:\n" + ship_query + "\nWith params:\n" + str(ship_params) + "\n")
+		cursor.execute(ship_query, ship_params)
+	
+	# Update the isApproved status for humans associated with this voyage
+	human_query = """UPDATE humans SET isApproved=%s 
+					WHERE HumanId IN (
+						SELECT HumanId FROM voyagehumans 
+						WHERE VoyageId=%s
+					)"""
+	human_params = (isApproved, VoyageId)
+	print("Executing Human SQL:\n" + human_query + "\nWith params:\n" + str(human_params) + "\n")
+	cursor.execute(human_query, human_params)
+	
 	connection.commit()
 
 	# Close the database connection
