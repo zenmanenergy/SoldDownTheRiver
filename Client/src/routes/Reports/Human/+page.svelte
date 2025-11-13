@@ -321,7 +321,7 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 									{#if Human.Height_cm}
 										({Human.Height_cm} cm)
 									{/if}
-								</div>b
+								</div>
 							</div>
 						{/if}
 					{/if}

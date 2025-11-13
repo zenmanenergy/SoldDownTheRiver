@@ -59,12 +59,16 @@ $: markerLocations = Locations.filter(l => markerLocationIds.includes(l.Location
 			Voyage.ShipId = data.ShipId || "";
 			Voyage.StartLocationId = data.StartLocationId || "";
 			Voyage.CaptainHumanId = data.CaptainHumanId;
+			Voyage.CustomsLocationId = data.CustomsLocationId || "";
 			Voyage.EndLocationId = data.EndLocationId || "";
 			if (data.StartDate) {
 				Voyage.StartDate = moment.utc(data.StartDate).format("YYYY-MM-DD") || "";
 			}
 			if (data.EndDate) {
 				Voyage.EndDate = moment.utc(data.EndDate).format("YYYY-MM-DD") || "";
+			}
+			if (data.CustomsDate) {
+				Voyage.CustomsDate = moment.utc(data.CustomsDate).format("YYYY-MM-DD") || "";
 			}
 			Voyage.Notes = data.Notes || "";
 		}
@@ -203,6 +207,13 @@ $: markerLocations = Locations.filter(l => markerLocationIds.includes(l.Location
 					   <td>{moment.utc(Voyage.EndDate).format('MMMM D, YYYY')}</td>
 				   </tr>
 				   {/if}
+				   
+				   {#if Voyage.StartDate && Voyage.EndDate}
+				   <tr>
+					   <td><strong>Duration:</strong></td>
+					   <td>{moment(Voyage.EndDate).diff(moment(Voyage.StartDate), 'days')} days</td>
+				   </tr>
+				   {/if}
 				   {#if Voyage.CaptainHumanId}
 				   <tr>
 					   <td><strong>Captain:</strong></td>
@@ -217,6 +228,18 @@ $: markerLocations = Locations.filter(l => markerLocationIds.includes(l.Location
 					   </td>
 				   </tr>
 				   {/if}
+				   <tr>
+					   <td><strong>Enslaved People:</strong></td>
+					   <td>{getHumansByRole('Enslaved').length}</td>
+				   </tr>
+				   <tr>
+					   <td><strong>Owners:</strong></td>
+					   <td>{getHumansByRole('Owner 1').length + getHumansByRole('Owner 2').length}</td>
+				   </tr>
+				   <tr>
+					   <td><strong>Agents:</strong></td>
+					   <td>{getHumansByRole('Shipping Agent').length + getHumansByRole('Collector Agent').length}</td>
+				   </tr>
 			   </tbody>
 		   </table>
 	   </div>
@@ -253,7 +276,7 @@ $: markerLocations = Locations.filter(l => markerLocationIds.includes(l.Location
 							{#if Voyage.CustomsLocationId}
 							<tr>
 								<td>Customs</td>
-								<td>N/A</td>
+								<td>{Voyage.CustomsDate ? moment.utc(Voyage.CustomsDate).format('MMMM D, YYYY') : "N/A"}</td>
 								<td>
 									<a href="/Reports/Location?LocationId={Voyage.CustomsLocationId}" target="_blank">
 										{getLocationName(Voyage.CustomsLocationId)}
@@ -401,57 +424,6 @@ $: markerLocations = Locations.filter(l => markerLocationIds.includes(l.Location
 			{/if}
 		</div>
 	{/if}
-
-	<!-- Voyage Summary Statistics -->
-	<div class="ActionBox">
-		<div class="title-container">
-			<h3 class="title is-4">Voyage Statistics</h3>
-		</div>
-		
-		<div class="columns">
-			<div class="column">
-				<div class="box has-text-centered">
-					<p class="title is-1 has-text-danger">{getHumansByRole('Enslaved').length}</p>
-					<p class="subtitle">Enslaved People</p>
-				</div>
-			</div>
-			<div class="column">
-				<div class="box has-text-centered">
-					<p class="title is-1 has-text-info">{getHumansByRole('Captain').length}</p>
-					<p class="subtitle">Captain(s)</p>
-				</div>
-			</div>
-			<div class="column">
-				<div class="box has-text-centered">
-					<p class="title is-1 has-text-warning">{getHumansByRole('Owner 1').length + getHumansByRole('Owner 2').length}</p>
-					<p class="subtitle">Owner(s)</p>
-				</div>
-			</div>
-			<div class="column">
-				<div class="box has-text-centered">
-					<p class="title is-1 has-text-success">{getHumansByRole('Shipping Agent').length + getHumansByRole('Collector Agent').length}</p>
-					<p class="subtitle">Agent(s)</p>
-				</div>
-			</div>
-		</div>
-
-		{#if Voyage.StartDate && Voyage.EndDate}
-			{@const duration = moment(Voyage.EndDate).diff(moment(Voyage.StartDate), 'days')}
-			<div class="notification is-info">
-				<strong>Voyage Duration:</strong> {duration} days
-				({moment(Voyage.StartDate).format('MMMM D, YYYY')} to {moment(Voyage.EndDate).format('MMMM D, YYYY')})
-			</div>
-		{/if}
-	</div>
-
-	<!-- <div style="margin-bottom:1rem;">
-		{#if !captureMode}
-			<button class="button is-small is-info" on:click={enableCaptureMode}>Enable Polygon Capture Mode</button>
-		{:else}
-			<button class="button is-small is-danger" on:click={disableCaptureMode}>Disable Polygon Capture Mode</button>
-			<span style="margin-left:1rem;color:#d32f2f;">Click on the map to capture [lng, lat] points (see console)</span>
-		{/if}
-	</div> -->
 </div>
 {/if}
 

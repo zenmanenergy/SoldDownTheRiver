@@ -7,7 +7,6 @@
 	import { handleGetShip } from './handleGetShip.js';
 	import { handleGetShipVoyages } from './handleGetShipVoyages.js';
 	import { handleGetLocations } from './handleGetLocations.js';
-	import { handleGetTransactions } from './handleGetTransactions.js';
 	import { handleGetLinkReferences } from '../References/handleGetLinkReferences.js';
 	
 	let ShipId = "";
@@ -23,16 +22,9 @@
 	};
 	let Voyages = [];
 	let Locations = [];
-	let Transactions = [];
 	let shipReferences = [];
 	let isReferencesLoading = true;
 	let isLoading = true;
-
-	// Pagination and sorting for Transactions
-	let transactionsCurrentPage = 1;
-	let transactionsItemsPerPage = 10;
-	let transactionsSortField = 'TransactionDate';
-	let transactionsSortDirection = 'desc';
 
 	// Pagination and sorting for Voyages
 	let voyagesCurrentPage = 1;
@@ -40,26 +32,7 @@
 	let voyagesSortField = 'StartDate';
 	let voyagesSortDirection = 'desc';
 
-	$: transactionsTotalPages = Math.ceil(Transactions.length / transactionsItemsPerPage);
 	$: voyagesTotalPages = Math.ceil(Voyages.length / voyagesItemsPerPage);
-
-	$: paginatedTransactions = Transactions
-		.sort((a, b) => {
-			let aVal = a[transactionsSortField] || '';
-			let bVal = b[transactionsSortField] || '';
-			
-			if (transactionsSortField.includes('Date')) {
-				aVal = new Date(aVal || 0);
-				bVal = new Date(bVal || 0);
-			}
-			
-			if (transactionsSortDirection === 'asc') {
-				return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-			} else {
-				return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
-			}
-		})
-		.slice((transactionsCurrentPage - 1) * transactionsItemsPerPage, transactionsCurrentPage * transactionsItemsPerPage);
 
 	$: paginatedVoyages = Voyages
 		.sort((a, b) => {
@@ -101,22 +74,8 @@
 		Voyages = data;
 	}
 
-	async function setTransactions(data) {
-		Transactions = data;
-	}
-
 	async function setShipReferences(data) {
 		shipReferences = data;
-	}
-
-	function sortTransactions(field) {
-		if (transactionsSortField === field) {
-			transactionsSortDirection = transactionsSortDirection === 'asc' ? 'desc' : 'asc';
-		} else {
-			transactionsSortField = field;
-			transactionsSortDirection = 'asc';
-		}
-		transactionsCurrentPage = 1;
 	}
 
 	function sortVoyages(field) {
@@ -148,8 +107,7 @@
 		await Promise.all([
 			handleGetShip( ShipId, setShip),
 			handleGetShipVoyages( ShipId, setVoyages),
-			handleGetLocations( setLocations),
-			handleGetTransactions( ShipId, setTransactions)
+			handleGetLocations( setLocations)
 		]);
 
 		// Fetch references linked to this ship
@@ -315,125 +273,6 @@
 								</button>
 							</li>
 						{:else if page === voyagesCurrentPage - 2 || page === voyagesCurrentPage + 2}
-							<li><span class="pagination-ellipsis">&hellip;</span></li>
-						{/if}
-					{/each}
-				</ul>
-			</nav>
-			{/if}
-		{/if}
-	</div>
-
-	<!-- Transactions Section -->
-	<div class="ActionBox">
-		<div class="title-container">
-			<h3 class="title is-4">Transactions ({Transactions.length})</h3>
-		</div>
-		
-		{#if Transactions.length === 0}
-			<div class="content">
-				<p>No transactions recorded for this ship.</p>
-			</div>
-		{:else}
-			<div class="table-container">
-				<table class="table is-striped is-hoverable is-fullwidth">
-					<thead>
-						<tr>
-							<th>
-								<button class="button is-ghost" on:click={() => sortTransactions('TransactionDate')}>
-									Date
-									{#if transactionsSortField === 'TransactionDate'}
-										<span class="icon is-small">
-											<i class="fas fa-chevron-{transactionsSortDirection === 'asc' ? 'up' : 'down'}"></i>
-										</span>
-									{/if}
-								</button>
-							</th>
-							<th>
-								<button class="button is-ghost" on:click={() => sortTransactions('FirstPartyFirstName')}>
-									First Party
-									{#if transactionsSortField === 'FirstPartyFirstName'}
-										<span class="icon is-small">
-											<i class="fas fa-chevron-{transactionsSortDirection === 'asc' ? 'up' : 'down'}"></i>
-										</span>
-									{/if}
-								</button>
-							</th>
-							<th>
-								<button class="button is-ghost" on:click={() => sortTransactions('SecondPartyFirstName')}>
-									Second Party
-									{#if transactionsSortField === 'SecondPartyFirstName'}
-										<span class="icon is-small">
-											<i class="fas fa-chevron-{transactionsSortDirection === 'asc' ? 'up' : 'down'}"></i>
-										</span>
-									{/if}
-								</button>
-							</th>
-							<th>
-								<button class="button is-ghost" on:click={() => sortTransactions('TransactionType')}>
-									Type
-									{#if transactionsSortField === 'TransactionType'}
-										<span class="icon is-small">
-											<i class="fas fa-chevron-{transactionsSortDirection === 'asc' ? 'up' : 'down'}"></i>
-										</span>
-									{/if}
-								</button>
-							</th>
-							<th>
-								<button class="button is-ghost" on:click={() => sortTransactions('Price')}>
-									Price
-									{#if transactionsSortField === 'Price'}
-										<span class="icon is-small">
-											<i class="fas fa-chevron-{transactionsSortDirection === 'asc' ? 'up' : 'down'}"></i>
-										</span>
-									{/if}
-								</button>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each paginatedTransactions as transaction}
-							<tr on:click={() => window.location.href = `/Reports/Transaction?TransactionId=${transaction.TransactionId}`} style="cursor:pointer;">
-								<td>{transaction.TransactionDate ? moment.utc(transaction.TransactionDate).format('MMMM D, YYYY') : "N/A"}</td>
-								<td>{transaction.FirstPartyFirstName} {transaction.FirstPartyLastName}</td>
-								<td>{transaction.SecondPartyFirstName} {transaction.SecondPartyLastName}</td>
-								<td>{transaction.TransactionType || "N/A"}</td>
-								<td>{transaction.Price ? `$${transaction.Price}` : "N/A"}</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-
-			<!-- Transactions Pagination -->
-			{#if transactionsTotalPages > 1}
-			<nav class="pagination is-centered" role="navigation">
-				<button 
-					class="pagination-previous" 
-					disabled={transactionsCurrentPage === 1}
-					on:click={() => transactionsCurrentPage = Math.max(1, transactionsCurrentPage - 1)}
-				>
-					Previous
-				</button>
-				<button 
-					class="pagination-next" 
-					disabled={transactionsCurrentPage === transactionsTotalPages}
-					on:click={() => transactionsCurrentPage = Math.min(transactionsTotalPages, transactionsCurrentPage + 1)}
-				>
-					Next
-				</button>
-				<ul class="pagination-list">
-					{#each Array(transactionsTotalPages).fill().map((_, i) => i + 1) as page}
-						{#if page === transactionsCurrentPage || page === 1 || page === transactionsTotalPages || Math.abs(page - transactionsCurrentPage) <= 1}
-							<li>
-								<button 
-									class="pagination-link {page === transactionsCurrentPage ? 'is-current' : ''}"
-									on:click={() => transactionsCurrentPage = page}
-								>
-									{page}
-								</button>
-							</li>
-						{:else if page === transactionsCurrentPage - 2 || page === transactionsCurrentPage + 2}
 							<li><span class="pagination-ellipsis">&hellip;</span></li>
 						{/if}
 					{/each}

@@ -32,6 +32,7 @@ def get_combinedtimelines(HumanId):
 			LEFT JOIN locations l ON ht.LocationId = l.LocationId
 			JOIN humans h on h.HumanId = ht.HumanId
 			WHERE ht.HumanId = %s
+			and ht.LocationType not in ('Voyage Start','Voyage End','Voyage Customs')
 			ORDER BY ht.Date_Circa ASC
 		"""
 		cursor.execute(query, (HumanId,))
@@ -49,10 +50,13 @@ def get_combinedtimelines(HumanId):
 			description_parts = []
 			
 			if timelinerow['LocationType']:
-				description_parts.append(f"Location Type: {timelinerow['LocationType']}")
+				description_parts.append(f"{timelinerow['LocationType']}")
+
+			# if timelinerow['ShipName']:
+			# 	description_parts.append(f"({timelinerow['ShipName']})")
 			
 			if timelinerow['RoleId']:
-				description_parts.append(f"Role: {timelinerow['RoleId']}")
+				description_parts.append(f"({timelinerow['RoleId']})")
 			
 			# Add location information
 			location_parts = []
@@ -68,7 +72,7 @@ def get_combinedtimelines(HumanId):
 				location_parts.append(timelinerow['Country'])
 			
 			if location_parts:
-				description_parts.append(f"Location: {', '.join(location_parts)}")
+				description_parts.append(f"{', '.join(location_parts)}")
 			
 			row['Description'] = " - ".join(description_parts) if description_parts else "Timeline entry"
 			response['combinedTimeLine'].append(row)
@@ -182,13 +186,19 @@ def get_combinedtimelines(HumanId):
 				endLocation.State AS endState,
 				endLocation.Latitude EndLatitude,
 				endLocation.Longitude EndLongitude,
-				s.ShipName
+				customsLocation.city AS customsCity, 
+				customsLocation.State AS customsState,
+				customsLocation.Latitude CustomsLatitude,
+				customsLocation.Longitude CustomsLongitude,
+				s.ShipName,
+				s.ShipId
 			FROM 
 				voyagehumans vh
 			JOIN voyages ON vh.VoyageId = voyages.VoyageId
 			JOIN ships s ON voyages.ShipId = s.ShipId
 			JOIN locations startLocation ON startLocation.LocationId = voyages.startLocationid
 			JOIN locations endLocation ON endLocation.LocationId = voyages.endLocationid
+			LEFT JOIN locations customsLocation ON customsLocation.LocationId = voyages.customsLocationid
 			JOIN humans h ON h.HumanId = vh.HumanId
 			WHERE 
 				vh.HumanId = %s
@@ -197,6 +207,7 @@ def get_combinedtimelines(HumanId):
 		"""
 		cursor.execute(query, (HumanId, ))
 		voyages = cursor.fetchall()  # Already returns a dictionary due to DictCursor
+		
 		for voyage in voyages:
 			
 			query = """
@@ -285,7 +296,6 @@ def get_combinedtimelines(HumanId):
 			"""
 			cursor.execute(query, (voyage['VoyageId']))
 			voyage['Enslaved'] = cursor.fetchall()
-		
 
 			query = """
 				SELECT distinct
@@ -333,13 +343,14 @@ def get_combinedtimelines(HumanId):
 					h.FirstName,
 					h.LastName
 					
-				FROM voyagehumans vh 
+				FROM voyagehumans vh
 				join humans h ON h.HumanId = vh.HumanId AND vh.VoyageId = %s and owner2_humanid =%s
-				"""
 				
+				"""
 				cursor.execute(query, (voyage['VoyageId'],Buyer['HumanId']))
 				Buyer_enslaved = cursor.fetchall()
 				Buyer['Enslaved']=Buyer_enslaved
+
 		response['voyages']=voyages
 			
 			
@@ -362,6 +373,97 @@ def get_combinedtimelines(HumanId):
 		
 
 		connection.close()
+		# Add voyage start entries for all voyages
+		for voyage in response['voyages']:
+			row = {}
+			row['DateCirca'] = voyage['StartDate']
+			row['DateAccuracy'] = voyage['StartDateAccuracy']
+			row['Latitude'] = voyage['StartLatitude']
+			row['Longitude'] = voyage['StartLongitude']
+			
+			# Build the voyage start description
+			human_name = " ".join(
+				filter(None, [human.get('FirstName'), human.get('LastName')])
+			)
+			human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
+			role_id = voyage.get('RoleId', '')
+			start_city = voyage.get('startCity', '')
+			start_state = voyage.get('startState', '')
+			ship_name = voyage.get('ShipName', '')
+			ship_id = voyage.get('ShipId', '')
+			
+			# Create ship link
+			ship_link = f'<a href="/Reports/Ship?ShipId={ship_id}">{ship_name}</a>' if ship_id and ship_name else ship_name
+			
+			# Create voyage link
+			voyage_id = voyage.get('VoyageId', '')
+			voyage_link = f'<a href="/Reports/Voyage?VoyageId={voyage_id}">Voyage</a>' if voyage_id else 'Voyage'
+			
+			description = f"{voyage_link} Start: {human_link} ({role_id}) departed {start_city}, {start_state} on the {ship_link}"
+			row['Description'] = description
+			response['combinedTimeLine'].append(row)
+
+		# Add voyage end entries for all voyages
+		for voyage in response['voyages']:
+			row = {}
+			row['DateCirca'] = voyage['EndDate']
+			row['DateAccuracy'] = voyage['EndDateAccuracy']
+			row['Latitude'] = voyage['EndLatitude']
+			row['Longitude'] = voyage['EndLongitude']
+			
+			# Build the voyage end description
+			human_name = " ".join(
+				filter(None, [human.get('FirstName'), human.get('LastName')])
+			)
+			human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
+			role_id = voyage.get('RoleId', '')
+			end_city = voyage.get('endCity', '')
+			end_state = voyage.get('endState', '')
+			ship_name = voyage.get('ShipName', '')
+			ship_id = voyage.get('ShipId', '')
+			
+			# Create ship link
+			ship_link = f'<a href="/Reports/Ship?ShipId={ship_id}">{ship_name}</a>' if ship_id and ship_name else ship_name
+			
+			# Create voyage link
+			voyage_id = voyage.get('VoyageId', '')
+			voyage_link = f'<a href="/Reports/Voyage?VoyageId={voyage_id}">Voyage</a>' if voyage_id else 'Voyage'
+			
+			description = f"{voyage_link} End: {human_link} ({role_id}) arrived {end_city}, {end_state} on the {ship_link}"
+			row['Description'] = description
+			response['combinedTimeLine'].append(row)
+
+		# Add voyage customs entries for all voyages
+		for voyage in response['voyages']:
+			# Only add customs entry if customs date exists
+			if voyage.get('CustomsDate'):
+				row = {}
+				row['DateCirca'] = voyage['CustomsDate']
+				row['DateAccuracy'] = voyage['CustomsDateAccuracy']
+				row['Latitude'] = voyage.get('CustomsLatitude')
+				row['Longitude'] = voyage.get('CustomsLongitude')
+				
+				# Build the voyage customs description
+				human_name = " ".join(
+					filter(None, [human.get('FirstName'), human.get('LastName')])
+				)
+				human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
+				role_id = voyage.get('RoleId', '')
+				customs_city = voyage.get('customsCity', '')
+				customs_state = voyage.get('customsState', '')
+				ship_name = voyage.get('ShipName', '')
+				ship_id = voyage.get('ShipId', '')
+				
+				# Create ship link
+				ship_link = f'<a href="/Reports/Ship?ShipId={ship_id}">{ship_name}</a>' if ship_id and ship_name else ship_name
+				
+				# Create voyage link
+				voyage_id = voyage.get('VoyageId', '')
+				voyage_link = f'<a href="/Reports/Voyage?VoyageId={voyage_id}">Voyage</a>' if voyage_id else 'Voyage'
+				
+				description = f"{voyage_link} Customs: {human_link} ({role_id}) processed customs {customs_city}, {customs_state} on the {ship_link}"
+				row['Description'] = description
+				response['combinedTimeLine'].append(row)
 
 
 		for transaction in response['transactions']:
@@ -405,7 +507,6 @@ def get_combinedtimelines(HumanId):
 			if human_name:
 				human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
 				name_parts.append(human_link)
-			print(voyage['RoleId'])
 			if voyage['RoleId']:
 				role = str(voyage['RoleId'])
 				if role == "Captain":
@@ -447,11 +548,14 @@ def get_combinedtimelines(HumanId):
 					row['DateCirca']=voyage['EndDate']
 					row['DateAccuracy']=voyage['EndDateAccuracy']
 					EnslavedDescription(voyage,name_parts)
+					print(name_parts)
 
 				
 
 			row['Description'] = " ".join(name_parts)
 			response['combinedTimeLine'].append(row)
+
+		
 
 		# Sort the combined timeline by date
 		def get_sort_key(item):

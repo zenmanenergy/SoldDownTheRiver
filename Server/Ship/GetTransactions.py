@@ -6,7 +6,7 @@ def get_Transactions(ShipId):
 	cursor, connection = Database.ConnectToDatabase()
 
 	# Construct the SQL query
-	query = f"SELECT *, (select max(dateAdded) from history where history.KeyValue=transactions.TransactionId  and history.TableName='transactions' and history.KeyName='TransactionId') LastModified"
+	query = f"SELECT *"
 	query +=f" from transactions "
 	
 
