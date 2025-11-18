@@ -332,7 +332,7 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 			{#if combinedTimeline && combinedTimeline.data && combinedTimeline.data.combinedTimeLine && combinedTimeline.data.combinedTimeLine.length > 0}
 				<div class="ActionBox">
 					<div class="title-container">
-						<h3 class="title is-4">Combined Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
+						<h3 class="title is-4">Timeline ({combinedTimeline.data.combinedTimeLine.length} records)</h3>
 					</div>
 					<div class="columns">
 						<div class="column is-half">

@@ -39,11 +39,13 @@ export async function handleLogin(Email, Password, formValid, callback) {
 		// Handle successful login
 		if (data && data.SessionId && data.UserType) {
 			console.log("Login successful, SessionId:", data.SessionId, "UserType:", data.UserType);
-			Cookies.set("SessionId", data.SessionId, { expires: 365 });
-			Cookies.set("UserType", data.UserType, { expires: 365 });
+			if (typeof window !== 'undefined' && window.Cookies) {
+				window.Cookies.set("SessionId", data.SessionId, { expires: 365 });
+				window.Cookies.set("UserType", data.UserType, { expires: 365 });
+			}
 
 			// Redirect to previous location if available
-			const previousLocation = Cookies.get("previousLocation");
+			const previousLocation = (typeof window !== 'undefined' && window.Cookies) ? window.Cookies.get("previousLocation") : null;
 			console.log(previousLocation)
 			if (previousLocation) {
 				window.location.href = previousLocation;
@@ -53,8 +55,10 @@ export async function handleLogin(Email, Password, formValid, callback) {
 			}
 		} else {
 			console.error("Invalid login response, no SessionId or UserType received");
-			Cookies.remove("SessionId");
-			Cookies.remove("UserType");
+			if (typeof window !== 'undefined' && window.Cookies) {
+				window.Cookies.remove("SessionId");
+				window.Cookies.remove("UserType");
+			}
 
 			callback(false);
 		}
