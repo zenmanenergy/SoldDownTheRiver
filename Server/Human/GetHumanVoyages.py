@@ -14,12 +14,18 @@ def get_human_voyages(HumanId):
             voyagehumans.HumanId,
             voyagehumans.RoleId,
             voyages.StartDate,
-            locations.city, locations.State
+            voyages.EndDate,
+            locations.city, locations.State,
+            endLocations.City AS EndCity,
+            endLocations.State AS EndState,
+            ships.ShipName
         FROM 
             voyagehumans
         JOIN 
             voyages ON voyagehumans.VoyageId = voyages.VoyageId
-        join locations on locations.LocationId=voyages.startLocationid    
+        JOIN locations ON locations.LocationId = voyages.StartLocationId
+        JOIN locations AS endLocations ON endLocations.LocationId = voyages.EndLocationId
+        JOIN ships ON ships.ShipId = voyages.ShipId
         WHERE 
             voyagehumans.HumanId = %s
     """

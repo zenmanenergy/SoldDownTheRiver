@@ -157,7 +157,6 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 			}
 
 			combinedTimeline = await handleGetCombinedTimeline(HumanId) || [];
-			console.log("combinedTimelinecombinedTimeline",combinedTimeline)
 			const humanTransactions = await handleGetHumanTransactions(HumanId);
 			if (humanTransactions) {
 				transactions = humanTransactions;
@@ -380,6 +379,11 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 							<thead>
 								<tr>
 									<th>Voyage ID</th>
+									<th>Ship Name</th>
+									<th>Departure Date</th>
+									<th>Departure Location</th>
+									<th>Arrival Date</th>
+									<th>Arrival Location</th>
 									<th>Role</th>
 									<th>Notes</th>
 								</tr>
@@ -387,13 +391,18 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 							<tbody>
 								{#each voyages as voyage}
 									<tr 
-										on:click={() => window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} 
+										on:click={() => window.open(`/Reports/Voyage?VoyageId=${voyage.VoyageId}`, '_blank')} 
 										on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') window.open(`/Voyage?VoyageId=${voyage.VoyageId}`, '_blank'); }}
 										tabindex="0"
 										style="cursor: pointer;"
 									>
 										<td>{voyage.VoyageId}</td>
-										<td>{voyage.RoleId}</td>
+										<td>{voyage.ShipName || ''}</td>
+										<td>{formatDate(voyage.StartDate, 'D') || ''}</td>
+										<td>{voyage.city || ''}{voyage.State ? `, ${voyage.State}` : ''}</td>
+										<td>{formatDate(voyage.EndDate, 'D') || ''}</td>
+										<td>{voyage.EndCity || ''}{voyage.EndState ? `, ${voyage.EndState}` : ''}</td>
+										<td>{voyage.RoleId || ''}</td>
 										<td>{voyage.Notes || ''}</td>
 									</tr>
 								{/each}
@@ -421,7 +430,7 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 							</thead>
 							<tbody>
 								{#each transactions as txn}
-									<tr on:click={() => window.open(`/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
+									<tr on:click={() => window.open(`/Reports/Transaction?TransactionId=${txn.TransactionId}`, '_blank')} style="cursor: pointer;">
 										<td>{txn.TransactionType || ''}</td>
 										<td>{formatDate(txn.date_circa, txn.date_accuracy)}</td>
 										<td>{txn.Notary || ''}</td>

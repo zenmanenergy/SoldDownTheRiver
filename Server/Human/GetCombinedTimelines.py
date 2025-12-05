@@ -472,12 +472,15 @@ def get_combinedtimelines(HumanId):
 			row['DateAccuracy']=transaction['date_accuracy']
 			row['Latitude']=transaction['Latitude']
 			row['Longitude']=transaction['Longitude']
+			TransactionId=transaction['TransactionId']
 			name_parts = []
 			# Wrap the human's name in a link to their report
 			human_name = " ".join(
 				filter(None, [human.get('FirstName'), human.get('LastName')])
 			)
 			if human_name:
+				
+				role = str(transaction['RoleId'])
 				human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
 				name_parts.append(human_link)
 
@@ -488,11 +491,15 @@ def get_combinedtimelines(HumanId):
 
 				elif role == "Buyer":
 					BuyerDescription(transaction,name_parts)
-				elif role == "Seller":
+				elif role == "Seller" or role=="FirstParty" or role=="Owner":
 					SellerDescription(transaction,name_parts)
 				elif role == "Notary":
 					NotaryDescription(transaction,name_parts)
-
+				elif role == "SellerAgent":
+					print("SELL")
+					SellerAgentDescription(transaction,name_parts)
+				elif role == "BuyerAgent":
+					BuyerAgentDescription(transaction,name_parts)			
 			row['Description'] = " ".join(name_parts)
 			response['combinedTimeLine'].append(row)
 
@@ -542,6 +549,12 @@ def get_combinedtimelines(HumanId):
 					row['DateCirca']=voyage['StartDate']
 					row['DateAccuracy']=voyage['StartDateAccuracy']
 					ShippingAgentDescription(voyage,name_parts)
+				elif role == "SellerAgent":
+					row['Latitude']=voyage['StartLatitude']
+					row['Longitude']=voyage['StartLongitude']
+					row['DateCirca']=voyage['StartDate']
+					row['DateAccuracy']=voyage['StartDateAccuracy']
+					SellerAgentDescription(voyage,name_parts)
 				elif role == "Enslaved":
 					row['Latitude']=voyage['EndLatitude']
 					row['Longitude']=voyage['EndLongitude']
@@ -605,6 +618,76 @@ def CollectorAgentDescription(voyage, name_parts):
 	end_city = voyage.get('endCity', '')
 	end_state = voyage.get('endState', '')
 	desc = f"collected these enslaved people: {enslaved_str} at {end_city} {end_state}"
+	name_parts.append(desc)
+	return name_parts
+
+def SellerAgentDescription(transaction, name_parts):
+	# Build sellers string
+	sellers = []
+	for seller in transaction.get('Seller', []):
+		seller_name = " ".join(
+			filter(None, [seller.get('FirstName'), seller.get('LastName')])
+		)
+		link = f'<a href="/Reports/Human?HumanId={seller.get("HumanId")}">{seller_name}</a>'
+		sellers.append(link)
+	sellers_str = " and ".join(sellers) if sellers else "Unknown Seller"
+	
+	# Build enslaved string
+	enslaved = []
+	for person in transaction.get('Enslaved', []):
+		person_name = " ".join(
+			filter(None, [person.get('FirstName'), person.get('LastName')])
+		)
+		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
+		enslaved.append(link)
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
+	
+	# Build buyers string
+	buyers = []
+	for buyer in transaction.get('Buyer', []):
+		buyer_name = " ".join(
+			filter(None, [buyer.get('FirstName'), buyer.get('LastName')])
+		)
+		link = f'<a href="/Reports/Human?HumanId={buyer.get("HumanId")}">{buyer_name}</a>'
+		buyers.append(link)
+	buyers_str = " and ".join(buyers) if buyers else "Unknown Buyer"
+	
+	desc = f"was the seller's agent for {sellers_str} in the sale of {enslaved_str} to {buyers_str}"
+	name_parts.append(desc)
+	return name_parts
+
+def BuyerAgentDescription(transaction, name_parts):
+	# Build buyers string
+	buyers = []
+	for buyer in transaction.get('Buyer', []):
+		buyer_name = " ".join(
+			filter(None, [buyer.get('FirstName'), buyer.get('LastName')])
+		)
+		link = f'<a href="/Reports/Human?HumanId={buyer.get("HumanId")}">{buyer_name}</a>'
+		buyers.append(link)
+	buyers_str = " and ".join(buyers) if buyers else "Unknown Buyer"
+	
+	# Build enslaved string
+	enslaved = []
+	for person in transaction.get('Enslaved', []):
+		person_name = " ".join(
+			filter(None, [person.get('FirstName'), person.get('LastName')])
+		)
+		link = f'<a href="/Reports/Human?HumanId={person.get("HumanId")}">{person_name}</a>'
+		enslaved.append(link)
+	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
+	
+	# Build buyers string
+	sellers = []
+	for seller in transaction.get('seller', []):
+		seller_name = " ".join(
+			filter(None, [seller.get('FirstName'), seller.get('LastName')])
+		)
+		link = f'<a href="/Reports/Human?HumanId={seller.get("HumanId")}">{seller_name}</a>'
+		sellers.append(link)
+	sellers_str = " and ".join(sellers) if sellers else "Unknown seller"
+	
+	desc = f"was the buyer's agent for {buyers_str} in the purchase of {enslaved_str} from {sellers_str}"
 	name_parts.append(desc)
 	return name_parts
 

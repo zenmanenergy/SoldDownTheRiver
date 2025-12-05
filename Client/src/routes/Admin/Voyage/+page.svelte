@@ -539,7 +539,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each VoyageHumans.filter(h => h.Role === 'Enslaved') as Human}
+								{#each VoyageHumans.filter(h => h.RoleId === 'Enslaved') as Human}
 									<tr on:click={() => window.open(`/Admin/Human?HumanId=${Human.HumanId}`, '_blank')}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
@@ -574,7 +574,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each VoyageHumans.filter(h => h.Role === 'Captain') as Human}
+								{#each VoyageHumans.filter(h => h.RoleId === 'Captain') as Human}
 									<tr on:click={() => window.location.href = `/Admin/Human?HumanId=${Human.HumanId}`}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
@@ -608,7 +608,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each VoyageHumans.filter(h => h.Role === 'Owner 1') as Human}
+								{#each VoyageHumans.filter(h => h.RoleId === 'Owner 1') as Human}
 									<tr on:click={() => window.location.href = `/Admin/Human?HumanId=${Human.HumanId}`}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
@@ -642,7 +642,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each VoyageHumans.filter(h => h.Role === 'Owner 2') as Human}
+								{#each VoyageHumans.filter(h => h.RoleId === 'Owner 2') as Human}
 									<tr on:click={() => window.location.href = `/Admin/Human?HumanId=${Human.HumanId}`}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
@@ -676,7 +676,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each VoyageHumans.filter(h => h.Role === 'Shipping Agent') as Human}
+								{#each VoyageHumans.filter(h => h.RoleId === 'Shipping Agent') as Human}
 									<tr on:click={() => window.location.href = `/Admin/Human?HumanId=${Human.HumanId}`}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
@@ -710,7 +710,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each VoyageHumans.filter(h => h.Role === 'Collector Agent') as Human}
+								{#each VoyageHumans.filter(h => h.RoleId === 'Collector Agent') as Human}
 									<tr on:click={() => window.location.href = `/Admin/Human?HumanId=${Human.HumanId}`}>
 										<td>{Human.FirstName || ''}</td>
 										<td>{Human.LastName || ''}</td>
