@@ -146,6 +146,7 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 
 				if (Human.Height_cm) {
 					Human.Height_in = (Human.Height_cm / 2.54).toFixed(2);
+					Human.Height_cm = Human.Height_cm.toFixed(0);
 				}
 			}
 
@@ -315,7 +316,7 @@ $: timelineLocations = (combinedTimeline && combinedTimeline.data && combinedTim
 								<div class="info-label">Height:</div>
 								<div class="info-value">
 									{#if Human.Height_in}
-										{Human.Height_in} inches
+										{Math.floor(Human.Height_in / 12)}'{Math.round(Human.Height_in % 12)}"
 									{/if}
 									{#if Human.Height_cm}
 										({Human.Height_cm} cm)

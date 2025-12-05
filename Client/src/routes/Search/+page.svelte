@@ -344,7 +344,6 @@ let justLoaded = true;
 				transaction.TransactionId,
 				transaction.URL
 			];
-			
 			// Combine all searchable values into one string
 			const searchableText = values.join(' ').toLowerCase();
 			

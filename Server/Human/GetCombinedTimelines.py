@@ -373,15 +373,23 @@ def get_combinedtimelines(HumanId):
 		
 
 		connection.close()
-		# Add voyage start entries for all voyages
+		# Create a dictionary to store voyage entries by date and VoyageId to combine multiple roles
+		voyage_entries = {}
+		
 		for voyage in response['voyages']:
-			row = {}
-			row['DateCirca'] = voyage['StartDate']
-			row['DateAccuracy'] = voyage['StartDateAccuracy']
-			row['Latitude'] = voyage['StartLatitude']
-			row['Longitude'] = voyage['StartLongitude']
+			row_key = (str(voyage['StartDate']), voyage['VoyageId'])  # Key for grouping
 			
-			# Build the voyage start description
+			if row_key not in voyage_entries:
+				# Create initial entry for this voyage on this date
+				voyage_entries[row_key] = {
+					'DateCirca': voyage['StartDate'],
+					'DateAccuracy': voyage['StartDateAccuracy'],
+					'Latitude': voyage['StartLatitude'],
+					'Longitude': voyage['StartLongitude'],
+					'descriptions': []
+				}
+			
+			# Always add the voyage start line (same for all roles)
 			human_name = " ".join(
 				filter(None, [human.get('FirstName'), human.get('LastName')])
 			)
@@ -399,8 +407,43 @@ def get_combinedtimelines(HumanId):
 			voyage_id = voyage.get('VoyageId', '')
 			voyage_link = f'<a href="/Reports/Voyage?VoyageId={voyage_id}">Voyage</a>' if voyage_id else 'Voyage'
 			
-			description = f"{voyage_link} Start: {human_link} ({role_id}) departed {start_city}, {start_state} on the {ship_link}"
-			row['Description'] = description
+			voyage_start_desc = f"{voyage_link} Start: {human_link} ({role_id}) departed {start_city}, {start_state} on the {ship_link}"
+			voyage_entries[row_key]['descriptions'].append(voyage_start_desc)
+			
+			# Add description based on role
+			name_parts = []
+			human_name = " ".join(
+				filter(None, [human.get('FirstName'), human.get('LastName')])
+			)
+			if human_name:
+				human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
+				name_parts.append(human_link)
+			
+			role = str(voyage.get('RoleId', ''))
+			if role == "Captain":
+				CaptainDescription(voyage, name_parts)
+			elif role == "ShippingAgent":
+				ShippingAgentDescription(voyage, name_parts)
+			elif role == "Owner1":
+				SellerDescription(voyage, name_parts)
+			elif role == "Owner2":
+				BuyerDescription(voyage, name_parts)
+			elif role == "CollectorAgent":
+				CollectorAgentDescription(voyage, name_parts)
+			elif role == "SellerAgent":
+				SellerAgentDescription(voyage, name_parts)
+			
+			if name_parts and len(name_parts) > 1:  # Only add role description if there's content beyond the name
+				voyage_entries[row_key]['descriptions'].append(" ".join(name_parts))
+		
+		# Add combined voyage entries to timeline
+		for entry in voyage_entries.values():
+			row = {}
+			row['DateCirca'] = entry['DateCirca']
+			row['DateAccuracy'] = entry['DateAccuracy']
+			row['Latitude'] = entry['Latitude']
+			row['Longitude'] = entry['Longitude']
+			row['Description'] = "<br>".join(entry['descriptions'])
 			response['combinedTimeLine'].append(row)
 
 		# Add voyage end entries for all voyages
@@ -430,6 +473,7 @@ def get_combinedtimelines(HumanId):
 			voyage_link = f'<a href="/Reports/Voyage?VoyageId={voyage_id}">Voyage</a>' if voyage_id else 'Voyage'
 			
 			description = f"{voyage_link} End: {human_link} ({role_id}) arrived {end_city}, {end_state} on the {ship_link}"
+			
 			row['Description'] = description
 			response['combinedTimeLine'].append(row)
 
@@ -496,75 +540,9 @@ def get_combinedtimelines(HumanId):
 				elif role == "Notary":
 					NotaryDescription(transaction,name_parts)
 				elif role == "SellerAgent":
-					print("SELL")
 					SellerAgentDescription(transaction,name_parts)
 				elif role == "BuyerAgent":
 					BuyerAgentDescription(transaction,name_parts)			
-			row['Description'] = " ".join(name_parts)
-			response['combinedTimeLine'].append(row)
-
-		for voyage in response['voyages']:
-			row={}
-			
-			name_parts = []
-			# Wrap the human's name in a link to their report
-			human_name = " ".join(
-				filter(None, [human.get('FirstName'), human.get('LastName')])
-			)
-			if human_name:
-				human_link = f'<a href="/Reports/Human?HumanId={human.get("HumanId")}">{human_name}</a>'
-				name_parts.append(human_link)
-			if voyage['RoleId']:
-				role = str(voyage['RoleId'])
-				if role == "Captain":
-					row['DateCirca']=voyage['StartDate']
-					row['DateAccuracy']=voyage['StartDateAccuracy']
-					row['Latitude']=voyage['StartLatitude']
-					row['Longitude']=voyage['StartLongitude']
-					CaptainDescription(voyage,name_parts)
-				elif role == "Owner2":
-					row['Latitude']=voyage['EndLatitude']
-					row['Longitude']=voyage['EndLongitude']
-					row['DateCirca']=voyage['EndDate']
-					row['DateAccuracy']=voyage['EndDateAccuracy']
-					BuyerDescription(voyage,name_parts)
-
-				elif role == "Owner1":
-					row['Latitude']=voyage['StartLatitude']
-					row['Longitude']=voyage['StartLongitude']
-					row['DateCirca']=voyage['EndDate']
-					row['DateAccuracy']=voyage['EndDateAccuracy']
-					SellerDescription(voyage,name_parts)
-
-				elif role == "CollectorAgent":
-					row['Latitude']=voyage['EndLatitude']
-					row['Longitude']=voyage['EndLongitude']
-					row['DateCirca']=voyage['EndDate']
-					row['DateAccuracy']=voyage['EndDateAccuracy']
-					CollectorAgentDescription(voyage,name_parts)
-
-				elif role == "ShippingAgent":
-					row['Latitude']=voyage['StartLatitude']
-					row['Longitude']=voyage['StartLongitude']
-					row['DateCirca']=voyage['StartDate']
-					row['DateAccuracy']=voyage['StartDateAccuracy']
-					ShippingAgentDescription(voyage,name_parts)
-				elif role == "SellerAgent":
-					row['Latitude']=voyage['StartLatitude']
-					row['Longitude']=voyage['StartLongitude']
-					row['DateCirca']=voyage['StartDate']
-					row['DateAccuracy']=voyage['StartDateAccuracy']
-					SellerAgentDescription(voyage,name_parts)
-				elif role == "Enslaved":
-					row['Latitude']=voyage['EndLatitude']
-					row['Longitude']=voyage['EndLongitude']
-					row['DateCirca']=voyage['EndDate']
-					row['DateAccuracy']=voyage['EndDateAccuracy']
-					EnslavedDescription(voyage,name_parts)
-					print(name_parts)
-
-				
-
 			row['Description'] = " ".join(name_parts)
 			response['combinedTimeLine'].append(row)
 
@@ -814,7 +792,10 @@ def SellerDescription(transaction, name_parts):
 	enslaved_str = ", ".join(enslaved) if enslaved else "Unnamed Enslaved Person"
 	# Make "sold" a link to the transaction report
 	transaction_id = transaction.get('TransactionId')
-	sold_link = f'<a href="/Reports/Transaction?TransactionId={transaction_id}">sold</a>: '
+	if transaction_id:
+		sold_link = f'<a href="/Reports/Transaction?TransactionId={transaction_id}">sold</a>: '
+	else:
+		sold_link = "sold: "
 	desc = f"{sold_link} {enslaved_str} to: {buyers_str}"
 	# Add notary if present
 	notaries = []
@@ -896,7 +877,15 @@ def EnslavedDescription(transaction, name_parts):
 		link = f'<a href="/Reports/Human?HumanId={buyer.get("HumanId")}">{buyer_name}</a>'
 		buyers.append(link)
 	buyers_str = " and ".join(buyers) if buyers else "Unknown Buyer"
-	desc = f"was sold by: {sellers_str} to: {buyers_str}"
+	
+	# Make "sold" a link to the transaction report if transaction_id exists
+	transaction_id = transaction.get('TransactionId')
+	if transaction_id:
+		sold_link = f'<a href="/Reports/Transaction?TransactionId={transaction_id}">sold</a>'
+	else:
+		sold_link = "sold"
+	
+	desc = f"was {sold_link} by: {sellers_str} to: {buyers_str}"
 	# Add notary if present
 	notaries = []
 	for notary in transaction.get('Notary', []):

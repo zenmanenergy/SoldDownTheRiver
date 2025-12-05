@@ -31,21 +31,21 @@ def get_searchtransactions():
 
 		LEFT JOIN locations l ON t.LocationId = l.LocationId
 		LEFT JOIN (
-			SELECT th1.TransactionId, GROUP_CONCAT(CONCAT_WS(' ', h1.FirstName, h1.LastName) SEPARATOR ', ') AS Notary
+			SELECT th1.TransactionId, GROUP_CONCAT(TRIM(CONCAT_WS(' ', NULLIF(TRIM(h1.FirstName), ''), NULLIF(TRIM(h1.LastName), ''))) SEPARATOR ', ') AS Notary
 			FROM transactionhumans th1
 			LEFT JOIN humans h1 ON th1.HumanId = h1.HumanId
-			WHERE th1.RoleId = 'Notary'
+			WHERE th1.RoleId = 'Notary' AND (h1.FirstName IS NOT NULL OR h1.LastName IS NOT NULL)
 			GROUP BY th1.TransactionId
 		) n ON t.TransactionId = n.TransactionId
 		LEFT JOIN (
-			SELECT th2.TransactionId, GROUP_CONCAT(CONCAT_WS(' ', h2.FirstName, h2.LastName) SEPARATOR ', ') AS Sellers
+			SELECT th2.TransactionId, GROUP_CONCAT(TRIM(CONCAT_WS(' ', NULLIF(TRIM(h2.FirstName), ''), NULLIF(TRIM(h2.LastName), ''))) SEPARATOR ', ') AS Sellers
 			FROM transactionhumans th2
 			LEFT JOIN humans h2 ON th2.HumanId = h2.HumanId
-			WHERE th2.RoleId = 'Seller'
+			WHERE th2.RoleId = 'Seller' AND (h2.FirstName IS NOT NULL OR h2.LastName IS NOT NULL)
 			GROUP BY th2.TransactionId
 		) s ON t.TransactionId = s.TransactionId
 		LEFT JOIN (
-			SELECT th3.TransactionId, GROUP_CONCAT(CONCAT_WS(' ', h3.FirstName, h3.LastName) SEPARATOR ', ') AS Buyers
+			SELECT th3.TransactionId, GROUP_CONCAT(TRIM(CONCAT_WS(' ', NULLIF(TRIM(h3.FirstName), ''), NULLIF(TRIM(h3.LastName), ''))) SEPARATOR ', ') AS Buyers
 			FROM transactionhumans th3
 			LEFT JOIN humans h3 ON th3.HumanId = h3.HumanId
 			WHERE th3.RoleId = 'Buyer'
